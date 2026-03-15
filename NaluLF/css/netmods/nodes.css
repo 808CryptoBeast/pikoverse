@@ -1,0 +1,202 @@
+/* =====================================================
+   css/netmods/nodes.css — Global Nodes UI
+   ===================================================== */
+
+#global-nodes-card .gn-btn{
+  margin-left:auto;
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.9);
+  cursor:pointer;
+}
+
+#global-nodes-card .gn-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin:10px 0 8px;
+}
+
+#global-nodes-card .gn-search{
+  flex:1 1 320px;
+  min-width:240px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);
+  color:rgba(255,255,255,.92);
+}
+
+#global-nodes-card .gn-select{
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);
+  color:rgba(255,255,255,.92);
+}
+
+#global-nodes-card .gn-check{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  opacity:.9;
+  user-select:none;
+}
+
+#global-nodes-card .gn-minpeers{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.20);
+}
+
+#global-nodes-card .gn-minpeers input[type="range"]{
+  width:140px;
+}
+
+#global-nodes-card .gn-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+#global-nodes-card .gn-pill{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+}
+
+#global-nodes-card .gn-list{
+  position:relative;
+  height:460px;
+  overflow:auto;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.20);
+}
+
+#global-nodes-card .gn-spacer{
+  width:100%;
+}
+
+#global-nodes-card .gn-rows{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+}
+
+#global-nodes-card .gn-row{
+  display:grid;
+  grid-template-columns: 1.6fr 1.0fr 0.9fr 1.2fr;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  cursor:pointer;
+}
+
+#global-nodes-card .gn-row:hover{
+  background:rgba(255,255,255,.05);
+}
+
+#global-nodes-card .gn-row--unmapped{
+  opacity:.78;
+}
+
+#global-nodes-card .gn-pub{
+  font-weight:700;
+}
+
+#global-nodes-card .gn-sub{
+  opacity:.65;
+  font-size:12px;
+  margin-top:2px;
+}
+
+#global-nodes-card .gn-badge{
+  display:inline-flex;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  margin-right:6px;
+  font-size:12px;
+}
+
+#global-nodes-card .gn-row-c{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+#global-nodes-card .gn-row-d{
+  opacity:.85;
+  align-self:center;
+}
+
+/* Map cluster marker */
+.nalunode-cluster-wrap{
+  background:transparent !important;
+}
+
+.nalunode-cluster{
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.nalunode-cluster-ring{
+  position:absolute;
+  inset:-4px;
+  border-radius:999px;
+  border:1px solid rgba(0,255,240,.35);
+  box-shadow:0 0 18px rgba(0,255,240,.25);
+}
+
+.nalunode-cluster-core{
+  width:100%;
+  height:100%;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0, 255, 240, .18);
+  border:1px solid rgba(0,255,240,.45);
+  color:rgba(255,255,255,.92);
+  font-weight:700;
+}
+
+/* Popup */
+.nalunode-popup-wrap .leaflet-popup-content{
+  margin:10px 12px;
+}
+
+.nalunode-pop-title{
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.nalunode-pop-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:3px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.nalunode-pop-row span{
+  opacity:.7;
+}
