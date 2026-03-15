@@ -1,0 +1,48 @@
+/* ====================
+   UTILITY CLASSES
+   ==================== */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-column {
+  flex-direction: column;
+}
+
+/* Grid utility */
+.grid {
+  display: grid;
+}
+
+/* Spacing utilities */
+.mt-1 { margin-top: var(--space-unit); }
+.mb-1 { margin-bottom: var(--space-unit); }
+.pt-1 { padding-top: var(--space-unit); }
+.pb-1 { padding-bottom: var(--space-unit); }
+/* Add more as needed */

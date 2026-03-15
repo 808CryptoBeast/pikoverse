@@ -1,0 +1,42 @@
+:root {
+  /* Color Variables */
+  --primary-color: #4a7c59;
+  --secondary-color: #ee8b36;
+  --accent-color: #9b4dca;
+  --dark-color: #1a1a1a;
+  --light-color: #f0f0f0;
+  --text-color: #f0f0f0;
+  --background-color: #222222;
+  --tribal-border-color: #ee8b36;
+  
+  /* Color Variations */
+  --color-olelo: #265d9c;
+  --color-ikeverse: #9D50BB;
+  --color-malama: #50E3C2;
+  --color-bg-dark: #121826;
+  --color-bg-light: #1E293B;
+  --color-text: #F8FAFC;
+  --color-text-light: #CBD5E1;
+
+  /* Layout Variables */
+  --header-height: 80px;
+  --max-width: 1200px;
+  
+  /* Spacing Variables */
+  --space-unit: 1rem;
+  --space-xxs: calc(0.25 * var(--space-unit));
+  --space-xs: calc(0.5 * var(--space-unit));
+  --space-sm: calc(0.75 * var(--space-unit));
+  --space-md: calc(1.25 * var(--space-unit));
+  --space-lg: calc(2 * var(--space-unit));
+  --space-xl: calc(3.25 * var(--space-unit));
+  --space-xxl: calc(5.25 * var(--space-unit));
+
+  /* Styling Variables */
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --transition-speed: 0.3s;
+  --transition-speed-slow: 0.5s;
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.4);
+}

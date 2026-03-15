@@ -1,0 +1,64 @@
+.dictionary-section {
+  padding: 80px 0;
+  background-color: var(--dark-color);
+}
+
+.dictionary-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.search-container {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--tribal-border-color);
+  border-radius: 50px;
+  color: var(--light-color);
+  font-size: 1rem;
+}
+
+.search-btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  background: var(--secondary-color);
+  color: var(--dark-color);
+  border: none;
+  border-radius: 50px;
+  padding: 10px 25px;
+  cursor: pointer;
+}
+
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.term-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.term-title {
+  color: var(--secondary-color);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.term-title::before {
+  content: '•';
+  color: var(--secondary-color);
+  margin-right: 10px;
+  font-size: 2rem;
+}

@@ -1,0 +1,154 @@
+/* ====================
+   MEANING SECTION
+   ==================== */
+.meaning-section {
+  position: relative;
+  background: 
+    linear-gradient(135deg, var(--dark-color) 0%, #1a2e3a 100%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,50 Q30,30 40,50 T60,50 T80,50" stroke="white" stroke-width="0.5" fill="none" opacity="0.05"/></svg>');
+  color: var(--light-color);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.meaning-section h2 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  margin: 0 auto 1.5rem;
+  position: relative;
+  width: fit-content;
+}
+
+.meaning-section h2::after {
+  content: "";
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5rem;
+  height: 0.2rem;
+  background: var(--primary-color);
+  border-radius: 0.2rem;
+}
+
+/* Card Grid System */
+.meaning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 1.5rem;
+  padding: 0 1.25rem;
+  max-width: 87.5rem;
+  margin: 3.75rem auto 0;
+}
+
+/* Card Styles */
+.meaning-card {
+  position: relative;
+  border-radius: 1rem;
+  min-height: 24rem;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  transform: translateY(1.25rem);
+  opacity: 0;
+  animation: cardEntrance 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--delay) * 0.5s);
+  box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.3);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background-size: cover;
+  background-position: center;
+}
+
+.meaning-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(0, 0, 0, 0.4) 50%, 
+    transparent 100%
+  );
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+
+.meaning-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="white" stroke-width="2" stroke-dasharray="2,2" opacity="0.05"/></svg>');
+  mix-blend-mode: overlay;
+  opacity: 0.15;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Card Content */
+.card-content {
+  position: relative;
+  z-index: 3;
+  padding: 1.875rem;
+  transform: translateY(1.25rem);
+  transition: transform 0.5s ease, opacity 0.3s ease;
+  width: 100%;
+  will-change: transform;
+}
+
+.meaning-card h3 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 0.5rem;
+  color: white;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.meaning-subtitle {
+  display: inline-block;
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  font-weight: 500;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+}
+
+.meaning-card p {
+  font-size: clamp(0.9rem, 3vw, 1rem);
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-top: 1rem;
+}
+
+/* Interactions */
+.meaning-card:hover {
+  transform: translateY(-0.5rem) !important;
+  box-shadow: 0 0.9375rem 2.5rem rgba(0, 0, 0, 0.4);
+}
+
+.meaning-card:hover::before {
+  opacity: 0.6;
+}
+
+.meaning-card:hover .card-content {
+  transform: translateY(0);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .meaning-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .meaning-card {
+    min-height: 18.75rem;
+    background-position: center 35%;
+  }
+  
+  .card-content {
+    padding: 1.25rem;
+  }
+}

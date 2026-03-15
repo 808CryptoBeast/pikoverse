@@ -1,0 +1,75 @@
+.ecosystem-section {
+  background:
+    linear-gradient(180deg, #171716 0%, #20211f 100%);
+  color: var(--light-color);
+}
+
+.ecosystem-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
+  margin-top: 3rem;
+}
+
+.ecosystem-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(238, 139, 54, 0.12);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  transition:
+    transform var(--transition-speed-slow),
+    border-color var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.ecosystem-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(238, 139, 54, 0.3);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.ecosystem-card.featured-card {
+  border-color: rgba(238, 139, 54, 0.4);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.08)
+  );
+}
+
+.project-icon {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.project-subtitle {
+  color: var(--secondary-color);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.project-features {
+  margin: 1.2rem 0 1.4rem;
+  padding-left: 0;
+}
+
+.project-features li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.7rem;
+  color: rgba(240, 240, 240, 0.84);
+}
+
+.project-features li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--secondary-color);
+}
+
+@media (max-width: 992px) {
+  .ecosystem-grid {
+    grid-template-columns: 1fr;
+  }
+}

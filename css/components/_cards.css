@@ -1,0 +1,89 @@
+/* ====================
+   CARD COMPONENTS
+   ==================== */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: all var(--transition-speed);
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .card-image {
+  transform: scale(1.05);
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  color: var(--light-color);
+  margin-bottom: 8px;
+}
+
+.card-text {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.card-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 2;
+}
+
+/* Variation: Feature Card */
+.feature-card {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+  border: 2px solid var(--tribal-border-color);
+}
+
+.feature-card:hover {
+  border-color: var(--secondary-color);
+}
+
+/* Variation: Product Card */
+.product-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.product-card .text-container {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(5px);
+}
+
+.product-card .product-title {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: inline-block;
+  color: var(--dark-color);
+}

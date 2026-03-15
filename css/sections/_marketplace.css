@@ -1,0 +1,66 @@
+.marketplace-section {
+  padding: 80px 0;
+  background-color: var(--dark-color);
+}
+
+.marketplace-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.product-filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid var(--tribal-border-color);
+  color: var(--light-color);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: var(--secondary-color);
+  color: var(--dark-color);
+  border-color: var(--secondary-color);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.product-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: all var(--transition-speed);
+  border: 1px solid rgba(238, 139, 54, 0.3);
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  border-color: var(--secondary-color);
+}
+
+.product-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--secondary-color);
+  color: var(--dark-color);
+  padding: 5px 15px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}

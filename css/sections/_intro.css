@@ -1,0 +1,39 @@
+.intro-section {
+  padding: 80px 0;
+  position: relative;
+  background-color: var(--dark-color);
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(74, 124, 89, 0.1) 0%, transparent 40%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,50 Q50,20 80,50 T140,50" stroke="%23ee8b36" stroke-width="1" fill="none" opacity="0.1"/></svg>');
+}
+
+.intro-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  align-items: center;
+}
+
+.intro-content h2 {
+  font-size: 2.5rem;
+  color: var(--secondary-color);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.intro-content h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.intro-image {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--tribal-border-color);
+}

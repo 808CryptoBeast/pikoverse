@@ -1,0 +1,318 @@
+/* Animation Styles */
+
+/* Amplify Word Animation */
+.amplify-animation {
+  height: 60px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.amplify-word {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+}
+
+.amplify-word.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Loading Spinners */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+/* Fishhook Spinner */
+.loading-spinner.fishhook::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border-top: 3px solid var(--primary-color);
+  border-right: 3px solid transparent;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner.fishhook::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border-top: 3px solid var(--secondary-color);
+  border-right: 3px solid transparent;
+  animation: spin 0.8s linear infinite reverse;
+}
+
+/* Spearhead Spinner */
+.loading-spinner.spearhead {
+  width: 40px;
+  height: 40px;
+  transform: rotate(45deg);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-spinner.spearhead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 20px solid var(--primary-color);
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid var(--primary-color);
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
+/* Tribal Spinner */
+.loading-spinner.tribal {
+  background-image: url('../assets/Tribalbird.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 40px;
+  height: 40px;
+  animation: rotate-tribal 2s infinite ease-in-out;
+}
+
+.tribal-spinner {
+  background-image: url('../assets/Tribalbird.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 30px;
+  height: 30px;
+  animation: rotate-tribal 2s infinite ease-in-out;
+}
+
+/* Size Variations */
+.loading-spinner.sm, .tribal-spinner.sm {
+  width: 20px;
+  height: 20px;
+}
+
+.loading-spinner.md, .tribal-spinner.md {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-spinner.lg, .tribal-spinner.lg {
+  width: 60px;
+  height: 60px;
+}
+
+.loading-spinner.xl, .tribal-spinner.xl {
+  width: 80px;
+  height: 80px;
+}
+
+/* Fade-In Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scale-In Animation */
+.scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.scale-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Slide-In Animation */
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Animation for Hawaiian Terms */
+.term-card {
+  transform-origin: center;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.term-card:hover {
+  transform: scale(1.05) translateY(-5px);
+}
+
+.term-card .term-emoji {
+  transition: transform 0.3s ease;
+}
+
+.term-card:hover .term-emoji {
+  transform: scale(1.2);
+  animation: bounce 0.5s ease infinite alternate;
+}
+
+/* Keyframe Animations */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.9) rotate(45deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(45deg);
+  }
+}
+
+@keyframes rotate-tribal {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Animation Delays */
+.delay-100 {
+  transition-delay: 0.1s;
+}
+
+.delay-200 {
+  transition-delay: 0.2s;
+}
+
+.delay-300 {
+  transition-delay: 0.3s;
+}
+
+.delay-400 {
+  transition-delay: 0.4s;
+}
+
+.delay-500 {
+  transition-delay: 0.5s;
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-rotate {
+  transition: transform 0.3s ease;
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg);
+}
+
+/* Button Animations */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.btn:hover::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* Scroll Animation */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}

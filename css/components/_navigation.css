@@ -1,0 +1,124 @@
+/* ====================
+   NAVIGATION COMPONENTS
+   ==================== */
+.main-nav ul {
+  display: flex;
+  list-style: none;
+}
+
+.main-nav li {
+  margin: 0 15px;
+  position: relative;
+}
+
+.main-nav a {
+  font-weight: 500;
+  position: relative;
+  color: var(--light-color);
+  padding: 8px 0;
+  display: inline-block;
+}
+
+.main-nav a.nav-highlight {
+  color: var(--accent-color);
+}
+
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color);
+  transition: width var(--transition-speed);
+}
+
+.main-nav a:hover::after,
+.main-nav a.active::after {
+  width: 100%;
+}
+
+/* Dropdown menu styles */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: var(--dark-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 10px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all var(--transition-speed);
+  z-index: 100;
+}
+
+.dropdown-menu li {
+  margin: 0;
+}
+
+.dropdown-menu a {
+  padding: 10px 20px;
+  display: block;
+  color: var(--light-color);
+}
+
+.dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+  .main-nav {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    background-color: var(--dark-color);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-speed);
+    border-bottom: 2px solid var(--tribal-border-color);
+  }
+
+  .main-nav.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .main-nav ul {
+    flex-direction: column;
+  }
+
+  .main-nav li {
+    margin: 10px 0;
+  }
+
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    padding-left: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+  }
+}

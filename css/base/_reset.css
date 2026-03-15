@@ -1,0 +1,68 @@
+/* ====================
+   BASE RESET STYLES
+   ==================== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 L30,10 L40,20 L30,30 Z M60,20 L70,10 L80,20 L70,30 Z M40,40 L50,30 L60,40 L50,50 Z M80,40 L90,30 L100,40 L90,50 Z M0,40 L10,30 L20,40 L10,50 Z M20,60 L30,50 L40,60 L30,70 Z M60,60 L70,50 L80,60 L70,70 Z M40,80 L50,70 L60,80 L50,90 Z M80,80 L90,70 L100,80 L90,90 Z M0,80 L10,70 L20,80 L10,90 Z" fill="rgba(74, 124, 89, 0.1)" /></svg>');
+  background-attachment: fixed;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+a:hover {
+  color: var(--accent-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+/* Section base styles */
+section {
+  padding: var(--space-xl) 0;
+  position: relative;
+}
+
+/* Section tribal borders */
+section::before, section::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--tribal-border-color) 20%, 
+    var(--tribal-border-color) 80%, 
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+section::before { top: 0; }
+section::after { bottom: 0; }
