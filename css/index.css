@@ -3631,97 +3631,312 @@ section::after {
 /* =====================================================
    10. PLATFORM ECOSYSTEM
    ===================================================== */
-.ecosystem-section {
-  background: linear-gradient(180deg, #171716 0%, #20211f 100%);
-  color: var(--light-color);
+/*/* ═══════════════════════════════════════════════════════════
+   CARD-AMP — Internal carousel + project icon styles
+   Add this alongside your existing ecosystem CSS.
+   Nothing else changes.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Card shell ── */
+.ecosystem-card.card-amp {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
 }
 
-.ecosystem-section h2 {
-  font-size: clamp(2rem, 5vw, 3rem);
+/* ── Project icon — shared across all cards ── */
+.project-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 26px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  position: relative;
+  flex-shrink: 0;
+
+  border: 1px solid rgba(255, 210, 122, .22);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .04) inset,
+    0 8px 28px rgba(0, 0, 0, .45),
+    0 0 20px rgba(255, 210, 122, .08);
+
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255, 210, 122, .10),
+    rgba(0, 0, 0, .35)
+  );
+
+  animation: iconGlow 4s ease-in-out infinite;
 }
 
-.ecosystem-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
-  margin-top: 3rem;
+@keyframes iconGlow {
+  0%,100% {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.04) inset,
+      0 8px 28px rgba(0,0,0,.45),
+      0 0 20px rgba(255,210,122,.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.06) inset,
+      0 10px 32px rgba(0,0,0,.50),
+      0 0 32px rgba(255,210,122,.22),
+      0 0 60px rgba(255,210,122,.08);
+  }
 }
 
-.ecosystem-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(238, 139, 54, 0.12);
-  border-radius: 18px;
+/* spinning ring */
+.project-icon::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 28px;
+  background: conic-gradient(
+    rgba(255,210,122,.55),
+    rgba(84,209,255,.35),
+    rgba(157,0,255,.25),
+    rgba(255,210,122,.55)
+  );
+  z-index: 0;
+  animation: iconRingSpin 6s linear infinite;
+  opacity: .6;
+}
+
+/* ring mask */
+.project-icon::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 24px;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255,210,122,.10),
+    rgba(8,11,20,.92)
+  );
+  z-index: 1;
+}
+
+@keyframes iconRingSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* base image styles — shared */
+.project-icon img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+  transition: transform .5s cubic-bezier(.25,.46,.45,.94), filter .4s ease;
+  filter: brightness(1.0) saturate(1.08) contrast(1.04);
+}
+
+/* hover states */
+.ecosystem-card:hover .project-icon {
+  animation-play-state: paused;
+  border-color: rgba(255,210,122,.50);
+}
+
+.ecosystem-card:hover .project-icon::before {
+  animation-duration: 2s;
+  opacity: 1;
+}
+
+.ecosystem-card:hover .project-icon img {
+  transform: scale(1.08);
+  filter: brightness(1.08) saturate(1.15) contrast(1.06);
+}
+
+/* ── Per-card icon overrides ── */
+
+.card-amp .project-icon img {
+  object-fit: cover;
+  width: 85%;
+  height: 85%;
+}
+
+/* Ikeverse — source image is small so scale it up to fill the container */
+.card-ikeverse .project-icon img {
+  object-fit: cover;
+  width: 85%;
+  height: 85%;
+
+}
+
+
+.card-history .project-icon img {
+  object-fit: cover;
+  width: 85%;
+  height: 85%;
+}
+
+.card-nalulf .project-icon img {
+  object-fit: cover;
+  width: 85%;
+  height: 85%;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .project-icon,
+  .project-icon::before { animation: none; }
+  .project-icon img     { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AMP INNER CAROUSEL
+   ═══════════════════════════════════════════════════════════ */
+
+.amp-inner-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.amp-inner-track::-webkit-scrollbar { display: none; }
+
+.amp-slide {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
   padding: 32px;
-  box-shadow: var(--shadow);
-  transition:
-    transform 0.35s ease,
-    border-color var(--transition-speed),
-    box-shadow var(--transition-speed);
-  text-align: left;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.ecosystem-card:hover {
-  transform: translateY(-10px);
-  border-color: rgba(238, 139, 54, 0.35);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+.amp-slide .card-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: saturate(1.05) contrast(1.04) brightness(.72);
+  transition: filter .4s ease;
+}
+.ecosystem-card.card-amp:hover .amp-slide .card-video {
+  filter: saturate(1.10) contrast(1.06) brightness(.85);
 }
 
-.ecosystem-card.featured-card {
-  border-color: rgba(238, 139, 54, 0.4);
+.amp-slide .card-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.12),
-    rgba(255, 255, 255, 0.08)
+    rgba(8,11,20,.20) 0%,
+    rgba(8,11,20,.50) 45%,
+    rgba(8,11,20,.88) 100%
   );
 }
 
-.project-icon {
-  font-size: 2.4rem;
-  margin-bottom: 1rem;
-  line-height: 1;
-}
-
-.project-subtitle {
-  color: var(--secondary-color);
-  font-weight: 600;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-}
-
-.project-features {
-  margin: 1.2rem 0 1.4rem;
-  padding-left: 0;
-  list-style: none;
-}
-
-.project-features li {
-  position: relative;
-  padding-left: 1.2rem;
-  margin-bottom: 0.65rem;
-  color: rgba(240, 240, 240, 0.84);
-  line-height: 1.6;
-}
-
-.project-features li::before {
-  content: "•";
+.amp-slide .card-top-glow {
   position: absolute;
-  left: 0;
-  color: var(--secondary-color);
+  top: 0; left: 0; right: 0;
+  height: 110px;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(255,210,122,.07), transparent);
 }
 
-.project-link {
-  display: inline-flex;
+.amp-slide-body {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.amp-slide-body .project-icon,
+.amp-slide-body h3,
+.amp-slide-body .project-subtitle,
+.amp-slide-body .project-description,
+.amp-slide-body .project-features,
+.amp-slide-body .project-link {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Arrows ── */
+.amp-inner-prev,
+.amp-inner-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(8,11,20,.62);
+  color: rgba(255,255,255,.88);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color .2s ease, background .2s ease, transform .18s ease;
+  backdrop-filter: blur(6px);
+}
+.amp-inner-prev { left: 10px; }
+.amp-inner-next { right: 10px; }
+.amp-inner-prev svg,
+.amp-inner-next svg { width: 16px; height: 16px; }
+
+.amp-inner-prev:hover,
+.amp-inner-next:hover {
+  border-color: rgba(255,210,122,.55);
+  background: rgba(255,210,122,.12);
+  transform: translateY(-50%) scale(1.08);
+}
+.amp-inner-prev:disabled,
+.amp-inner-next:disabled {
+  opacity: .25;
+  pointer-events: none;
+}
+
+/* ── Dots ── */
+.amp-inner-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 7px;
   align-items: center;
-  font-weight: 700;
-  color: var(--secondary-color);
-  transition: all var(--transition-speed);
+}
+.amp-inner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.25);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background .22s ease, transform .22s ease, border-color .22s ease;
+}
+.amp-inner-dot.is-active {
+  background: rgba(255,210,122,.90);
+  border-color: rgba(255,210,122,.90);
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(255,210,122,.5);
 }
 
-.project-link:hover {
-  color: var(--light-color);
-  transform: translateX(4px);
+/* ── Carousel reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .amp-inner-track { scroll-behavior: auto; }
+  .amp-inner-prev,
+  .amp-inner-next  { transition: none; }
 }
-
 /* =====================================================
    11. IKEVERSE FEATURE SECTION
    ===================================================== */

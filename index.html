@@ -394,31 +394,93 @@
     </div>
 
     <div class="ecosystem-grid">
-      <article class="ecosystem-card card-amp">
-        <video class="card-video" autoplay muted playsinline preload="metadata">
-          <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
-        </video>
-        <div class="card-video-overlay"></div>
-        <div class="card-top-glow"></div>
 
-        <div class="project-icon">🌺</div>
-        <h3>AMP</h3>
-        <p class="project-subtitle">Creative, Cultural &amp; Marketplace Expression</p>
-        <p class="project-description">
-          AMP carries visual identity, storytelling, branded expression, and marketplace offerings
-          rooted in culture, heritage, and the living spirit of Aloha.
-        </p>
+      <!-- ═══════════════════════════════════════════════════════
+           CARD 1 — AMP Showcase (internal left/right carousel)
+           To add more slides: duplicate the .amp-slide block
+           inside .amp-inner-track. No JS changes needed.
+           ═══════════════════════════════════════════════════════ -->
+      <article class="ecosystem-card card-amp amp-showcase-card">
 
-        <ul class="project-features">
-          <li>Cultural design and brand expression</li>
-          <li>Story-driven merchandise and visuals</li>
-          <li>Lifestyle extensions of the broader mission</li>
-          <li>Creative identity rooted in heritage</li>
+        <!-- Scrollable inner track -->
+        <ul class="amp-inner-track" id="ampInnerTrack" role="list">
+
+          <!-- SLIDE 1 — Foundation (only slide for now) -->
+          <li class="amp-slide">
+            <video class="card-video" autoplay muted playsinline preload="metadata">
+              <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
+            </video>
+            <div class="card-video-overlay"></div>
+            <div class="card-top-glow"></div>
+
+            <div class="amp-slide-body">
+              <div class="project-icon">
+  <img src="assets/AMP Tiki.jpg" alt="AMP" />
+</div>
+              <h3>AMP</h3>
+              <p class="project-subtitle">Creative, Cultural &amp; Marketplace Expression</p>
+              <p class="project-description">
+                AMP carries visual identity, storytelling, branded expression, and marketplace offerings
+                rooted in culture, heritage, and the living spirit of Aloha.
+              </p>
+              <ul class="project-features">
+                <li>Cultural design and brand expression</li>
+                <li>Story-driven merchandise and visuals</li>
+                <li>Lifestyle extensions of the broader mission</li>
+                <li>Creative identity rooted in heritage</li>
+              </ul>
+            </div>
+          </li>
+<!-- SLIDE 2 — Cosmic Weave -->
+<li class="amp-slide">
+  <video class="card-video" autoplay muted playsinline preload="metadata">
+    <source src="assets/platform-images/cosmic-weave-bg.mp4" type="video/mp4">
+  </video>
+  <div class="card-video-overlay"></div>
+  <div class="card-top-glow"></div>
+
+  <div class="amp-slide-body">
+    <div class="project-icon">🌌</div>
+    <h3>Cosmic Weave</h3>
+    <p class="project-subtitle">Interactive Cultural Globe</p>
+    <p class="project-description">
+      An interactive globe mapping the wisdom traditions and knowledge systems
+      of 50 living cultures — visualising how ideas, movement, and meaning
+      connect across time and ocean.
+    </p>
+    <ul class="project-features">
+      <li>50 living cultures mapped</li>
+      <li>Connections across time and geography</li>
+      <li>Story mode narratives for each culture</li>
+      <li>Lens and layer exploration tools</li>
+    </ul>
+    <a href="cosmic-weave.html" class="project-link">Explore the Globe →</a>
+  </div>
+</li>
+          <!-- Add more slides here by duplicating the <li class="amp-slide"> block above -->
+
         </ul>
 
-        <a href="#marketplace" class="project-link">Explore AMP →</a>
+        <!-- Prev / Next arrows — hidden until 2+ slides exist (JS handles this) -->
+        <button class="amp-inner-prev" id="ampInnerPrev" aria-label="Previous" type="button" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button class="amp-inner-next" id="ampInnerNext" aria-label="Next" type="button" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+
+        <!-- Dot indicators — hidden until 2+ slides exist -->
+        <div class="amp-inner-dots" id="ampInnerDots" hidden></div>
+
       </article>
 
+      <!-- CARD 2 — Ikeverse (unchanged) -->
       <article class="ecosystem-card featured-card card-ikeverse">
         <video class="card-video" autoplay muted playsinline preload="metadata">
           <source src="assets/platform-images/ikeverse-bg.mp4" type="video/mp4">
@@ -426,14 +488,15 @@
         <div class="card-video-overlay"></div>
         <div class="card-top-glow"></div>
 
-        <div class="project-icon">🌌</div>
+        <div class="project-icon">
+  <img src="assets/goldenp.jpg" alt="Ikeverse" />
+</div>
         <h3>Ikeverse</h3>
         <p class="project-subtitle">Cultural Learning Platform</p>
         <p class="project-description">
           A living learning hub centered on indigenous cultures, ancestral knowledge, ancient histories,
           global cultural interconnections, and the evolving relationship between humanity and technology.
         </p>
-
         <ul class="project-features">
           <li>Indigenous cultural learning paths</li>
           <li>Ancient history and global connections</li>
@@ -441,10 +504,10 @@
           <li>Technology, blockchain, AI, and cryptography modules</li>
           <li>Future support for decentralized preservation</li>
         </ul>
-
-        <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link">Enter Ikeverse →</a>
+        <a href="ikeverse.html" class="project-link">Enter Ikeverse →</a>
       </article>
 
+      <!-- CARD 3 — Historical Data Aggregator (unchanged) -->
       <article class="ecosystem-card card-history">
         <video class="card-video" autoplay muted playsinline preload="metadata">
           <source src="assets/platform-images/historical-bg.mp4" type="video/mp4">
@@ -452,24 +515,25 @@
         <div class="card-video-overlay"></div>
         <div class="card-top-glow"></div>
 
-        <div class="project-icon">📚</div>
+        <div class="project-icon">
+  <img src="assets/platform-images/HDA.png" alt="NaluLF" />
+</div>
         <h3>Historical Data Aggregator</h3>
         <p class="project-subtitle">Memory, Preservation, and Research</p>
         <p class="project-description">
           A developing system for gathering, organizing, and preserving historical knowledge across
           cultures, timelines, and sources — with a focus on indigenous narratives and overlooked histories.
         </p>
-
         <ul class="project-features">
           <li>Curated historical knowledge aggregation</li>
           <li>Cross-cultural connections and timeline mapping</li>
           <li>Preservation-oriented information design</li>
           <li>Future-ready decentralized archival direction</li>
         </ul>
-
         <a href="#contact" class="project-link">Follow the Build →</a>
       </article>
 
+      <!-- CARD 4 — NaluLF (unchanged) -->
       <article class="ecosystem-card card-nalulf">
         <video class="card-video" autoplay muted playsinline preload="metadata">
           <source src="assets/platform-images/nalulf-bg.mp4" type="video/mp4">
@@ -477,26 +541,28 @@
         <div class="card-video-overlay"></div>
         <div class="card-top-glow"></div>
 
-        <div class="project-icon">🌊</div>
+        <div class="project-icon">
+  <img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" />
+</div>
         <h3>Nalu Ledger Forensics / NaluLF</h3>
         <p class="project-subtitle">XRPL Data Aggregation &amp; Forensics</p>
         <p class="project-description">
           A deep-inspection XRPL platform focused on ledger monitoring, account intelligence,
           fraud detection signals, behavioral patterns, and investigative data gathering.
         </p>
-
         <ul class="project-features">
           <li>XRPL monitoring and ledger analytics</li>
           <li>Fraud detection and suspicious pattern analysis</li>
           <li>Wallet, token, and transaction inspection</li>
           <li>Forensic workflows for investigators and builders</li>
         </ul>
-
-        <a href="https://808cryptobeast.github.io/NaluLF/" class="project-link">Explore NaluLF →</a>
+        <a href="NaluLF/index.html" class="project-link">Explore NaluLF →</a>
       </article>
+
     </div>
   </div>
 </section>
+
   <!-- IKEVERSE FEATURE -->
   <section id="knowledge-bridge" class="knowledge-bridge-section">
   <div class="container">
