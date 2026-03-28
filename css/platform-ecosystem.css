@@ -1028,3 +1028,35 @@
     transition: none !important;
   }
 }
+.card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+  filter: brightness(0.9) saturate(1.02);
+  transform: scale(1.02);
+  transition:
+    transform 0.55s ease,
+    filter 0.4s ease;
+}
+
+.ecosystem-card:hover .card-image,
+.amp-slide:hover .card-image {
+  transform: scale(1.05);
+  filter: brightness(0.98) saturate(1.06);
+}
+
+.amp-slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.amp-slide-body {
+  position: relative;
+  z-index: 3;
+}
