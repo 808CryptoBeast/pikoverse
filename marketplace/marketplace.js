@@ -94,7 +94,7 @@
           // Merge in any missing fields from seed (e.g. bg) that admin doesn't set
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-            return Object.assign({ bg: 'assets/hawaii-mountains.jpg.webp' }, seed, p);
+            return Object.assign({ bg: '/assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }
