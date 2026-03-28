@@ -570,3 +570,99 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// amp-inner-carousel.js
+// Paste at the bottom of your existing JS file.
+// Controls the left/right carousel inside card-amp only.
+// To add a new slide: duplicate the <li class="amp-slide"> block in the HTML.
+// Nothing here needs to change.
+
+(function () {
+  var track  = document.getElementById('ampInnerTrack');
+  var prev   = document.getElementById('ampInnerPrev');
+  var next   = document.getElementById('ampInnerNext');
+  var dotsEl = document.getElementById('ampInnerDots');
+  if (!track) return;
+
+  var slides  = Array.from(track.querySelectorAll('.amp-slide'));
+  var total   = slides.length;
+  var current = 0;
+
+  // Only show controls when there are 2 or more slides
+  if (total > 1) {
+    if (prev)   prev.removeAttribute('hidden');
+    if (next)   next.removeAttribute('hidden');
+    if (dotsEl) dotsEl.removeAttribute('hidden');
+  }
+
+  // Build dot indicators
+  var dots = slides.map(function (_, i) {
+    var btn = document.createElement('button');
+    btn.className = 'amp-inner-dot' + (i === 0 ? ' is-active' : '');
+    btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+    btn.addEventListener('click', function () { goTo(i); });
+    if (dotsEl) dotsEl.appendChild(btn);
+    return btn;
+  });
+
+  function syncUI(idx) {
+    current = idx;
+    dots.forEach(function (d, i) {
+      d.classList.toggle('is-active', i === idx);
+    });
+    if (prev) prev.disabled = idx === 0;
+    if (next) next.disabled = idx === total - 1;
+  }
+
+  function goTo(idx) {
+    var slide = slides[idx];
+    if (!slide) return;
+    track.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+    syncUI(idx);
+  }
+
+  if (prev) prev.addEventListener('click', function () { goTo(Math.max(0, current - 1)); });
+  if (next) next.addEventListener('click', function () { goTo(Math.min(total - 1, current + 1)); });
+
+  // Update dots as user scrolls / swipes
+  var scrollTimer;
+  track.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+      var closest = 0, closestDist = Infinity;
+      slides.forEach(function (slide, i) {
+        var dist = Math.abs(slide.offsetLeft - track.scrollLeft);
+        if (dist < closestDist) { closestDist = dist; closest = i; }
+      });
+      syncUI(closest);
+    }, 60);
+  }, { passive: true });
+
+  // Touch drag support
+  var dragStart = null;
+  track.addEventListener('pointerdown', function (e) {
+    dragStart = { x: e.clientX, scrollLeft: track.scrollLeft };
+    track.setPointerCapture(e.pointerId);
+  }, { passive: true });
+
+  track.addEventListener('pointermove', function (e) {
+    if (!dragStart) return;
+    track.scrollLeft = dragStart.scrollLeft + (dragStart.x - e.clientX);
+  }, { passive: true });
+
+  track.addEventListener('pointerup', function (e) {
+    if (!dragStart) return;
+    var dx = Math.abs(e.clientX - dragStart.x);
+    dragStart = null;
+    if (dx > 30) {
+      var closest = 0, closestDist = Infinity;
+      slides.forEach(function (slide, i) {
+        var dist = Math.abs(slide.offsetLeft - track.scrollLeft);
+        if (dist < closestDist) { closestDist = dist; closest = i; }
+      });
+      goTo(closest);
+    }
+  });
+
+  syncUI(0);
+})();
