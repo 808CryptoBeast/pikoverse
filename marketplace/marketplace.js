@@ -73,7 +73,7 @@
       price: 2200,
       description: 'Heavy canvas tote with AMP logo and cultural motif. Large enough for a full market run, strong enough for years of use.',
       image: '/assets/AMP Tiki.jpg',
-      bg: '/assets/hawaii-mountains.jpg.webp',
+      bg: '../assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -94,7 +94,7 @@
           // Merge in any missing fields from seed (e.g. bg) that admin doesn't set
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-            return Object.assign({ bg: '/assets/hawaii-mountains.jpg.webp' }, seed, p);
+            return Object.assign({ bg: '../assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }
