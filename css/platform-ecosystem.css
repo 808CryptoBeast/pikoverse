@@ -1060,3 +1060,26 @@
   position: relative;
   z-index: 3;
 }
+
+/* AMP slide click-through fixes */
+.amp-slide .card-image,
+.amp-slide .card-video,
+.amp-slide .card-video-overlay,
+.amp-slide .card-top-glow {
+  pointer-events: none;
+}
+
+.amp-slide {
+  position: relative;
+}
+
+.amp-slide-body {
+  position: relative;
+  z-index: 5;
+}
+
+.amp-slide-body .project-link {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+}
