@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About Aloha Mass Productions — the people and mission behind Pikoverse, AMP, Root Stall, Ikeverse, and Nalu Ledger Forensics.">
+  <meta name="theme-color" content="#5B9A68">
+  <title>About | Aloha Mass Productions</title>
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #c9a84c;
+      --gold-light: #f0c96a;
+      --green:      #4caf7a;
+      --blue:       #54d1ff;
+      --bg:         #0b0d14;
+      --bg2:        #111520;
+      --text:       rgba(255,255,255,.88);
+      --muted:      rgba(255,255,255,.45);
+      --border:     rgba(201,168,76,.12);
+      --header-h:   72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: var(--gold); text-decoration: none; transition: color .2s; }
+    a:hover { color: var(--gold-light); }
+
+    /* ── NAV ── */
+    .about-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: rgba(6,8,16,.96);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 24px;
+    }
+    .about-nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .about-nav-logo-img {
+      width: 44px; height: 44px; border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid rgba(201,168,76,.3);
+      box-shadow: 0 0 14px rgba(201,168,76,.1);
+    }
+    .about-nav-brand { font-size: 15px; font-weight: 700; color: #fff; }
+    .about-nav-sub { font-size: 10px; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; }
+    .about-nav-links {
+      margin-left: auto;
+      display: flex; gap: 28px;
+      list-style: none;
+    }
+    .about-nav-links a {
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      transition: color .2s;
+    }
+    .about-nav-links a:hover { color: #fff; }
+
+    /* ── HERO ── */
+    .about-hero {
+      min-height: 520px;
+      padding: calc(var(--header-h) + 80px) 32px 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,168,76,.08) 0%, transparent 70%),
+        linear-gradient(180deg, #0b0d14 0%, #111520 100%);
+    }
+    .about-hero::after {
+      content: '';
+      position: absolute;
+      left: 50%; bottom: 0;
+      transform: translateX(-50%);
+      width: min(72%, 860px); height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,.8), transparent);
+      opacity: .7;
+    }
+    .about-hero-inner { max-width: 760px; position: relative; z-index: 1; }
+    .about-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      background: rgba(201,168,76,.08);
+      border: 1px solid rgba(201,168,76,.18);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .about-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 700; line-height: 1.1;
+      color: #fff; margin-bottom: 20px;
+    }
+    .about-hero h1 span { color: var(--gold-light); }
+    .about-hero p {
+      font-size: 16px; color: rgba(255,255,255,.7);
+      line-height: 1.8; max-width: 640px; margin: 0 auto;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .about-section {
+      padding: 100px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .about-section + .about-section {
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .about-section-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px; display: block;
+    }
+    .about-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700; color: #fff;
+      margin-bottom: 20px; line-height: 1.2;
+    }
+    .about-section h2::after {
+      content: '';
+      display: block; width: 80px; height: 3px;
+      margin-top: 14px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      border-radius: 999px;
+    }
+    .about-section p {
+      font-size: 15px; color: rgba(255,255,255,.72);
+      line-height: 1.85; max-width: 760px;
+      margin-bottom: 16px;
+    }
+    .about-section p:last-child { margin-bottom: 0; }
+    .about-section strong { color: var(--gold-light); font-weight: 700; }
+
+    /* ── MISSION GRID ── */
+    .about-mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+    .about-mission-card {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color .2s, transform .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-mission-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .about-mission-card:hover { border-color: rgba(201,168,76,.25); transform: translateY(-3px); }
+    .about-mission-card:hover::before { opacity: 1; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .about-mission-icon { font-size: 28px; margin-bottom: 14px; }
+    .about-mission-card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .about-mission-card p { font-size: 13px; color: var(--muted); line-height: 1.7; margin: 0; }
+
+    /* ── PLATFORM GRID ── */
+    .about-platforms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .about-platform-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: border-color .2s, background .2s;
+    }
+    .about-platform-card:hover {
+      border-color: rgba(201,168,76,.3);
+      background: rgba(255,255,255,.05);
+    }
+    .about-platform-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .about-platform-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .about-platform-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .about-platform-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .about-platform-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 3px 10px; border-radius: 20px;
+      width: fit-content; margin-top: 4px;
+    }
+    .status-live    { background: rgba(76,175,122,.12); color: var(--green); border: 1px solid rgba(76,175,122,.3); }
+    .status-beta    { background: rgba(84,209,255,.10); color: var(--blue);  border: 1px solid rgba(84,209,255,.3); }
+    .status-soon    { background: rgba(255,255,255,.05); color: var(--muted); border: 1px solid rgba(255,255,255,.1); }
+
+    /* ── VALUES ── */
+    .about-values {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 40px;
+    }
+    .about-value {
+      padding: 18px 20px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      transition: border-color .2s;
+    }
+    .about-value:hover { border-color: rgba(201,168,76,.2); }
+    .about-value-hawaiian {
+      font-size: 15px; font-weight: 700; color: var(--gold-light);
+      margin-bottom: 4px;
+    }
+    .about-value-english { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+    /* ── CONTACT CTA ── */
+    .about-cta {
+      padding: 100px 32px;
+      text-align: center;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,.06) 0%, transparent 70%);
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .about-cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: #fff; margin-bottom: 16px;
+    }
+    .about-cta p { font-size: 15px; color: var(--muted); max-width: 540px; margin: 0 auto 32px; line-height: 1.8; }
+    .about-cta-btns { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .about-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: .03em; transition: all .2s;
+      text-decoration: none;
+    }
+    .about-btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #07060e;
+      box-shadow: 0 4px 18px rgba(201,168,76,.25);
+    }
+    .about-btn-primary:hover { box-shadow: 0 8px 28px rgba(201,168,76,.4); transform: translateY(-2px); color: #07060e; }
+    .about-btn-outline {
+      border: 1px solid rgba(201,168,76,.3);
+      color: var(--gold-light);
+      background: rgba(201,168,76,.06);
+    }
+    .about-btn-outline:hover { background: rgba(201,168,76,.14); border-color: var(--gold); }
+
+    /* ── FOOTER ── */
+    .about-footer {
+      text-align: center;
+      padding: 28px 32px;
+      border-top: 1px solid rgba(255,255,255,.05);
+      font-size: 12px; color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .about-nav-links { display: none; }
+      .about-section { padding: 70px 20px; }
+      .about-hero { padding: calc(var(--header-h) + 50px) 20px 60px; }
+      .about-cta { padding: 70px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="about-nav">
+    <a href="index.html" class="about-nav-logo">
+      <img src="assets/AMP Tiki.jpg" alt="AMP" class="about-nav-logo-img">
+      <div>
+        <div class="about-nav-brand">Pikoverse</div>
+        <div class="about-nav-sub">Ka Ulana ʻIke</div>
+      </div>
+    </a>
+    <ul class="about-nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#ecosystem">Platforms</a></li>
+      <li><a href="marketplace/marketplace.html">Marketplace</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="about-hero">
+    <div class="about-hero-inner">
+      <div class="about-eyebrow"><i class="fas fa-seedling"></i> Built from Hawaiʻi</div>
+      <h1>About <span>Aloha Mass Productions</span></h1>
+      <p>
+        We are a Hawaiʻi-based creative and technology studio building platforms that honor culture,
+        preserve knowledge, and connect communities across the digital landscape.
+      </p>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <section class="about-section">
+    <span class="about-section-label">Who We Are</span>
+    <h2>Our Mission</h2>
+    <p>
+      Aloha Mass Productions — AMP — exists at the intersection of <strong>culture, education,
+      technology, and creativity</strong>. We build with intention: every platform, every product,
+      every decision is rooted in the values of Aloha and a deep respect for indigenous knowledge,
+      ancestral wisdom, and the communities we serve.
+    </p>
+    <p>
+      Pikoverse is our umbrella ecosystem — <strong>Ka Ulana ʻIke</strong>, the Weaving of Knowledge.
+      It connects AMP, Ikeverse, Root Stall, Nalu Ledger Forensics, and the Historical Data Aggregator
+      under one shared vision: to ensure that culture is not left behind by the future, but carried
+      forward with care, purpose, and innovation.
+    </p>
+
+    <div class="about-mission-grid">
+      <div class="about-mission-card">
+        <div class="about-mission-icon">🌺</div>
+        <h3>Rooted in Aloha</h3>
+        <p>Every platform begins with values — kindness, unity, patience, and care for the land and each other.</p>
+      </div>
+      <div class="about-mission-card">
+        <div class="about-mission-icon">📚</div>
+        <h3>Preserving Knowledge</h3>
+        <p>We build tools that capture, organize, and protect cultural narratives, historical records, and ancestral wisdom.</p>
+      </div>
+      <div class="about-mission-card">
+        <div class="about-mission-icon">🔗</div>
+        <h3>Connecting Communities</h3>
+        <p>From digital farmers markets to blockchain forensics, we bridge the gap between people, land, and emerging technology.</p>
+      </div>
+      <div class="about-mission-card">
+        <div class="about-mission-icon">🚀</div>
+        <h3>Building the Future</h3>
+        <p>We meet emerging systems — AI, blockchain, decentralized networks — with indigenous knowledge and ethical design.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="about-section">
+    <span class="about-section-label">The Ecosystem</span>
+    <h2>Our Platforms</h2>
+    <p>
+      Each branch of Pikoverse serves a different role — but all are woven together by the same
+      intention: to preserve what matters, expand access to learning, and build meaningful systems
+      for the future.
+    </p>
+
+    <div class="about-platforms">
+      <div class="about-platform-card">
+        <div class="about-platform-icon"><img src="assets/AMP Tiki.jpg" alt="AMP"></div>
+        <div>
+          <div class="about-platform-name">AMP Marketplace</div>
+          <div class="about-platform-desc">Cultural design, story-driven merchandise, and creative identity rooted in Aloha heritage.</div>
+          <span class="about-platform-status status-live">● Live</span>
+        </div>
+      </div>
+      <div class="about-platform-card">
+        <div class="about-platform-icon"><img src="assets/goldenp.jpg" alt="Ikeverse"></div>
+        <div>
+          <div class="about-platform-name">Ikeverse</div>
+          <div class="about-platform-desc">A living learning hub for indigenous cultures, ancient histories, and the evolving relationship between humanity and technology.</div>
+          <span class="about-platform-status status-beta">◉ Beta</span>
+        </div>
+      </div>
+      <div class="about-platform-card">
+        <div class="about-platform-icon"><img src="assets/rootstall_w.jpeg" alt="Root Stall"></div>
+        <div>
+          <div class="about-platform-name">Root Stall</div>
+          <div class="about-platform-desc">Hawaiʻi's first digital farmers market — connecting local farmers, vendors, and communities across the islands.</div>
+          <span class="about-platform-status status-live">● Live</span>
+        </div>
+      </div>
+      <div class="about-platform-card">
+        <div class="about-platform-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF"></div>
+        <div>
+          <div class="about-platform-name">Nalu Ledger Forensics</div>
+          <div class="about-platform-desc">Deep-inspection XRPL analytics for ledger monitoring, fraud detection, and investigative data gathering.</div>
+          <span class="about-platform-status status-beta">◉ Beta</span>
+        </div>
+      </div>
+      <div class="about-platform-card">
+        <div class="about-platform-icon"><img src="assets/platform-images/HDA.png" alt="HDA"></div>
+        <div>
+          <div class="about-platform-name">Historical Data Aggregator</div>
+          <div class="about-platform-desc">A preservation system for gathering and organizing historical knowledge across cultures, timelines, and overlooked narratives.</div>
+          <span class="about-platform-status status-soon">○ Coming Soon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES -->
+  <section class="about-section">
+    <span class="about-section-label">How We Work</span>
+    <h2>Guided by Aloha</h2>
+    <p>
+      Aloha is not just a greeting — it is a relational, ethical, and spiritual way of being.
+      These values are not decorative. They are the operating principles behind every decision we make.
+    </p>
+
+    <div class="about-values">
+      <div class="about-value">
+        <div class="about-value-hawaiian">Akahai</div>
+        <div class="about-value-english">Kindness</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">Lōkahi</div>
+        <div class="about-value-english">Unity</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">ʻOluʻolu</div>
+        <div class="about-value-english">Agreeable</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">Haʻahaʻa</div>
+        <div class="about-value-english">Humility</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">Ahonui</div>
+        <div class="about-value-english">Patience</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">Pono</div>
+        <div class="about-value-english">Righteousness</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">Mālama</div>
+        <div class="about-value-english">Care</div>
+      </div>
+      <div class="about-value">
+        <div class="about-value-hawaiian">ʻOiaʻiʻo</div>
+        <div class="about-value-english">Truth</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="about-cta">
+    <h2>Weaving knowledge forward</h2>
+    <p>
+      Have a project, a question, an idea, or a story worth preserving?
+      We'd love to hear from you.
+    </p>
+    <div class="about-cta-btns">
+      <a href="index.html#contact" class="about-btn about-btn-primary">
+        <i class="fas fa-envelope"></i> Get in Touch
+      </a>
+      <a href="index.html#showcase" class="about-btn about-btn-outline">
+        <i class="fas fa-rocket"></i> View the Showcase
+      </a>
+      <a href="marketplace/marketplace.html" class="about-btn about-btn-outline">
+        <i class="fas fa-store"></i> Visit the Store
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="about-footer">
+    <p>&copy; 2026 Aloha Mass Productions / Pikoverse. Built from Hawaiʻi with respect, care, and future vision.</p>
+    <p style="margin-top:6px">
+      <a href="index.html">Home</a> &nbsp;·&nbsp;
+      <a href="marketplace/marketplace.html">Marketplace</a> &nbsp;·&nbsp;
+      <a href="index.html#ecosystem">Platforms</a> &nbsp;·&nbsp;
+      <a href="index.html#contact">Contact</a>
+    </p>
+  </footer>
+
+</body>
+</html>
