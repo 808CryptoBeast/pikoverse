@@ -527,6 +527,79 @@
     initSubmitModal();
     renderShowcaseWall();
     initPulse();
+    seedPulse();
+
+    // Wire the empty showcase state button to open the modal
+    var emptyBtn = document.getElementById('pikoOpenSubmitEmpty');
+    if (emptyBtn) {
+      emptyBtn.addEventListener('click', function() {
+        var backdrop = document.getElementById('pikoSubmitBackdrop');
+        if (backdrop) {
+          backdrop.classList.add('is-open');
+          backdrop.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+          // Switch to project tab
+          document.querySelectorAll('.piko-modal-tab').forEach(function(b) {
+            b.classList.toggle('is-active', b.dataset.tab === 'project');
+          });
+          document.querySelectorAll('.piko-tab-pane').forEach(function(p) {
+            p.classList.toggle('is-active', p.id === 'pikoTabProject');
+          });
+        }
+      });
+    }
   });
+
+  /* ─────────────────────────────────────────────
+     SEED PULSE — curated entries shown on first visit
+     so the feed is never empty for new visitors
+  ───────────────────────────────────────────── */
+  function seedPulse() {
+    var SEED_KEY = 'amp_pulse_seeded_v1';
+    if (localStorage.getItem(SEED_KEY)) return; // only seed once
+
+    var seeds = [
+      {
+        id: 'seed-rootstall',
+        text: "Root Stall launched \u2014 Hawai\u02BBi's first digital farmers market is live.",
+        name: 'AMP Team',
+        category: 'platform',
+        ts: Date.now() - 1000 * 60 * 60 * 24 * 3,
+        dismissed: false,
+        reply: '',
+        status: 'reviewed',
+      },
+      {
+        id: 'seed-ikeverse',
+        text: 'Ikeverse beta is open — indigenous cultures, ancient histories, and emerging tech.',
+        name: 'AMP Team',
+        category: 'platform',
+        ts: Date.now() - 1000 * 60 * 60 * 24 * 7,
+        dismissed: false,
+        reply: '',
+        status: 'reviewed',
+      },
+      {
+        id: 'seed-pikoverse',
+        text: 'Pikoverse — Ka Ulana ʻIke — the gateway ecosystem is now live.',
+        name: 'Aloha Mass Productions',
+        category: 'platform',
+        ts: Date.now() - 1000 * 60 * 60 * 24 * 14,
+        dismissed: false,
+        reply: '',
+        status: 'reviewed',
+      },
+    ];
+
+    var ideas = loadIdeas();
+    // Only add seeds that don't already exist
+    seeds.forEach(function(seed) {
+      if (!ideas.find(function(i) { return i.id === seed.id; })) {
+        ideas.push(seed);
+      }
+    });
+    saveIdeas(ideas);
+    localStorage.setItem(SEED_KEY, '1');
+  }
 
 })();

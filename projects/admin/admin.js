@@ -1267,11 +1267,19 @@ function renderAnalytics() {
   if (recent.length === 0) {
     suggEl.innerHTML = '<p class="adm-muted" style="padding:12px;text-align:center">No activity yet.</p>';
   } else {
-    suggEl.innerHTML = recent.map(s => `
-      <div class="adm-recent-sugg-row">
-        <div class="adm-recent-sugg-text">${esc(s.text.length > 80 ? s.text.slice(0, 80) + '…' : s.text)}</div>
-        <div class="adm-recent-sugg-meta">${s.name || 'Anonymous'} · ${new Date(s.timestamp).toLocaleDateString()}</div>
-      </div>`).join('');
+    suggEl.innerHTML = recent.map(s => {
+      // Unified: suggestions/ideas use .text, projects use .desc; timestamps vary
+      const typeIcon  = s._type === 'idea' ? '💡' : s._type === 'project' ? '🚀' : '🛍️';
+      const typeLabel = s._type === 'idea' ? 'Hub Idea' : s._type === 'project' ? 'Project' : 'Suggestion';
+      const rawText   = s.text || s.desc || '';
+      const display   = rawText.length > 80 ? rawText.slice(0, 80) + '…' : rawText;
+      const ts        = s._ts || s.timestamp || s.ts || 0;
+      const dateStr   = ts ? new Date(ts).toLocaleDateString() : '—';
+      return `<div class="adm-recent-sugg-row">
+        <div class="adm-recent-sugg-text">${typeIcon} <strong style="font-size:10px;opacity:.6;text-transform:uppercase">${esc(typeLabel)}</strong> ${esc(display)}</div>
+        <div class="adm-recent-sugg-meta">${esc(s.name || 'Anonymous')} · ${esc(dateStr)}</div>
+      </div>`;
+    }).join('');
   }
 }
 

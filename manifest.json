@@ -1,0 +1,26 @@
+{
+  "name": "Pikoverse — Ka Ulana ʻIke",
+  "short_name": "Pikoverse",
+  "description": "A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d14",
+  "theme_color": "#5B9A68",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/AMP Tiki.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/AMP Tiki.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle"],
+  "lang": "en-US"
+}

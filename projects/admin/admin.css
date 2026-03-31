@@ -1016,3 +1016,53 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: var(-
   background: rgba(76,175,122,.22);
   box-shadow: 0 4px 16px rgba(76,175,122,.2);
 }
+
+/* ══════════════════════════════════════════════
+   SIDEBAR — section labels + external links
+   ══════════════════════════════════════════════ */
+
+/* Section label dividers inside nav */
+.adm-nav-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 14px 14px 5px;
+  opacity: .55;
+}
+.adm-nav-section-label:first-child { padding-top: 4px; }
+
+/* ── Sidebar section labels ── */
+.adm-nav-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 14px 14px 4px;
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* ── Platform link buttons (open in new tab) ── */
+.adm-nav-link {
+  text-decoration: none;
+}
+.adm-nav-link-icon {
+  margin-left: auto;
+  font-size: 9px;
+  opacity: .3;
+  transition: opacity var(--transition);
+}
+.adm-nav-link:hover .adm-nav-link-icon { opacity: .7; }
+
+/* Sidebar scrollable when content is tall */
+.adm-sidebar {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.adm-sidebar::-webkit-scrollbar { display: none; }
+
+/* Teal badge for future Ikeverse panel */
+.adm-nav-badge--teal { background: #40c4aa; color: #07060e; }

@@ -1446,11 +1446,13 @@
    ══════════════════════════════════════════════ */
 
 /* Give the card a defined min-height so the absolute child has a canvas */
+/* ── AMP card: position:relative so absolute child fills it ── */
 .ecosystem-card.card-amp {
   min-height: 580px;
+  position: relative; /* ensures amp-slide-single fills the card */
 }
 
-/* Fill the entire card absolutely — mirrors how other cards work */
+/* Fill card exactly like other ecosystem cards */
 .amp-slide-single {
   position: absolute;
   inset: 0;
@@ -1459,7 +1461,7 @@
   overflow: hidden;
 }
 
-/* Video fills the slide */
+/* Video fills behind everything */
 .amp-slide-single .card-video {
   position: absolute;
   inset: 0;
@@ -1467,23 +1469,23 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  filter: saturate(1.05) contrast(1.04) brightness(.68);
+  filter: saturate(1.05) contrast(1.04) brightness(.65);
   transition: filter .4s ease;
 }
 .ecosystem-card.card-amp:hover .amp-slide-single .card-video {
-  filter: saturate(1.10) contrast(1.06) brightness(.82);
+  filter: saturate(1.10) contrast(1.06) brightness(.80);
 }
 
-/* Dark gradient — same recipe as other cards */
+/* Dark gradient — heavier at bottom so text reads */
 .amp-slide-single .card-video-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(8,11,20,.18) 0%,
-    rgba(8,11,20,.45) 40%,
-    rgba(8,11,20,.90) 100%
+    rgba(8,11,20,.10) 0%,
+    rgba(8,11,20,.35) 35%,
+    rgba(8,11,20,.88) 100%
   );
 }
 
@@ -1496,16 +1498,71 @@
   background: linear-gradient(180deg, rgba(255,210,122,.09), transparent);
 }
 
-/* Body sits above video, content pushed to bottom */
+/* Body: icon pinned top, text middle, button bottom — mirrors other cards */
 .amp-slide-single .amp-slide-body {
   position: relative;
   z-index: 2;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 32px;
-  gap: 10px;
+  /* NO justify-content so items stack naturally from top */
+  padding: 28px 28px 28px;
+  gap: 0;
+}
+
+/* Icon at top with breathing room */
+.amp-slide-single .amp-slide-body .project-icon {
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+/* Title immediately under icon */
+.amp-slide-single .amp-slide-body h3 {
+  margin-bottom: 6px;
+}
+
+/* Subtitle under title */
+.amp-slide-single .amp-slide-body .project-subtitle {
+  margin-bottom: 12px;
+}
+
+/* Description takes up middle space */
+.amp-slide-single .amp-slide-body .project-description {
+  flex: 1; /* pushes button to bottom */
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+/* Feature list */
+.amp-slide-single .amp-slide-body .project-features {
+  margin-bottom: 16px;
+}
+
+/* Button anchored at bottom */
+.amp-slide-single .amp-slide-body .project-link {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* ── Mobile: card needs explicit height since child is absolute ── */
+@media (max-width: 768px) {
+  .ecosystem-card.card-amp {
+    min-height: 520px;
+    /* Clip the top so content doesn't overflow above the card */
+    overflow: hidden;
+  }
+  .amp-slide-single .amp-slide-body {
+    padding: 22px;
+  }
+  .amp-slide-single .amp-slide-body .project-description {
+    display: none; /* hide long desc on small screens, keep icon/title/features/button */
+  }
+}
+
+@media (max-width: 480px) {
+  .ecosystem-card.card-amp {
+    min-height: 480px;
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -1604,4 +1661,46 @@
 @media (max-width: 1000px) {
   .piko-featured-card { grid-template-columns: 1fr; }
   .piko-featured-img { min-height: 280px; }
+}
+
+/* ── Admin dock node — muted, not public-facing ── */
+.dock-node--admin .dock-icon-wrap {
+  opacity: .45;
+  transition: opacity .2s;
+}
+.dock-node--admin:hover .dock-icon-wrap {
+  opacity: .85;
+}
+.dock-node--admin .dock-node-name {
+  color: rgba(255,255,255,.22);
+}
+.dock-node--admin:hover .dock-node-name {
+  color: rgba(255,255,255,.55);
+}
+.dock-node--admin .dock-status-ring {
+  border-color: rgba(255,255,255,.12) !important;
+  animation: none !important;
+}
+.dock-node--admin .dock-status-dot {
+  background: rgba(255,255,255,.2) !important;
+}
+
+/* ── Pikoverse footer admin icon ── */
+.footer-admin-access {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  margin-left: 10px;
+  vertical-align: middle;
+  color: rgba(255,255,255,.14);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color .2s, background .2s;
+}
+.footer-admin-access:hover {
+  color: rgba(255,255,255,.55);
+  background: rgba(255,255,255,.06);
 }

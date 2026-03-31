@@ -7,6 +7,21 @@
   <meta name="theme-color" content="#5B9A68">
   <title>Pikoverse | Ka Ulana ʻIke | The Weaving of Knowledge</title>
 
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/">
+  <meta property="og:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
+  <meta property="og:description" content="A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together through learning, preservation, and digital innovation.">
+  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP Tiki.jpg">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:site_name"   content="Pikoverse">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Pikoverse — Ka Ulana ʻIke">
+  <meta name="twitter:description" content="Aloha, indigenous knowledge, culture, history, and emerging technologies woven together. Built from Hawaiʻi.">
+  <meta name="twitter:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP Tiki.jpg">
+
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
 
@@ -105,6 +120,21 @@
         <div class="dock-tooltip">
           <span class="dock-tooltip-name">Community Showcase</span>
           <span class="dock-tooltip-status">● Open</span>
+        </div>
+      </a>
+
+      <div class="dock-divider"></div>
+
+      <a href="marketplace/admin.html" class="dock-node dock-node--admin" data-status="live">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon" style="font-size:16px">⚙️</div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Admin</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Admin Panel</span>
+          <span class="dock-tooltip-status">🔒 Login required</span>
         </div>
       </a>
 
@@ -369,7 +399,11 @@
                 <li>Creative identity rooted in heritage</li>
                 <li>Apparel, goods, and future marketplace offerings</li>
               </ul>
+<<<<<<< HEAD
+              <a href="marketplace/marketplace.html" class="project-link amp-market-link">
+=======
               <a href="marketplace/index.html" class="project-link amp-market-link">
+>>>>>>> 2e855c2badbc2926ea6b3c45ff92174a6a69f923
                 <i class="fas fa-store"></i> Visit AMP Marketplace →
               </a>
             </div>
@@ -524,7 +558,14 @@
       <div class="piko-showcase-grid" id="pikoShowcaseGrid"></div>
       <div class="piko-showcase-empty" id="pikoShowcaseEmpty" hidden>
         <i class="fas fa-rocket"></i>
-        <p>Be the first to submit a community project.</p>
+        <h4 style="color:#fff;margin-bottom:8px;font-size:16px">No approved projects yet</h4>
+        <p style="max-width:400px;margin:0 auto 20px">
+          Building something connected to Pikoverse, Aloha, culture, or technology?
+          Submit it and the AMP team will review it.
+        </p>
+        <button class="piko-share-fab-inline" id="pikoOpenSubmitEmpty" type="button">
+          <i class="fas fa-rocket"></i> Submit Your Project
+        </button>
       </div>
 
     </div>
@@ -553,7 +594,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <a href="#intro" class="footer-logo" aria-label="Pikoverse home">
+          <a href="/projects/admin/admin.html" class="footer-logo" aria-label="admin">
             <video class="footer-logo-video" autoplay muted playsinline preload="metadata">
               <source src="assets/intro/pikoverse-intro.mp4" type="video/mp4">
             </video>
@@ -575,7 +616,7 @@
         </div>
         <div class="footer-contact">
           <h3>Contact</h3>
-          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cda4a3aba28daca1a2a5aca0acbebebdbfa2a9b8aeb9a4a2a3e3aea2a0">[email&#160;protected]</a></p>
+          <p><strong>Email:</strong> <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a></p>
           <p>Built from Hawaiʻi with cultural respect and future vision.</p>
           <div class="social-links">
             <a href="#" aria-label="Facebook"><i class="social-icon facebook"></i></a>
@@ -585,7 +626,11 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 Pikoverse. All rights reserved.</p>
+        <p>&copy; 2026 Pikoverse. All rights reserved.
+          <a href="marketplace/admin.html" class="footer-admin-access" aria-label="Admin" title="Admin">
+            <i class="fas fa-sliders"></i>
+          </a>
+        </p>
         <p><small>Pikoverse approaches Hawaiian culture and indigenous knowledge with respect, care, and responsibility.</small></p>
       </div>
     </div>
@@ -749,9 +794,9 @@
       <span class="piko-pulse-dot"></span>
       Live Pulse
     </button>
-  </div>
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  </div><script>
   document.addEventListener("DOMContentLoaded", () => {
+    // ── Pikoverse intro cards: play once, last card loops back to frame 0 then pauses ──
     const introCards = document.querySelectorAll("#amp-intro .amp-card");
     introCards.forEach((card, index) => {
       const video = card.querySelector(".amp-card-video");
@@ -769,6 +814,68 @@
       if (video.readyState >= 2) tryPlay();
       else video.addEventListener("loadeddata", tryPlay, { once: true });
     });
+
+    // ── Lazy-load ecosystem card videos via IntersectionObserver ──
+    // Replaces autoplay on all .card-video and .amp-card-video elements
+    // so off-screen videos don't load or play until they scroll into view.
+    if ("IntersectionObserver" in window) {
+      const lazyVideos = document.querySelectorAll(
+        ".ecosystem-card .card-video, .amp-slide-single .card-video"
+      );
+
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            // Trigger src load if using <source> tags
+            if (!video.src && video.querySelector("source")) {
+              video.load();
+            }
+            video.play().catch(() => {});
+            videoObserver.unobserve(video);
+          }
+        });
+      }, { rootMargin: "100px" });
+
+      lazyVideos.forEach(v => videoObserver.observe(v));
+    }
   });
   </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // ── Mobile nav toggle ──────────────────────────────────────────────────
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+    const mainNav      = document.querySelector('.main-nav');
+    if (mobileToggle && mainNav) {
+      mobileToggle.addEventListener('click', () => {
+        const isOpen = mainNav.classList.toggle('show');
+        mobileToggle.setAttribute('aria-expanded', isOpen);
+      });
+      mainNav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          mainNav.classList.remove('show');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.main-nav') && !e.target.closest('.mobile-menu-toggle')) {
+          mainNav.classList.remove('show');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  });
+  </script>
+
   <script src="js/main.js"></script>
+<<<<<<< HEAD
+  <script src="js/animations.js"></script>
+  <script src="js/dictionary.js"></script>
+  <script src="js/marketplace.js"></script>
+  <script src="js/knowledgeHub.js" defer></script>
+  <script src="js/hub.js" defer></script>
+</body>
+</html>
+=======
+
+>>>>>>> 2e855c2badbc2926ea6b3c45ff92174a6a69f923
