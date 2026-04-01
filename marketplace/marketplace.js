@@ -33,8 +33,8 @@
       category: 'shirts',
       price: 3500,
       description: 'Beyond fabric and tech — AMP carries heritage forward through design. Premium heavyweight cotton, screen-printed with culturally rooted artwork.',
-      image: '../assets/AMP RYB.jpg',
-      bg: '../assets/hawaii-mountains.jpg.webp',
+      image: 'assets/AMP RYB.jpg',
+      bg: 'assets/hawaii-mountains.jpg.webp',
       badge: 'featured',
       sizes: ['XS','S','M','L','XL','2XL'],
       featured: true,
@@ -46,8 +46,8 @@
       category: 'hats',
       price: 2800,
       description: 'Aloha in motion — culture expressed through identity, story, and presence. Structured 6-panel cap with embroidered Rabbit Island artwork.',
-      image: '../assets/AMP Rabbit Island.jpg',
-      bg: '../assets/hawaii-mountains.jpg.webp',
+      image: 'assets/AMP Rabbit Island.jpg',
+      bg: 'assets/hawaii-mountains.jpg.webp',
       badge: 'new',
       sizes: ['One Size'],
       featured: true,
@@ -59,8 +59,8 @@
       category: 'stickers',
       price: 800,
       description: 'Weatherproof vinyl stickers. Three designs, rooted in Aloha Mass Productions visual identity. Stick them anywhere.',
-      image: '../assets/AMP Tiki.jpg',
-      bg: '../assets/hawaii-mountains.jpg.webp',
+      image: 'assets/AMP Tiki.jpg',
+      bg: 'assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -72,8 +72,8 @@
       category: 'accessories',
       price: 2200,
       description: 'Heavy canvas tote with AMP logo and cultural motif. Large enough for a full market run, strong enough for years of use.',
-      image: '../assets/AMP Tiki.jpg',
-      bg: '../assets/hawaii-mountains.jpg.webp',
+      image: 'assets/AMP Tiki.jpg',
+      bg: 'assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -94,7 +94,7 @@
           // Merge in any missing fields from seed (e.g. bg) that admin doesn't set
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-            return Object.assign({ bg: '../assets/hawaii-mountains.jpg.webp' }, seed, p);
+            return Object.assign({ bg: 'assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }
@@ -442,6 +442,10 @@
   function closeModal() {
     var backdrop = document.getElementById('mpModalBackdrop');
     var modal    = document.getElementById('mpModal');
+    // Blur any focused element inside modal before hiding to avoid aria-hidden + focus conflict
+    if (document.activeElement && backdrop && backdrop.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     if (backdrop) {
       backdrop.classList.remove('is-open');
       backdrop.setAttribute('aria-hidden', 'true');
@@ -549,6 +553,10 @@
   function closeCart() {
     var drawer   = document.getElementById('mpCartDrawer');
     var backdrop = document.getElementById('mpCartBackdrop');
+    // Blur focused element before hiding cart
+    if (document.activeElement && drawer && drawer.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
     if (drawer)   { drawer.classList.remove('is-open');   drawer.setAttribute('aria-hidden', 'true'); }
     if (backdrop) { backdrop.classList.remove('is-open'); }
     document.body.style.overflow = '';
@@ -657,27 +665,135 @@
     if (cartContinue) cartContinue.addEventListener('click', closeCart);
     if (cartBackdrop) cartBackdrop.addEventListener('click', closeCart);
 
-    // Checkout button — redirect to payment processor
-    var checkoutBtn = document.getElementById('mpCheckoutBtn');
-    if (checkoutBtn) {
-      checkoutBtn.addEventListener('click', function () {
-        if (!state.cart.length) {
-          showToast('<i class="fas fa-info-circle"></i> Your cart is empty');
-          return;
-        }
-        // SECURITY: never pass cart data via URL params.
-        // Instead, POST to your server endpoint which creates a secure
-        // checkout session with your payment processor (Stripe, etc.)
-        // and redirects. Replace the alert below with your actual endpoint.
-        showToast('<i class="fas fa-lock"></i> Redirecting to secure checkout…');
-        // Example:
-        // fetch('/api/checkout', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
-        //   body: JSON.stringify({ items: state.cart })
-        // }).then(r => r.json()).then(d => window.location.href = d.checkoutUrl);
-      });
+    // ── PAYMENT SETTINGS ────────────────────────────────────────────
+    // Set these in the admin Settings panel, or edit directly here.
+    // Leave a value as '' to hide that payment option.
+    var PAY_CONFIG_KEY = 'amp_pay_config';
+    function getPayConfig() {
+      try {
+        var stored = localStorage.getItem(PAY_CONFIG_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch(e) {}
+      return {
+        paypal:   '',   // e.g. 'alohamassproductions'  → paypal.me/alohamassproductions
+        venmo:    '',   // e.g. 'AlohaMP'               → venmo.com/u/AlohaMP
+        cashapp:  '',   // e.g. '$AlohaMP'              → cash.app/$AlohaMP
+        stripe:   '',   // full Stripe Payment Link URL → https://buy.stripe.com/xxxx
+      };
     }
+
+    // ── CHECKOUT MODAL ────────────────────────────────────────────
+    var checkoutBtn      = document.getElementById('mpCheckoutBtn');
+    var checkoutBackdrop = document.getElementById('mpCheckoutBackdrop');
+    var checkoutModal    = document.getElementById('mpCheckoutModal');
+    var checkoutClose    = document.getElementById('mpCheckoutModalClose');
+
+    function buildOrderNote() {
+      // Human-readable order note for payment app memo field
+      var lines = state.cart.map(function(item) {
+        return item.name + (item.size && item.size !== 'N/A' ? ' (' + item.size + ')' : '') + ' x' + item.qty;
+      });
+      return 'AMP Order: ' + lines.join(', ');
+    }
+
+    function buildOrderNoteEncoded() {
+      return encodeURIComponent(buildOrderNote());
+    }
+
+    function openCheckoutModal() {
+      if (!state.cart.length) {
+        showToast('<i class="fas fa-info-circle"></i> Your cart is empty');
+        return;
+      }
+
+      var cfg     = getPayConfig();
+      var total   = cartTotal();
+      var discount = state.promoDiscount || 0;
+      var finalAmt = Math.max(0, total - discount);
+      var dollars  = (finalAmt / 100).toFixed(2);
+      var note     = buildOrderNoteEncoded();
+
+      // Populate order summary
+      var itemsEl = document.getElementById('mpCheckoutItems');
+      var totalEl = document.getElementById('mpCheckoutTotal');
+      if (itemsEl) {
+        itemsEl.innerHTML = state.cart.map(function(item) {
+          return '<div class="mp-checkout-item">' +
+            '<span class="mp-checkout-item-name">' + escHtml(item.name) +
+              (item.size && item.size !== 'N/A' ? ' <small>(' + escHtml(item.size) + ')</small>' : '') +
+              ' &times;' + item.qty + '</span>' +
+            '<span class="mp-checkout-item-price">' + formatPrice(item.price * item.qty) + '</span>' +
+          '</div>';
+        }).join('') + (discount > 0 ? '<div class="mp-checkout-item mp-checkout-item--promo">' +
+          '<span>Promo discount</span><span>-' + formatPrice(discount) + '</span></div>' : '');
+      }
+      if (totalEl) totalEl.textContent = formatPrice(finalAmt);
+
+      // Build payment URLs
+      var paypal  = document.getElementById('mpPayPal');
+      var venmo   = document.getElementById('mpVenmo');
+      var cashapp = document.getElementById('mpCashApp');
+      var stripe  = document.getElementById('mpStripeLink');
+
+      if (paypal) {
+        if (cfg.paypal) {
+          paypal.href = 'https://paypal.me/' + cfg.paypal + '/' + dollars;
+          paypal.hidden = false;
+        } else {
+          paypal.hidden = true;
+        }
+      }
+      if (venmo) {
+        if (cfg.venmo) {
+          var venmoHandle = cfg.venmo.replace(/^@/, '');
+          venmo.href = 'https://venmo.com/' + venmoHandle + '?txn=pay&amount=' + dollars + '&note=' + note;
+          venmo.hidden = false;
+        } else {
+          venmo.hidden = true;
+        }
+      }
+      if (cashapp) {
+        if (cfg.cashapp) {
+          var cashtag = cfg.cashapp.replace(/^\$/, '');
+          cashapp.href = 'https://cash.app/$' + cashtag + '/' + dollars;
+          cashapp.hidden = false;
+        } else {
+          cashapp.hidden = true;
+        }
+      }
+      if (stripe) {
+        if (cfg.stripe) {
+          // Stripe Payment Links don't take amount params — just open the link
+          // Customer will see the configured price. Note goes in Stripe metadata.
+          stripe.href = cfg.stripe;
+          stripe.hidden = false;
+        } else {
+          stripe.hidden = true;
+        }
+      }
+
+      // Show modal
+      if (checkoutBackdrop) { checkoutBackdrop.classList.add('is-open'); checkoutBackdrop.setAttribute('aria-hidden','false'); }
+      if (checkoutModal)    { checkoutModal.classList.add('is-open');    checkoutModal.setAttribute('aria-hidden','false'); }
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCheckoutModal() {
+      if (checkoutBackdrop) { checkoutBackdrop.classList.remove('is-open'); checkoutBackdrop.setAttribute('aria-hidden','true'); }
+      if (checkoutModal)    { checkoutModal.classList.remove('is-open');    checkoutModal.setAttribute('aria-hidden','true'); }
+      document.body.style.overflow = '';
+    }
+
+    if (checkoutBtn)      checkoutBtn.addEventListener('click', openCheckoutModal);
+    if (checkoutClose)    checkoutClose.addEventListener('click', closeCheckoutModal);
+    if (checkoutBackdrop) checkoutBackdrop.addEventListener('click', function(e) {
+      if (e.target === checkoutBackdrop) closeCheckoutModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && checkoutModal && checkoutModal.classList.contains('is-open')) {
+        closeCheckoutModal();
+      }
+    });
 
     // Modal close
     var modalClose   = document.getElementById('mpModalClose');
