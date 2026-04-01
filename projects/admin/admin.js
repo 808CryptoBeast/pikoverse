@@ -162,6 +162,55 @@ function esc(str) {
 }
 
 /* ─────────────────────────────────────────────
+   NEW SUBMISSION NOTIFICATIONS
+   Compares item timestamps against a stored
+   "last seen" time per panel. Badge glows when
+   there are items newer than last visit.
+───────────────────────────────────────────── */
+const NotifDB = {
+  key: panel => 'amp_admin_seen_' + panel,
+  mark(panel)  { localStorage.setItem(this.key(panel), Date.now()); },
+  lastSeen(panel) {
+    const v = localStorage.getItem(this.key(panel));
+    return v ? parseInt(v) : 0;
+  },
+  hasNew(panel, items, tsField) {
+    const seen = this.lastSeen(panel);
+    if (!seen) return items.length > 0; // first ever visit → show badge
+    return items.some(i => (i[tsField] || 0) > seen);
+  },
+};
+
+function refreshNotifBadges() {
+  // Suggestions + Ideas
+  const allSugg = [
+    ...SuggDB.all().map(s => ({ ts: s.timestamp || 0, status: s.status })),
+    ...IdeaDB.all().map(i => ({ ts: i.ts || 0, status: i.status })),
+  ].filter(s => s.status === 'pending');
+  const hasSuggNew = allSugg.length > 0 &&
+    allSugg.some(s => s.ts > NotifDB.lastSeen('suggestions'));
+
+  const suggBadge = document.getElementById('admSuggBadge');
+  if (suggBadge) {
+    suggBadge.hidden = allSugg.length === 0;
+    suggBadge.textContent = allSugg.length;
+    suggBadge.classList.toggle('adm-nav-badge--new', hasSuggNew);
+  }
+
+  // Projects
+  const pendingProj = ProjDB.all().filter(p => p.status === 'pending');
+  const hasProjNew  = pendingProj.length > 0 &&
+    pendingProj.some(p => (p.ts || 0) > NotifDB.lastSeen('projects'));
+
+  const projBadge = document.getElementById('admProjBadge');
+  if (projBadge) {
+    projBadge.hidden = pendingProj.length === 0;
+    projBadge.textContent = pendingProj.length;
+    projBadge.classList.toggle('adm-nav-badge--new', hasProjNew);
+  }
+}
+
+/* ─────────────────────────────────────────────
    DEFAULT PRODUCTS (seeded on first run)
    TODO: SWAP — on first run, fetch these from
    your CMS instead of seeding from here
@@ -173,7 +222,7 @@ const DEFAULT_PRODUCTS = [
     category: 'shirts',
     price: 3500,        // cents
     description: 'Bold red, yellow and blue AMP tee. Comfortable everyday wear.',
-    image: 'assets/AMP RYB.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20RYB.jpg',
     badge: 'featured',
     sizes: ['XS','S','M','L','XL','2XL'],
     featured: true,
@@ -185,7 +234,7 @@ const DEFAULT_PRODUCTS = [
     category: 'hats',
     price: 2800,
     description: 'Classic cap featuring Rabbit Island artwork.',
-    image: 'assets/AMP Rabbit Island.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Rabbit%20Island.jpg',
     badge: 'new',
     sizes: ['One Size'],
     featured: false,
@@ -197,7 +246,7 @@ const DEFAULT_PRODUCTS = [
     category: 'stickers',
     price: 800,
     description: 'Vinyl sticker of the iconic AMP Tiki. Waterproof.',
-    image: 'assets/AMPTTiki.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMPTTiki.jpg',
     badge: '',
     sizes: [],
     featured: false,
@@ -209,7 +258,7 @@ const DEFAULT_PRODUCTS = [
     category: 'accessories',
     price: 2200,
     description: 'Reusable tote with the AMP Tiki logo.',
-    image: 'assets/AMP Tiki.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
     badge: '',
     sizes: ['One Size'],
     featured: false,
@@ -225,10 +274,30 @@ const DEFAULT_PRODUCTS = [
    TODO: SWAP updateProduct → PUT  /api/products/:id
    TODO: SWAP deleteProduct → DELETE /api/products/:id
 ───────────────────────────────────────────── */
+const BASE_URL = 'https://808cryptobeast.github.io/pikoverse';
+
 const ProductDB = {
   load() {
     const stored = DB.get('products');
-    if (stored) return stored;
+    if (stored) {
+      // One-time migration: fix bare 'assets/...' paths to '../../assets/...'
+      // needed when admin moved from marketplace/ to projects/admin/
+      const needsFix = stored.some(p => p.image && (
+        p.image.startsWith('assets/') || p.image.startsWith('../../assets/')
+      ));
+      if (needsFix) {
+        const fixed = stored.map(p => {
+          if (!p.image) return p;
+          let img = p.image;
+          if (img.startsWith('../../assets/')) img = img.replace('../../assets/', BASE_URL + '/assets/');
+          else if (img.startsWith('assets/'))  img = BASE_URL + '/' + img;
+          return { ...p, image: img };
+        });
+        DB.set('products', fixed);
+        return fixed;
+      }
+      return stored;
+    }
     DB.set('products', DEFAULT_PRODUCTS);
     return DEFAULT_PRODUCTS;
   },
@@ -382,12 +451,18 @@ function openModal(backdropId) {
 
 function closeModal(backdropId) {
   const el = document.getElementById(backdropId);
+  // Blur any focused element inside the modal before hiding it
+  // prevents the aria-hidden + focused descendant browser warning
+  if (document.activeElement && el && el.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   el.classList.remove('is-open');
   el.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 }
 
 function setPanel(panelName) {
+  if (!panelName) return; // guard: platform link buttons have no data-panel
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('is-active'));
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('is-active'));
   document.getElementById('admPanel' + panelName.charAt(0).toUpperCase() + panelName.slice(1))
@@ -429,6 +504,24 @@ function renderProducts(filterText = '') {
   document.getElementById('admStatTotal').textContent   = total;
   document.getElementById('admStatActive').textContent  = total - soldOut;
   document.getElementById('admStatSoldOut').textContent = soldOut;
+
+  // Sync bulk bar visibility
+  updateBulkBar();
+}
+
+/* ── Bulk selection ── */
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.adm-row-check:checked'))
+    .map(cb => cb.dataset.id);
+}
+
+function updateBulkBar() {
+  var bar = document.getElementById('admBulkBar');
+  var countEl = document.getElementById('admBulkCount');
+  if (!bar) return;
+  var selected = getSelectedIds();
+  bar.hidden = selected.length === 0;
+  if (countEl) countEl.textContent = selected.length;
 }
 
 function productRow(p) {
@@ -452,6 +545,10 @@ function productRow(p) {
 
   return `
     <tr data-id="${esc(p.id)}">
+      <td style="width:36px;padding:12px 8px 12px 16px">
+        <input type="checkbox" class="adm-row-check" data-id="${esc(p.id)}"
+               style="accent-color:var(--gold);width:15px;height:15px;cursor:pointer">
+      </td>
       <td>${imgHtml}</td>
       <td>
         <div class="adm-product-name">${esc(p.name)}${badgeHtml}</div>
@@ -717,6 +814,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ── Sidebar nav ── */
   document.querySelectorAll('.adm-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (!btn.dataset.panel) return; // platform external links — no panel to switch to
       setPanel(btn.dataset.panel);
       // Close sidebar on mobile
       if (window.innerWidth <= 860) {
@@ -895,8 +993,110 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('admGoogleClientId').value = savedGoogleId;
   }
 
+  /* ── Payment config — load saved handles ── */
+  (function loadPayConfig() {
+    try {
+      var raw = localStorage.getItem('amp_pay_config');
+      if (!raw) return;
+      var cfg = JSON.parse(raw);
+      if (cfg.paypal  && document.getElementById('admPayPal'))   document.getElementById('admPayPal').value   = cfg.paypal;
+      if (cfg.venmo   && document.getElementById('admVenmo'))    document.getElementById('admVenmo').value    = cfg.venmo;
+      if (cfg.cashapp && document.getElementById('admCashApp'))  document.getElementById('admCashApp').value  = cfg.cashapp;
+      if (cfg.stripe  && document.getElementById('admStripe'))   document.getElementById('admStripe').value   = cfg.stripe;
+    } catch(e) {}
+  })();
+
+  var admSavePayBtn = document.getElementById('admSavePayBtn');
+  if (admSavePayBtn) {
+    admSavePayBtn.addEventListener('click', function() {
+      var cfg = {
+        paypal:  (document.getElementById('admPayPal')?.value  || '').trim(),
+        venmo:   (document.getElementById('admVenmo')?.value   || '').trim(),
+        cashapp: (document.getElementById('admCashApp')?.value || '').trim(),
+        stripe:  (document.getElementById('admStripe')?.value  || '').trim(),
+      };
+      localStorage.setItem('amp_pay_config', JSON.stringify(cfg));
+      showToast('Payment settings saved.');
+    });
+  }
+
   /* ── Export button ── */
   document.getElementById('admExportBtn').addEventListener('click', exportProducts);
+
+  /* ── Select-all checkbox ── */
+  var selectAll = document.getElementById('admSelectAll');
+  if (selectAll) {
+    selectAll.addEventListener('change', function() {
+      document.querySelectorAll('.adm-row-check').forEach(function(cb) {
+        cb.checked = selectAll.checked;
+      });
+      updateBulkBar();
+    });
+  }
+
+  /* ── Row checkbox delegation ── */
+  var productTbody = document.getElementById('admProductTbody');
+  if (productTbody) {
+    productTbody.addEventListener('change', function(e) {
+      if (e.target.classList.contains('adm-row-check')) updateBulkBar();
+    });
+  }
+
+  /* ── Bulk action buttons ── */
+  var bulkSoldOut = document.getElementById('admBulkSoldOut');
+  var bulkActive  = document.getElementById('admBulkActive');
+  var bulkDelete  = document.getElementById('admBulkDelete');
+  var bulkClear   = document.getElementById('admBulkClear');
+
+  if (bulkSoldOut) bulkSoldOut.addEventListener('click', function() {
+    getSelectedIds().forEach(id => ProductDB.update(id, { soldOut: true }));
+    renderProducts(document.getElementById('admProductSearch').value);
+    showToast('Marked as sold out.');
+  });
+  if (bulkActive) bulkActive.addEventListener('click', function() {
+    getSelectedIds().forEach(id => ProductDB.update(id, { soldOut: false }));
+    renderProducts(document.getElementById('admProductSearch').value);
+    showToast('Marked as active.');
+  });
+  if (bulkDelete) bulkDelete.addEventListener('click', function() {
+    var ids = getSelectedIds();
+    if (!ids.length) return;
+    if (!confirm('Delete ' + ids.length + ' product(s)? This cannot be undone.')) return;
+    ids.forEach(id => ProductDB.remove(id));
+    renderProducts(document.getElementById('admProductSearch').value);
+    showToast(ids.length + ' product(s) deleted.');
+  });
+  if (bulkClear) bulkClear.addEventListener('click', function() {
+    document.querySelectorAll('.adm-row-check').forEach(cb => cb.checked = false);
+    var sa = document.getElementById('admSelectAll');
+    if (sa) sa.checked = false;
+    updateBulkBar();
+  });
+
+  /* ── Export ALL data ── */
+  var admExportAllBtn = document.getElementById('admExportAllBtn');
+  if (admExportAllBtn) {
+    admExportAllBtn.addEventListener('click', function() {
+      var all = {
+        exported:    new Date().toISOString(),
+        products:    ProductDB.all(),
+        promos:      PromooDB.all(),
+        banner:      BannerDB.get(),
+        suggestions: SuggDB.all(),
+        ideas:       IdeaDB.all(),
+        projects:    ProjDB.all(),
+        payConfig:   JSON.parse(localStorage.getItem('amp_pay_config') || '{}'),
+      };
+      var blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href = url;
+      a.download = 'amp-all-data-' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('All data exported.');
+    });
+  }
 
   /* ── Escape key closes open modals ── */
   document.addEventListener('keydown', (e) => {
@@ -1623,9 +1823,9 @@ window.setPanel = function(panelName) {
   _origSetPanel(panelName);
   if (panelName === 'analytics')   renderAnalytics();
   if (panelName === 'promos')      renderPromos();
-  if (panelName === 'suggestions') renderSuggestions();
+  if (panelName === 'suggestions') { renderSuggestions(); NotifDB.mark('suggestions'); refreshNotifBadges(); }
   if (panelName === 'banner')      initBannerPanel();
-  if (panelName === 'projects')    renderProjects();
+  if (panelName === 'projects')    { renderProjects(); NotifDB.mark('projects'); refreshNotifBadges(); }
 };
 
 /* ══════════════════════════════════════════
@@ -1681,25 +1881,13 @@ window.setPanel = function(panelName) {
 document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
 
-  // Refresh project badge on load
+  // Refresh all notification badges on load
   setTimeout(() => {
-    const projPending = ProjDB.all().filter(p => p.status === 'pending').length;
-    const projBadge = document.getElementById('admProjBadge');
-    if (projBadge) { projBadge.hidden = projPending === 0; projBadge.textContent = projPending; }
-
-    // Suggestions badge (store suggestions + hub ideas combined)
-    const suggPending = SuggDB.all().filter(s => s.status === 'pending').length
-                      + IdeaDB.all().filter(i => !i.dismissed && i.status !== 'reviewed').length;
-    const suggBadge = document.getElementById('admSuggBadge');
+    try { refreshNotifBadges(); } catch(e) {}
+    // also keep suggestion pending count in panel header in sync
+    const allPending = SuggDB.all().filter(s => s.status === 'pending').length
+                     + IdeaDB.all().filter(i => !i.dismissed && i.status !== 'reviewed').length;
     const suggCount = document.getElementById('admSuggPendingCount');
-    if (suggBadge) { suggBadge.hidden = suggPending === 0; suggBadge.textContent = suggPending; }
-    if (suggCount) suggCount.textContent = suggPending;
-  }, 100);
-
-  // Refresh suggestion badge on load
-  setTimeout(() => {
-    const pending = SuggDB.all().filter(s => s.status === 'pending').length;
-    const badge = document.getElementById('admSuggBadge');
-    if (badge) { badge.hidden = pending === 0; badge.textContent = pending; }
-  }, 100);
+    if (suggCount) suggCount.textContent = allPending;
+  }, 150);
 });
