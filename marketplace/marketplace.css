@@ -2025,44 +2025,189 @@ img { max-width: 100%; display: block; }
   .mp-sugg-panel { width: 100vw; }
   .mp-sugg-fab   { bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 18px; }
 }
-/* Footer logo image */
+/* Footer logo — Tiki image doubles as admin access */
 .mp-footer-logo-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  display: inline-block;
   margin-bottom: 14px;
   text-decoration: none;
 }
 .mp-footer-logo-img {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(201,168,76,.4);
-  box-shadow: 0 0 14px rgba(201,168,76,.2);
-  transition: border-color .2s, box-shadow .2s;
+  border: 2px solid rgba(201,168,76,.25);
+  box-shadow: 0 0 12px rgba(201,168,76,.15);
+  transition: border-color .25s, box-shadow .25s, transform .25s;
+  display: block;
 }
 .mp-footer-logo-link:hover .mp-footer-logo-img {
-  border-color: #c9a84c;
-  box-shadow: 0 0 22px rgba(201,168,76,.4);
-}
-.mp-footer-logo-text {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--mp-gold);
-  letter-spacing: .05em;
+  border-color: rgba(201,168,76,.7);
+  box-shadow: 0 0 24px rgba(201,168,76,.35);
+  transform: scale(1.06);
 }
 
-/* Subtle admin access dot in footer */
-.mp-footer-admin-link {
-  display: inline-flex;
+/* ── Admin nav button ── */
+.mp-nav-admin-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 12px;
-  color: rgba(255,255,255,.12);
-  font-size: 10px;
-  transition: color .2s;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: rgba(255,255,255,.35);
+  font-size: 14px;
   text-decoration: none;
+  transition: color .2s, background .2s;
+  flex-shrink: 0;
 }
-.mp-footer-admin-link:hover { color: rgba(201,168,76,.5); }
+.mp-nav-admin-btn:hover {
+  color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.07);
+}
+
+/* ── Admin footer link ── */
+.mp-footer-admin-link {
+  color: rgba(255,255,255,.18);
+  font-size: inherit;
+  text-decoration: none;
+  transition: color .2s;
+}
+.mp-footer-admin-link:hover {
+  color: rgba(255,255,255,.5);
+}
+
+/* ══════════════════════════════════════════════
+   CHECKOUT MODAL
+   ══════════════════════════════════════════════ */
+.mp-checkout-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 910;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.mp-checkout-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+.mp-checkout-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(.96);
+  z-index: 911;
+  width: min(480px, calc(100vw - 32px));
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0b0d14;
+  border: 1px solid rgba(201,168,76,.18);
+  border-radius: 16px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.75);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,.2) transparent;
+}
+.mp-checkout-modal.is-open {
+  opacity: 1; pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.mp-checkout-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  position: sticky; top: 0; background: #0b0d14; z-index: 2;
+}
+.mp-checkout-modal-header h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: #f0c96a;
+  display: flex; align-items: center; gap: 8px;
+}
+.mp-checkout-modal-close {
+  width: 30px; height: 30px;
+  border-radius: 6px; background: none; border: none;
+  color: rgba(255,255,255,.4); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.mp-checkout-modal-close:hover { background: rgba(255,255,255,.07); color: #fff; }
+
+.mp-checkout-modal-body { padding: 20px 24px 24px; }
+
+/* Order summary */
+.mp-checkout-summary {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.mp-checkout-summary-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 12px;
+}
+.mp-checkout-item {
+  display: flex; justify-content: space-between;
+  font-size: 13px; color: rgba(255,255,255,.75);
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.mp-checkout-item:last-child { border-bottom: none; }
+.mp-checkout-item--promo { color: #4caf7a; }
+.mp-checkout-total-row {
+  display: flex; justify-content: space-between;
+  padding-top: 10px; margin-top: 4px;
+  font-size: 14px; font-weight: 700;
+  color: #fff;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.mp-checkout-total-val { color: #f0c96a; }
+
+.mp-checkout-instructions {
+  font-size: 13px; color: rgba(255,255,255,.55);
+  line-height: 1.6; margin-bottom: 18px;
+}
+
+/* Payment grid */
+.mp-payment-grid {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 18px;
+}
+.mp-payment-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  transition: filter .18s, transform .15s;
+}
+.mp-payment-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.mp-payment-btn:active { transform: translateY(0); }
+.mp-payment-btn svg { flex-shrink: 0; }
+
+.mp-payment-btn--paypal {
+  background: #003087; color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.mp-payment-btn--venmo {
+  background: #008cff; color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.mp-payment-btn--cashapp {
+  background: #00d64f; color: #000;
+  border: 1px solid rgba(0,0,0,.1);
+}
+.mp-payment-btn--stripe {
+  background: linear-gradient(135deg, #6772e5, #8b92f1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.mp-checkout-note {
+  font-size: 12px; color: rgba(255,255,255,.4);
+  line-height: 1.6; text-align: center;
+}
+.mp-checkout-note a { color: rgba(255,255,255,.55); }
+.mp-checkout-note a:hover { color: #c9a84c; }
