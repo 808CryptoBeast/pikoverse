@@ -277,7 +277,22 @@ const DEFAULT_PRODUCTS = [
 const ProductDB = {
   load() {
     const stored = DB.get('products');
-    if (stored) return stored;
+    if (stored) {
+      // One-time migration: fix bare 'assets/...' paths to '../../assets/...'
+      // needed when admin moved from marketplace/ to projects/admin/
+      const needsFix = stored.some(p => p.image && p.image.startsWith('assets/'));
+      if (needsFix) {
+        const fixed = stored.map(p => ({
+          ...p,
+          image: p.image && p.image.startsWith('assets/')
+            ? '../../' + p.image
+            : p.image,
+        }));
+        DB.set('products', fixed);
+        return fixed;
+      }
+      return stored;
+    }
     DB.set('products', DEFAULT_PRODUCTS);
     return DEFAULT_PRODUCTS;
   },
