@@ -672,14 +672,16 @@
     function getPayConfig() {
       try {
         var stored = localStorage.getItem(PAY_CONFIG_KEY);
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          var parsed = JSON.parse(stored);
+          // Only return stored config if at least one method is set
+          if (parsed.paypal || parsed.venmo || parsed.cashapp || parsed.stripe) {
+            return parsed;
+          }
+        }
       } catch(e) {}
-      return {
-        paypal:   '',   // e.g. 'alohamassproductions'  → paypal.me/alohamassproductions
-        venmo:    '',   // e.g. 'AlohaMP'               → venmo.com/u/AlohaMP
-        cashapp:  '',   // e.g. '$AlohaMP'              → cash.app/$AlohaMP
-        stripe:   '',   // full Stripe Payment Link URL → https://buy.stripe.com/xxxx
-      };
+      // Default: return empty — admin must configure in Settings → Payment Methods
+      return { paypal: '', venmo: '', cashapp: '', stripe: '' };
     }
 
     // ── CHECKOUT MODAL ────────────────────────────────────────────
@@ -734,11 +736,13 @@
       var venmo   = document.getElementById('mpVenmo');
       var cashapp = document.getElementById('mpCashApp');
       var stripe  = document.getElementById('mpStripeLink');
+      var anyMethod = false;
 
       if (paypal) {
         if (cfg.paypal) {
           paypal.href = 'https://paypal.me/' + cfg.paypal + '/' + dollars;
           paypal.hidden = false;
+          anyMethod = true;
         } else {
           paypal.hidden = true;
         }
@@ -748,6 +752,7 @@
           var venmoHandle = cfg.venmo.replace(/^@/, '');
           venmo.href = 'https://venmo.com/' + venmoHandle + '?txn=pay&amount=' + dollars + '&note=' + note;
           venmo.hidden = false;
+          anyMethod = true;
         } else {
           venmo.hidden = true;
         }
@@ -757,25 +762,34 @@
           var cashtag = cfg.cashapp.replace(/^\$/, '');
           cashapp.href = 'https://cash.app/$' + cashtag + '/' + dollars;
           cashapp.hidden = false;
+          anyMethod = true;
         } else {
           cashapp.hidden = true;
         }
       }
       if (stripe) {
         if (cfg.stripe) {
-          // Stripe Payment Links don't take amount params — just open the link
-          // Customer will see the configured price. Note goes in Stripe metadata.
           stripe.href = cfg.stripe;
           stripe.hidden = false;
+          anyMethod = true;
         } else {
           stripe.hidden = true;
         }
       }
 
+      // If no payment methods configured, show a fallback message
+      var noMethodsEl = document.getElementById('mpNoPaymentMethods');
+      if (noMethodsEl) noMethodsEl.style.display = anyMethod ? 'none' : 'block';
+
       // Show modal
       if (checkoutBackdrop) { checkoutBackdrop.classList.add('is-open'); checkoutBackdrop.setAttribute('aria-hidden','false'); }
       if (checkoutModal)    { checkoutModal.classList.add('is-open');    checkoutModal.setAttribute('aria-hidden','false'); }
       document.body.style.overflow = 'hidden';
+      // Focus close button for accessibility
+      setTimeout(function() {
+        var closeBtn = document.getElementById('mpCheckoutModalClose');
+        if (closeBtn) closeBtn.focus();
+      }, 100);
     }
 
     function closeCheckoutModal() {
