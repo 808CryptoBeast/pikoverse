@@ -6,18 +6,15 @@
   <meta name="description" content="AMP Marketplace — Creative expression within the Pikoverse ecosystem. Culturally inspired design rooted in Aloha.">
   <meta name="theme-color" content="#0a0e17">
 
-  <!-- Security headers via meta (server headers should mirror these) -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 
   <title>AMP Marketplace — Aloha Mass Productions</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <link rel="stylesheet" href="css/marketplace.css">
@@ -27,18 +24,16 @@
   <!-- ── NAV ── -->
   <nav class="mp-nav" id="mpNav" aria-label="Main navigation">
 
-    <!-- Tiki logo = Home -->
     <a href="../index.html" class="mp-nav-logo" aria-label="Home — Aloha Mass Productions">
-      <img src="assets/AMP Tiki.jpg" alt="AMP Tiki">
+      <img src="../assets/AMP Tiki.jpg" alt="AMP Tiki">
     </a>
 
-    <!-- Desktop links -->
     <div class="mp-nav-links" id="mpNavLinks">
-      <a href="../cosmic-weave.html" class="mp-nav-link">
+      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-link">
         <i class="fas fa-globe"></i>
         <span>Pikoverse</span>
       </a>
-      <a href="../ikeverse.html" class="mp-nav-link">
+      <a href="https://808cryptobeast.github.io/Ikeverse/" class="mp-nav-link">
         <i class="fas fa-eye"></i>
         <span>Ikeverse</span>
       </a>
@@ -48,7 +43,6 @@
       </a>
     </div>
 
-    <!-- Right side: cart + hamburger -->
     <div class="mp-nav-right">
       <a href="../projects/admin/admin.html" class="mp-nav-admin-btn" title="Admin" aria-label="Admin panel">
         <i class="fas fa-sliders"></i>
@@ -62,15 +56,14 @@
       </button>
     </div>
 
-    <!-- Mobile dropdown -->
     <div class="mp-nav-mobile" id="mpNavMobile" aria-hidden="true">
       <a href="../index.html" class="mp-nav-mobile-link">
-        <img src="assets/AMP Tiki.jpg" alt="" class="mp-nav-mobile-tiki"> Home
+        <img src="../assets/AMP Tiki.jpg" alt="" class="mp-nav-mobile-tiki"> Home
       </a>
-      <a href="../cosmic-weave.html" class="mp-nav-mobile-link">
+      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-mobile-link">
         <i class="fas fa-globe"></i> Pikoverse
       </a>
-      <a href="../ikeverse.html" class="mp-nav-mobile-link">
+      <a href="https://808cryptobeast.github.io/Ikeverse/" class="mp-nav-mobile-link">
         <i class="fas fa-eye"></i> Ikeverse
       </a>
       <a href="../about.html" class="mp-nav-mobile-link">
@@ -81,14 +74,14 @@
     <div class="mp-nav-scanline" aria-hidden="true"></div>
   </nav>
 
-  <!-- ── ANNOUNCEMENT BANNER (populated by admin) ── -->
+  <!-- ── ANNOUNCEMENT BANNER ── -->
   <div id="mpBanner" class="mp-banner" hidden>
     <i class="fas fa-bullhorn" aria-hidden="true"></i>
     <span id="mpBannerText"></span>
     <button class="mp-banner-close" id="mpBannerClose" type="button" aria-label="Close banner">×</button>
   </div>
 
-  <!-- ── MARKETPLACE HERO ── -->
+  <!-- ── HERO ── -->
   <header class="mp-hero">
     <div class="mp-hero-bg" aria-hidden="true">
       <div class="mp-hero-glow mp-hero-glow--left"></div>
@@ -110,31 +103,22 @@
     </div>
   </header>
 
-  <!-- ── MAIN LAYOUT ── -->
+  <!-- ── MAIN ── -->
   <main class="mp-main" id="mp-main">
     <div class="mp-container">
 
-      <!-- ── SEARCH BAR ── -->
       <div class="mp-topbar">
         <div class="mp-search-wrap">
           <i class="fas fa-search mp-search-icon" aria-hidden="true"></i>
-          <input
-            type="search"
-            id="mpSearch"
-            class="mp-search"
-            placeholder="Search products..."
-            aria-label="Search products"
-            autocomplete="off"
-            spellcheck="false"
-            maxlength="80"
-          >
+          <input type="search" id="mpSearch" class="mp-search"
+                 placeholder="Search products..." aria-label="Search products"
+                 autocomplete="off" spellcheck="false" maxlength="80">
           <button class="mp-search-clear" id="mpSearchClear" aria-label="Clear search" type="button" hidden>
             <i class="fas fa-times"></i>
           </button>
         </div>
       </div>
 
-      <!-- ── CATEGORY FILTER ── -->
       <nav class="mp-categories" aria-label="Product categories">
         <button class="mp-cat-btn is-active" data-cat="all" type="button">All Items</button>
         <button class="mp-cat-btn" data-cat="shirts" type="button">
@@ -151,11 +135,8 @@
         </button>
       </nav>
 
-      <!-- ── SORT + RESULTS COUNT ── -->
       <div class="mp-toolbar">
-        <p class="mp-results-count" id="mpResultsCount" aria-live="polite">
-          Showing all items
-        </p>
+        <p class="mp-results-count" id="mpResultsCount" aria-live="polite">Showing all items</p>
         <div class="mp-sort-wrap">
           <label for="mpSort" class="mp-sort-label">Sort by</label>
           <select id="mpSort" class="mp-sort" aria-label="Sort products">
@@ -167,14 +148,8 @@
         </div>
       </div>
 
-      <!-- ── PRODUCT GRID ── -->
-      <div class="mp-grid" id="mpGrid" role="list" aria-label="Products">
+      <div class="mp-grid" id="mpGrid" role="list" aria-label="Products"></div>
 
-        <!-- Products injected by JS from PRODUCTS array -->
-
-      </div>
-
-      <!-- Empty state -->
       <div class="mp-empty" id="mpEmpty" hidden>
         <i class="fas fa-search"></i>
         <p>No products found for "<span id="mpEmptyTerm"></span>"</p>
@@ -190,26 +165,20 @@
       <button class="mp-modal-close" id="mpModalClose" aria-label="Close" type="button">
         <i class="fas fa-times"></i>
       </button>
-
       <div class="mp-modal-inner">
         <div class="mp-modal-gallery">
           <img src="" alt="" id="mpModalImg" class="mp-modal-img" loading="lazy">
           <div class="mp-modal-badge" id="mpModalBadge"></div>
         </div>
-
         <div class="mp-modal-info">
           <div class="mp-modal-cat" id="mpModalCat"></div>
           <h2 class="mp-modal-title" id="mpModalTitle"></h2>
           <p class="mp-modal-desc" id="mpModalDesc"></p>
           <div class="mp-modal-price" id="mpModalPrice"></div>
-
-          <!-- Size selector (shown for shirts/hats) -->
           <div class="mp-modal-sizes" id="mpModalSizes" hidden>
             <p class="mp-modal-sizes-label">Size</p>
             <div class="mp-size-grid" id="mpSizeGrid"></div>
           </div>
-
-          <!-- Quantity -->
           <div class="mp-modal-qty">
             <p class="mp-modal-sizes-label">Quantity</p>
             <div class="mp-qty-wrap">
@@ -218,31 +187,18 @@
               <button class="mp-qty-btn" id="mpQtyUp" aria-label="Increase quantity" type="button">+</button>
             </div>
           </div>
-
           <div class="mp-modal-actions">
             <button class="mp-add-to-cart-btn" id="mpAddToCart" type="button">
-              <i class="fas fa-shopping-bag"></i>
-              Add to Cart
+              <i class="fas fa-shopping-bag"></i> Add to Cart
             </button>
             <button class="mp-wishlist-btn" id="mpWishlist" aria-label="Save to wishlist" type="button">
               <i class="far fa-heart"></i>
             </button>
           </div>
-
-          <!-- Trust signals -->
           <div class="mp-trust">
-            <div class="mp-trust-item">
-              <i class="fas fa-shield-halved"></i>
-              <span>Secure checkout</span>
-            </div>
-            <div class="mp-trust-item">
-              <i class="fas fa-truck"></i>
-              <span>Free shipping over $75</span>
-            </div>
-            <div class="mp-trust-item">
-              <i class="fas fa-rotate-left"></i>
-              <span>30-day returns</span>
-            </div>
+            <div class="mp-trust-item"><i class="fas fa-shield-halved"></i><span>Secure checkout</span></div>
+            <div class="mp-trust-item"><i class="fas fa-truck"></i><span>Free shipping over $75</span></div>
+            <div class="mp-trust-item"><i class="fas fa-rotate-left"></i><span>30-day returns</span></div>
           </div>
         </div>
       </div>
@@ -253,20 +209,13 @@
   <div class="mp-cart-backdrop" id="mpCartBackdrop" aria-hidden="true"></div>
   <aside class="mp-cart-drawer" id="mpCartDrawer" aria-label="Shopping cart" aria-hidden="true">
     <div class="mp-cart-header">
-      <h2 class="mp-cart-title">
-        <i class="fas fa-shopping-bag"></i> Your Cart
-      </h2>
+      <h2 class="mp-cart-title"><i class="fas fa-shopping-bag"></i> Your Cart</h2>
       <button class="mp-cart-close" id="mpCartClose" aria-label="Close cart" type="button">
         <i class="fas fa-times"></i>
       </button>
     </div>
-
-    <div class="mp-cart-body" id="mpCartBody">
-      <!-- Cart items injected by JS -->
-    </div>
-
+    <div class="mp-cart-body" id="mpCartBody"></div>
     <div class="mp-cart-footer" id="mpCartFooter">
-      <!-- Promo code -->
       <div class="mp-promo-wrap">
         <div class="mp-promo-row">
           <input type="text" id="mpPromoInput" class="mp-promo-input"
@@ -279,18 +228,15 @@
         <span>Promo discount</span>
         <span id="mpPromoSavingsAmt" style="color:#4caf7a"></span>
       </div>
-
       <div class="mp-cart-subtotal">
         <span>Subtotal</span>
         <span id="mpCartSubtotal">$0.00</span>
       </div>
       <p class="mp-cart-note">
-        <i class="fas fa-lock"></i>
-        Taxes and shipping calculated at checkout
+        <i class="fas fa-lock"></i> Taxes and shipping calculated at checkout
       </p>
       <button class="mp-checkout-btn" id="mpCheckoutBtn" type="button">
-        <i class="fas fa-lock"></i>
-        Secure Checkout
+        <i class="fas fa-lock"></i> Secure Checkout
       </button>
       <button class="mp-cart-continue" id="mpCartContinue" type="button">
         Continue Shopping
@@ -298,7 +244,7 @@
     </div>
   </aside>
 
-  <!-- ── TOAST NOTIFICATION ── -->
+  <!-- ── TOAST ── -->
   <div class="mp-toast" id="mpToast" role="status" aria-live="polite" aria-hidden="true"></div>
 
   <!-- ── FOOTER ── -->
@@ -306,7 +252,9 @@
     <div class="mp-container">
       <div class="mp-footer-grid">
         <div class="mp-footer-brand">
-          <div class="mp-footer-logo">🌌 AMP</div>
+          <a href="../index.html" class="mp-footer-logo-link" aria-label="Aloha Mass Productions">
+            <img src="../assets/AMPTTiki.jpg" alt="AMP" class="mp-footer-logo-img">
+          </a>
           <p>Creative expression within the Pikoverse ecosystem — rooted in Aloha, carried forward through design.</p>
         </div>
         <div class="mp-footer-links">
@@ -319,8 +267,8 @@
         <div class="mp-footer-links">
           <h4>Info</h4>
           <a href="../index.html">Home</a>
-          <a href="../cosmic-weave.html">Pikoverse</a>
-          <a href="../whitepaper.pdf" target="_blank" rel="noopener">White Paper</a>
+          <a href="https://808cryptobeast.github.io/pikoverse/">Pikoverse</a>
+          <a href="https://808cryptobeast.github.io/Ikeverse/">Ikeverse</a>
         </div>
         <div class="mp-footer-links">
           <h4>Policies</h4>
@@ -330,18 +278,18 @@
         </div>
       </div>
       <div class="mp-footer-bottom">
-        <p>© 2026 Aloha Mass Productions. All rights reserved. &nbsp;·&nbsp;
-          <a href="../projects/admin/admin.html" class="mp-footer-admin-link" title="Admin">Admin</a>
-        </p>
+        <p>© 2026 Aloha Mass Productions. All rights reserved.</p>
         <div class="mp-footer-badges">
           <span><i class="fas fa-lock"></i> SSL Secured</span>
           <span><i class="fas fa-shield-halved"></i> Safe Checkout</span>
+          <a href="../projects/admin/admin.html" class="mp-footer-admin-link" title="Admin">
+            <i class="fas fa-sliders"></i>
+          </a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- ── SUGGESTION PANEL ── -->
   <!-- ── CHECKOUT MODAL ── -->
   <div class="mp-checkout-backdrop" id="mpCheckoutBackdrop" aria-hidden="true"></div>
   <div class="mp-checkout-modal" id="mpCheckoutModal" role="dialog" aria-modal="true" aria-labelledby="mpCheckoutTitle">
@@ -351,10 +299,7 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-
     <div class="mp-checkout-modal-body">
-
-      <!-- Order summary -->
       <div class="mp-checkout-summary">
         <div class="mp-checkout-summary-label">Order Summary</div>
         <div id="mpCheckoutItems" class="mp-checkout-items"></div>
@@ -363,56 +308,46 @@
           <span id="mpCheckoutTotal" class="mp-checkout-total-val">$0.00</span>
         </div>
       </div>
-
-      <!-- Instructions -->
       <p class="mp-checkout-instructions">
         Choose how you want to pay. Your order details will be pre-filled.
         We'll confirm and ship once payment is received.
       </p>
-
-      <!-- Payment buttons -->
       <div class="mp-payment-grid">
-
         <a id="mpPayPal" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--paypal">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
             <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
           </svg>
           <span>Pay with PayPal</span>
         </a>
-
         <a id="mpVenmo" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--venmo">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
             <path d="M19.174 0c.72 1.197 1.044 2.43 1.044 3.988 0 4.976-4.249 11.44-7.698 15.976H5.3L2.136 1.043l6.217-.59 1.618 13.047c1.51-2.466 3.376-6.346 3.376-8.987 0-1.44-.248-2.43-.66-3.228z"/>
           </svg>
           <span>Pay with Venmo</span>
         </a>
-
         <a id="mpCashApp" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--cashapp">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M19.11 4.89L19.11 4.89C17.15 2.93 14.53 1.8 11.76 1.8c-5.49 0-9.96 4.47-9.96 9.96 0 2.77 1.13 5.39 3.09 7.35l.02.02c1.96 1.94 4.57 3.07 7.32 3.07 5.49 0 9.96-4.47 9.96-9.96 0-2.75-1.11-5.36-3.08-7.35zm-3.02 10.15c-.3.86-.96 1.44-1.84 1.61l-.15.03v.74c0 .14-.11.25-.25.25h-1.24c-.14 0-.25-.11-.25-.25v-.7c-.7-.09-1.33-.38-1.79-.82-.47-.45-.74-1.05-.74-1.68 0-.14.11-.25.25-.25h1.33c.12 0 .22.08.24.2.06.3.24.55.51.73.28.18.62.27.97.26.36 0 .69-.09.92-.26.23-.16.35-.38.35-.62 0-.25-.12-.45-.36-.6-.24-.15-.63-.28-1.14-.39-.94-.2-1.64-.52-2.08-.93-.44-.42-.67-.96-.67-1.6 0-.82.38-1.49 1.09-1.91.32-.19.7-.3 1.1-.35v-.71c0-.14.11-.25.25-.25h1.24c.14 0 .25.11.25.25v.72c.6.1 1.11.35 1.51.74.41.39.64.9.65 1.46 0 .14-.11.25-.25.25h-1.28c-.12 0-.22-.08-.25-.2-.04-.24-.17-.44-.37-.58-.21-.14-.48-.21-.77-.21-.3 0-.56.07-.75.2-.18.13-.28.31-.28.52 0 .21.1.37.31.5.23.14.63.26 1.18.38.97.2 1.68.52 2.13.94.45.43.68.99.68 1.67 0 .56-.17 1.04-.51 1.43z"/>
+            <path d="M19.11 4.89C17.15 2.93 14.53 1.8 11.76 1.8c-5.49 0-9.96 4.47-9.96 9.96 0 2.77 1.13 5.39 3.09 7.35l.02.02c1.96 1.94 4.57 3.07 7.32 3.07 5.49 0 9.96-4.47 9.96-9.96 0-2.75-1.11-5.36-3.08-7.35zm-3.02 10.15c-.3.86-.96 1.44-1.84 1.61l-.15.03v.74c0 .14-.11.25-.25.25h-1.24c-.14 0-.25-.11-.25-.25v-.7c-.7-.09-1.33-.38-1.79-.82-.47-.45-.74-1.05-.74-1.68 0-.14.11-.25.25-.25h1.33c.12 0 .22.08.24.2.06.3.24.55.51.73.28.18.62.27.97.26.36 0 .69-.09.92-.26.23-.16.35-.38.35-.62 0-.25-.12-.45-.36-.6-.24-.15-.63-.28-1.14-.39-.94-.2-1.64-.52-2.08-.93-.44-.42-.67-.96-.67-1.6 0-.82.38-1.49 1.09-1.91.32-.19.7-.3 1.1-.35v-.71c0-.14.11-.25.25-.25h1.24c.14 0 .25.11.25.25v.72c.6.1 1.11.35 1.51.74.41.39.64.9.65 1.46 0 .14-.11.25-.25.25h-1.28c-.12 0-.22-.08-.25-.2-.04-.24-.17-.44-.37-.58-.21-.14-.48-.21-.77-.21-.3 0-.56.07-.75.2-.18.13-.28.31-.28.52 0 .21.1.37.31.5.23.14.63.26 1.18.38.97.2 1.68.52 2.13.94.45.43.68.99.68 1.67 0 .56-.17 1.04-.51 1.43z"/>
           </svg>
           <span>Pay with Cash App</span>
         </a>
-
         <a id="mpStripeLink" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--stripe" hidden>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
             <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
           </svg>
           <span>Pay with Card</span>
         </a>
-
       </div>
-
       <p class="mp-checkout-note">
         <i class="fas fa-info-circle"></i>
         After payment, email your receipt to
-        <a href="/cdn-cgi/l/email-protection#97fef9f1f8d7f6fbf8fff6faf6e4e4e7e5f8f3e2f4e3fef8f9b9f4f8fa"><span class="__cf_email__" data-cfemail="761f18101936171a191e171b170505060419120315021f19185815191b">[email&#160;protected]</span></a>
+        <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a>
         and we'll confirm your order within 24 hours.
       </p>
-
     </div>
   </div>
 
+  <!-- ── SUGGESTION PANEL ── -->
   <div class="mp-sugg-backdrop" id="mpSuggBackdrop"></div>
   <aside class="mp-sugg-panel" id="mpSuggPanel" aria-label="Suggestions">
     <div class="mp-sugg-panel-header">
@@ -425,8 +360,6 @@
       </button>
     </div>
     <div class="mp-sugg-panel-body" id="mpSuggPanelBody">
-
-      <!-- Submit form -->
       <div id="mpSuggFormWrap">
         <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px;line-height:1.5">
           Have an idea for a new product, design, or improvement? We read every suggestion.
@@ -456,8 +389,6 @@
           </button>
         </form>
       </div>
-
-      <!-- Success state -->
       <div id="mpSuggSuccessWrap" hidden>
         <div class="mp-sugg-success">
           <i class="fas fa-circle-check"></i>
@@ -466,16 +397,16 @@
           <button class="mp-sugg-success-back" id="mpSuggBackBtn" type="button">Submit another</button>
         </div>
       </div>
-
       <div class="mp-sugg-divider"><span>Community Suggestions</span></div>
-
-      <!-- Public suggestion wall -->
-      <div class="mp-sugg-wall" id="mpSuggWall">
-        <!-- Injected by JS -->
-      </div>
-
+      <div class="mp-sugg-wall" id="mpSuggWall"></div>
     </div>
   </aside>
 
   <!-- Floating suggestion button -->
-  <button class="mp-sugg-fab" id="mpSuggFab" type
+  <button class="mp-sugg-fab" id="mpSuggFab" type="button" aria-label="Share a suggestion">
+    <i class="fas fa-lightbulb"></i>
+  </button>
+
+  <script src="marketplace.js"></script>
+</body>
+</html>
