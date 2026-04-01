@@ -708,8 +708,11 @@
         return;
       }
 
-      var cfg     = getPayConfig();
-      var total   = cartTotal();
+      // ── Close cart drawer first ────────────────────
+      closeCart();
+
+      var cfg      = getPayConfig();
+      var total    = cartTotal();
       var discount = window._ampPromoSaving || 0;
       var finalAmt = Math.max(0, total - discount);
       var dollars  = (finalAmt / 100).toFixed(2);
@@ -731,7 +734,7 @@
       }
       if (totalEl) totalEl.textContent = formatPrice(finalAmt);
 
-      // Build payment URLs
+      // Build payment URLs — always show buttons, wire real URLs when configured
       var paypal  = document.getElementById('mpPayPal');
       var venmo   = document.getElementById('mpVenmo');
       var cashapp = document.getElementById('mpCashApp');
@@ -739,70 +742,111 @@
       var anyMethod = false;
 
       if (paypal) {
+        paypal.hidden = false; // always visible
         if (cfg.paypal) {
           paypal.href = 'https://paypal.me/' + cfg.paypal + '/' + dollars;
-          paypal.hidden = false;
+          paypal.dataset.configured = 'true';
           anyMethod = true;
         } else {
-          paypal.hidden = true;
+          paypal.href = '#';
+          paypal.dataset.configured = '';
         }
       }
       if (venmo) {
+        venmo.hidden = false;
         if (cfg.venmo) {
           var venmoHandle = cfg.venmo.replace(/^@/, '');
           venmo.href = 'https://venmo.com/' + venmoHandle + '?txn=pay&amount=' + dollars + '&note=' + note;
-          venmo.hidden = false;
+          venmo.dataset.configured = 'true';
           anyMethod = true;
         } else {
-          venmo.hidden = true;
+          venmo.href = '#';
+          venmo.dataset.configured = '';
         }
       }
       if (cashapp) {
+        cashapp.hidden = false;
         if (cfg.cashapp) {
           var cashtag = cfg.cashapp.replace(/^\$/, '');
           cashapp.href = 'https://cash.app/$' + cashtag + '/' + dollars;
-          cashapp.hidden = false;
+          cashapp.dataset.configured = 'true';
           anyMethod = true;
         } else {
-          cashapp.hidden = true;
+          cashapp.href = '#';
+          cashapp.dataset.configured = '';
         }
       }
       if (stripe) {
         if (cfg.stripe) {
           stripe.href = cfg.stripe;
           stripe.hidden = false;
+          stripe.dataset.configured = 'true';
           anyMethod = true;
         } else {
           stripe.hidden = true;
+          stripe.dataset.configured = '';
         }
       }
 
-      // If no payment methods configured, show a fallback message
+      // Show/hide "not configured" message
       var noMethodsEl = document.getElementById('mpNoPaymentMethods');
       if (noMethodsEl) noMethodsEl.style.display = anyMethod ? 'none' : 'block';
 
+      // Wire payment button clicks:
+      // - configured → open in new tab, keep modal open so user sees email instructions
+      // - not configured → show toast, keep modal open
+      [paypal, venmo, cashapp, stripe].forEach(function(btn) {
+        if (!btn) return;
+        // Remove old listener by cloning
+        var clone = btn.cloneNode(true);
+        btn.parentNode.replaceChild(clone, btn);
+        clone.addEventListener('click', function(e) {
+          e.stopPropagation(); // never let click bubble to backdrop
+          if (!clone.dataset.configured) {
+            e.preventDefault();
+            showToast('<i class="fas fa-gear"></i> Set up this payment method in Admin → Settings');
+            return;
+          }
+          // Real URL — open in new tab, keep modal open so user sees receipt instructions
+          // Don't close the modal — let user read the "email receipt" note
+        });
+      });
+
       // Show modal
-      if (checkoutBackdrop) { checkoutBackdrop.classList.add('is-open'); checkoutBackdrop.setAttribute('aria-hidden','false'); }
-      if (checkoutModal)    { checkoutModal.classList.add('is-open');    checkoutModal.setAttribute('aria-hidden','false'); }
+      if (checkoutBackdrop) {
+        checkoutBackdrop.classList.add('is-open');
+        checkoutBackdrop.setAttribute('aria-hidden', 'false');
+      }
+      if (checkoutModal) {
+        checkoutModal.classList.add('is-open');
+        checkoutModal.setAttribute('aria-hidden', 'false');
+      }
       document.body.style.overflow = 'hidden';
-      // Focus close button for accessibility
-      setTimeout(function() {
-        var closeBtn = document.getElementById('mpCheckoutModalClose');
-        if (closeBtn) closeBtn.focus();
-      }, 100);
     }
 
     function closeCheckoutModal() {
-      if (checkoutBackdrop) { checkoutBackdrop.classList.remove('is-open'); checkoutBackdrop.setAttribute('aria-hidden','true'); }
-      if (checkoutModal)    { checkoutModal.classList.remove('is-open');    checkoutModal.setAttribute('aria-hidden','true'); }
+      if (checkoutBackdrop) {
+        checkoutBackdrop.classList.remove('is-open');
+        checkoutBackdrop.setAttribute('aria-hidden', 'true');
+      }
+      if (checkoutModal) {
+        checkoutModal.classList.remove('is-open');
+        checkoutModal.setAttribute('aria-hidden', 'true');
+      }
       document.body.style.overflow = '';
     }
 
-    if (checkoutBtn)      checkoutBtn.addEventListener('click', openCheckoutModal);
-    if (checkoutClose)    checkoutClose.addEventListener('click', closeCheckoutModal);
-    if (checkoutBackdrop) checkoutBackdrop.addEventListener('click', function(e) {
-      if (e.target === checkoutBackdrop) closeCheckoutModal();
-    });
+    if (checkoutBtn)   checkoutBtn.addEventListener('click', openCheckoutModal);
+    if (checkoutClose) checkoutClose.addEventListener('click', closeCheckoutModal);
+
+    // Only close on backdrop click — not when clicking inside the modal
+    if (checkoutBackdrop) {
+      checkoutBackdrop.addEventListener('click', function(e) {
+        if (e.target === checkoutBackdrop) closeCheckoutModal();
+      });
+    }
+
+    // Escape closes checkout modal
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && checkoutModal && checkoutModal.classList.contains('is-open')) {
         closeCheckoutModal();

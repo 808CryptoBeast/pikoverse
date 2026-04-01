@@ -147,7 +147,7 @@
         </button>
 
         <div class="adm-nav-section-label">Platforms</div>
-        <a href="../../marketplace/index.html" target="_blank" class="adm-nav-btn adm-nav-link">
+        <a href="../../marketplace/marketplace.html" target="_blank" class="adm-nav-btn adm-nav-link">
           <i class="fas fa-store"></i> AMP Store
           <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
         </a>
@@ -159,7 +159,11 @@
           <i class="fas fa-book-open"></i> Ikeverse
           <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
         </a>
-        <a href=".../index.html#showcase" target="_blank" class="adm-nav-btn adm-nav-link">
+        <a href="../../cosmic-weave.html" target="_blank" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-globe"></i> Cosmic Weave
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+        <a href="../../index.html#showcase" target="_blank" class="adm-nav-btn adm-nav-link">
           <i class="fas fa-star"></i> Showcase
           <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
         </a>
@@ -228,10 +232,30 @@
           </button>
         </div>
 
+        <!-- Bulk action bar (hidden until items selected) -->
+        <div class="adm-bulk-bar" id="admBulkBar" hidden>
+          <span class="adm-bulk-count"><strong id="admBulkCount">0</strong> selected</span>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkSoldOut" type="button">
+            <i class="fas fa-ban"></i> Mark Sold Out
+          </button>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkActive" type="button">
+            <i class="fas fa-circle-check"></i> Mark Active
+          </button>
+          <button class="adm-btn adm-btn--danger adm-btn--sm" id="admBulkDelete" type="button">
+            <i class="fas fa-trash"></i> Delete Selected
+          </button>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkClear" type="button">
+            <i class="fas fa-xmark"></i> Clear
+          </button>
+        </div>
+
         <div class="adm-table-wrap">
           <table class="adm-table" id="admProductTable">
             <thead>
               <tr>
+                <th style="width:36px;padding:12px 8px 12px 16px">
+                  <input type="checkbox" id="admSelectAll" style="accent-color:var(--gold);width:15px;height:15px;cursor:pointer" title="Select all">
+                </th>
                 <th>Image</th>
                 <th>Name</th>
                 <th>Category</th>
@@ -332,11 +356,56 @@
           </div>
 
           <div class="adm-settings-card">
-            <h4><i class="fas fa-file-export"></i> Export Data</h4>
-            <p class="adm-muted">Download your products as JSON — useful when migrating to a real database or CMS.</p>
-            <button type="button" class="adm-btn adm-btn--outline" id="admExportBtn">
-              <i class="fas fa-download"></i> Export Products JSON
+            <h4><i class="fas fa-credit-card"></i> Payment Methods</h4>
+            <p class="adm-muted">Set your payment handles. Leave blank to hide that option at checkout. Changes take effect immediately.</p>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-paypal" style="color:#003087"></i> PayPal.me username</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-at adm-input-icon"></i>
+                <input type="text" id="admPayPal" class="adm-input" placeholder="YourUsername" maxlength="64">
+              </div>
+              <p class="adm-field-hint">paypal.me/<strong>YourUsername</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-vimeo" style="color:#008CFF"></i> Venmo username</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-at adm-input-icon"></i>
+                <input type="text" id="admVenmo" class="adm-input" placeholder="YourVenmoHandle" maxlength="64">
+              </div>
+              <p class="adm-field-hint">venmo.com/<strong>YourVenmoHandle</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label">Cash App $cashtag</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-dollar-sign adm-input-icon"></i>
+                <input type="text" id="admCashApp" class="adm-input" placeholder="YourCashtag" maxlength="64">
+              </div>
+              <p class="adm-field-hint">cash.app/$<strong>YourCashtag</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-stripe-s" style="color:#6772e5"></i> Stripe Payment Link</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-link adm-input-icon"></i>
+                <input type="url" id="admStripe" class="adm-input" placeholder="https://buy.stripe.com/xxxx" maxlength="256">
+              </div>
+              <p class="adm-field-hint">From Stripe Dashboard → Payment Links</p>
+            </div>
+            <button type="button" class="adm-btn adm-btn--primary" id="admSavePayBtn">
+              <i class="fas fa-floppy-disk"></i> Save Payment Settings
             </button>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-file-export"></i> Export Data</h4>
+            <p class="adm-muted">Download your store data as JSON — useful for backup or migrating to a real database.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button type="button" class="adm-btn adm-btn--outline" id="admExportBtn">
+                <i class="fas fa-download"></i> Export Products
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admExportAllBtn">
+                <i class="fas fa-database"></i> Export All Data
+              </button>
+            </div>
           </div>
 
         </div>

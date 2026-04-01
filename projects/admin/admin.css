@@ -1066,3 +1066,36 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: var(-
 
 /* Teal badge for future Ikeverse panel */
 .adm-nav-badge--teal { background: #40c4aa; color: #07060e; }
+
+/* ── Bulk action bar ── */
+.adm-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+  animation: admBulkIn .15s ease;
+}
+@keyframes admBulkIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.adm-bulk-count {
+  font-size: 13px;
+  color: var(--gold-light);
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+/* ── New-item notification badge pulse ── */
+.adm-nav-badge--new {
+  animation: admBadgePulse 1.8s ease-in-out infinite;
+}
+@keyframes admBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(201,168,76,0); }
+}
