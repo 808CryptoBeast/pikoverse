@@ -1421,6 +1421,20 @@ function renderAnalytics() {
 
   document.getElementById('admAnalProducts').textContent    = products.length;
   document.getElementById('admAnalPromos').textContent      = promos.length;
+
+  // Email subscribers count (from marketplace email capture)
+  try {
+    const emailList = JSON.parse(localStorage.getItem('amp_email_list_v1') || '[]');
+    const emailEl = document.getElementById('admAnalEmails');
+    if (emailEl) emailEl.textContent = emailList.length;
+  } catch(e) {}
+
+  // Notify me requests
+  try {
+    const notifyList = JSON.parse(localStorage.getItem('amp_notify_v1') || '[]');
+    const notifyEl = document.getElementById('admAnalNotify');
+    if (notifyEl) notifyEl.textContent = notifyList.length;
+  } catch(e) {}
   document.getElementById('admAnalSuggestions').textContent = suggestions.length + ideas.length;
   const projEl = document.getElementById('admAnalProjects');
   if (projEl) projEl.textContent = projects.length;

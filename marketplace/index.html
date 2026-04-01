@@ -11,6 +11,17 @@
 
   <title>AMP Marketplace — Aloha Mass Productions</title>
 
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html">
+  <meta property="og:title"       content="AMP Marketplace — Culture Through Design">
+  <meta property="og:description" content="Culturally inspired apparel and goods rooted in Aloha. Every piece carries heritage forward — built within the Pikoverse ecosystem.">
+  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
+  <meta property="og:site_name"   content="Pikoverse">
+  <meta name="twitter:card"       content="summary_large_image">
+  <meta name="twitter:title"      content="AMP Marketplace — Culture Through Design">
+  <meta name="twitter:image"      content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -173,6 +184,7 @@
         <div class="mp-modal-info">
           <div class="mp-modal-cat" id="mpModalCat"></div>
           <h2 class="mp-modal-title" id="mpModalTitle"></h2>
+          <div class="mp-modal-rating" id="mpModalRating"></div>
           <p class="mp-modal-desc" id="mpModalDesc"></p>
           <div class="mp-modal-price" id="mpModalPrice"></div>
           <div class="mp-modal-sizes" id="mpModalSizes" hidden>
@@ -351,7 +363,7 @@
       <p class="mp-checkout-note">
         <i class="fas fa-info-circle"></i>
         After payment, email your receipt to
-        <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a>
+        <a href="/cdn-cgi/l/email-protection#ee87808881ae8f8281868f838f9d9d9e9c818a9b8d9a878180c08d8183"><span class="__cf_email__" data-cfemail="deb7b0b8b19ebfb2b1b6bfb3bfadadaeacb1baabbdaab7b1b0f0bdb1b3">[email&#160;protected]</span></a>
         and we'll confirm your order within 24 hours.
       </p>
     </div>
@@ -416,6 +428,29 @@
   <button class="mp-sugg-fab" id="mpSuggFab" type="button" aria-label="Share a suggestion">
     <i class="fas fa-lightbulb"></i>
   </button>
+
+  <!-- ── EMAIL CAPTURE BANNER ── -->
+  <div class="mp-email-capture" id="mpEmailCapture">
+    <div class="mp-email-capture-inner">
+      <button class="mp-email-close" id="mpEmailClose" type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="mp-email-icon">🌺</div>
+      <h3 class="mp-email-title">Get 10% Off Your First Order</h3>
+      <p class="mp-email-sub">Join the AMP community. Culture-rooted drops, new products, and Pikoverse updates.</p>
+      <form class="mp-email-form" id="mpEmailForm" novalidate>
+        <input type="email" id="mpEmailInput" class="mp-email-input"
+               placeholder="your@email.com" maxlength="120" required>
+        <button type="submit" class="mp-email-btn">
+          <i class="fas fa-paper-plane"></i> Subscribe
+        </button>
+      </form>
+      <div id="mpEmailSuccess" class="mp-email-success" hidden>
+        <i class="fas fa-circle-check"></i> Mahalo! Use code <strong>WELCOME10</strong> at checkout.
+      </div>
+      <p class="mp-email-note">No spam. Unsubscribe anytime.</p>
+    </div>
+  </div>
 
   <script src="marketplace.js"></script>
 </body>

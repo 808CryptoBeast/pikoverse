@@ -102,10 +102,9 @@
     return PRODUCT_SEED.slice();
   }
 
-  // Live product list — filtered to exclude sold-out items for shoppers
-  // (Admin can still see all including sold-out via admin.html)
+  // Live product list — includes sold-out items (shown with overlay)
   function getProducts() {
-    return loadProducts().filter(function(p) { return !p.soldOut; });
+    return loadProducts(); // show all, render sold-out with overlay
   }
 
   // For cart lookups we need ALL products including sold-out (cart may hold them)
@@ -150,13 +149,13 @@
   ════════════════════════════════════════════════════════ */
   function loadCart() {
     try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
+      var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) state.cart = JSON.parse(raw);
     } catch (e) { state.cart = []; }
   }
 
   function saveCart() {
-    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state.cart)); }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.cart)); }
     catch (e) { /* storage unavailable — silent fail */ }
   }
 
@@ -170,6 +169,10 @@
   function addToCart(productId, size, qty) {
     var product = getAllProducts().find(function (p) { return p.id === productId; });
     if (!product) return;
+    if (product.soldOut) {
+      showToast('<i class="fas fa-ban"></i> ' + escapeHtml(product.name) + ' is sold out.');
+      return;
+    }
 
     qty = Math.max(1, Math.min(99, parseInt(qty) || 1));
     var key = cartKey(productId, size);
@@ -300,16 +303,29 @@
         '            aria-label="Quick view ' + escapeHtml(p.name) + '" type="button">',
         '      <i class="fas fa-eye" aria-hidden="true"></i>',
         '    </button>',
+        (p.soldOut ? '    <div class="mp-sold-out-overlay">' +
+          '<span class="mp-sold-out-label">Sold Out</span>' +
+          '<button class="mp-notify-btn" data-notify-id="' + escapeHtml(p.id) + '" data-notify-name="' + escapeHtml(p.name) + '" type="button">' +
+          '<i class="fas fa-bell"></i> Notify Me</button>' +
+          '</div>' : ''),
         '  </div>',
         '  <div class="mp-product-info">',
         '    <div class="mp-product-cat">' + escapeHtml(p.category) + '</div>',
         '    <h3 class="mp-product-name">' + escapeHtml(p.name) + '</h3>',
+        renderStarsMini(p.id),
+        (p.sizes && p.sizes.length > 0
+          ? '    <div class="mp-product-sizes-preview">' +
+            p.sizes.slice(0, 4).map(function(s) {
+              return '<span class="mp-size-chip">' + escapeHtml(s) + '</span>';
+            }).join('') +
+            (p.sizes.length > 4 ? '<span class="mp-size-chip mp-size-chip--more">+' + (p.sizes.length - 4) + '</span>' : '') +
+            '</div>'
+          : ''),
         '    <div class="mp-product-footer">',
         '      <span class="mp-product-price">' + formatPrice(p.price) + '</span>',
-        '      <button class="mp-product-add" data-id="' + escapeHtml(p.id) + '"',
-        '              aria-label="Add ' + escapeHtml(p.name) + ' to cart" type="button">',
-        '        <i class="fas fa-plus" aria-hidden="true"></i>',
-        '      </button>',
+        (!p.soldOut ? '      <button class="mp-product-add" data-id="' + escapeHtml(p.id) + '"' +
+          ' aria-label="Add ' + escapeHtml(p.name) + ' to cart" type="button">' +
+          '<i class="fas fa-plus" aria-hidden="true"></i></button>' : ''),
         '    </div>',
         '  </div>',
         '</div>',
@@ -384,6 +400,10 @@
     if (title)   title.textContent = p.name;
     if (desc)    desc.textContent  = p.description;
     if (price)   price.textContent = formatPrice(p.price);
+
+    // Ratings
+    var ratingEl = document.getElementById('mpModalRating');
+    if (ratingEl) ratingEl.innerHTML = renderStarsFull(productId);
     if (catEl)   catEl.textContent = p.category;
     if (qtyVal)  qtyVal.textContent = '1';
 
@@ -599,6 +619,123 @@
   }
 
   /* ════════════════════════════════════════════════════════
+     RATINGS
+  ════════════════════════════════════════════════════════ */
+  var RATINGS_KEY = 'amp_ratings_v1';
+
+  function getRatings() {
+    try { return JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}'); }
+    catch(e) { return {}; }
+  }
+
+  function saveRating(productId, stars) {
+    var r = getRatings();
+    if (!r[productId]) r[productId] = { total: 0, count: 0, mine: null };
+    if (r[productId].mine !== null) {
+      r[productId].total -= r[productId].mine; // remove old
+      r[productId].count--;
+    }
+    r[productId].total += stars;
+    r[productId].count++;
+    r[productId].mine = stars;
+    localStorage.setItem(RATINGS_KEY, JSON.stringify(r));
+    return r[productId];
+  }
+
+  function getProductRating(productId) {
+    var r = getRatings()[productId];
+    if (!r || r.count === 0) return { avg: 0, count: 0, mine: null };
+    return { avg: r.total / r.count, count: r.count, mine: r.mine };
+  }
+
+  function renderStarsMini(productId) {
+    var r = getProductRating(productId);
+    if (r.count === 0) {
+      return '    <div class="mp-stars-mini mp-stars-empty"><span>No reviews yet</span></div>';
+    }
+    var filled = Math.round(r.avg);
+    var stars = '';
+    for (var i = 1; i <= 5; i++) {
+      stars += '<i class="' + (i <= filled ? 'fas' : 'far') + ' fa-star"></i>';
+    }
+    return '    <div class="mp-stars-mini">' + stars + ' <span>(' + r.count + ')</span></div>';
+  }
+
+  function renderStarsFull(productId) {
+    var r = getProductRating(productId);
+    var html = '<div class="mp-stars-full" data-product-id="' + escapeHtml(productId) + '">';
+    for (var i = 1; i <= 5; i++) {
+      var cls = i <= (r.mine || Math.round(r.avg)) ? 'fas' : 'far';
+      html += '<button class="mp-star-btn ' + cls + ' fa-star" data-star="' + i + '" aria-label="Rate ' + i + ' stars" type="button"></button>';
+    }
+    html += '</div>';
+    if (r.count > 0) {
+      html += '<span class="mp-stars-count">' + r.avg.toFixed(1) + ' (' + r.count + ' review' + (r.count !== 1 ? 's' : '') + ')</span>';
+    } else {
+      html += '<span class="mp-stars-count">Be the first to rate</span>';
+    }
+    return html;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     NOTIFY ME (Sold Out)
+  ════════════════════════════════════════════════════════ */
+  var NOTIFY_KEY = 'amp_notify_v1';
+
+  function saveNotify(productId, productName, email) {
+    try {
+      var all = JSON.parse(localStorage.getItem(NOTIFY_KEY) || '[]');
+      if (!all.find(function(n) { return n.productId === productId && n.email === email; })) {
+        all.push({ productId: productId, productName: productName, email: email, ts: Date.now() });
+        localStorage.setItem(NOTIFY_KEY, JSON.stringify(all));
+      }
+    } catch(e) {}
+  }
+
+  /* ════════════════════════════════════════════════════════
+     EMAIL CAPTURE
+  ════════════════════════════════════════════════════════ */
+  var EMAIL_KEY = 'amp_email_list_v1';
+  var EMAIL_DISMISSED_KEY = 'amp_email_dismissed';
+
+  function initEmailCapture() {
+    if (localStorage.getItem(EMAIL_DISMISSED_KEY)) return;
+    var banner = document.getElementById('mpEmailCapture');
+    if (!banner) return;
+    setTimeout(function() {
+      banner.classList.add('is-visible');
+    }, 8000); // show after 8 seconds
+
+    var form   = document.getElementById('mpEmailForm');
+    var input  = document.getElementById('mpEmailInput');
+    var close  = document.getElementById('mpEmailClose');
+    var success = document.getElementById('mpEmailSuccess');
+
+    if (close) close.addEventListener('click', function() {
+      banner.classList.remove('is-visible');
+      localStorage.setItem(EMAIL_DISMISSED_KEY, '1');
+    });
+
+    if (form) form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = input ? input.value.trim() : '';
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+      try {
+        var list = JSON.parse(localStorage.getItem(EMAIL_KEY) || '[]');
+        if (!list.includes(email)) { list.push(email); localStorage.setItem(EMAIL_KEY, JSON.stringify(list)); }
+      } catch(ex) {}
+      // Apply 10% promo automatically
+      window._ampPromoSaving = 0;
+      if (success) { success.hidden = false; if (form) form.hidden = true; }
+      setTimeout(function() {
+        banner.classList.remove('is-visible');
+        localStorage.setItem(EMAIL_DISMISSED_KEY, '1');
+        showToast('<i class="fas fa-tag"></i> Use code WELCOME10 for 10% off!');
+      }, 2000);
+    });
+  }
+
+  /* ════════════════════════════════════════════════════════
      WIRE EVENTS
   ════════════════════════════════════════════════════════ */
   function wireEvents() {
@@ -664,6 +801,48 @@
     if (cartClose)    cartClose.addEventListener('click', closeCart);
     if (cartContinue) cartContinue.addEventListener('click', closeCart);
     if (cartBackdrop) cartBackdrop.addEventListener('click', closeCart);
+
+    // ── Notify Me (sold out products) — delegated from grid ──
+    document.getElementById('mpGrid').addEventListener('click', function(e) {
+      var btn = e.target.closest('.mp-notify-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      var id   = btn.getAttribute('data-notify-id');
+      var name = btn.getAttribute('data-notify-name');
+      // Show inline email prompt
+      var existing = btn.parentNode.querySelector('.mp-notify-form');
+      if (existing) { existing.remove(); return; }
+      var formEl = document.createElement('div');
+      formEl.className = 'mp-notify-form';
+      formEl.innerHTML =
+        '<input type="email" class="mp-notify-input" placeholder="your@email.com" maxlength="120">' +
+        '<button class="mp-notify-submit" type="button">Notify Me</button>';
+      btn.parentNode.appendChild(formEl);
+      formEl.querySelector('.mp-notify-submit').addEventListener('click', function() {
+        var emailVal = formEl.querySelector('.mp-notify-input').value.trim();
+        if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+          showToast('Please enter a valid email address.');
+          return;
+        }
+        saveNotify(id, name, emailVal);
+        formEl.remove();
+        showToast('<i class="fas fa-bell"></i> We\'ll notify you when ' + escapeHtml(name) + ' is back!');
+      });
+      setTimeout(function() { formEl.querySelector('.mp-notify-input').focus(); }, 50);
+    });
+
+    // ── Star ratings — delegated from modal ──
+    document.getElementById('mpModal').addEventListener('click', function(e) {
+      var btn = e.target.closest('.mp-star-btn');
+      if (!btn) return;
+      var stars = parseInt(btn.getAttribute('data-star'));
+      var productId = btn.closest('.mp-stars-full').getAttribute('data-product-id');
+      saveRating(productId, stars);
+      var ratingEl = document.getElementById('mpModalRating');
+      if (ratingEl) ratingEl.innerHTML = renderStarsFull(productId);
+      showToast('<i class="fas fa-star"></i> Thanks for your rating!');
+      renderGrid(); // refresh mini stars on cards
+    });
 
     // ── PAYMENT SETTINGS ────────────────────────────────────────────
     // Set these in the admin Settings panel, or edit directly here.
@@ -885,6 +1064,11 @@
     if (addBtn) {
       addBtn.addEventListener('click', function () {
         if (!state.modal.productId) return;
+        var soldCheck = getAllProducts().find(function(x) { return x.id === state.modal.productId; });
+        if (soldCheck && soldCheck.soldOut) {
+          showToast('<i class="fas fa-ban"></i> This item is sold out.');
+          return;
+        }
         var p = getAllProducts().find(function (p) { return p.id === state.modal.productId; });
         if (!p) return;
 
@@ -970,6 +1154,7 @@
     renderCart();
     updateCartCount();
     wireEvents();
+    initEmailCapture();
   }
 
   if (document.readyState === 'loading') {

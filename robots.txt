@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block admin panel from indexing
+Disallow: /projects/admin/admin.html
+Disallow: /projects/admin/
+
+Sitemap: https://808cryptobeast.github.io/pikoverse/sitemap.xml
