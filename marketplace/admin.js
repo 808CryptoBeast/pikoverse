@@ -446,12 +446,18 @@ function openModal(backdropId) {
 
 function closeModal(backdropId) {
   const el = document.getElementById(backdropId);
+  // Blur any focused element inside the modal before hiding it
+  // prevents the aria-hidden + focused descendant browser warning
+  if (document.activeElement && el && el.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
   el.classList.remove('is-open');
   el.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 }
 
 function setPanel(panelName) {
+  if (!panelName) return; // guard: platform link buttons have no data-panel
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('is-active'));
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('is-active'));
   document.getElementById('admPanel' + panelName.charAt(0).toUpperCase() + panelName.slice(1))
