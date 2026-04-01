@@ -33,7 +33,7 @@
       category: 'shirts',
       price: 3500,
       description: 'Beyond fabric and tech — AMP carries heritage forward through design. Premium heavyweight cotton, screen-printed with culturally rooted artwork.',
-      image: 'assets/AMP RYB.jpg',
+      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20RYB.jpg',
       bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: 'featured',
       sizes: ['XS','S','M','L','XL','2XL'],
@@ -46,7 +46,7 @@
       category: 'hats',
       price: 2800,
       description: 'Aloha in motion — culture expressed through identity, story, and presence. Structured 6-panel cap with embroidered Rabbit Island artwork.',
-      image: 'assets/AMP Rabbit Island.jpg',
+      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Rabbit%20Island.jpg',
       bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: 'new',
       sizes: ['One Size'],
@@ -59,7 +59,7 @@
       category: 'stickers',
       price: 800,
       description: 'Weatherproof vinyl stickers. Three designs, rooted in Aloha Mass Productions visual identity. Stick them anywhere.',
-      image: 'assets/AMP Tiki.jpg',
+      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
       bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
@@ -72,7 +72,7 @@
       category: 'accessories',
       price: 2200,
       description: 'Heavy canvas tote with AMP logo and cultural motif. Large enough for a full market run, strong enough for years of use.',
-      image: 'assets/AMP Tiki.jpg',
+      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
       bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
@@ -708,7 +708,7 @@
 
       var cfg     = getPayConfig();
       var total   = cartTotal();
-      var discount = state.promoDiscount || 0;
+      var discount = window._ampPromoSaving || 0;
       var finalAmt = Math.max(0, total - discount);
       var dollars  = (finalAmt / 100).toFixed(2);
       var note     = buildOrderNoteEncoded();
@@ -719,8 +719,8 @@
       if (itemsEl) {
         itemsEl.innerHTML = state.cart.map(function(item) {
           return '<div class="mp-checkout-item">' +
-            '<span class="mp-checkout-item-name">' + escHtml(item.name) +
-              (item.size && item.size !== 'N/A' ? ' <small>(' + escHtml(item.size) + ')</small>' : '') +
+            '<span class="mp-checkout-item-name">' + escapeHtml(item.name) +
+              (item.size && item.size !== 'N/A' ? ' <small>(' + escapeHtml(item.size) + ')</small>' : '') +
               ' &times;' + item.qty + '</span>' +
             '<span class="mp-checkout-item-price">' + formatPrice(item.price * item.qty) + '</span>' +
           '</div>';
@@ -1022,12 +1022,14 @@
       feedback.hidden = false;
       if (result.ok) {
         appliedPromo = result;
+        window._ampPromoSaving = result.saving; // bridge to checkout modal
         feedback.textContent = '✓ ' + result.promo.code + ' applied — saving $' + (result.saving/100).toFixed(2);
         feedback.className   = 'mp-promo-feedback mp-promo-feedback--ok';
         promoInput.disabled  = true;
         applyBtn.textContent = 'Remove';
         applyBtn.onclick = function() {
           appliedPromo = null;
+          window._ampPromoSaving = 0; // clear bridge
           promoInput.value    = '';
           promoInput.disabled = false;
           feedback.hidden     = true;
