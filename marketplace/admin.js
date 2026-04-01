@@ -222,7 +222,7 @@ const DEFAULT_PRODUCTS = [
     category: 'shirts',
     price: 3500,        // cents
     description: 'Bold red, yellow and blue AMP tee. Comfortable everyday wear.',
-    image: '../../assets/AMP RYB.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20RYB.jpg',
     badge: 'featured',
     sizes: ['XS','S','M','L','XL','2XL'],
     featured: true,
@@ -234,7 +234,7 @@ const DEFAULT_PRODUCTS = [
     category: 'hats',
     price: 2800,
     description: 'Classic cap featuring Rabbit Island artwork.',
-    image: '../../assets/AMP Rabbit Island.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Rabbit%20Island.jpg',
     badge: 'new',
     sizes: ['One Size'],
     featured: false,
@@ -246,7 +246,7 @@ const DEFAULT_PRODUCTS = [
     category: 'stickers',
     price: 800,
     description: 'Vinyl sticker of the iconic AMP Tiki. Waterproof.',
-    image: '../../assets/AMPTTiki.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMPTTiki.jpg',
     badge: '',
     sizes: [],
     featured: false,
@@ -258,7 +258,7 @@ const DEFAULT_PRODUCTS = [
     category: 'accessories',
     price: 2200,
     description: 'Reusable tote with the AMP Tiki logo.',
-    image: '../../assets/AMP Tiki.jpg',
+    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
     badge: '',
     sizes: ['One Size'],
     featured: false,
@@ -274,20 +274,25 @@ const DEFAULT_PRODUCTS = [
    TODO: SWAP updateProduct → PUT  /api/products/:id
    TODO: SWAP deleteProduct → DELETE /api/products/:id
 ───────────────────────────────────────────── */
+const BASE_URL = 'https://808cryptobeast.github.io/pikoverse';
+
 const ProductDB = {
   load() {
     const stored = DB.get('products');
     if (stored) {
       // One-time migration: fix bare 'assets/...' paths to '../../assets/...'
       // needed when admin moved from marketplace/ to projects/admin/
-      const needsFix = stored.some(p => p.image && p.image.startsWith('assets/'));
+      const needsFix = stored.some(p => p.image && (
+        p.image.startsWith('assets/') || p.image.startsWith('../../assets/')
+      ));
       if (needsFix) {
-        const fixed = stored.map(p => ({
-          ...p,
-          image: p.image && p.image.startsWith('assets/')
-            ? '../../' + p.image
-            : p.image,
-        }));
+        const fixed = stored.map(p => {
+          if (!p.image) return p;
+          let img = p.image;
+          if (img.startsWith('../../assets/')) img = img.replace('../../assets/', BASE_URL + '/assets/');
+          else if (img.startsWith('assets/'))  img = BASE_URL + '/' + img;
+          return { ...p, image: img };
+        });
         DB.set('products', fixed);
         return fixed;
       }

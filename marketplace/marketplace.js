@@ -34,7 +34,7 @@
       price: 3500,
       description: 'Beyond fabric and tech — AMP carries heritage forward through design. Premium heavyweight cotton, screen-printed with culturally rooted artwork.',
       image: 'assets/AMP RYB.jpg',
-      bg: 'assets/hawaii-mountains.jpg.webp',
+      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: 'featured',
       sizes: ['XS','S','M','L','XL','2XL'],
       featured: true,
@@ -47,7 +47,7 @@
       price: 2800,
       description: 'Aloha in motion — culture expressed through identity, story, and presence. Structured 6-panel cap with embroidered Rabbit Island artwork.',
       image: 'assets/AMP Rabbit Island.jpg',
-      bg: 'assets/hawaii-mountains.jpg.webp',
+      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: 'new',
       sizes: ['One Size'],
       featured: true,
@@ -60,7 +60,7 @@
       price: 800,
       description: 'Weatherproof vinyl stickers. Three designs, rooted in Aloha Mass Productions visual identity. Stick them anywhere.',
       image: 'assets/AMP Tiki.jpg',
-      bg: 'assets/hawaii-mountains.jpg.webp',
+      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -73,7 +73,7 @@
       price: 2200,
       description: 'Heavy canvas tote with AMP logo and cultural motif. Large enough for a full market run, strong enough for years of use.',
       image: 'assets/AMP Tiki.jpg',
-      bg: 'assets/hawaii-mountains.jpg.webp',
+      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -94,7 +94,7 @@
           // Merge in any missing fields from seed (e.g. bg) that admin doesn't set
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-            return Object.assign({ bg: 'assets/hawaii-mountains.jpg.webp' }, seed, p);
+            return Object.assign({ bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }
