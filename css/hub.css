@@ -2212,3 +2212,123 @@
     min-height: 320px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   AMP ECOSYSTEM CARD — Fix amp-slide-single to fill card properly
+   The .amp-slide-single wrapper needs to stretch to full card height
+   and content must not be clipped. Matches other ecosystem cards.
+═══════════════════════════════════════════════════════════════ */
+
+/* Make the slide-single wrapper fill the card completely */
+.ecosystem-card.card-amp .amp-slide-single {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Video fills the card */
+.ecosystem-card.card-amp .amp-slide-single .card-video {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+}
+
+/* Overlay above video */
+.ecosystem-card.card-amp .amp-slide-single .card-video-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+}
+
+/* Top glow above overlay */
+.ecosystem-card.card-amp .amp-slide-single .card-top-glow {
+  z-index: 2 !important;
+}
+
+/* Body content: sits at bottom like other cards */
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
+  position: relative !important;
+  z-index: 3 !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  /* Match padding of other ecosystem cards */
+  padding: 32px !important;
+  /* Never clip the link button */
+  overflow: visible !important;
+  margin-top: auto !important;
+}
+
+/* Ensure all content in the body is visible */
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-icon,
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body h3,
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-subtitle,
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-description,
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-features,
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-link {
+  position: relative !important;
+  z-index: 4 !important;
+  overflow: visible !important;
+}
+
+/* The link must always be fully visible and clickable */
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-link {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  margin-top: 16px !important;
+}
+
+/* Mobile: ensure consistent height with other cards */
+@media (max-width: 768px) {
+  .ecosystem-card.card-amp {
+    min-height: 500px !important;
+    position: relative !important;
+  }
+
+  .ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
+    padding: 24px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE NAV — z-index fix
+   .main-nav needs z-index high enough to show above the piko-dock
+   (z-index: 150) and any other fixed elements. The site-header
+   is z-index: 1000, so the nav should be 999 to sit just under it
+   but above everything else.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .main-nav {
+    z-index: 999 !important;
+  }
+
+  /* Ensure the show state is fully visible */
+  .main-nav.show {
+    z-index: 999 !important;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* Make toggle button always on top */
+  .mobile-menu-toggle {
+    z-index: 1001 !important;
+    position: relative !important;
+  }
+
+  /* Prevent dock from covering the nav */
+  .piko-dock {
+    z-index: 100 !important;
+  }
+}
