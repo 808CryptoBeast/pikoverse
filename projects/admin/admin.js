@@ -2275,13 +2275,129 @@ function openArticleModal(id = null) {
   setTimeout(() => document.getElementById('admArtTitle')?.focus(), 100);
 }
 
+// ── "Publish to Site" — commits _pikoArticles.js directly to GitHub ─────────
+// If GitHub config is set in Settings, pushes via API (zero manual steps).
+// Falls back to file download if not configured.
+function generateArticleEmbed() {
+  var articles = loadArticles().filter(function(a) { return a.published; });
+  if (!articles.length) {
+    showToast('No published articles yet.');
+    return;
+  }
+
+  // Strip base64 images (too large for a committed file; use URL instead)
+  var clean = articles.map(function(a) {
+    return Object.assign({}, a, {
+      image: (a.image && a.image.startsWith('data:')) ? '' : (a.image || '')
+    });
+  });
+
+  var ts = new Date().toISOString();
+  var fileContent = [
+    '// Pikoverse Chronicle - Published Articles',
+    '// Auto-generated. Do not edit manually.',
+    '// Generated: ' + ts,
+    '',
+    'window._pikoArticles = ' + JSON.stringify(clean, null, 2) + ';',
+    ''
+  ].join('\n');
+
+  var cfg = loadGhConfig();
+
+  if (cfg && cfg.token && cfg.owner && cfg.repo) {
+    // ── GitHub API path ────────────────────────────────────────────────
+    publishViaGitHub(cfg, fileContent);
+  } else {
+    // ── Fallback: download the file ────────────────────────────────────
+    downloadArticleFile(fileContent);
+  }
+}
+
+function publishViaGitHub(cfg, fileContent) {
+  var filePath = 'js/_pikoArticles.js';
+  var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
+  var headers  = {
+    'Authorization': 'Bearer ' + cfg.token,
+    'Accept':        'application/vnd.github+json',
+    'Content-Type':  'application/json'
+  };
+
+  showToast('Publishing to GitHub...');
+
+  // Step 1: get current file SHA (needed to update existing file)
+  fetch(apiBase + '?ref=' + cfg.branch, { headers: headers })
+    .then(function(r) { return r.json(); })
+    .then(function(existing) {
+      var sha = existing && existing.sha ? existing.sha : undefined;
+
+      // Step 2: commit the file
+      var body = {
+        message: 'Publish Chronicle articles [admin]',
+        content: btoa(unescape(encodeURIComponent(fileContent))),
+        branch:  cfg.branch
+      };
+      if (sha) body.sha = sha;
+
+      return fetch(apiBase, {
+        method:  'PUT',
+        headers: headers,
+        body:    JSON.stringify(body)
+      });
+    })
+    .then(function(r) {
+      if (r.ok) {
+        showToast('Published! Articles live on all devices in ~30 seconds.');
+      } else {
+        return r.json().then(function(err) {
+          showToast('GitHub error: ' + (err.message || r.status) + '. Check Settings > GitHub.');
+        });
+      }
+    })
+    .catch(function(err) {
+      showToast('Publish failed. Check your connection and GitHub settings.');
+      console.error('[Publish]', err);
+    });
+}
+
+function downloadArticleFile(fileContent) {
+  var blob = new Blob([fileContent], { type: 'application/javascript' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url; a.download = '_pikoArticles.js';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = [
+    '<div style="background:#13111f;border:1px solid rgba(201,168,76,.35);border-radius:16px;padding:28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px">',
+      '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a;margin:0">_pikoArticles.js downloaded</h3>',
+      '<p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;margin:0">',
+        'Put this file in your repo&#39;s <code style="color:#f0c96a">js/</code> folder and commit. ',
+        '<strong style="color:#fff">Tip:</strong> connect GitHub in Settings to skip this step forever.',
+      '</p>',
+      '<button id="_dlClose" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer">Got it</button>',
+    '</div>'
+  ].join('');
+  document.body.appendChild(modal);
+  document.getElementById('_dlClose').onclick = function() { modal.remove(); };
+  modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+}
+
+// Guarantee global scope regardless of load order
+window.generateArticleEmbed = generateArticleEmbed;
+window.publishViaGitHub     = publishViaGitHub;
+window.downloadArticleFile  = downloadArticleFile;
+
+
 function bindArticlesPanel() {
   const addBtn = document.getElementById('admAddArticleBtn');
   if (addBtn) addBtn.addEventListener('click', () => openArticleModal());
 
   // "Publish to Site" button
   const publishBtn = document.getElementById('admPublishArticlesBtn');
-  if (publishBtn) publishBtn.addEventListener('click', generateArticleEmbed);
+  if (publishBtn) publishBtn.addEventListener('click', function() { generateArticleEmbed(); });
 
   // Filter buttons
   document.querySelectorAll('[data-art-filter]').forEach(btn => {
@@ -2358,6 +2474,7 @@ function bindArticlesPanel() {
   // ── Article Cover Image — drop zone, file picker, paste, URL ──────────────
   wireArticleImageZone();
 }
+
 
 function wireArticleImageZone() {
   var zone        = document.getElementById('admArtImgZone');
@@ -2492,116 +2609,6 @@ function wireArticleImageZone() {
       e.stopPropagation();
       clearPreview();
     });
-  }
-
-  // ── "Publish to Site" — commits _pikoArticles.js directly to GitHub ─────────
-  // If GitHub config is set in Settings, pushes via API (zero manual steps).
-  // Falls back to file download if not configured.
-  function generateArticleEmbed() {
-    var articles = loadArticles().filter(function(a) { return a.published; });
-    if (!articles.length) {
-      showToast('No published articles yet.');
-      return;
-    }
-
-    // Strip base64 images (too large for a committed file; use URL instead)
-    var clean = articles.map(function(a) {
-      return Object.assign({}, a, {
-        image: (a.image && a.image.startsWith('data:')) ? '' : (a.image || '')
-      });
-    });
-
-    var ts = new Date().toISOString();
-    var fileContent = [
-      '// Pikoverse Chronicle - Published Articles',
-      '// Auto-generated. Do not edit manually.',
-      '// Generated: ' + ts,
-      '',
-      'window._pikoArticles = ' + JSON.stringify(clean, null, 2) + ';',
-      ''
-    ].join('\n');
-
-    var cfg = loadGhConfig();
-
-    if (cfg && cfg.token && cfg.owner && cfg.repo) {
-      // ── GitHub API path ────────────────────────────────────────────────
-      publishViaGitHub(cfg, fileContent);
-    } else {
-      // ── Fallback: download the file ────────────────────────────────────
-      downloadArticleFile(fileContent);
-    }
-  }
-
-  function publishViaGitHub(cfg, fileContent) {
-    var filePath = 'js/_pikoArticles.js';
-    var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
-    var headers  = {
-      'Authorization': 'Bearer ' + cfg.token,
-      'Accept':        'application/vnd.github+json',
-      'Content-Type':  'application/json'
-    };
-
-    showToast('Publishing to GitHub...');
-
-    // Step 1: get current file SHA (needed to update existing file)
-    fetch(apiBase + '?ref=' + cfg.branch, { headers: headers })
-      .then(function(r) { return r.json(); })
-      .then(function(existing) {
-        var sha = existing && existing.sha ? existing.sha : undefined;
-
-        // Step 2: commit the file
-        var body = {
-          message: 'Publish Chronicle articles [admin]',
-          content: btoa(unescape(encodeURIComponent(fileContent))),
-          branch:  cfg.branch
-        };
-        if (sha) body.sha = sha;
-
-        return fetch(apiBase, {
-          method:  'PUT',
-          headers: headers,
-          body:    JSON.stringify(body)
-        });
-      })
-      .then(function(r) {
-        if (r.ok) {
-          showToast('Published! Articles live on all devices in ~30 seconds.');
-        } else {
-          return r.json().then(function(err) {
-            showToast('GitHub error: ' + (err.message || r.status) + '. Check Settings > GitHub.');
-          });
-        }
-      })
-      .catch(function(err) {
-        showToast('Publish failed. Check your connection and GitHub settings.');
-        console.error('[Publish]', err);
-      });
-  }
-
-  function downloadArticleFile(fileContent) {
-    var blob = new Blob([fileContent], { type: 'application/javascript' });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href = url; a.download = '_pikoArticles.js';
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    var modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px';
-    modal.innerHTML = [
-      '<div style="background:#13111f;border:1px solid rgba(201,168,76,.35);border-radius:16px;padding:28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px">',
-        '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a;margin:0">_pikoArticles.js downloaded</h3>',
-        '<p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;margin:0">',
-          'Put this file in your repo&#39;s <code style="color:#f0c96a">js/</code> folder and commit. ',
-          '<strong style="color:#fff">Tip:</strong> connect GitHub in Settings to skip this step forever.',
-        '</p>',
-        '<button id="_dlClose" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer">Got it</button>',
-      '</div>'
-    ].join('');
-    document.body.appendChild(modal);
-    document.getElementById('_dlClose').onclick = function() { modal.remove(); };
-    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
   }
 
     // Expose reset API for openArticleModal
