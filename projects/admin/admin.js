@@ -2324,38 +2324,44 @@ function publishViaGitHub(cfg, fileContent) {
 
   showToast('Publishing to GitHub...');
 
-  // Step 1: get current file SHA (needed to update existing file)
+  // Step 1: get current file SHA (required to UPDATE existing file, skip for new)
   fetch(apiBase + '?ref=' + cfg.branch, { headers: headers })
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (r.status === 404) return { sha: null };  // file doesn't exist yet — create it
+      if (!r.ok) throw new Error('GET ' + r.status);
+      return r.json();
+    })
     .then(function(existing) {
-      var sha = existing && existing.sha ? existing.sha : undefined;
+      var sha = (existing && existing.sha) ? existing.sha : null;
 
-      // Step 2: commit the file
-      var body = {
-        message: 'Publish Chronicle articles [admin]',
-        content: btoa(unescape(encodeURIComponent(fileContent))),
-        branch:  cfg.branch
-      };
+      var encoded;
+      try { encoded = btoa(unescape(encodeURIComponent(fileContent))); }
+      catch(e) { encoded = btoa(fileContent); }
+
+      var body = { message: 'Publish Chronicle articles [admin]', content: encoded, branch: cfg.branch };
       if (sha) body.sha = sha;
 
-      return fetch(apiBase, {
-        method:  'PUT',
-        headers: headers,
-        body:    JSON.stringify(body)
-      });
+      return fetch(apiBase, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
     })
     .then(function(r) {
-      if (r.ok) {
-        showToast('Published! Articles live on all devices in ~30 seconds.');
+      return r.json().then(function(data) { return { ok: r.ok, status: r.status, data: data }; });
+    })
+    .then(function(result) {
+      if (result.ok) {
+        showToast('Done! Articles will show on all devices within 30 seconds.');
       } else {
-        return r.json().then(function(err) {
-          showToast('GitHub error: ' + (err.message || r.status) + '. Check Settings > GitHub.');
-        });
+        var msg = (result.data && result.data.message) || ('Status ' + result.status);
+        if (result.status === 401) msg = 'Token invalid or expired — regenerate in Settings.';
+        if (result.status === 403) msg = 'Token needs "repo" scope — check Settings.';
+        if (result.status === 404) msg = 'Repo "' + cfg.owner + '/' + cfg.repo + '" not found — check Settings.';
+        if (result.status === 422) msg = 'Branch "' + cfg.branch + '" not found — check Settings.';
+        showToast('Publish failed: ' + msg);
+        console.error('[Publish]', result);
       }
     })
     .catch(function(err) {
-      showToast('Publish failed. Check your connection and GitHub settings.');
-      console.error('[Publish]', err);
+      showToast('Publish failed — open browser console for details.');
+      console.error('[Publish] error:', err);
     });
 }
 

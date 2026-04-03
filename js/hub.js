@@ -715,9 +715,10 @@
   }
 
   function initChronicle() {
+    // Render immediately with whatever is already available (localStorage / script tag)
     renderChronicle();
 
-    // Filter buttons
+    // Wire filter buttons
     document.querySelectorAll('[data-chron-cat]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         document.querySelectorAll('[data-chron-cat]').forEach(function(b) { b.classList.remove('is-active'); });
@@ -734,6 +735,38 @@
       chronPage++;
       renderChronicle();
     });
+
+    // ── Dynamic fetch of _pikoArticles.js ────────────────────────────────
+    // Fetches the published articles file directly from the server.
+    // Works on any device without needing a script tag or localStorage.
+    // Relative URL resolves correctly on GitHub Pages.
+    if (typeof fetch !== 'undefined') {
+      fetch('./js/_pikoArticles.js?_=' + Date.now(), { cache: 'no-store' })
+        .then(function(r) {
+          if (!r.ok) return null;
+          return r.text();
+        })
+        .then(function(text) {
+          if (!text) return;
+          try {
+            // Execute the file content in a safe way to set window._pikoArticles
+            var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*?\]);/);
+            if (match) {
+              var parsed = JSON.parse(match[1]);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                window._pikoArticles = parsed;
+                chronPage = 1;
+                renderChronicle();
+              }
+            }
+          } catch(e) {
+            // File exists but couldn't parse — ignore
+          }
+        })
+        .catch(function() {
+          // File doesn't exist yet — that's fine, use localStorage only
+        });
+    }
   }
 
   /* ─────────────────────────────────────────────
