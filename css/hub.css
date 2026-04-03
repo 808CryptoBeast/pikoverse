@@ -2078,3 +2078,137 @@
   .piko-check-form { flex-direction: column; }
   .piko-check-btn { justify-content: center; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   AMP INTRO CARDS — Mobile fixes
+   Overrides css/index.css on small screens to make all 3 cards
+   (Foundation, Ecosystem, Mission) match in height, layout and
+   ensure no content/buttons are clipped.
+═══════════════════════════════════════════════════════════════ */
+
+/* Stack to single column on mobile */
+@media (max-width: 768px) {
+  .amp-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .amp-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    /* Let height grow with content — never clip */
+    height: auto !important;
+    min-height: 300px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: relative !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Video fills the card as a background */
+  .amp-card-video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  /* Overlay sits above video */
+  .amp-card-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    background: linear-gradient(
+      to bottom,
+      rgba(5, 8, 18, 0.3) 0%,
+      rgba(5, 8, 18, 0.75) 60%,
+      rgba(5, 8, 18, 0.92) 100%
+    ) !important;
+    border-radius: 16px !important;
+  }
+
+  .amp-card-border,
+  .amp-card-sweep {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+    border-radius: 16px !important;
+  }
+
+  /* Content sits on top — full height, padded, scrollable if needed */
+  .amp-card-content {
+    position: relative !important;
+    z-index: 3 !important;
+    padding: 120px 22px 28px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    /* Never clip buttons */
+    overflow: visible !important;
+  }
+
+  .amp-card-content h3 {
+    font-size: 18px !important;
+    margin-bottom: 10px !important;
+    color: #fff !important;
+  }
+
+  .amp-card-content p {
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Any button / CTA inside the card — always fully visible */
+  .amp-card-content a,
+  .amp-card-content button {
+    position: relative !important;
+    z-index: 4 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    /* Prevent card overflow from clipping it */
+    overflow: visible !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Make all 3 cards the same height */
+  .amp-foundation,
+  .amp-ecosystem,
+  .amp-mission {
+    min-height: 360px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .amp-card-content {
+    padding: 100px 18px 24px !important;
+  }
+
+  .amp-card-content h3 {
+    font-size: 16px !important;
+  }
+
+  .amp-card-content p {
+    font-size: 12px !important;
+  }
+
+  .amp-foundation,
+  .amp-ecosystem,
+  .amp-mission {
+    min-height: 320px !important;
+  }
+}
