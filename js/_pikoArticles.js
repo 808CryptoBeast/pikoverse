@@ -1,6 +1,6 @@
 // Pikoverse Chronicle - Published Articles
 // Auto-generated. Do not edit manually.
-// Generated: 2026-04-03T20:23:23.649Z
+// Generated: 2026-04-03T20:28:52.343Z
 
 window._pikoArticles = [
   {
@@ -12,7 +12,7 @@ window._pikoArticles = [
     "excerpt": "",
     "tags": "",
     "published": true,
-    "pinned": true,
+    "pinned": false,
     "id": "art-1775224318622",
     "ts": 1775224318622
   }
