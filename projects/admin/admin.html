@@ -986,12 +986,32 @@
           </div>
 
           <div class="adm-field adm-field--full">
-            <label class="adm-label" for="admArtImage">Cover Image URL</label>
-            <div class="adm-input-wrap">
-              <i class="fas fa-image adm-input-icon"></i>
-              <input type="url" id="admArtImage" class="adm-input"
-                     placeholder="https://… (leave blank for category default)" maxlength="512">
+            <label class="adm-label">Cover Image</label>
+
+            <!-- Drop zone -->
+            <div class="adm-art-img-zone" id="admArtImgZone">
+              <div class="adm-art-img-preview-wrap" id="admArtImgPreviewWrap" hidden>
+                <img id="admArtImgPreview" src="" alt="Cover preview" class="adm-art-img-preview">
+                <button type="button" class="adm-art-img-clear" id="admArtImgClear" aria-label="Remove image">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="adm-art-img-placeholder" id="admArtImgPlaceholder">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <span class="adm-art-img-main-text">Drag &amp; drop an image here</span>
+                <span class="adm-art-img-sub-text">or click to browse · paste a file or URL</span>
+              </div>
+              <!-- Hidden file input — triggered by clicking the zone -->
+              <input type="file" id="admArtImgFile" accept="image/*" class="adm-art-img-file" tabindex="-1">
             </div>
+
+            <!-- URL input — paste a URL directly -->
+            <div class="adm-input-wrap" style="margin-top:8px">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admArtImage" class="adm-input"
+                     placeholder="Or paste an image URL: https://…" maxlength="512">
+            </div>
+            <p class="adm-field-hint">Accepts file upload, drag &amp; drop, clipboard paste, or a direct URL. Stored as base64 if uploaded.</p>
           </div>
 
           <div class="adm-field adm-field--full">

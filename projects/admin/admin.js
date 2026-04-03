@@ -2180,6 +2180,8 @@ function openArticleModal(id = null) {
   document.getElementById('admArticleSaveBtnLabel').textContent = id ? 'Save Changes' : 'Save Article';
   document.getElementById('admArtPublished').checked = true;
   document.getElementById('admArtPinned').checked = false;
+  // Reset image zone
+  if (window._artImgZone) window._artImgZone.clearPreview();
 
   if (id) {
     const a = loadArticles().find(x => x.id === id);
@@ -2190,6 +2192,8 @@ function openArticleModal(id = null) {
     document.getElementById('admArtSource').value     = a.source || '';
     document.getElementById('admArtCategory').value   = a.category || 'other';
     document.getElementById('admArtImage').value      = a.image || '';
+    // Show preview in drop zone
+    if (a.image && window._artImgZone) window._artImgZone.showPreview(a.image);
     document.getElementById('admArtExcerpt').value    = a.excerpt || '';
     document.getElementById('admArtExcerptCount').textContent = (a.excerpt || '').length;
     document.getElementById('admArtTags').value       = a.tags || '';
@@ -2225,7 +2229,10 @@ function bindArticlesPanel() {
       const url      = document.getElementById('admArtUrl').value.trim();
       const source   = document.getElementById('admArtSource').value.trim();
       const category = document.getElementById('admArtCategory').value;
-      const image    = document.getElementById('admArtImage').value.trim();
+      // Image: use drop zone's current value (base64 upload, dragged URL, or typed URL)
+      const image = window._artImgZone
+        ? window._artImgZone.getValue()
+        : document.getElementById('admArtImage').value.trim();
       const excerpt  = document.getElementById('admArtExcerpt').value.trim();
       const tags     = document.getElementById('admArtTags').value.trim();
       const published= document.getElementById('admArtPublished').checked;
@@ -2272,7 +2279,161 @@ function bindArticlesPanel() {
   document.getElementById('admArtExcerpt')?.addEventListener('input', e => {
     document.getElementById('admArtExcerptCount').textContent = e.target.value.length;
   });
+
+  // ── Article Cover Image — drop zone, file picker, paste, URL ──────────────
+  wireArticleImageZone();
 }
+
+function wireArticleImageZone() {
+  var zone        = document.getElementById('admArtImgZone');
+  var fileInput   = document.getElementById('admArtImgFile');
+  var urlInput    = document.getElementById('admArtImage');
+  var preview     = document.getElementById('admArtImgPreview');
+  var previewWrap = document.getElementById('admArtImgPreviewWrap');
+  var placeholder = document.getElementById('admArtImgPlaceholder');
+  var clearBtn    = document.getElementById('admArtImgClear');
+  if (!zone) return;
+
+  // ── Core helpers ────────────────────────────────────────────────────────
+  function setPreview(src) {
+    if (!src) return;
+    preview.src = src;
+    previewWrap.hidden = false;
+    placeholder.hidden = true;
+    // Sync URL field only for http URLs; base64 is too long
+    if (!src.startsWith('data:') && urlInput) urlInput.value = src;
+    if ( src.startsWith('data:') && urlInput) urlInput.value = '';
+  }
+
+  function clearPreview() {
+    preview.src = '';
+    previewWrap.hidden = true;
+    placeholder.hidden = false;
+    if (urlInput) urlInput.value = '';
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Please use an image file (jpg, png, gif, webp, etc.)');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(ev) { setPreview(ev.target.result); };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Click zone → open file picker ───────────────────────────────────────
+  zone.addEventListener('click', function(e) {
+    if (clearBtn && clearBtn.contains(e.target)) return; // don't open picker on clear
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files && fileInput.files[0]) {
+      handleFile(fileInput.files[0]);
+    }
+    fileInput.value = ''; // reset so same file re-selectable
+  });
+
+  // ── Drag & drop ──────────────────────────────────────────────────────────
+  // Prevent browser default (which would navigate to the file)
+  ['dragenter','dragover'].forEach(function(evName) {
+    zone.addEventListener(evName, function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.add('is-dragging');
+    });
+  });
+
+  zone.addEventListener('dragleave', function(e) {
+    e.stopPropagation();
+    // Only remove class when leaving the zone entirely
+    if (!zone.contains(e.relatedTarget)) {
+      zone.classList.remove('is-dragging');
+    }
+  });
+
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    zone.classList.remove('is-dragging');
+
+    var dt = e.dataTransfer;
+
+    // 1. File drop (from desktop/Finder)
+    if (dt.files && dt.files.length > 0) {
+      handleFile(dt.files[0]);
+      return;
+    }
+
+    // 2. Image dragged from another browser tab/page
+    var srcUrl = dt.getData('text/uri-list') || dt.getData('URL') || dt.getData('text/plain') || '';
+    if (srcUrl && (srcUrl.startsWith('http') || srcUrl.startsWith('https'))) {
+      setPreview(srcUrl.trim());
+    }
+  });
+
+  // ── Paste (Cmd/Ctrl+V) anywhere while article modal is open ────────────
+  function handlePaste(e) {
+    // Only act when article modal is open
+    var modal = document.getElementById('admArticleModalBackdrop');
+    if (!modal || !modal.classList.contains('is-open')) return;
+
+    var items = (e.clipboardData || window.clipboardData || {}).items;
+    if (!items) return;
+
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      // Image from clipboard (screenshot, copy image, etc.)
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        e.preventDefault();
+        handleFile(item.getAsFile());
+        showToast('Image pasted from clipboard.');
+        return;
+      }
+    }
+    // Text paste goes to whichever input has focus — handled by URL input below
+  }
+
+  document.addEventListener('paste', handlePaste);
+
+  // ── URL input: live preview as you type or paste ─────────────────────────
+  if (urlInput) {
+    urlInput.addEventListener('input', function() {
+      var v = urlInput.value.trim();
+      if (/^https?:\/\/.+/i.test(v)) {
+        setPreview(v);
+      } else if (!v) {
+        // Only clear if preview isn't a file upload
+        if (!preview.src.startsWith('data:')) clearPreview();
+      }
+    });
+  }
+
+  // ── Clear button ─────────────────────────────────────────────────────────
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      clearPreview();
+    });
+  }
+
+  // Expose reset API for openArticleModal
+  window._artImgZone = {
+    showPreview: setPreview,
+    clearPreview: clearPreview,
+    // Get current image value (base64 or URL)
+    getValue: function() {
+      if (preview.src && preview.src !== window.location.href &&
+          preview.src !== '' && !preview.hidden) {
+        return preview.src;
+      }
+      return (urlInput && urlInput.value.trim()) || '';
+    }
+  };
+}
+
 
 function loadOrders() {
   try { return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]'); } catch(e) { return []; }
