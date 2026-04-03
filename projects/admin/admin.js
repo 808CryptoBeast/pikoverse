@@ -2275,11 +2275,11 @@ function openArticleModal(id = null) {
   setTimeout(() => document.getElementById('admArtTitle')?.focus(), 100);
 }
 
-// ── Check whether _pikoArticles.js is live on the server ─────────────────────
+// ── Check whether pikoArticles.js is live on the server ─────────────────────
 function checkPublishStatus() {
   var cfg = loadGhConfig();
   var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
-  var fileUrl  = repoBase + '/js/_pikoArticles.js?v=' + Date.now();
+  var fileUrl  = repoBase + '/js/pikoArticles.js?v=' + Date.now();
 
   console.log('[Check Status] Fetching:', fileUrl);
   showToast('Checking server...');
@@ -2316,7 +2316,7 @@ function checkPublishStatus() {
     });
 }
 
-// ── "Publish to Site" — commits _pikoArticles.js directly to GitHub ─────────
+// ── "Publish to Site" — commits pikoArticles.js directly to GitHub ─────────
 // If GitHub config is set in Settings, pushes via API (zero manual steps).
 // Falls back to file download if not configured.
 function generateArticleEmbed() {
@@ -2355,7 +2355,7 @@ function generateArticleEmbed() {
 }
 
 function publishViaGitHub(cfg, fileContent) {
-  var filePath = 'js/_pikoArticles.js';
+  var filePath = 'js/pikoArticles.js';
   var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
   var headers  = {
     'Authorization': 'Bearer ' + cfg.token,
@@ -2411,7 +2411,7 @@ function downloadArticleFile(fileContent) {
   var blob = new Blob([fileContent], { type: 'application/javascript' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
-  a.href = url; a.download = '_pikoArticles.js';
+  a.href = url; a.download = 'pikoArticles.js';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);

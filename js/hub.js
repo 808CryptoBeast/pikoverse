@@ -737,23 +737,23 @@
     });
 
     // ── Fetch published articles from server ─────────────────────────────
-    // _pikoArticles.js is a JS file committed to the repo via Admin > Chronicle > Publish to Site
+    // pikoArticles.js is a JS file committed to the repo via Admin > Chronicle > Publish to Site
     // eval() is safe here — we wrote the file ourselves, it only sets window._pikoArticles
     if (typeof fetch !== 'undefined') {
-      var _path = './js/_pikoArticles.js';
+      var _path = './js/pikoArticles.js';
       fetch(_path, { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
           if (!text) return;
           try {
             // eslint-disable-next-line no-eval
-            eval(text); // executes: window._pikoArticles = [...];
+            eval(text); // executes: window._pikoArticles = [...]; (variable name stays the same)
             if (Array.isArray(window._pikoArticles) && window._pikoArticles.length > 0) {
               chronPage = 1;
               renderChronicle();
             }
           } catch(e) {
-            console.warn('[Chronicle] Could not parse _pikoArticles.js:', e);
+            console.warn('[Chronicle] Could not parse pikoArticles.js:', e);
           }
         })
         .catch(function() {}); // 404 = file not committed yet, ignore silently
