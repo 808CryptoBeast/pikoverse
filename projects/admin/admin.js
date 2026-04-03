@@ -2040,6 +2040,77 @@ window.setPanel = function(panelName) {
 ══════════════════════════════════════════ */
 const ORDERS_KEY   = 'amp_orders_v1';
 const ARTICLES_KEY = 'amp_articles_v1';
+const GH_KEY       = 'amp_gh_config';
+
+/* ══════════════════════════════════════════
+   GITHUB CONFIG — save/load PAT + repo info
+══════════════════════════════════════════ */
+function loadGhConfig() {
+  try { return JSON.parse(localStorage.getItem(GH_KEY) || 'null'); } catch(e) { return null; }
+}
+function saveGhConfig(cfg) {
+  try { localStorage.setItem(GH_KEY, JSON.stringify(cfg)); } catch(e) {}
+}
+
+function bindGhSettings() {
+  var ownerEl  = document.getElementById('admGhOwner');
+  var repoEl   = document.getElementById('admGhRepo');
+  var branchEl = document.getElementById('admGhBranch');
+  var tokenEl  = document.getElementById('admGhToken');
+  var saveBtn  = document.getElementById('admGhSaveBtn');
+  var testBtn  = document.getElementById('admGhTestBtn');
+  var clearBtn = document.getElementById('admGhClearBtn');
+  var okEl     = document.getElementById('admGhSaveOk');
+  if (!ownerEl) return;
+
+  // Pre-fill from saved config
+  var cfg = loadGhConfig();
+  if (cfg) {
+    ownerEl.value  = cfg.owner  || '';
+    repoEl.value   = cfg.repo   || '';
+    branchEl.value = cfg.branch || 'main';
+    tokenEl.value  = cfg.token  || '';
+    if (cfg.token) { if (okEl) okEl.hidden = false; }
+  }
+
+  if (saveBtn) saveBtn.addEventListener('click', function() {
+    var cfg = {
+      owner:  ownerEl.value.trim(),
+      repo:   repoEl.value.trim(),
+      branch: branchEl.value.trim() || 'main',
+      token:  tokenEl.value.trim()
+    };
+    if (!cfg.owner || !cfg.repo || !cfg.token) {
+      showToast('Fill in username, repo name, and token.');
+      return;
+    }
+    saveGhConfig(cfg);
+    if (okEl) okEl.hidden = false;
+    showToast('GitHub connection saved.');
+  });
+
+  if (testBtn) testBtn.addEventListener('click', function() {
+    var cfg = loadGhConfig();
+    if (!cfg || !cfg.token) { showToast('Save your GitHub config first.'); return; }
+    showToast('Testing connection...');
+    fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo, {
+      headers: { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github+json' }
+    }).then(function(r) {
+      if (r.ok) {
+        showToast('Connected to ' + cfg.owner + '/' + cfg.repo + ' successfully.');
+      } else {
+        showToast('Connection failed (' + r.status + '). Check your token and repo name.');
+      }
+    }).catch(function() { showToast('Network error. Check your connection.'); });
+  });
+
+  if (clearBtn) clearBtn.addEventListener('click', function() {
+    localStorage.removeItem(GH_KEY);
+    ownerEl.value = repoEl.value = branchEl.value = tokenEl.value = '';
+    if (okEl) okEl.hidden = true;
+    showToast('GitHub config cleared.');
+  });
+}
 
 /* ══════════════════════════════════════════
    ARTICLES — Chronicle
@@ -2423,73 +2494,117 @@ function wireArticleImageZone() {
     });
   }
 
-  // ── "Publish to Site" — generate embed snippet for index.html ──────────────
+  // ── "Publish to Site" — commits _pikoArticles.js directly to GitHub ─────────
+  // If GitHub config is set in Settings, pushes via API (zero manual steps).
+  // Falls back to file download if not configured.
   function generateArticleEmbed() {
     var articles = loadArticles().filter(function(a) { return a.published; });
     if (!articles.length) {
-      showToast('No published articles to embed. Publish at least one article first.');
+      showToast('No published articles yet.');
       return;
     }
-    // Strip base64 images from embed (they're too large for HTML)
+
+    // Strip base64 images (too large for a committed file; use URL instead)
     var clean = articles.map(function(a) {
       return Object.assign({}, a, {
-        image: a.image && a.image.startsWith('data:') ? '' : (a.image || '')
+        image: (a.image && a.image.startsWith('data:')) ? '' : (a.image || '')
       });
     });
-    var scriptOpen  = '<scr' + 'ipt>';
-    var scriptClose = '</scr' + 'ipt>';
-    var snippet = scriptOpen + '\n  window._pikoArticles = ' +
-      JSON.stringify(clean, null, 2) +
-      ';\n' + scriptClose;
 
-    // Show in a copyable modal
-    var modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
-    modal.innerHTML =
-      '<div style="background:#13111f;border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:24px;max-width:700px;width:100%;max-height:80vh;display:flex;flex-direction:column;gap:14px">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between">' +
-          '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a">Publish Articles to Site</h3>' +
-          '<button id="_embedClose" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer">✕</button>' +
-        '</div>' +
-        '<p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.6">' +
-          'Copy this snippet and paste it into <code style="color:#f0c96a">index.html</code> ' +
-          'just before the closing <code style="color:#f0c96a">&lt;/body&gt;</code> tag, ' +
-          'then commit the file. Articles will appear on all devices instantly.' +
-        '</p>' +
-        '<textarea id="_embedCode" style="flex:1;min-height:200px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px;color:#e8e0f0;font-family:Courier New,monospace;font-size:11px;resize:vertical;outline:none" readonly>' +
-          snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;') +
-        '</textarea>' +
-        '<div style="display:flex;gap:10px">' +
-          '<button id="_embedCopy" style="flex:1;padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer;font-size:13px">' +
-            '📋 Copy to Clipboard' +
-          '</button>' +
-          '<button id="_embedClose2" style="padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-size:13px">Close</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(modal);
+    var ts = new Date().toISOString();
+    var fileContent = [
+      '// Pikoverse Chronicle - Published Articles',
+      '// Auto-generated. Do not edit manually.',
+      '// Generated: ' + ts,
+      '',
+      'window._pikoArticles = ' + JSON.stringify(clean, null, 2) + ';',
+      ''
+    ].join('\n');
 
-    // Real snippet in textarea (not escaped)
-    document.getElementById('_embedCode').value = snippet;
+    var cfg = loadGhConfig();
 
-    document.getElementById('_embedCopy').onclick = function() {
-      var ta = document.getElementById('_embedCode');
-      ta.select();
-      try {
-        navigator.clipboard.writeText(ta.value).then(function() {
-          showToast('✅ Snippet copied! Paste into index.html before </body>');
-        });
-      } catch(e) {
-        document.execCommand('copy');
-        showToast('✅ Snippet copied! Paste into index.html before </body>');
-      }
-    };
-    function closeEmbed() { modal.remove(); }
-    document.getElementById('_embedClose').onclick  = closeEmbed;
-    document.getElementById('_embedClose2').onclick = closeEmbed;
-    modal.addEventListener('click', function(e) { if (e.target === modal) closeEmbed(); });
+    if (cfg && cfg.token && cfg.owner && cfg.repo) {
+      // ── GitHub API path ────────────────────────────────────────────────
+      publishViaGitHub(cfg, fileContent);
+    } else {
+      // ── Fallback: download the file ────────────────────────────────────
+      downloadArticleFile(fileContent);
+    }
   }
 
-  // Expose reset API for openArticleModal
+  function publishViaGitHub(cfg, fileContent) {
+    var filePath = 'js/_pikoArticles.js';
+    var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
+    var headers  = {
+      'Authorization': 'Bearer ' + cfg.token,
+      'Accept':        'application/vnd.github+json',
+      'Content-Type':  'application/json'
+    };
+
+    showToast('Publishing to GitHub...');
+
+    // Step 1: get current file SHA (needed to update existing file)
+    fetch(apiBase + '?ref=' + cfg.branch, { headers: headers })
+      .then(function(r) { return r.json(); })
+      .then(function(existing) {
+        var sha = existing && existing.sha ? existing.sha : undefined;
+
+        // Step 2: commit the file
+        var body = {
+          message: 'Publish Chronicle articles [admin]',
+          content: btoa(unescape(encodeURIComponent(fileContent))),
+          branch:  cfg.branch
+        };
+        if (sha) body.sha = sha;
+
+        return fetch(apiBase, {
+          method:  'PUT',
+          headers: headers,
+          body:    JSON.stringify(body)
+        });
+      })
+      .then(function(r) {
+        if (r.ok) {
+          showToast('Published! Articles live on all devices in ~30 seconds.');
+        } else {
+          return r.json().then(function(err) {
+            showToast('GitHub error: ' + (err.message || r.status) + '. Check Settings > GitHub.');
+          });
+        }
+      })
+      .catch(function(err) {
+        showToast('Publish failed. Check your connection and GitHub settings.');
+        console.error('[Publish]', err);
+      });
+  }
+
+  function downloadArticleFile(fileContent) {
+    var blob = new Blob([fileContent], { type: 'application/javascript' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = '_pikoArticles.js';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    var modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML = [
+      '<div style="background:#13111f;border:1px solid rgba(201,168,76,.35);border-radius:16px;padding:28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px">',
+        '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a;margin:0">_pikoArticles.js downloaded</h3>',
+        '<p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;margin:0">',
+          'Put this file in your repo&#39;s <code style="color:#f0c96a">js/</code> folder and commit. ',
+          '<strong style="color:#fff">Tip:</strong> connect GitHub in Settings to skip this step forever.',
+        '</p>',
+        '<button id="_dlClose" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer">Got it</button>',
+      '</div>'
+    ].join('');
+    document.body.appendChild(modal);
+    document.getElementById('_dlClose').onclick = function() { modal.remove(); };
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+  }
+
+    // Expose reset API for openArticleModal
   window._artImgZone = {
     showPreview: setPreview,
     clearPreview: clearPreview,
@@ -2740,6 +2855,7 @@ function exportCSV(filename, headers, rows) {
 document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
   bindArticlesPanel();
+  bindGhSettings();
 
   // Refresh all notification badges on load
   setTimeout(() => {

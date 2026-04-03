@@ -3,501 +3,1245 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="About Aloha Mass Productions — the people and mission behind Pikoverse, AMP, Root Stall, Ikeverse, and Nalu Ledger Forensics.">
-  <meta name="theme-color" content="#5B9A68">
-  <title>About | Aloha Mass Productions</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="no-referrer">
+  <title>AMP Admin — Aloha Mass Productions</title>
 
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --gold:       #c9a84c;
-      --gold-light: #f0c96a;
-      --green:      #4caf7a;
-      --blue:       #54d1ff;
-      --bg:         #0b0d14;
-      --bg2:        #111520;
-      --text:       rgba(255,255,255,.88);
-      --muted:      rgba(255,255,255,.45);
-      --border:     rgba(201,168,76,.12);
-      --header-h:   72px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    a { color: var(--gold); text-decoration: none; transition: color .2s; }
-    a:hover { color: var(--gold-light); }
-
-    /* ── NAV ── */
-    .about-nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--header-h);
-      background: rgba(6,8,16,.96);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      padding: 0 32px;
-      gap: 24px;
-    }
-    .about-nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; flex-shrink: 0;
-    }
-    .about-nav-logo-img {
-      width: 44px; height: 44px; border-radius: 12px;
-      object-fit: cover;
-      border: 1px solid rgba(201,168,76,.3);
-      box-shadow: 0 0 14px rgba(201,168,76,.1);
-    }
-    .about-nav-brand { font-size: 15px; font-weight: 700; color: #fff; }
-    .about-nav-sub { font-size: 10px; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; }
-    .about-nav-links {
-      margin-left: auto;
-      display: flex; gap: 28px;
-      list-style: none;
-    }
-    .about-nav-links a {
-      font-size: 13px; font-weight: 600;
-      color: var(--muted);
-      transition: color .2s;
-    }
-    .about-nav-links a:hover { color: #fff; }
-
-    /* ── HERO ── */
-    .about-hero {
-      min-height: 520px;
-      padding: calc(var(--header-h) + 80px) 32px 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,168,76,.08) 0%, transparent 70%),
-        linear-gradient(180deg, #0b0d14 0%, #111520 100%);
-    }
-    .about-hero::after {
-      content: '';
-      position: absolute;
-      left: 50%; bottom: 0;
-      transform: translateX(-50%);
-      width: min(72%, 860px); height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,.8), transparent);
-      opacity: .7;
-    }
-    .about-hero-inner { max-width: 760px; position: relative; z-index: 1; }
-    .about-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 16px; border-radius: 999px;
-      background: rgba(201,168,76,.08);
-      border: 1px solid rgba(201,168,76,.18);
-      font-size: 11px; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 20px;
-    }
-    .about-hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.4rem, 6vw, 4.2rem);
-      font-weight: 700; line-height: 1.1;
-      color: #fff; margin-bottom: 20px;
-    }
-    .about-hero h1 span { color: var(--gold-light); }
-    .about-hero p {
-      font-size: 16px; color: rgba(255,255,255,.7);
-      line-height: 1.8; max-width: 640px; margin: 0 auto;
-    }
-
-    /* ── SECTION WRAPPER ── */
-    .about-section {
-      padding: 100px 32px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .about-section + .about-section {
-      border-top: 1px solid rgba(255,255,255,.05);
-    }
-    .about-section-label {
-      font-size: 11px; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 12px; display: block;
-    }
-    .about-section h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 700; color: #fff;
-      margin-bottom: 20px; line-height: 1.2;
-    }
-    .about-section h2::after {
-      content: '';
-      display: block; width: 80px; height: 3px;
-      margin-top: 14px;
-      background: linear-gradient(90deg, var(--gold), transparent);
-      border-radius: 999px;
-    }
-    .about-section p {
-      font-size: 15px; color: rgba(255,255,255,.72);
-      line-height: 1.85; max-width: 760px;
-      margin-bottom: 16px;
-    }
-    .about-section p:last-child { margin-bottom: 0; }
-    .about-section strong { color: var(--gold-light); font-weight: 700; }
-
-    /* ── MISSION GRID ── */
-    .about-mission-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 48px;
-    }
-    .about-mission-card {
-      background: rgba(255,255,255,.025);
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 16px;
-      padding: 28px;
-      transition: border-color .2s, transform .2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .about-mission-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      opacity: 0; transition: opacity .2s;
-    }
-    .about-mission-card:hover { border-color: rgba(201,168,76,.25); transform: translateY(-3px); }
-    .about-mission-card:hover::before { opacity: 1; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-    .about-mission-icon { font-size: 28px; margin-bottom: 14px; }
-    .about-mission-card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-    .about-mission-card p { font-size: 13px; color: var(--muted); line-height: 1.7; margin: 0; }
-
-    /* ── PLATFORM GRID ── */
-    .about-platforms {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-top: 40px;
-    }
-    .about-platform-card {
-      background: rgba(255,255,255,.03);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px;
-      display: flex; flex-direction: column; gap: 10px;
-      transition: border-color .2s, background .2s;
-    }
-    .about-platform-card:hover {
-      border-color: rgba(201,168,76,.3);
-      background: rgba(255,255,255,.05);
-    }
-    .about-platform-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.04);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-    .about-platform-icon img { width: 100%; height: 100%; object-fit: cover; }
-    .about-platform-name { font-size: 14px; font-weight: 700; color: #fff; }
-    .about-platform-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
-    .about-platform-status {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; padding: 3px 10px; border-radius: 20px;
-      width: fit-content; margin-top: 4px;
-    }
-    .status-live    { background: rgba(76,175,122,.12); color: var(--green); border: 1px solid rgba(76,175,122,.3); }
-    .status-beta    { background: rgba(84,209,255,.10); color: var(--blue);  border: 1px solid rgba(84,209,255,.3); }
-    .status-soon    { background: rgba(255,255,255,.05); color: var(--muted); border: 1px solid rgba(255,255,255,.1); }
-
-    /* ── VALUES ── */
-    .about-values {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px;
-      margin-top: 40px;
-    }
-    .about-value {
-      padding: 18px 20px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 12px;
-      transition: border-color .2s;
-    }
-    .about-value:hover { border-color: rgba(201,168,76,.2); }
-    .about-value-hawaiian {
-      font-size: 15px; font-weight: 700; color: var(--gold-light);
-      margin-bottom: 4px;
-    }
-    .about-value-english { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-
-    /* ── CONTACT CTA ── */
-    .about-cta {
-      padding: 100px 32px;
-      text-align: center;
-      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,.06) 0%, transparent 70%);
-      border-top: 1px solid rgba(255,255,255,.05);
-    }
-    .about-cta h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      color: #fff; margin-bottom: 16px;
-    }
-    .about-cta p { font-size: 15px; color: var(--muted); max-width: 540px; margin: 0 auto 32px; line-height: 1.8; }
-    .about-cta-btns { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
-    .about-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 24px; border-radius: 10px;
-      font-size: 13px; font-weight: 700;
-      letter-spacing: .03em; transition: all .2s;
-      text-decoration: none;
-    }
-    .about-btn-primary {
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: #07060e;
-      box-shadow: 0 4px 18px rgba(201,168,76,.25);
-    }
-    .about-btn-primary:hover { box-shadow: 0 8px 28px rgba(201,168,76,.4); transform: translateY(-2px); color: #07060e; }
-    .about-btn-outline {
-      border: 1px solid rgba(201,168,76,.3);
-      color: var(--gold-light);
-      background: rgba(201,168,76,.06);
-    }
-    .about-btn-outline:hover { background: rgba(201,168,76,.14); border-color: var(--gold); }
-
-    /* ── FOOTER ── */
-    .about-footer {
-      text-align: center;
-      padding: 28px 32px;
-      border-top: 1px solid rgba(255,255,255,.05);
-      font-size: 12px; color: var(--muted);
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .about-nav-links { display: none; }
-      .about-section { padding: 70px 20px; }
-      .about-hero { padding: calc(var(--header-h) + 50px) 20px 60px; }
-      .about-cta { padding: 70px 20px; }
-    }
-  </style>
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="about-nav">
-    <a href="index.html" class="about-nav-logo">
-      <img src="assets/AMP Tiki.jpg" alt="AMP" class="about-nav-logo-img">
-      <div>
-        <div class="about-nav-brand">Pikoverse</div>
-        <div class="about-nav-sub">Ka Ulana ʻIke</div>
-      </div>
-    </a>
-    <ul class="about-nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="index.html#ecosystem">Platforms</a></li>
-      <li><a href="marketplace/marketplace.html">Marketplace</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
-    </ul>
-  </nav>
+  <!-- ══════════════════════════════════════════════
+       LOGIN SCREEN
+  ══════════════════════════════════════════════ -->
+  <div class="adm-login-screen" id="admLoginScreen">
+    <div class="adm-login-bg" aria-hidden="true">
+      <div class="adm-login-glow adm-login-glow--a"></div>
+      <div class="adm-login-glow adm-login-glow--b"></div>
+      <div class="adm-login-grid"></div>
+    </div>
 
-  <!-- HERO -->
-  <div class="about-hero">
-    <div class="about-hero-inner">
-      <div class="about-eyebrow"><i class="fas fa-seedling"></i> Built from Hawaiʻi</div>
-      <h1>About <span>Aloha Mass Productions</span></h1>
-      <p>
-        We are a Hawaiʻi-based creative and technology studio building platforms that honor culture,
-        preserve knowledge, and connect communities across the digital landscape.
+    <div class="adm-login-card">
+      <div class="adm-login-logo">
+        <span class="adm-login-logo-icon">🌺</span>
+        <div>
+          <div class="adm-login-logo-title">AMP Admin</div>
+          <div class="adm-login-logo-sub">Aloha Mass Productions</div>
+        </div>
+      </div>
+
+      <h1 class="adm-login-heading">Sign In</h1>
+
+      <div class="adm-alert adm-alert--error" id="admLoginError" hidden>
+        <i class="fas fa-circle-exclamation"></i>
+        <span id="admLoginErrorMsg"></span>
+      </div>
+
+      <form class="adm-login-form" id="admLoginForm" autocomplete="on" novalidate>
+        <div class="adm-field">
+          <label class="adm-label" for="admUsername">Username</label>
+          <div class="adm-input-wrap">
+            <i class="fas fa-user adm-input-icon"></i>
+            <input type="text" id="admUsername" class="adm-input"
+                   placeholder="admin" autocomplete="username" maxlength="64" required>
+          </div>
+        </div>
+
+        <div class="adm-field">
+          <label class="adm-label" for="admPassword">Password</label>
+          <div class="adm-input-wrap">
+            <i class="fas fa-lock adm-input-icon"></i>
+            <input type="password" id="admPassword" class="adm-input"
+                   placeholder="••••••••" autocomplete="current-password" maxlength="128" required>
+            <button type="button" class="adm-pw-toggle" id="admPwToggle" aria-label="Show password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="adm-btn adm-btn--primary adm-btn--full" id="admLoginBtn">
+          <i class="fas fa-arrow-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div class="adm-login-divider"><span>or</span></div>
+
+      <div id="g_id_onload"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID"
+           data-callback="handleGoogleLogin"
+           data-auto_prompt="false">
+      </div>
+      <button type="button" class="adm-btn adm-btn--google adm-btn--full" id="admGoogleBtn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <p class="adm-login-note">
+        <i class="fas fa-shield-halved"></i>
+        Restricted to authorised administrators only.
       </p>
     </div>
   </div>
 
-  <!-- MISSION -->
-  <section class="about-section">
-    <span class="about-section-label">Who We Are</span>
-    <h2>Our Mission</h2>
-    <p>
-      Aloha Mass Productions — AMP — exists at the intersection of <strong>culture, education,
-      technology, and creativity</strong>. We build with intention: every platform, every product,
-      every decision is rooted in the values of Aloha and a deep respect for indigenous knowledge,
-      ancestral wisdom, and the communities we serve.
-    </p>
-    <p>
-      Pikoverse is our umbrella ecosystem — <strong>Ka Ulana ʻIke</strong>, the Weaving of Knowledge.
-      It connects AMP, Ikeverse, Root Stall, Nalu Ledger Forensics, and the Historical Data Aggregator
-      under one shared vision: to ensure that culture is not left behind by the future, but carried
-      forward with care, purpose, and innovation.
-    </p>
+  <!-- ══════════════════════════════════════════════
+       ADMIN DASHBOARD
+  ══════════════════════════════════════════════ -->
+  <div class="adm-app" id="admApp" hidden>
 
-    <div class="about-mission-grid">
-      <div class="about-mission-card">
-        <div class="about-mission-icon">🌺</div>
-        <h3>Rooted in Aloha</h3>
-        <p>Every platform begins with values — kindness, unity, patience, and care for the land and each other.</p>
-      </div>
-      <div class="about-mission-card">
-        <div class="about-mission-icon">📚</div>
-        <h3>Preserving Knowledge</h3>
-        <p>We build tools that capture, organize, and protect cultural narratives, historical records, and ancestral wisdom.</p>
-      </div>
-      <div class="about-mission-card">
-        <div class="about-mission-icon">🔗</div>
-        <h3>Connecting Communities</h3>
-        <p>From digital farmers markets to blockchain forensics, we bridge the gap between people, land, and emerging technology.</p>
-      </div>
-      <div class="about-mission-card">
-        <div class="about-mission-icon">🚀</div>
-        <h3>Building the Future</h3>
-        <p>We meet emerging systems — AI, blockchain, decentralized networks — with indigenous knowledge and ethical design.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- PLATFORMS -->
-  <section class="about-section">
-    <span class="about-section-label">The Ecosystem</span>
-    <h2>Our Platforms</h2>
-    <p>
-      Each branch of Pikoverse serves a different role — but all are woven together by the same
-      intention: to preserve what matters, expand access to learning, and build meaningful systems
-      for the future.
-    </p>
-
-    <div class="about-platforms">
-      <div class="about-platform-card">
-        <div class="about-platform-icon"><img src="assets/AMP Tiki.jpg" alt="AMP"></div>
+    <!-- Sidebar -->
+    <aside class="adm-sidebar" id="admSidebar">
+      <div class="adm-sidebar-logo">
+        <span>🌺</span>
         <div>
-          <div class="about-platform-name">AMP Marketplace</div>
-          <div class="about-platform-desc">Cultural design, story-driven merchandise, and creative identity rooted in Aloha heritage.</div>
-          <span class="about-platform-status status-live">● Live</span>
+          <div class="adm-sidebar-title">AMP Admin</div>
+          <div class="adm-sidebar-sub">Dashboard</div>
         </div>
       </div>
-      <div class="about-platform-card">
-        <div class="about-platform-icon"><img src="assets/goldenp.jpg" alt="Ikeverse"></div>
-        <div>
-          <div class="about-platform-name">Ikeverse</div>
-          <div class="about-platform-desc">A living learning hub for indigenous cultures, ancient histories, and the evolving relationship between humanity and technology.</div>
-          <span class="about-platform-status status-beta">◉ Beta</span>
-        </div>
-      </div>
-      <div class="about-platform-card">
-        <div class="about-platform-icon"><img src="assets/rootstall_w.jpeg" alt="Root Stall"></div>
-        <div>
-          <div class="about-platform-name">Root Stall</div>
-          <div class="about-platform-desc">Hawaiʻi's first digital farmers market — connecting local farmers, vendors, and communities across the islands.</div>
-          <span class="about-platform-status status-live">● Live</span>
-        </div>
-      </div>
-      <div class="about-platform-card">
-        <div class="about-platform-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF"></div>
-        <div>
-          <div class="about-platform-name">Nalu Ledger Forensics</div>
-          <div class="about-platform-desc">Deep-inspection XRPL analytics for ledger monitoring, fraud detection, and investigative data gathering.</div>
-          <span class="about-platform-status status-beta">◉ Beta</span>
-        </div>
-      </div>
-      <div class="about-platform-card">
-        <div class="about-platform-icon"><img src="assets/platform-images/HDA.png" alt="HDA"></div>
-        <div>
-          <div class="about-platform-name">Historical Data Aggregator</div>
-          <div class="about-platform-desc">A preservation system for gathering and organizing historical knowledge across cultures, timelines, and overlooked narratives.</div>
-          <span class="about-platform-status status-soon">○ Coming Soon</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- VALUES -->
-  <section class="about-section">
-    <span class="about-section-label">How We Work</span>
-    <h2>Guided by Aloha</h2>
-    <p>
-      Aloha is not just a greeting — it is a relational, ethical, and spiritual way of being.
-      These values are not decorative. They are the operating principles behind every decision we make.
-    </p>
+      <nav class="adm-sidebar-nav" aria-label="Admin navigation">
 
-    <div class="about-values">
-      <div class="about-value">
-        <div class="about-value-hawaiian">Akahai</div>
-        <div class="about-value-english">Kindness</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">Lōkahi</div>
-        <div class="about-value-english">Unity</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">ʻOluʻolu</div>
-        <div class="about-value-english">Agreeable</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">Haʻahaʻa</div>
-        <div class="about-value-english">Humility</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">Ahonui</div>
-        <div class="about-value-english">Patience</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">Pono</div>
-        <div class="about-value-english">Righteousness</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">Mālama</div>
-        <div class="about-value-english">Care</div>
-      </div>
-      <div class="about-value">
-        <div class="about-value-hawaiian">ʻOiaʻiʻo</div>
-        <div class="about-value-english">Truth</div>
-      </div>
-    </div>
-  </section>
+        <div class="adm-nav-section-label">Store</div>
+        <button class="adm-nav-btn is-active" data-panel="products" type="button">
+          <i class="fas fa-box-open"></i> Products
+        </button>
+        <button class="adm-nav-btn" data-panel="orders" type="button">
+          <i class="fas fa-receipt"></i> Orders
+          <span class="adm-nav-badge" id="admOrdersBadge" hidden>0</span>
+        </button>
+        <button class="adm-nav-btn" data-panel="customers" type="button">
+          <i class="fas fa-users"></i> Customers
+        </button>
+        <button class="adm-nav-btn" data-panel="promos" type="button">
+          <i class="fas fa-tag"></i> Promo Codes
+        </button>
+        <button class="adm-nav-btn" data-panel="banner" type="button">
+          <i class="fas fa-bullhorn"></i> Banner
+        </button>
 
-  <!-- CTA -->
-  <div class="about-cta">
-    <h2>Weaving knowledge forward</h2>
-    <p>
-      Have a project, a question, an idea, or a story worth preserving?
-      We'd love to hear from you.
-    </p>
-    <div class="about-cta-btns">
-      <a href="index.html#contact" class="about-btn about-btn-primary">
-        <i class="fas fa-envelope"></i> Get in Touch
-      </a>
-      <a href="index.html#showcase" class="about-btn about-btn-outline">
-        <i class="fas fa-rocket"></i> View the Showcase
-      </a>
-      <a href="marketplace/marketplace.html" class="about-btn about-btn-outline">
-        <i class="fas fa-store"></i> Visit the Store
-      </a>
+        <div class="adm-nav-section-label">Hub</div>
+        <button class="adm-nav-btn" data-panel="articles" type="button">
+          <i class="fas fa-newspaper"></i> Chronicle Articles
+          <span class="adm-nav-badge adm-nav-badge--teal" id="admArticlesBadge" hidden>0</span>
+        </button>
+        <button class="adm-nav-btn" data-panel="suggestions" type="button">
+          <i class="fas fa-lightbulb"></i> Ideas &amp; Suggestions
+          <span class="adm-nav-badge adm-nav-badge--gold" id="admSuggBadge" hidden>0</span>
+        </button>
+        <button class="adm-nav-btn" data-panel="projects" type="button">
+          <i class="fas fa-rocket"></i> Showcase Projects
+          <span class="adm-nav-badge adm-nav-badge--blue" id="admProjBadge" hidden>0</span>
+        </button>
+
+        <div class="adm-nav-section-label">Reporting</div>
+        <button class="adm-nav-btn" data-panel="analytics" type="button">
+          <i class="fas fa-chart-line"></i> Analytics
+        </button>
+
+        <div class="adm-nav-section-label">Config</div>
+        <button class="adm-nav-btn" data-panel="settings" type="button">
+          <i class="fas fa-gear"></i> Settings
+        </button>
+
+        <div class="adm-nav-section-label">Platforms</div>
+        <a href="../../marketplace/marketplace.html" target="_blank" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-store"></i> AMP Store
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+        <a href="../../index.html" target="_blank" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-house"></i> Pikoverse Hub
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+        <a href="https://808cryptobeast.github.io/Ikeverse/" target="_blank" rel="noopener" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-book-open"></i> Ikeverse
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+        <a href="../../cosmic-weave.html" target="_blank" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-globe"></i> Cosmic Weave
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+        <a href="../../index.html#showcase" target="_blank" class="adm-nav-btn adm-nav-link">
+          <i class="fas fa-star"></i> Showcase
+          <i class="fas fa-arrow-up-right-from-square adm-nav-link-icon"></i>
+        </a>
+
+      </nav>
+
+      <div class="adm-sidebar-footer">
+        <div class="adm-sidebar-user">
+          <div class="adm-sidebar-avatar" id="admSidebarAvatar">A</div>
+          <div class="adm-sidebar-user-info">
+            <div class="adm-sidebar-user-name" id="admSidebarName">Admin</div>
+            <div class="adm-sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+        <button class="adm-logout-btn" id="admLogoutBtn" type="button" aria-label="Sign out">
+          <i class="fas fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="adm-main" id="admMain">
+
+      <header class="adm-topbar">
+        <button class="adm-sidebar-toggle" id="admSidebarToggle" type="button" aria-label="Toggle sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 class="adm-page-title" id="admPageTitle">Products</h2>
+        <div class="adm-topbar-right"></div>
+      </header>
+
+      <!-- PRODUCTS PANEL -->
+      <section class="adm-panel is-active" id="admPanelProducts">
+        <div class="adm-stats-row">
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon"><i class="fas fa-box-open"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admStatTotal">0</div>
+              <div class="adm-stat-label">Total Products</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--green"><i class="fas fa-circle-check"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admStatActive">0</div>
+              <div class="adm-stat-label">Active</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--red"><i class="fas fa-ban"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admStatSoldOut">0</div>
+              <div class="adm-stat-label">Sold Out</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-toolbar">
+          <div class="adm-search-wrap">
+            <i class="fas fa-search adm-search-icon"></i>
+            <input type="search" id="admProductSearch" class="adm-search"
+                   placeholder="Search products…" maxlength="80" autocomplete="off">
+          </div>
+          <button class="adm-btn adm-btn--primary" id="admAddProductBtn" type="button">
+            <i class="fas fa-plus"></i> Add Product
+          </button>
+        </div>
+
+        <!-- Bulk action bar (hidden until items selected) -->
+        <div class="adm-bulk-bar" id="admBulkBar" hidden>
+          <span class="adm-bulk-count"><strong id="admBulkCount">0</strong> selected</span>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkSoldOut" type="button">
+            <i class="fas fa-ban"></i> Mark Sold Out
+          </button>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkActive" type="button">
+            <i class="fas fa-circle-check"></i> Mark Active
+          </button>
+          <button class="adm-btn adm-btn--danger adm-btn--sm" id="admBulkDelete" type="button">
+            <i class="fas fa-trash"></i> Delete Selected
+          </button>
+          <button class="adm-btn adm-btn--outline adm-btn--sm" id="admBulkClear" type="button">
+            <i class="fas fa-xmark"></i> Clear
+          </button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table" id="admProductTable">
+            <thead>
+              <tr>
+                <th style="width:36px;padding:12px 8px 12px 16px">
+                  <input type="checkbox" id="admSelectAll" style="accent-color:var(--gold);width:15px;height:15px;cursor:pointer" title="Select all">
+                </th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admProductTbody"></tbody>
+          </table>
+          <div class="adm-empty" id="admProductEmpty" hidden>
+            <i class="fas fa-box-open"></i>
+            <p>No products yet. Add your first product.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDERS PANEL -->
+      <section class="adm-panel" id="admPanelOrders">
+        <div class="adm-panel-header">
+          <h3>Orders</h3>
+          <p class="adm-panel-sub">Orders submitted through the marketplace checkout. Pending confirmation means payment was sent but receipt not yet emailed.</p>
+        </div>
+        <div class="adm-toolbar">
+          <div class="adm-search-wrap">
+            <i class="fas fa-search adm-search-icon"></i>
+            <input type="search" id="admOrderSearch" class="adm-search" placeholder="Search orders…" maxlength="40" autocomplete="off">
+          </div>
+          <select id="admOrderFilter" class="adm-input adm-select" style="width:auto;min-width:160px">
+            <option value="all">All Orders</option>
+            <option value="pending_confirmation">Awaiting Confirmation</option>
+            <option value="confirmed">Confirmed</option>
+          </select>
+        </div>
+        <div class="adm-table-wrap">
+          <table class="adm-table" id="admOrdersTable">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admOrdersTbody"></tbody>
+          </table>
+          <div class="adm-empty" id="admOrdersEmpty" hidden>
+            <i class="fas fa-receipt"></i>
+            <p>No orders yet. They appear here when customers complete checkout.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS PANEL -->
+      <section class="adm-panel" id="admPanelCustomers">
+        <div class="adm-panel-header">
+          <h3>Customers</h3>
+          <p class="adm-panel-sub">Email subscribers, notify-me requests, and order history — all in one place.</p>
+        </div>
+        <div class="adm-stats-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(76,175,122,.15);color:#4caf7a"><i class="fas fa-envelope"></i></div>
+            <div><div class="adm-stat-val" id="admCustEmailCount">0</div><div class="adm-stat-label">Email Subscribers</div></div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(255,159,71,.12);color:#ff9f47"><i class="fas fa-bell"></i></div>
+            <div><div class="adm-stat-val" id="admCustNotifyCount">0</div><div class="adm-stat-label">Notify Me</div></div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--blue"><i class="fas fa-receipt"></i></div>
+            <div><div class="adm-stat-val" id="admCustOrderCount">0</div><div class="adm-stat-label">Total Orders</div></div>
+          </div>
+        </div>
+        <div id="admCustomersList" class="adm-sugg-list" style="margin-top:20px"></div>
+        <div class="adm-empty" id="admCustomersEmpty" hidden>
+          <i class="fas fa-users"></i>
+          <p>No customer data yet. Email subscribers and notify-me requests will appear here.</p>
+        </div>
+      </section>
+
+      <!-- SETTINGS PANEL -->
+      <section class="adm-panel" id="admPanelSettings">
+        <div class="adm-panel-header"><h3>Settings</h3></div>
+        <div class="adm-settings-grid">
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-lock"></i> Change Password</h4>
+            <form id="admChangePwForm" novalidate>
+              <div class="adm-field">
+                <label class="adm-label" for="admCurrPw">Current Password</label>
+                <input type="password" id="admCurrPw" class="adm-input" maxlength="128" autocomplete="current-password">
+              </div>
+              <div class="adm-field">
+                <label class="adm-label" for="admNewPw">New Password</label>
+                <input type="password" id="admNewPw" class="adm-input" maxlength="128" autocomplete="new-password">
+                <p class="adm-field-hint">Minimum 12 characters</p>
+              </div>
+              <div class="adm-field">
+                <label class="adm-label" for="admConfirmPw">Confirm New Password</label>
+                <input type="password" id="admConfirmPw" class="adm-input" maxlength="128" autocomplete="new-password">
+              </div>
+              <div class="adm-alert adm-alert--error" id="admPwError" hidden>
+                <i class="fas fa-circle-exclamation"></i><span id="admPwErrorMsg"></span>
+              </div>
+              <div class="adm-alert adm-alert--success" id="admPwSuccess" hidden>
+                <i class="fas fa-circle-check"></i> Password updated successfully.
+              </div>
+              <button type="submit" class="adm-btn adm-btn--primary">Update Password</button>
+            </form>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-credit-card"></i> Stripe Integration</h4>
+            <p class="adm-muted">To connect Stripe checkout:</p>
+            <ol class="adm-setup-steps">
+              <li>Create a Stripe account at <strong>stripe.com</strong></li>
+              <li>Add your <code>STRIPE_SECRET_KEY</code> to your server environment</li>
+              <li>Create a <code>/api/checkout</code> endpoint that creates a Stripe session</li>
+              <li>Add your webhook endpoint and verify the <code>stripe-signature</code> header</li>
+              <li>Set <code>STRIPE_WEBHOOK_SECRET</code> in your environment</li>
+            </ol>
+            <a href="https://stripe.com/docs/checkout/quickstart" target="_blank"
+               rel="noopener noreferrer" class="adm-btn adm-btn--outline">
+              <i class="fas fa-arrow-up-right-from-square"></i> Stripe Quickstart Guide
+            </a>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fab fa-google"></i> Google OAuth Setup</h4>
+            <p class="adm-muted">To enable Google login:</p>
+            <ol class="adm-setup-steps">
+              <li>Go to <strong>console.cloud.google.com</strong></li>
+              <li>Create a project → APIs &amp; Services → Credentials</li>
+              <li>Create an OAuth 2.0 Client ID (Web application)</li>
+              <li>Add your domain to Authorised JavaScript Origins</li>
+              <li>Replace <code>YOUR_GOOGLE_CLIENT_ID</code> in <code>admin.js</code></li>
+            </ol>
+            <div class="adm-field">
+              <label class="adm-label">Your Google Client ID</label>
+              <input type="text" id="admGoogleClientId" class="adm-input"
+                     placeholder="xxxx.apps.googleusercontent.com" maxlength="256">
+            </div>
+            <button type="button" class="adm-btn adm-btn--outline" id="admSaveGoogleId">
+              <i class="fas fa-floppy-disk"></i> Save Client ID
+            </button>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-credit-card"></i> Payment Methods</h4>
+            <p class="adm-muted">Set your payment handles. Leave blank to hide that option at checkout. Changes take effect immediately.</p>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-paypal" style="color:#003087"></i> PayPal.me username</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-at adm-input-icon"></i>
+                <input type="text" id="admPayPal" class="adm-input" placeholder="YourUsername" maxlength="64">
+              </div>
+              <p class="adm-field-hint">paypal.me/<strong>YourUsername</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-vimeo" style="color:#008CFF"></i> Venmo username</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-at adm-input-icon"></i>
+                <input type="text" id="admVenmo" class="adm-input" placeholder="YourVenmoHandle" maxlength="64">
+              </div>
+              <p class="adm-field-hint">venmo.com/<strong>YourVenmoHandle</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label">Cash App $cashtag</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-dollar-sign adm-input-icon"></i>
+                <input type="text" id="admCashApp" class="adm-input" placeholder="YourCashtag" maxlength="64">
+              </div>
+              <p class="adm-field-hint">cash.app/$<strong>YourCashtag</strong></p>
+            </div>
+            <div class="adm-field">
+              <label class="adm-label"><i class="fab fa-stripe-s" style="color:#6772e5"></i> Stripe Payment Link</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-link adm-input-icon"></i>
+                <input type="url" id="admStripe" class="adm-input" placeholder="https://buy.stripe.com/xxxx" maxlength="256">
+              </div>
+              <p class="adm-field-hint">From Stripe Dashboard → Payment Links</p>
+            </div>
+            <button type="button" class="adm-btn adm-btn--primary" id="admSavePayBtn">
+              <i class="fas fa-floppy-disk"></i> Save Payment Settings
+            </button>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-file-export"></i> Export Data</h4>
+            <p class="adm-muted">Download your store data as JSON — useful for backup or migrating to a real database.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button type="button" class="adm-btn adm-btn--outline" id="admExportBtn">
+                <i class="fas fa-download"></i> Export Products
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admExportAllBtn">
+                <i class="fas fa-database"></i> Export All Data
+              </button>
+            </div>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-bell"></i> Restock Notifications</h4>
+            <p class="adm-muted">Customers who clicked "Notify Me" on sold-out products. Click a product to draft a restock email.</p>
+            <div id="admNotifyList" class="adm-notify-list">
+              <p class="adm-muted" style="padding:8px 0">Loading…</p>
+            </div>
+            <button type="button" class="adm-btn adm-btn--outline" id="admNotifyExportBtn" style="margin-top:12px">
+              <i class="fas fa-download"></i> Export as CSV
+            </button>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-envelope"></i> Email Subscribers</h4>
+            <p class="adm-muted">Customers who signed up via the 10% off banner on the marketplace.</p>
+            <div id="admEmailSubList" class="adm-notify-list">
+              <p class="adm-muted" style="padding:8px 0">Loading…</p>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="adm-btn adm-btn--outline" id="admEmailSubExportBtn">
+                <i class="fas fa-download"></i> Export CSV
+              </button>
+              <a id="admEmailSubMailto" href="#" class="adm-btn adm-btn--primary" style="display:none">
+                <i class="fas fa-paper-plane"></i> Email All Subscribers
+              </a>
+            </div>
+          </div>
+
+
+          <div class="adm-settings-card">
+            <h4><i class="fab fa-github"></i> GitHub Auto-Publish</h4>
+            <p class="adm-field-hint" style="margin-bottom:14px;color:var(--text-muted);font-size:12px;line-height:1.6">
+              Connect to GitHub so "Publish to Site" commits articles directly to your repo — no manual file dragging.
+              <a href="https://github.com/settings/tokens/new?scopes=repo&description=Pikoverse+Admin" target="_blank" rel="noopener" style="color:var(--gold)">Generate a token →</a>
+            </p>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhOwner">GitHub Username</label>
+              <input type="text" id="admGhOwner" class="adm-input" placeholder="808cryptobeast" maxlength="60">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhRepo">Repository Name</label>
+              <input type="text" id="admGhRepo" class="adm-input" placeholder="pikoverse" maxlength="100">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhBranch">Branch</label>
+              <input type="text" id="admGhBranch" class="adm-input" placeholder="main" maxlength="60">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhToken">Personal Access Token</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-key adm-input-icon"></i>
+                <input type="password" id="admGhToken" class="adm-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" maxlength="200" autocomplete="off">
+              </div>
+              <p class="adm-field-hint">Needs <code>repo</code> scope. Stored only in this browser.</p>
+            </div>
+            <div class="adm-alert adm-alert--success" id="admGhSaveOk" hidden>
+              <i class="fas fa-circle-check"></i> GitHub connected. "Publish to Site" will now auto-commit.
+            </div>
+            <div style="display:flex;gap:8px">
+              <button type="button" class="adm-btn adm-btn--primary" id="admGhSaveBtn">
+                <i class="fas fa-plug"></i> Save Connection
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admGhTestBtn">
+                <i class="fas fa-circle-check"></i> Test
+              </button>
+              <button type="button" class="adm-btn adm-btn--ghost" id="admGhClearBtn" style="color:var(--danger);border-color:var(--danger);opacity:.7">
+                Clear
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ANALYTICS PANEL -->
+      <section class="adm-panel" id="admPanelAnalytics">
+        <div class="adm-panel-header">
+          <h3>Analytics</h3>
+          <p class="adm-panel-sub">Overview of your store performance. Revenue and orders populate once Stripe is connected.</p>
+        </div>
+        <div class="adm-stats-row adm-stats-row--wide">
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--purple"><i class="fas fa-dollar-sign"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalRevenue">$0.00</div>
+              <div class="adm-stat-label">Total Revenue</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--blue"><i class="fas fa-receipt"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalOrders">0</div>
+              <div class="adm-stat-label">Orders</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon"><i class="fas fa-box-open"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalProducts">0</div>
+              <div class="adm-stat-label">Products</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--green"><i class="fas fa-tag"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalPromos">0</div>
+              <div class="adm-stat-label">Active Promos</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--gold"><i class="fas fa-lightbulb"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalSuggestions">0</div>
+              <div class="adm-stat-label">Ideas &amp; Suggestions</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--blue"><i class="fas fa-rocket"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalProjects">0</div>
+              <div class="adm-stat-label">Community Projects</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(76,175,122,.15);color:#4caf7a"><i class="fas fa-envelope"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalEmails">0</div>
+              <div class="adm-stat-label">Email Subscribers</div>
+            </div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(255,159,71,.12);color:#ff9f47"><i class="fas fa-bell"></i></div>
+            <div>
+              <div class="adm-stat-val" id="admAnalNotify">0</div>
+              <div class="adm-stat-label">Notify Me Requests</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-analytics-row">
+          <div class="adm-analytics-card adm-analytics-card--wide">
+            <div class="adm-analytics-card-header">
+              <span>Revenue Over Time</span>
+              <span class="adm-muted">Requires Stripe connection</span>
+            </div>
+            <div class="adm-chart-placeholder">
+              <i class="fas fa-chart-area"></i>
+              <p>Connect Stripe to see revenue charts</p>
+              <a href="#" class="adm-link adm-switch-panel" data-panel="settings">Go to Settings →</a>
+            </div>
+          </div>
+          <div class="adm-analytics-card">
+            <div class="adm-analytics-card-header">
+              <span>Top Products</span>
+            </div>
+            <div id="admTopProducts" class="adm-top-products">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-analytics-row">
+          <div class="adm-analytics-card">
+            <div class="adm-analytics-card-header"><span>Inventory Status</span></div>
+            <div id="admInventoryStatus" class="adm-inventory-list">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+          <div class="adm-analytics-card">
+            <div class="adm-analytics-card-header"><span>Recent Activity</span><span class="adm-muted" style="font-size:11px">Ideas, suggestions &amp; projects</span></div>
+            <div id="admRecentSuggestions" class="adm-recent-suggestions">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROMO CODES PANEL -->
+      <section class="adm-panel" id="admPanelPromos">
+        <div class="adm-toolbar">
+          <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--gold-light);flex:1">Promo Codes</h3>
+          <button class="adm-btn adm-btn--primary" id="admAddPromoBtn" type="button">
+            <i class="fas fa-plus"></i> New Code
+          </button>
+        </div>
+        <div class="adm-table-wrap">
+          <table class="adm-table" id="admPromoTable">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Discount</th>
+                <th>Min Order</th>
+                <th>Uses</th>
+                <th>Expires</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admPromoTbody"></tbody>
+          </table>
+          <div class="adm-empty" id="admPromoEmpty" hidden>
+            <i class="fas fa-tag"></i>
+            <p>No promo codes yet. Create your first one.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- BANNER PANEL -->
+      <section class="adm-panel" id="admPanelBanner">
+        <div class="adm-panel-header">
+          <h3>Announcement Banner</h3>
+          <p class="adm-panel-sub">Display a banner at the top of the marketplace. Changes go live immediately on save.</p>
+        </div>
+        <div class="adm-settings-grid">
+          <div class="adm-settings-card adm-settings-card--wide">
+            <h4><i class="fas fa-eye"></i> Preview</h4>
+            <div id="admBannerPreview" class="adm-banner-preview adm-banner-preview--info">
+              <i class="fas fa-bullhorn"></i>
+              <span id="admBannerPreviewText">Your banner message will appear here.</span>
+              <button type="button" class="adm-banner-preview-close" tabindex="-1">×</button>
+            </div>
+          </div>
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-pencil"></i> Compose</h4>
+            <form id="admBannerForm" novalidate>
+              <div class="adm-field">
+                <label class="adm-label">Banner Message <span class="adm-required">*</span></label>
+                <input type="text" id="admBannerText" class="adm-input"
+                       placeholder="e.g. Free shipping this weekend on all orders!" maxlength="140">
+                <p class="adm-field-hint"><span id="admBannerCount">0</span>/140</p>
+              </div>
+              <div class="adm-field">
+                <label class="adm-label">Style</label>
+                <div class="adm-banner-styles">
+                  <label class="adm-banner-style-opt">
+                    <input type="radio" name="admBannerStyle" value="info" checked> 
+                    <span class="adm-style-swatch adm-style-swatch--info">Info</span>
+                  </label>
+                  <label class="adm-banner-style-opt">
+                    <input type="radio" name="admBannerStyle" value="promo">
+                    <span class="adm-style-swatch adm-style-swatch--promo">Promo</span>
+                  </label>
+                  <label class="adm-banner-style-opt">
+                    <input type="radio" name="admBannerStyle" value="warning">
+                    <span class="adm-style-swatch adm-style-swatch--warning">Warning</span>
+                  </label>
+                </div>
+              </div>
+              <div class="adm-field adm-field--row">
+                <label class="adm-toggle-label">
+                  <div class="adm-toggle-wrap">
+                    <input type="checkbox" id="admBannerActive" class="adm-toggle-input">
+                    <div class="adm-toggle"></div>
+                  </div>
+                  Show banner on store
+                </label>
+              </div>
+              <div class="adm-modal-footer" style="padding-top:16px;margin-top:8px">
+                <button type="button" class="adm-btn adm-btn--danger adm-btn--sm" id="admBannerClearBtn">
+                  <i class="fas fa-trash"></i> Clear
+                </button>
+                <button type="submit" class="adm-btn adm-btn--primary">
+                  <i class="fas fa-floppy-disk"></i> Save Banner
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ARTICLES PANEL -->
+      <section class="adm-panel" id="admPanelArticles">
+        <div class="adm-toolbar">
+          <div style="flex:1">
+            <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--gold-light);margin:0 0 4px">
+              Chronicle Articles
+            </h3>
+            <p style="font-size:11px;color:var(--text-muted);margin:0">
+              Curated reads — your Medium posts, news articles, culture &amp; tech stories. Shown on the Pikoverse hub.
+            </p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="adm-sugg-filter-wrap">
+              <button class="adm-sugg-filter is-active" data-art-filter="all" type="button">All</button>
+              <button class="adm-sugg-filter" data-art-filter="published" type="button">Published</button>
+              <button class="adm-sugg-filter" data-art-filter="draft" type="button">Drafts</button>
+              <button class="adm-sugg-filter" data-art-filter="pinned" type="button">
+                <i class="fas fa-thumbtack" style="font-size:10px"></i> Pinned
+              </button>
+            </div>
+            <button class="adm-btn adm-btn--primary" id="admAddArticleBtn" type="button">
+              <i class="fas fa-plus"></i> New Article
+            </button>
+            <button class="adm-btn adm-btn--outline" id="admPublishArticlesBtn" type="button" title="Generate embed code to make articles visible on all devices">
+              <i class="fas fa-globe"></i> Publish to Site
+            </button>
+          </div>
+        </div>
+        <div id="admArticleList" class="adm-sugg-list"></div>
+        <div class="adm-empty" id="admArticleEmpty" hidden>
+          <i class="fas fa-newspaper"></i>
+          <p>No articles yet. Add your first Medium post or news link.</p>
+        </div>
+      </section>
+
+      <!-- SUGGESTIONS PANEL -->
+      <section class="adm-panel" id="admPanelSuggestions">
+        <div class="adm-toolbar">
+          <div style="flex:1">
+            <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--gold-light);margin:0 0 4px">
+              Suggestions &amp; Hub Ideas
+            </h3>
+            <p style="font-size:11px;color:var(--text-muted);margin:0">
+              Combines store suggestions and ideas submitted from the Pikoverse hub.
+            </p>
+          </div>
+          <div class="adm-sugg-filter-wrap">
+            <button class="adm-sugg-filter is-active" data-filter="all" type="button">All</button>
+            <button class="adm-sugg-filter" data-filter="pending" type="button">
+              Pending <span class="adm-nav-badge" id="admSuggPendingCount" style="position:static;margin-left:4px">0</span>
+            </button>
+            <button class="adm-sugg-filter" data-filter="reviewed" type="button">Reviewed</button>
+          </div>
+        </div>
+        <div id="admSuggList" class="adm-sugg-list">
+          <!-- Injected by JS -->
+        </div>
+        <div class="adm-empty" id="admSuggEmpty" hidden>
+          <i class="fas fa-lightbulb"></i>
+          <p>No suggestions or ideas yet. They appear here when submitted from the store or the hub.</p>
+        </div>
+      </section>
+
+
+      <!-- PROJECTS PANEL -->
+      <section class="adm-panel" id="admPanelProjects">
+        <div class="adm-toolbar">
+          <div style="flex:1">
+            <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--gold-light);margin:0 0 4px">
+              Community Projects
+            </h3>
+            <p style="font-size:11px;color:var(--text-muted);margin:0">
+              Approve a project to add it to the Showcase on the hub. Each card shows a preview of how it will appear.
+            </p>
+          </div>
+          <div class="adm-sugg-filter-wrap">
+            <button class="adm-proj-filter is-active" data-filter="pending" type="button">
+              Pending <span class="adm-nav-badge" id="admProjPendingCount" style="position:static;margin-left:4px">0</span>
+            </button>
+            <button class="adm-proj-filter" data-filter="approved" type="button">
+              <i class="fas fa-circle-check" style="font-size:10px"></i> Live
+            </button>
+            <button class="adm-proj-filter" data-filter="dismissed" type="button">Dismissed</button>
+            <button class="adm-proj-filter" data-filter="all" type="button">All</button>
+          </div>
+        </div>
+        <div id="admProjList" class="adm-sugg-list"></div>
+        <div class="adm-empty" id="admProjEmpty" hidden>
+          <i class="fas fa-rocket"></i>
+          <p>No project submissions yet. They appear here when submitted from the hub.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- PRODUCT FORM MODAL -->
+  <div class="adm-modal-backdrop" id="admProductModalBackdrop" aria-hidden="true">
+    <div class="adm-modal" id="admProductModal" role="dialog"
+         aria-modal="true" aria-labelledby="admProductModalTitle">
+
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admProductModalTitle">Add Product</h3>
+        <button class="adm-modal-close" id="admProductModalClose" aria-label="Close" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form class="adm-modal-body" id="admProductForm" novalidate>
+        <input type="hidden" id="admProductId">
+
+        <div class="adm-form-grid">
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label">Product Image</label>
+            <div class="adm-img-upload" id="admImgUpload">
+              <img src="" alt="" id="admImgPreview" class="adm-img-preview" hidden>
+              <div class="adm-img-placeholder" id="admImgPlaceholder">
+                <i class="fas fa-image"></i>
+                <span>Click to upload or paste image URL below</span>
+              </div>
+              <input type="file" id="admImgFile" accept="image/*"
+                     class="adm-img-file" aria-label="Upload product image">
+            </div>
+            <div class="adm-input-wrap" style="margin-top:8px">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admImgUrl" class="adm-input"
+                     placeholder="Or paste: /assets/my-product.jpg" maxlength="512">
+            </div>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admProdName">
+              Product Name <span class="adm-required">*</span>
+            </label>
+            <input type="text" id="admProdName" class="adm-input"
+                   placeholder="e.g. AMP RYB T-Shirt" maxlength="120" required>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admProdCat">
+              Category <span class="adm-required">*</span>
+            </label>
+            <select id="admProdCat" class="adm-input adm-select" required>
+              <option value="">Select category…</option>
+              <option value="shirts">Shirts</option>
+              <option value="hats">Hats</option>
+              <option value="stickers">Stickers</option>
+              <option value="accessories">Accessories</option>
+            </select>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admProdPrice">
+              Price (USD) <span class="adm-required">*</span>
+            </label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-dollar-sign adm-input-icon"></i>
+              <input type="number" id="admProdPrice" class="adm-input"
+                     placeholder="35.00" min="0" step="0.01" max="9999" required>
+            </div>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admProdBadge">Badge</label>
+            <select id="admProdBadge" class="adm-input adm-select">
+              <option value="">None</option>
+              <option value="featured">Featured</option>
+              <option value="new">New</option>
+              <option value="sale">Sale</option>
+            </select>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdDesc">Description</label>
+            <textarea id="admProdDesc" class="adm-input adm-textarea"
+                      placeholder="Describe this product…" rows="3" maxlength="500"></textarea>
+            <p class="adm-field-hint"><span id="admDescCount">0</span>/500</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryTitle">
+              Story Title
+              <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0"> — cultural connection (optional)</span>
+            </label>
+            <input type="text" id="admProdStoryTitle" class="adm-input"
+                   placeholder="e.g. The Legend of Mokumanamana" maxlength="120">
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryExcerpt">Story Excerpt</label>
+            <textarea id="admProdStoryExcerpt" class="adm-input adm-textarea"
+                      placeholder="A short paragraph on the cultural story behind this design…"
+                      rows="3" maxlength="400"></textarea>
+            <p class="adm-field-hint"><span id="admStoryCount">0</span>/400</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryUrl">Ikeverse / Story Link URL</label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admProdStoryUrl" class="adm-input"
+                     placeholder="https://808cryptobeast.github.io/Ikeverse/..." maxlength="512">
+            </div>
+            <p class="adm-field-hint">Links to the Ikeverse article or external source for this design's story</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label">Sizes</label>
+            <div class="adm-sizes-wrap">
+              <label class="adm-checkbox"><input type="checkbox" value="XS"> XS</label>
+              <label class="adm-checkbox"><input type="checkbox" value="S"> S</label>
+              <label class="adm-checkbox"><input type="checkbox" value="M"> M</label>
+              <label class="adm-checkbox"><input type="checkbox" value="L"> L</label>
+              <label class="adm-checkbox"><input type="checkbox" value="XL"> XL</label>
+              <label class="adm-checkbox"><input type="checkbox" value="2XL"> 2XL</label>
+              <label class="adm-checkbox"><input type="checkbox" value="One Size"> One Size</label>
+            </div>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admProdFeatured" class="adm-toggle-input">
+                <div class="adm-toggle"></div>
+              </div>
+              Feature this product
+              <span class="adm-muted">(shows first in the grid)</span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="adm-alert adm-alert--error" id="admFormError" hidden>
+          <i class="fas fa-circle-exclamation"></i><span id="admFormErrorMsg"></span>
+        </div>
+
+        <div class="adm-modal-footer">
+          <button type="button" class="adm-btn adm-btn--outline" id="admProductCancelBtn">Cancel</button>
+          <button type="submit" class="adm-btn adm-btn--primary" id="admProductSaveBtn">
+            <i class="fas fa-floppy-disk"></i>
+            <span id="admProductSaveBtnLabel">Save Product</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="about-footer">
-    <p>&copy; 2026 Aloha Mass Productions / Pikoverse. Built from Hawaiʻi with respect, care, and future vision.</p>
-    <p style="margin-top:6px">
-      <a href="index.html">Home</a> &nbsp;·&nbsp;
-      <a href="marketplace/marketplace.html">Marketplace</a> &nbsp;·&nbsp;
-      <a href="index.html#ecosystem">Platforms</a> &nbsp;·&nbsp;
-      <a href="index.html#contact">Contact</a>
-    </p>
-  </footer>
+  <!-- ARTICLE FORM MODAL -->
+  <div class="adm-modal-backdrop" id="admArticleModalBackdrop" aria-hidden="true">
+    <div class="adm-modal" id="admArticleModal" role="dialog" aria-modal="true" aria-labelledby="admArticleModalTitle">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admArticleModalTitle">New Article</h3>
+        <button class="adm-modal-close" id="admArticleModalClose" aria-label="Close" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form class="adm-modal-body" id="admArticleForm" novalidate>
+        <input type="hidden" id="admArticleId">
+        <div class="adm-form-grid">
 
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtTitle">Title <span class="adm-required">*</span></label>
+            <input type="text" id="admArtTitle" class="adm-input"
+                   placeholder="e.g. The Rise of Indigenous Digital Economies" maxlength="160" required>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtUrl">Article URL <span class="adm-required">*</span></label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admArtUrl" class="adm-input"
+                     placeholder="https://medium.com/@you/your-article" maxlength="512" required>
+            </div>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admArtSource">Source / Publication <span class="adm-required">*</span></label>
+            <input type="text" id="admArtSource" class="adm-input"
+                   placeholder="e.g. Medium, CNN, Self-written" maxlength="80" required>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admArtCategory">Category</label>
+            <select id="admArtCategory" class="adm-input adm-select">
+              <option value="culture">Culture</option>
+              <option value="technology">Technology</option>
+              <option value="history">History</option>
+              <option value="aloha">Aloha</option>
+              <option value="crypto">Crypto / Web3</option>
+              <option value="environment">Environment</option>
+              <option value="community">Community</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label">Cover Image</label>
+
+            <!-- Drop zone -->
+            <div class="adm-art-img-zone" id="admArtImgZone">
+              <div class="adm-art-img-preview-wrap" id="admArtImgPreviewWrap" hidden>
+                <img id="admArtImgPreview" src="" alt="Cover preview" class="adm-art-img-preview">
+                <button type="button" class="adm-art-img-clear" id="admArtImgClear" aria-label="Remove image">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="adm-art-img-placeholder" id="admArtImgPlaceholder">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <span class="adm-art-img-main-text">Drag &amp; drop an image here</span>
+                <span class="adm-art-img-sub-text">or click to browse · paste a file or URL</span>
+              </div>
+              <!-- Hidden file input — triggered by clicking the zone -->
+              <input type="file" id="admArtImgFile" accept="image/*" class="adm-art-img-file" tabindex="-1">
+            </div>
+
+            <!-- URL input — paste a URL directly -->
+            <div class="adm-input-wrap" style="margin-top:8px">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admArtImage" class="adm-input"
+                     placeholder="Or paste an image URL: https://…" maxlength="512">
+            </div>
+            <p class="adm-field-hint">Accepts file upload, drag &amp; drop, clipboard paste, or a direct URL. Stored as base64 if uploaded.</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtExcerpt">Your Commentary <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0">(your take on this piece)</span></label>
+            <textarea id="admArtExcerpt" class="adm-input adm-textarea"
+                      placeholder="Why this matters to the Pikoverse… what you want readers to take away…"
+                      rows="3" maxlength="400"></textarea>
+            <p class="adm-field-hint"><span id="admArtExcerptCount">0</span>/400</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtTags">Tags <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0">(comma separated)</span></label>
+            <input type="text" id="admArtTags" class="adm-input"
+                   placeholder="e.g. Indigenous, AI, Blockchain, Hawai'i" maxlength="200">
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admArtPublished" class="adm-toggle-input" checked>
+                <div class="adm-toggle"></div>
+              </div>
+              Published (visible on hub)
+            </label>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admArtPinned" class="adm-toggle-input">
+                <div class="adm-toggle"></div>
+              </div>
+              Pin to top of Chronicle
+            </label>
+          </div>
+
+        </div>
+        <div class="adm-alert adm-alert--error" id="admArticleError" hidden>
+          <i class="fas fa-circle-exclamation"></i><span id="admArticleErrorMsg"></span>
+        </div>
+        <div class="adm-modal-footer">
+          <button type="button" class="adm-btn adm-btn--outline" id="admArticleCancelBtn">Cancel</button>
+          <button type="submit" class="adm-btn adm-btn--primary" id="admArticleSaveBtn">
+            <i class="fas fa-floppy-disk"></i>
+            <span id="admArticleSaveBtnLabel">Save Article</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROMO CODE MODAL -->
+  <div class="adm-modal-backdrop" id="admPromoModalBackdrop" aria-hidden="true">
+    <div class="adm-modal adm-modal--sm" role="dialog" aria-modal="true" aria-labelledby="admPromoModalTitle">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admPromoModalTitle">New Promo Code</h3>
+        <button class="adm-modal-close" id="admPromoModalClose" aria-label="Close" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form class="adm-modal-body" id="admPromoForm" novalidate>
+        <input type="hidden" id="admPromoId">
+        <div class="adm-form-grid">
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admPromoCode">Code <span class="adm-required">*</span></label>
+            <input type="text" id="admPromoCode" class="adm-input"
+                   placeholder="e.g. ALOHA20" maxlength="30"
+                   style="text-transform:uppercase" required>
+            <p class="adm-field-hint">Customers enter this at checkout. Letters and numbers only.</p>
+          </div>
+          <div class="adm-field">
+            <label class="adm-label" for="admPromoType">Discount Type <span class="adm-required">*</span></label>
+            <select id="admPromoType" class="adm-input adm-select" required>
+              <option value="percent">Percentage (%)</option>
+              <option value="fixed">Fixed Amount ($)</option>
+            </select>
+          </div>
+          <div class="adm-field">
+            <label class="adm-label" for="admPromoValue">Value <span class="adm-required">*</span></label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-percent adm-input-icon" id="admPromoValueIcon"></i>
+              <input type="number" id="admPromoValue" class="adm-input"
+                     placeholder="20" min="1" max="9999" step="1" required>
+            </div>
+          </div>
+          <div class="adm-field">
+            <label class="adm-label" for="admPromoMin">Min Order ($)</label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-dollar-sign adm-input-icon"></i>
+              <input type="number" id="admPromoMin" class="adm-input"
+                     placeholder="0.00" min="0" step="0.01">
+            </div>
+            <p class="adm-field-hint">Leave 0 for no minimum</p>
+          </div>
+          <div class="adm-field">
+            <label class="adm-label" for="admPromoMaxUses">Max Uses</label>
+            <input type="number" id="admPromoMaxUses" class="adm-input"
+                   placeholder="Unlimited" min="1" step="1">
+            <p class="adm-field-hint">Leave blank for unlimited</p>
+          </div>
+          <div class="adm-field">
+            <label class="adm-label" for="admPromoExpiry">Expiry Date</label>
+            <input type="date" id="admPromoExpiry" class="adm-input">
+            <p class="adm-field-hint">Leave blank for no expiry</p>
+          </div>
+          <div class="adm-field adm-field--full">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admPromoActive" class="adm-toggle-input" checked>
+                <div class="adm-toggle"></div>
+              </div>
+              Code is active
+            </label>
+          </div>
+        </div>
+        <div class="adm-alert adm-alert--error" id="admPromoError" hidden>
+          <i class="fas fa-circle-exclamation"></i><span id="admPromoErrorMsg"></span>
+        </div>
+        <div class="adm-modal-footer">
+          <button type="button" class="adm-btn adm-btn--outline" id="admPromoCancelBtn">Cancel</button>
+          <button type="submit" class="adm-btn adm-btn--primary">
+            <i class="fas fa-floppy-disk"></i>
+            <span id="admPromoSaveBtnLabel">Save Code</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUGGESTION REPLY MODAL -->
+  <div class="adm-modal-backdrop" id="admReplyModalBackdrop" aria-hidden="true">
+    <div class="adm-modal adm-modal--sm" role="dialog" aria-modal="true" aria-labelledby="admReplyModalTitle">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admReplyModalTitle">Reply to Suggestion</h3>
+        <button class="adm-modal-close" id="admReplyModalClose" aria-label="Close" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="adm-modal-body">
+        <input type="hidden" id="admReplySuggId">
+        <div class="adm-sugg-preview-card" id="admReplySuggPreview"></div>
+        <div class="adm-field" style="margin-top:16px">
+          <label class="adm-label">Your Reply</label>
+          <textarea id="admReplyText" class="adm-input adm-textarea"
+                    placeholder="Write a reply visible to the customer…"
+                    rows="4" maxlength="600"></textarea>
+          <p class="adm-field-hint"><span id="admReplyCount">0</span>/600</p>
+        </div>
+        <div class="adm-modal-footer">
+          <button type="button" class="adm-btn adm-btn--outline" id="admReplyCancelBtn">Cancel</button>
+          <button type="button" class="adm-btn adm-btn--primary" id="admReplySaveBtn">
+            <i class="fas fa-paper-plane"></i> Send Reply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="adm-modal-backdrop" id="admDeleteBackdrop" aria-hidden="true">
+    <div class="adm-modal adm-modal--sm" role="dialog" aria-modal="true"
+         aria-labelledby="admDeleteTitle">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admDeleteTitle">Remove Product</h3>
+        <button class="adm-modal-close" id="admDeleteClose" type="button" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="adm-modal-body">
+        <p>Are you sure you want to remove <strong id="admDeleteName"></strong>? This cannot be undone.</p>
+      </div>
+      <div class="adm-modal-footer">
+        <button type="button" class="adm-btn adm-btn--outline" id="admDeleteCancel">Cancel</button>
+        <button type="button" class="adm-btn adm-btn--danger" id="admDeleteConfirm">
+          <i class="fas fa-trash-can"></i> Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="adm-toast" id="admToast" role="status" aria-live="polite" aria-hidden="true"></div>
+
+  <!-- Google Identity Services (loads AFTER config is set in admin.js) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="admin.js"></script>
 </body>
 </html>
