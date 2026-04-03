@@ -736,36 +736,47 @@
       renderChronicle();
     });
 
-    // ── Dynamic fetch of _pikoArticles.js ────────────────────────────────
-    // Fetches the published articles file directly from the server.
-    // Works on any device without needing a script tag or localStorage.
-    // Relative URL resolves correctly on GitHub Pages.
+    // ── Fetch _pikoArticles.js from server ───────────────────────────────
+    // Loads published articles so ALL devices see them.
+    // NOTE: Browser always logs a 404 in console if file doesn't exist yet —
+    // that error is harmless and disappears once you click "Publish to Site"
+    // in Admin > Chronicle and commit the file.
     if (typeof fetch !== 'undefined') {
-      fetch('./js/_pikoArticles.js?_=' + Date.now(), { cache: 'no-store' })
-        .then(function(r) {
-          if (!r.ok) return null;
-          return r.text();
-        })
+      // Derive base URL from current page — handles both root sites and
+      // subdirectory sites (e.g. username.github.io/reponame/)
+      var _segments = window.location.pathname.split('/').filter(Boolean);
+      // On GitHub Pages project sites the first segment is the repo name.
+      // We want: origin + /reponame/js/_pikoArticles.js
+      // On root sites (username.github.io) there's no repo segment.
+      // Safest approach: walk up from current path until we hit the root.
+      var _base = window.location.origin;
+      // If pathname has segments (e.g. /pikoverse/ or /pikoverse/projects/admin/)
+      // keep only the first segment as the base path
+      if (_segments.length > 0) {
+        // Check if first segment looks like a repo name (not a folder like 'js', 'css', 'projects')
+        var _first = _segments[0];
+        if (!['js','css','projects','assets','images'].includes(_first)) {
+          _base = window.location.origin + '/' + _first;
+        }
+      }
+      var _artUrl = _base + '/js/_pikoArticles.js';
+
+      fetch(_artUrl, { cache: 'no-store' })
+        .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
           if (!text) return;
           try {
-            // Execute the file content in a safe way to set window._pikoArticles
-            var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*?\]);/);
-            if (match) {
-              var parsed = JSON.parse(match[1]);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                window._pikoArticles = parsed;
-                chronPage = 1;
-                renderChronicle();
-              }
+            var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*\])/);
+            if (!match) return;
+            var parsed = JSON.parse(match[1]);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              window._pikoArticles = parsed;
+              chronPage = 1;
+              renderChronicle();
             }
-          } catch(e) {
-            // File exists but couldn't parse — ignore
-          }
+          } catch(e) {}
         })
-        .catch(function() {
-          // File doesn't exist yet — that's fine, use localStorage only
-        });
+        .catch(function() {});
     }
   }
 

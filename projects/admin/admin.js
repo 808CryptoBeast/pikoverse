@@ -2275,6 +2275,47 @@ function openArticleModal(id = null) {
   setTimeout(() => document.getElementById('admArtTitle')?.focus(), 100);
 }
 
+// ── Check whether _pikoArticles.js is live on the server ─────────────────────
+function checkPublishStatus() {
+  var cfg = loadGhConfig();
+  var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
+  var fileUrl  = repoBase + '/js/_pikoArticles.js?v=' + Date.now();
+
+  console.log('[Check Status] Fetching:', fileUrl);
+  showToast('Checking server...');
+
+  fetch(fileUrl, { cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) {
+        if (r.status === 404) {
+          showToast('❌ File not found. Click "Publish to Site" then wait 30s for GitHub Pages to rebuild.');
+        } else {
+          showToast('⚠️ Server returned ' + r.status + '. Check your GitHub config in Settings.');
+        }
+        return null;
+      }
+      return r.text();
+    })
+    .then(function(text) {
+      if (!text) return;
+      try {
+        var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*\])/);
+        if (!match) { showToast('⚠️ File exists but looks empty or malformed. Try Publish to Site again.'); return; }
+        var articles = JSON.parse(match[1]);
+        if (!Array.isArray(articles) || articles.length === 0) {
+          showToast('⚠️ File is live but has 0 articles. Publish at least one article first.');
+        } else {
+          showToast('✅ ' + articles.length + ' article' + (articles.length === 1 ? '' : 's') + ' live on the server and visible on all devices.');
+        }
+      } catch(e) {
+        showToast('⚠️ File exists but could not be parsed. Try Publish to Site again.');
+      }
+    })
+    .catch(function() {
+      showToast('❌ Could not reach server. Check your internet connection.');
+    });
+}
+
 // ── "Publish to Site" — commits _pikoArticles.js directly to GitHub ─────────
 // If GitHub config is set in Settings, pushes via API (zero manual steps).
 // Falls back to file download if not configured.
@@ -2322,6 +2363,7 @@ function publishViaGitHub(cfg, fileContent) {
     'Content-Type':  'application/json'
   };
 
+  console.log('[Publish] Starting. URL:', apiBase, 'Branch:', cfg.branch);
   showToast('Publishing to GitHub...');
 
   // Step 1: get current file SHA (required to UPDATE existing file, skip for new)
@@ -2404,6 +2446,10 @@ function bindArticlesPanel() {
   // "Publish to Site" button
   const publishBtn = document.getElementById('admPublishArticlesBtn');
   if (publishBtn) publishBtn.addEventListener('click', function() { generateArticleEmbed(); });
+
+  // "Check Status" button
+  var checkStatusBtn = document.getElementById('admCheckPublishBtn');
+  if (checkStatusBtn) checkStatusBtn.addEventListener('click', function() { checkPublishStatus(); });
 
   // Filter buttons
   document.querySelectorAll('[data-art-filter]').forEach(btn => {
