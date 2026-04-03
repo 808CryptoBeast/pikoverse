@@ -715,7 +715,7 @@
   }
 
   function initChronicle() {
-    // Render immediately with whatever is already available (localStorage / script tag)
+    // Render immediately with whatever is already in localStorage
     renderChronicle();
 
     // Wire filter buttons
@@ -736,47 +736,27 @@
       renderChronicle();
     });
 
-    // ── Fetch _pikoArticles.js from server ───────────────────────────────
-    // Loads published articles so ALL devices see them.
-    // NOTE: Browser always logs a 404 in console if file doesn't exist yet —
-    // that error is harmless and disappears once you click "Publish to Site"
-    // in Admin > Chronicle and commit the file.
+    // ── Fetch published articles from server ─────────────────────────────
+    // _pikoArticles.js is a JS file committed to the repo via Admin > Chronicle > Publish to Site
+    // eval() is safe here — we wrote the file ourselves, it only sets window._pikoArticles
     if (typeof fetch !== 'undefined') {
-      // Derive base URL from current page — handles both root sites and
-      // subdirectory sites (e.g. username.github.io/reponame/)
-      var _segments = window.location.pathname.split('/').filter(Boolean);
-      // On GitHub Pages project sites the first segment is the repo name.
-      // We want: origin + /reponame/js/_pikoArticles.js
-      // On root sites (username.github.io) there's no repo segment.
-      // Safest approach: walk up from current path until we hit the root.
-      var _base = window.location.origin;
-      // If pathname has segments (e.g. /pikoverse/ or /pikoverse/projects/admin/)
-      // keep only the first segment as the base path
-      if (_segments.length > 0) {
-        // Check if first segment looks like a repo name (not a folder like 'js', 'css', 'projects')
-        var _first = _segments[0];
-        if (!['js','css','projects','assets','images'].includes(_first)) {
-          _base = window.location.origin + '/' + _first;
-        }
-      }
-      var _artUrl = _base + '/js/_pikoArticles.js';
-
-      fetch(_artUrl, { cache: 'no-store' })
+      var _path = '/pikoverse/js/_pikoArticles.js';
+      fetch(_path, { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
           if (!text) return;
           try {
-            var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*\])/);
-            if (!match) return;
-            var parsed = JSON.parse(match[1]);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              window._pikoArticles = parsed;
+            // eslint-disable-next-line no-eval
+            eval(text); // executes: window._pikoArticles = [...];
+            if (Array.isArray(window._pikoArticles) && window._pikoArticles.length > 0) {
               chronPage = 1;
               renderChronicle();
             }
-          } catch(e) {}
+          } catch(e) {
+            console.warn('[Chronicle] Could not parse _pikoArticles.js:', e);
+          }
         })
-        .catch(function() {});
+        .catch(function() {}); // 404 = file not committed yet, ignore silently
     }
   }
 
