@@ -2214,121 +2214,523 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AMP ECOSYSTEM CARD — Fix amp-slide-single to fill card properly
-   The .amp-slide-single wrapper needs to stretch to full card height
-   and content must not be clipped. Matches other ecosystem cards.
+   AMP ECOSYSTEM CARD — Fix so content displays like other cards
+   Root cause: .amp-slide-single has no height in base CSS so it
+   collapses. Fix: pin it absolutely to fill the card, then pin
+   the body to the bottom like all other ecosystem cards.
 ═══════════════════════════════════════════════════════════════ */
 
-/* Make the slide-single wrapper fill the card completely */
+/* Slide wrapper fills the entire card */
 .ecosystem-card.card-amp .amp-slide-single {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
   overflow: hidden !important;
 }
 
-/* Video fills the card */
-.ecosystem-card.card-amp .amp-slide-single .card-video {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
-}
+/* Video, overlay, glow are already absolute inside — they fill correctly */
 
-/* Overlay above video */
-.ecosystem-card.card-amp .amp-slide-single .card-video-overlay {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 1 !important;
-}
-
-/* Top glow above overlay */
-.ecosystem-card.card-amp .amp-slide-single .card-top-glow {
-  z-index: 2 !important;
-}
-
-/* Body content: sits at bottom like other cards */
+/* Body pinned to BOTTOM of card — exactly like other ecosystem cards */
 .ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
-  position: relative !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   z-index: 3 !important;
-  flex: 1 !important;
+  padding: 32px !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: flex-end !important;
-  /* Match padding of other ecosystem cards */
-  padding: 32px !important;
-  /* Never clip the link button */
+  align-items: flex-start !important;
   overflow: visible !important;
-  margin-top: auto !important;
 }
 
-/* Ensure all content in the body is visible */
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-icon,
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body h3,
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-subtitle,
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-description,
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-features,
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-link {
+/* Ensure all content inside body is above overlays */
+.ecosystem-card.card-amp .amp-slide-single .amp-slide-body > * {
   position: relative !important;
   z-index: 4 !important;
-  overflow: visible !important;
 }
 
-/* The link must always be fully visible and clickable */
+/* Link always fully visible and clickable */
 .ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-link {
   display: inline-flex !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
-  margin-top: 16px !important;
 }
 
-/* Mobile: ensure consistent height with other cards */
 @media (max-width: 768px) {
   .ecosystem-card.card-amp {
     min-height: 500px !important;
     position: relative !important;
   }
-
   .ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
     padding: 24px !important;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE NAV — z-index fix
-   .main-nav needs z-index high enough to show above the piko-dock
-   (z-index: 150) and any other fixed elements. The site-header
-   is z-index: 1000, so the nav should be 999 to sit just under it
-   but above everything else.
+   AMP INTRO CARDS — Mobile fixes (Foundation / Ecosystem / Mission)
+   These are the .amp-card elements in #amp-intro — separate from
+   the ecosystem section .card-amp above.
 ═══════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .main-nav {
-    z-index: 999 !important;
+@media (max-width: 900px) {
+  .amp-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
   }
 
-  /* Ensure the show state is fully visible */
+  .amp-card {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 380px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
+  }
+
+  .amp-card-video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .amp-card-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    background: linear-gradient(to bottom, rgba(5,8,18,.25) 0%, rgba(5,8,18,.72) 55%, rgba(5,8,18,.93) 100%) !important;
+    pointer-events: none !important;
+  }
+
+  .amp-card-border, .amp-card-sweep {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+  }
+
+  .amp-card-content {
+    position: relative !important;
+    z-index: 3 !important;
+    padding: 200px 20px 28px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .amp-card-content a,
+  .amp-card-content button {
+    position: relative !important;
+    z-index: 4 !important;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .amp-card-content { padding: 220px 20px 30px !important; }
+}
+
+@media (max-width: 420px) {
+  .amp-card { min-height: 340px !important; }
+  .amp-card-content { padding: 180px 16px 24px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE NAV + PIKO DOCK — definitive fix
+   
+   THE PROBLEM: .piko-dock is position:sticky; top:0 and is the
+   FIRST element in the DOM. The fixed site-header is ALSO at
+   top:0. On iOS Safari, sticky elements that occupy the same
+   screen area as fixed elements intercept touch events even when
+   they have a lower z-index — so the hamburger and logo get
+   blocked.
+   
+   THE FIX: On mobile, remove sticky behaviour from piko-dock
+   entirely (position:relative) AND add margin-top:80px so it
+   starts below the fixed header in the normal flow. This means
+   the dock will scroll with the page on mobile — acceptable
+   trade-off to keep the header fully interactive.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Header must win everything */
+  .site-header {
+    z-index: 2000 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Dock scrolls with the page — no longer sticky on mobile.
+     margin-top pushes its natural position BELOW the fixed header
+     so it never overlaps it, even before any scrolling. */
+  .piko-dock {
+    position: relative !important;
+    top: auto !important;
+    margin-top: 80px !important;
+    z-index: 50 !important;
+    pointer-events: auto;
+  }
+
+  /* Mobile nav drawer — shows below header when toggle fires */
+  .mobile-menu-toggle {
+    position: relative !important;
+    z-index: 2001 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .main-nav {
+    z-index: 1999 !important;
+    pointer-events: none;
+  }
+
   .main-nav.show {
-    z-index: 999 !important;
     transform: translateY(0) !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
-  }
-
-  /* Make toggle button always on top */
-  .mobile-menu-toggle {
-    z-index: 1001 !important;
-    position: relative !important;
-  }
-
-  /* Prevent dock from covering the nav */
-  .piko-dock {
-    z-index: 100 !important;
+    z-index: 1999 !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ARTICLE COVER IMAGE — Drop zone
+═══════════════════════════════════════════════════════════════ */
+.adm-art-img-zone {
+  position: relative;
+  width: 100%;
+  min-height: 140px;
+  border: 2px dashed rgba(255,255,255,.12);
+  border-radius: var(--radius, 8px);
+  background: rgba(255,255,255,.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .2s, background .2s;
+  user-select: none;
+}
+.adm-art-img-zone:hover,
+.adm-art-img-zone.is-dragging {
+  border-color: var(--gold, #f0c96a);
+  background: rgba(201,168,76,.06);
+}
+.adm-art-img-zone.is-dragging {
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(201,168,76,.18);
+}
+.adm-art-img-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.adm-art-img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.adm-art-img-placeholder i {
+  font-size: 28px;
+  color: rgba(255,255,255,.2);
+}
+.adm-art-img-main-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.45);
+}
+.adm-art-img-sub-text {
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+}
+.adm-art-img-preview-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.adm-art-img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.adm-art-img-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.7);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  transition: background .15s;
+}
+.adm-art-img-clear:hover { background: rgba(224,82,82,.8); }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHRONICLE + SUBMISSION CHECKER
+═══════════════════════════════════════════════════════════════ */
+══════
+   PIKOVERSE CHRONICLE
+═══════════════════════════════════════════════════════════════ */
+.piko-chronicle-section {
+  padding: 80px 0 60px;
+  background: linear-gradient(180deg, #07060e 0%, #0b0919 100%);
+  position: relative;
+  overflow: hidden;
+}
+.piko-chronicle-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,.3), transparent);
+}
+.piko-chronicle-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.piko-chronicle-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.piko-chronicle-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 800;
+  color: #fff;
+  margin: 6px 0 10px;
+  line-height: 1.15;
+}
+.piko-chronicle-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.5);
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+/* Filter buttons */
+.piko-chronicle-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+  padding-top: 8px;
+}
+.piko-chron-filter {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.5);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+}
+.piko-chron-filter:hover { border-color: rgba(201,168,76,.4); color: #f0c96a; }
+.piko-chron-filter.is-active {
+  background: rgba(201,168,76,.12);
+  border-color: rgba(201,168,76,.4);
+  color: #f0c96a;
+}
+
+/* Article grid */
+.piko-chronicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+/* Article card */
+.piko-chron-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.piko-chron-card:hover {
+  border-color: rgba(201,168,76,.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+}
+.piko-chron-card--pinned {
+  border-color: rgba(201,168,76,.25);
+  background: rgba(201,168,76,.04);
+}
+
+/* Card image */
+.piko-chron-card-img {
+  height: 160px;
+  background: rgba(255,255,255,.04);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.piko-chron-default-icon {
+  font-size: 48px;
+  opacity: .35;
+  filter: grayscale(1);
+}
+.piko-chron-pin-badge {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(201,168,76,.85);
+  color: #080b14;
+  letter-spacing: .04em;
+}
+
+/* Card body */
+.piko-chron-card-body {
+  padding: 16px 18px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.piko-chron-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.piko-chron-cat {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f0c96a;
+  letter-spacing: .04em;
+}
+.piko-chron-source {
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.piko-chron-date {
+  font-size: 10px;
+  color: rgba(255,255,255,.25);
+  margin-left: auto;
+}
+.piko-chron-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+  margin: 0;
+}
+.piko-chron-card:hover .piko-chron-title { color: #f0c96a; }
+.piko-chron-excerpt {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+  flex: 1;
+}
+.piko-chron-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.piko-chron-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.45);
+}
+.piko-chron-read {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(201,168,76,.65);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .15s;
+}
+.piko-chron-card:hover .piko-chron-read { color: #f0c96a; }
+
+/* Load more */
+.piko-chronicle-more { text-align: center; margin-top: 8px; }
+.piko-chron-more-btn {
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.5);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .18s;
+}
+.piko-chron-more-btn:hover { border-color: rgba(201,168,76,.4); color: #f0c96a; }
+
+/* Empty state */
+.piko-chronicle-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,.3);
+}
+.piko-chronicle-empty i { font-size: 40px; margin-bottom: 14px; display: block; opacity: .3; }

@@ -627,7 +627,33 @@
   var chronPage = 1;
 
   function loadArticles() {
-    try { return JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]'); } catch(e) { return []; }
+    // Merge embedded site articles (window._pikoArticles, set in index.html)
+    // with any locally added/edited articles in localStorage.
+    // This allows articles published by admin to be visible on ALL devices.
+    var embedded = [];
+    try {
+      if (window._pikoArticles && Array.isArray(window._pikoArticles)) {
+        embedded = window._pikoArticles;
+      }
+    } catch(e) {}
+
+    var local = [];
+    try { local = JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]'); } catch(e) {}
+
+    // Merge: local overrides embedded (by id). Local-only additions included.
+    if (!embedded.length) return local;
+    if (!local.length)    return embedded;
+
+    var merged = embedded.slice();
+    local.forEach(function(la) {
+      var existIdx = merged.findIndex(function(e) { return e.id === la.id; });
+      if (existIdx !== -1) {
+        merged[existIdx] = la; // local edit wins
+      } else {
+        merged.push(la); // local-only addition
+      }
+    });
+    return merged;
   }
 
   function renderChronicle() {

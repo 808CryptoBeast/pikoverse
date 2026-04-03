@@ -34,139 +34,6 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- ── AMP CARD MOBILE FIX ── 
-       Inline <style> beats any external CSS regardless of load order.
-       Fixes portrait clipping on iPhone — button fully visible, all 3
-       cards uniform height, video as full background. -->
-  <style>
-    /* Portrait phones and small screens — matches both orientations up to 900px */
-    @media (max-width: 900px) {
-      .amp-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 20px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-
-      .amp-card {
-        position: relative !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        /* KEY: let height grow with content */
-        height: auto !important;
-        min-height: 380px !important;
-        max-height: none !important;
-        /* KEY: never clip content or buttons */
-        overflow: visible !important;
-        border-radius: 16px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        flex: none !important;
-      }
-
-      /* Video fills card as background */
-      .amp-card-video {
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        z-index: 0 !important;
-        border-radius: 16px !important;
-        pointer-events: none !important;
-      }
-
-      /* Dark gradient overlay — above video */
-      .amp-card-overlay {
-        position: absolute !important;
-        inset: 0 !important;
-        z-index: 1 !important;
-        background: linear-gradient(
-          to bottom,
-          rgba(5,8,18,0.25) 0%,
-          rgba(5,8,18,0.72) 55%,
-          rgba(5,8,18,0.93) 100%
-        ) !important;
-        border-radius: 16px !important;
-        pointer-events: none !important;
-      }
-
-      .amp-card-border,
-      .amp-card-sweep {
-        position: absolute !important;
-        inset: 0 !important;
-        z-index: 2 !important;
-        pointer-events: none !important;
-        border-radius: 16px !important;
-      }
-
-      /* Content: sits on top, padded so video shows above text */
-      .amp-card-content {
-        position: relative !important;
-        z-index: 3 !important;
-        /* top padding = space for the video to show through */
-        padding: 200px 20px 28px !important;
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-end !important;
-        /* NEVER clip */
-        overflow: visible !important;
-        box-sizing: border-box !important;
-      }
-
-      .amp-card-content h3 {
-        font-size: 18px !important;
-        font-weight: 700 !important;
-        color: #fff !important;
-        margin: 0 0 10px !important;
-        line-height: 1.3 !important;
-      }
-
-      .amp-card-content p {
-        font-size: 13px !important;
-        line-height: 1.65 !important;
-        color: rgba(255,255,255,0.78) !important;
-        margin: 0 0 18px !important;
-      }
-
-      /* Buttons and links — always fully visible */
-      .amp-card-content a,
-      .amp-card-content button {
-        position: relative !important;
-        z-index: 4 !important;
-        display: inline-flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        overflow: visible !important;
-        max-width: 100% !important;
-      }
-    }
-
-    /* Portrait orientation specifically — extra room */
-    @media (max-width: 900px) and (orientation: portrait) {
-      .amp-card {
-        min-height: 400px !important;
-      }
-      .amp-card-content {
-        padding: 220px 20px 30px !important;
-      }
-    }
-
-    /* Very small phones */
-    @media (max-width: 420px) {
-      .amp-card {
-        min-height: 340px !important;
-      }
-      .amp-card-content {
-        padding: 180px 16px 24px !important;
-      }
-      .amp-card-content h3 { font-size: 16px !important; }
-      .amp-card-content p  { font-size: 12px !important; }
-    }
-  </style>
 </head>
 <body>
   <!-- ── PROJECT DOCK ── -->
@@ -812,7 +679,7 @@
         </div>
         <div class="footer-contact">
           <h3>Contact</h3>
-          <p><strong>Email:</strong> <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a></p>
+          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#9df4f3fbf2ddfcf1f2f5fcf0fceeeeedeff2f9e8fee9f4f2f3b3fef2f0"><span class="__cf_email__" data-cfemail="b0d9ded6dff0d1dcdfd8d1ddd1c3c3c0c2dfd4c5d3c4d9dfde9ed3dfdd">[email&#160;protected]</span></a></p>
           <p>Built from Hawaiʻi with cultural respect and future vision.</p>
           <div class="social-links">
             <a href="#" aria-label="Facebook"><i class="social-icon facebook"></i></a>
@@ -1043,7 +910,7 @@
       <span class="piko-pulse-dot"></span>
       Live Pulse
     </button>
-  </div><script>
+  </div><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   document.addEventListener("DOMContentLoaded", () => {
     // ── Pikoverse intro cards: play once, last card loops back to frame 0 then pauses ──
     const introCards = document.querySelectorAll("#amp-intro .amp-card");
@@ -1115,7 +982,6 @@
     }
   });
   </script>
-
   <script src="js/main.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/dictionary.js"></script>

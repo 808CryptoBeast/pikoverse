@@ -2208,6 +2208,10 @@ function bindArticlesPanel() {
   const addBtn = document.getElementById('admAddArticleBtn');
   if (addBtn) addBtn.addEventListener('click', () => openArticleModal());
 
+  // "Publish to Site" button
+  const publishBtn = document.getElementById('admPublishArticlesBtn');
+  if (publishBtn) publishBtn.addEventListener('click', generateArticleEmbed);
+
   // Filter buttons
   document.querySelectorAll('[data-art-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2417,6 +2421,72 @@ function wireArticleImageZone() {
       e.stopPropagation();
       clearPreview();
     });
+  }
+
+  // ── "Publish to Site" — generate embed snippet for index.html ──────────────
+  function generateArticleEmbed() {
+    var articles = loadArticles().filter(function(a) { return a.published; });
+    if (!articles.length) {
+      showToast('No published articles to embed. Publish at least one article first.');
+      return;
+    }
+    // Strip base64 images from embed (they're too large for HTML)
+    var clean = articles.map(function(a) {
+      return Object.assign({}, a, {
+        image: a.image && a.image.startsWith('data:') ? '' : (a.image || '')
+      });
+    });
+    var scriptOpen  = '<scr' + 'ipt>';
+    var scriptClose = '</scr' + 'ipt>';
+    var snippet = scriptOpen + '\n  window._pikoArticles = ' +
+      JSON.stringify(clean, null, 2) +
+      ';\n' + scriptClose;
+
+    // Show in a copyable modal
+    var modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML =
+      '<div style="background:#13111f;border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:24px;max-width:700px;width:100%;max-height:80vh;display:flex;flex-direction:column;gap:14px">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between">' +
+          '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a">Publish Articles to Site</h3>' +
+          '<button id="_embedClose" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer">✕</button>' +
+        '</div>' +
+        '<p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.6">' +
+          'Copy this snippet and paste it into <code style="color:#f0c96a">index.html</code> ' +
+          'just before the closing <code style="color:#f0c96a">&lt;/body&gt;</code> tag, ' +
+          'then commit the file. Articles will appear on all devices instantly.' +
+        '</p>' +
+        '<textarea id="_embedCode" style="flex:1;min-height:200px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px;color:#e8e0f0;font-family:Courier New,monospace;font-size:11px;resize:vertical;outline:none" readonly>' +
+          snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+        '</textarea>' +
+        '<div style="display:flex;gap:10px">' +
+          '<button id="_embedCopy" style="flex:1;padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer;font-size:13px">' +
+            '📋 Copy to Clipboard' +
+          '</button>' +
+          '<button id="_embedClose2" style="padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-size:13px">Close</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    // Real snippet in textarea (not escaped)
+    document.getElementById('_embedCode').value = snippet;
+
+    document.getElementById('_embedCopy').onclick = function() {
+      var ta = document.getElementById('_embedCode');
+      ta.select();
+      try {
+        navigator.clipboard.writeText(ta.value).then(function() {
+          showToast('✅ Snippet copied! Paste into index.html before </body>');
+        });
+      } catch(e) {
+        document.execCommand('copy');
+        showToast('✅ Snippet copied! Paste into index.html before </body>');
+      }
+    };
+    function closeEmbed() { modal.remove(); }
+    document.getElementById('_embedClose').onclick  = closeEmbed;
+    document.getElementById('_embedClose2').onclick = closeEmbed;
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeEmbed(); });
   }
 
   // Expose reset API for openArticleModal
