@@ -12,7 +12,7 @@
   <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/">
   <meta property="og:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
   <meta property="og:description" content="A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together through learning, preservation, and digital innovation.">
-  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP Tiki.jpg">
+  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
   <meta property="og:locale"      content="en_US">
   <meta property="og:site_name"   content="Pikoverse">
 
@@ -20,7 +20,7 @@
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="Pikoverse — Ka Ulana ʻIke">
   <meta name="twitter:description" content="Aloha, indigenous knowledge, culture, history, and emerging technologies woven together. Built from Hawaiʻi.">
-  <meta name="twitter:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP Tiki.jpg">
+  <meta name="twitter:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
@@ -41,7 +41,7 @@
 
       <span class="piko-dock-label">Pikoverse</span>
 
-      <a href="marketplace/marketplace.html" class="dock-node" data-status="live">
+      <a href="/marketplace/index.html" class="dock-node" data-status="live">
         <div class="dock-icon-wrap">
           <div class="dock-icon"><img src="assets/AMP Tiki.jpg" alt="AMP"></div>
           <div class="dock-status-ring"></div>
@@ -95,7 +95,7 @@
         </div>
       </a>
 
-      <a href="https://808cryptobeast.github.io/Ikeverse/" class="dock-node" data-status="beta">
+      <a href="https://808cryptobeast.github.io/NaluLF/" class="dock-node" data-status="beta">
         <div class="dock-icon-wrap">
           <div class="dock-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF"></div>
           <div class="dock-status-ring"></div>
@@ -125,7 +125,7 @@
 
       <div class="dock-divider"></div>
 
-      <a href="marketplace/admin.html" class="dock-node dock-node--admin" data-status="live">
+      <a href="projects/admin/admin.html" class="dock-node dock-node--admin" data-status="live">
         <div class="dock-icon-wrap">
           <div class="dock-icon" style="font-size:16px">⚙️</div>
           <div class="dock-status-ring"></div>
@@ -163,6 +163,7 @@
           <li><a href="#aloha-foundation">Aloha</a></li>
           <li><a href="#ecosystem">Platforms</a></li>
           <li><a href="#showcase">Showcase</a></li>
+              <li><a href="#chronicle">Chronicle</a></li>
           <li><a href="#contact" class="nav-highlight">Connect</a></li>
         </ul>
       </nav>
@@ -399,7 +400,7 @@
                 <li>Creative identity rooted in heritage</li>
                 <li>Apparel, goods, and future marketplace offerings</li>
               </ul>
-              <a href="marketplace/index.html" class="project-link amp-market-link">
+              <a href="marketplace/marketplace.html" class="project-link amp-market-link">
                 <i class="fas fa-store"></i> Visit AMP Marketplace →
               </a>
             </div>
@@ -473,7 +474,7 @@
             <li>Wallet, token, and transaction inspection</li>
             <li>Forensic workflows for investigators and builders</li>
           </ul>
-          <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link">Explore NaluLF →</a>
+          <a href="https://808cryptobeast.github.io/NaluLF/" class="project-link">Explore NaluLF →</a>
         </article>
 
       </div>
@@ -497,6 +498,28 @@
     </div>
   </section>
   <!-- ── COMMUNITY SHOWCASE ── -->
+  <!-- ── SUBMISSION CHECKER ── -->
+  <section class="piko-check-section" id="pikoCheckSection">
+    <div class="piko-check-inner">
+      <div class="piko-check-heading">
+        <i class="fas fa-search"></i>
+        <div>
+          <h3>Check Your Submission</h3>
+          <p>Got a submission ID from an idea or project you submitted? See if the AMP team has responded.</p>
+        </div>
+      </div>
+      <div class="piko-check-form">
+        <input type="text" id="pikoCheckSubInput" class="piko-check-input"
+               placeholder="e.g. idea-1717000000000 or post-1717000000000"
+               maxlength="80" autocomplete="off" spellcheck="false">
+        <button class="piko-check-btn" id="pikoCheckSubBtn" type="button">
+          <i class="fas fa-search"></i> Check Status
+        </button>
+      </div>
+      <div id="pikoCheckSubResult" class="piko-check-result" hidden></div>
+    </div>
+  </section>
+
   <section id="showcase" class="piko-showcase-section">
     <div class="piko-showcase-inner">
 
@@ -566,6 +589,49 @@
 
     </div>
   </section>
+  <!-- ══════════════════════════════════════════════════════
+       PIKOVERSE CHRONICLE
+  ══════════════════════════════════════════════════════ -->
+  <section id="chronicle" class="piko-chronicle-section">
+    <div class="piko-chronicle-inner">
+
+      <div class="piko-chronicle-header">
+        <div>
+          <div class="piko-showcase-eyebrow">Pikoverse Chronicle</div>
+          <h2 class="piko-chronicle-title">Reads &amp; Perspectives</h2>
+          <p class="piko-chronicle-sub">
+            Culture, technology, history, and the ideas shaping the Pikoverse worldview —
+            curated by the AMP team.
+          </p>
+        </div>
+        <div class="piko-chronicle-filters" id="pikoChronicleFilters">
+          <button class="piko-chron-filter is-active" data-chron-cat="all" type="button">All</button>
+          <button class="piko-chron-filter" data-chron-cat="culture" type="button">🌺 Culture</button>
+          <button class="piko-chron-filter" data-chron-cat="history" type="button">📜 History</button>
+          <button class="piko-chron-filter" data-chron-cat="technology" type="button">⚡ Technology</button>
+          <button class="piko-chron-filter" data-chron-cat="aloha" type="button">🤙 Aloha</button>
+          <button class="piko-chron-filter" data-chron-cat="crypto" type="button">🔗 Web3</button>
+          <button class="piko-chron-filter" data-chron-cat="environment" type="button">🌿 Environment</button>
+        </div>
+      </div>
+
+      <!-- Article grid — injected by hub.js -->
+      <div class="piko-chronicle-grid" id="pikoChronicleGrid"></div>
+
+      <div class="piko-chronicle-empty" id="pikoChronicleEmpty" hidden>
+        <i class="fas fa-newspaper"></i>
+        <p>No articles published yet. Check back soon.</p>
+      </div>
+
+      <div class="piko-chronicle-more" id="pikoChronicleMore" hidden>
+        <button class="piko-chron-more-btn" id="pikoChronicleMoreBtn" type="button">
+          Load More <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
   <!-- FINAL CTA -->
   <section id="connect" class="final-cta-section">
     <div class="container">
@@ -590,7 +656,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <a href="projects/admin/admin.html" class="footer-logo" aria-label="admin">
+          <a href="#intro" class="footer-logo" aria-label="Pikoverse home">
             <video class="footer-logo-video" autoplay muted playsinline preload="metadata">
               <source src="assets/intro/pikoverse-intro.mp4" type="video/mp4">
             </video>
@@ -612,7 +678,7 @@
         </div>
         <div class="footer-contact">
           <h3>Contact</h3>
-          <p><strong>Email:</strong> <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a></p>
+          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#b1d8dfd7def1d0ddded9d0dcd0c2c2c1c3ded5c4d2c5d8dedf9fd2dedc"><span class="__cf_email__" data-cfemail="f59c9b939ab594999a9d949894868685879a918096819c9a9bdb969a98">[email&#160;protected]</span></a></p>
           <p>Built from Hawaiʻi with cultural respect and future vision.</p>
           <div class="social-links">
             <a href="#" aria-label="Facebook"><i class="social-icon facebook"></i></a>
@@ -623,7 +689,7 @@
       </div>
       <div class="footer-bottom">
         <p>&copy; 2026 Pikoverse. All rights reserved.
-          <a href="marketplace/admin.html" class="footer-admin-access" aria-label="Admin" title="Admin">
+          <a href="projects/admin/admin.html" class="footer-admin-access" aria-label="Admin" title="Admin">
             <i class="fas fa-sliders"></i>
           </a>
         </p>
@@ -649,6 +715,9 @@
         </button>
         <button class="piko-modal-tab" data-tab="idea" type="button">
           <i class="fas fa-lightbulb"></i> Share an Idea
+        </button>
+        <button class="piko-modal-tab" data-tab="post" type="button">
+          <i class="fas fa-pen-to-square"></i> Community Post
         </button>
       </div>
 
@@ -760,7 +829,52 @@
             <i class="fas fa-circle-check"></i>
             <h4>Mahalo! 🌺</h4>
             <p>Your idea has been submitted. The AMP team reads every one.</p>
+            <div class="piko-modal-id-box" id="pikoIdeaIdBox" hidden>
+              <p class="piko-modal-id-label">Your Submission ID — save this to check for replies:</p>
+              <code class="piko-modal-id-code" id="pikoIdeaIdCode"></code>
+            </div>
             <button class="piko-modal-again" id="pikoIdeaAgain" type="button">Submit another</button>
+          </div>
+        </div>
+
+        <!-- COMMUNITY POST TAB -->
+        <div class="piko-tab-pane" id="pikoTabPost">
+          <p class="piko-modal-intro">
+            Share news, updates, or anything worth saying with the Pikoverse community.
+            Posts appear live in the Pulse feed.
+          </p>
+          <form class="piko-modal-form" id="pikoPostForm" novalidate>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostTitle">Post Title <span style="color:#e05252">*</span></label>
+              <input type="text" id="pikoPostTitle" class="piko-modal-input"
+                     placeholder="What's happening?" maxlength="100" required>
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostBody">Message <span style="color:#e05252">*</span></label>
+              <textarea id="pikoPostBody" class="piko-modal-input piko-modal-textarea"
+                        placeholder="Share the update, story, or news…" rows="4" maxlength="500" required></textarea>
+              <p class="piko-modal-hint"><span id="pikoPostCount">0</span>/500</p>
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostLink">Link <span class="piko-modal-optional">(optional)</span></label>
+              <input type="url" id="pikoPostLink" class="piko-modal-input"
+                     placeholder="https://…" maxlength="512">
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostName">Your Name <span class="piko-modal-optional">(optional)</span></label>
+              <input type="text" id="pikoPostName" class="piko-modal-input"
+                     placeholder="Community member" maxlength="60">
+            </div>
+            <p class="piko-modal-err" id="pikoPostErr" hidden></p>
+            <button type="submit" class="piko-modal-submit">
+              <i class="fas fa-paper-plane"></i> Post to Community
+            </button>
+          </form>
+          <div id="pikoPostSuccess" class="piko-modal-success" hidden>
+            <i class="fas fa-circle-check"></i>
+            <h4>Posted! 🌺</h4>
+            <p>Your post is now live in the Pulse feed.</p>
+            <button class="piko-modal-again" id="pikoPostAgain" type="button">Post again</button>
           </div>
         </div>
 
@@ -778,9 +892,14 @@
     <div class="piko-pulse-panel" id="pikoPulsePanel">
       <div class="piko-pulse-header">
         <span class="piko-pulse-title">Live Activity</span>
-        <button class="piko-pulse-refresh" id="pikoPulseRefresh" type="button" aria-label="Refresh">
-          <i class="fas fa-arrows-rotate"></i>
-        </button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="piko-pulse-post-btn" id="pikoPulsePostBtn" type="button" title="Post to community">
+            <i class="fas fa-pen-to-square"></i>
+          </button>
+          <button class="piko-pulse-refresh" id="pikoPulseRefresh" type="button" aria-label="Refresh">
+            <i class="fas fa-arrows-rotate"></i>
+          </button>
+        </div>
       </div>
       <div class="piko-pulse-list" id="pikoPulseList"></div>
       <div class="piko-pulse-empty" id="pikoPulseEmpty" hidden>No recent activity yet.</div>
@@ -867,7 +986,7 @@
   <script src="js/animations.js"></script>
   <script src="js/dictionary.js"></script>
   <script src="js/marketplace.js"></script>
-  <script src="js/knowledgeHub.js" defer></script>
-  <script src="js/hub.js" defer></script>
+  <script src="js/knowledgeHub.js"></script>
+  <script src="js/hub.js"></script>
 </body>
 </html>

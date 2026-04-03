@@ -119,6 +119,9 @@
           <i class="fas fa-receipt"></i> Orders
           <span class="adm-nav-badge" id="admOrdersBadge" hidden>0</span>
         </button>
+        <button class="adm-nav-btn" data-panel="customers" type="button">
+          <i class="fas fa-users"></i> Customers
+        </button>
         <button class="adm-nav-btn" data-panel="promos" type="button">
           <i class="fas fa-tag"></i> Promo Codes
         </button>
@@ -127,6 +130,10 @@
         </button>
 
         <div class="adm-nav-section-label">Hub</div>
+        <button class="adm-nav-btn" data-panel="articles" type="button">
+          <i class="fas fa-newspaper"></i> Chronicle Articles
+          <span class="adm-nav-badge adm-nav-badge--teal" id="admArticlesBadge" hidden>0</span>
+        </button>
         <button class="adm-nav-btn" data-panel="suggestions" type="button">
           <i class="fas fa-lightbulb"></i> Ideas &amp; Suggestions
           <span class="adm-nav-badge adm-nav-badge--gold" id="admSuggBadge" hidden>0</span>
@@ -277,14 +284,65 @@
       <section class="adm-panel" id="admPanelOrders">
         <div class="adm-panel-header">
           <h3>Orders</h3>
-          <p class="adm-panel-sub">
-            Orders will appear here once your Stripe webhook is connected.
-          </p>
+          <p class="adm-panel-sub">Orders submitted through the marketplace checkout. Pending confirmation means payment was sent but receipt not yet emailed.</p>
         </div>
-        <div class="adm-orders-placeholder">
-          <i class="fas fa-receipt"></i>
-          <p>No orders yet</p>
-          <p class="adm-muted">Connect Stripe to start receiving orders. See Settings for the setup guide.</p>
+        <div class="adm-toolbar">
+          <div class="adm-search-wrap">
+            <i class="fas fa-search adm-search-icon"></i>
+            <input type="search" id="admOrderSearch" class="adm-search" placeholder="Search orders…" maxlength="40" autocomplete="off">
+          </div>
+          <select id="admOrderFilter" class="adm-input adm-select" style="width:auto;min-width:160px">
+            <option value="all">All Orders</option>
+            <option value="pending_confirmation">Awaiting Confirmation</option>
+            <option value="confirmed">Confirmed</option>
+          </select>
+        </div>
+        <div class="adm-table-wrap">
+          <table class="adm-table" id="admOrdersTable">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admOrdersTbody"></tbody>
+          </table>
+          <div class="adm-empty" id="admOrdersEmpty" hidden>
+            <i class="fas fa-receipt"></i>
+            <p>No orders yet. They appear here when customers complete checkout.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS PANEL -->
+      <section class="adm-panel" id="admPanelCustomers">
+        <div class="adm-panel-header">
+          <h3>Customers</h3>
+          <p class="adm-panel-sub">Email subscribers, notify-me requests, and order history — all in one place.</p>
+        </div>
+        <div class="adm-stats-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(76,175,122,.15);color:#4caf7a"><i class="fas fa-envelope"></i></div>
+            <div><div class="adm-stat-val" id="admCustEmailCount">0</div><div class="adm-stat-label">Email Subscribers</div></div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon" style="background:rgba(255,159,71,.12);color:#ff9f47"><i class="fas fa-bell"></i></div>
+            <div><div class="adm-stat-val" id="admCustNotifyCount">0</div><div class="adm-stat-label">Notify Me</div></div>
+          </div>
+          <div class="adm-stat-card">
+            <div class="adm-stat-icon adm-stat-icon--blue"><i class="fas fa-receipt"></i></div>
+            <div><div class="adm-stat-val" id="admCustOrderCount">0</div><div class="adm-stat-label">Total Orders</div></div>
+          </div>
+        </div>
+        <div id="admCustomersList" class="adm-sugg-list" style="margin-top:20px"></div>
+        <div class="adm-empty" id="admCustomersEmpty" hidden>
+          <i class="fas fa-users"></i>
+          <p>No customer data yet. Email subscribers and notify-me requests will appear here.</p>
         </div>
       </section>
 
@@ -405,6 +463,33 @@
               <button type="button" class="adm-btn adm-btn--outline" id="admExportAllBtn">
                 <i class="fas fa-database"></i> Export All Data
               </button>
+            </div>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-bell"></i> Restock Notifications</h4>
+            <p class="adm-muted">Customers who clicked "Notify Me" on sold-out products. Click a product to draft a restock email.</p>
+            <div id="admNotifyList" class="adm-notify-list">
+              <p class="adm-muted" style="padding:8px 0">Loading…</p>
+            </div>
+            <button type="button" class="adm-btn adm-btn--outline" id="admNotifyExportBtn" style="margin-top:12px">
+              <i class="fas fa-download"></i> Export as CSV
+            </button>
+          </div>
+
+          <div class="adm-settings-card">
+            <h4><i class="fas fa-envelope"></i> Email Subscribers</h4>
+            <p class="adm-muted">Customers who signed up via the 10% off banner on the marketplace.</p>
+            <div id="admEmailSubList" class="adm-notify-list">
+              <p class="adm-muted" style="padding:8px 0">Loading…</p>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="adm-btn adm-btn--outline" id="admEmailSubExportBtn">
+                <i class="fas fa-download"></i> Export CSV
+              </button>
+              <a id="admEmailSubMailto" href="#" class="adm-btn adm-btn--primary" style="display:none">
+                <i class="fas fa-paper-plane"></i> Email All Subscribers
+              </a>
             </div>
           </div>
 
@@ -607,6 +692,38 @@
         </div>
       </section>
 
+      <!-- ARTICLES PANEL -->
+      <section class="adm-panel" id="admPanelArticles">
+        <div class="adm-toolbar">
+          <div style="flex:1">
+            <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--gold-light);margin:0 0 4px">
+              Chronicle Articles
+            </h3>
+            <p style="font-size:11px;color:var(--text-muted);margin:0">
+              Curated reads — your Medium posts, news articles, culture &amp; tech stories. Shown on the Pikoverse hub.
+            </p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="adm-sugg-filter-wrap">
+              <button class="adm-sugg-filter is-active" data-art-filter="all" type="button">All</button>
+              <button class="adm-sugg-filter" data-art-filter="published" type="button">Published</button>
+              <button class="adm-sugg-filter" data-art-filter="draft" type="button">Drafts</button>
+              <button class="adm-sugg-filter" data-art-filter="pinned" type="button">
+                <i class="fas fa-thumbtack" style="font-size:10px"></i> Pinned
+              </button>
+            </div>
+            <button class="adm-btn adm-btn--primary" id="admAddArticleBtn" type="button">
+              <i class="fas fa-plus"></i> New Article
+            </button>
+          </div>
+        </div>
+        <div id="admArticleList" class="adm-sugg-list"></div>
+        <div class="adm-empty" id="admArticleEmpty" hidden>
+          <i class="fas fa-newspaper"></i>
+          <p>No articles yet. Add your first Medium post or news link.</p>
+        </div>
+      </section>
+
       <!-- SUGGESTIONS PANEL -->
       <section class="adm-panel" id="admPanelSuggestions">
         <div class="adm-toolbar">
@@ -753,6 +870,33 @@
           </div>
 
           <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryTitle">
+              Story Title
+              <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0"> — cultural connection (optional)</span>
+            </label>
+            <input type="text" id="admProdStoryTitle" class="adm-input"
+                   placeholder="e.g. The Legend of Mokumanamana" maxlength="120">
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryExcerpt">Story Excerpt</label>
+            <textarea id="admProdStoryExcerpt" class="adm-input adm-textarea"
+                      placeholder="A short paragraph on the cultural story behind this design…"
+                      rows="3" maxlength="400"></textarea>
+            <p class="adm-field-hint"><span id="admStoryCount">0</span>/400</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admProdStoryUrl">Ikeverse / Story Link URL</label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admProdStoryUrl" class="adm-input"
+                     placeholder="https://808cryptobeast.github.io/Ikeverse/..." maxlength="512">
+            </div>
+            <p class="adm-field-hint">Links to the Ikeverse article or external source for this design's story</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
             <label class="adm-label">Sizes</label>
             <div class="adm-sizes-wrap">
               <label class="adm-checkbox"><input type="checkbox" value="XS"> XS</label>
@@ -787,6 +931,112 @@
           <button type="submit" class="adm-btn adm-btn--primary" id="admProductSaveBtn">
             <i class="fas fa-floppy-disk"></i>
             <span id="admProductSaveBtnLabel">Save Product</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ARTICLE FORM MODAL -->
+  <div class="adm-modal-backdrop" id="admArticleModalBackdrop" aria-hidden="true">
+    <div class="adm-modal" id="admArticleModal" role="dialog" aria-modal="true" aria-labelledby="admArticleModalTitle">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="admArticleModalTitle">New Article</h3>
+        <button class="adm-modal-close" id="admArticleModalClose" aria-label="Close" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form class="adm-modal-body" id="admArticleForm" novalidate>
+        <input type="hidden" id="admArticleId">
+        <div class="adm-form-grid">
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtTitle">Title <span class="adm-required">*</span></label>
+            <input type="text" id="admArtTitle" class="adm-input"
+                   placeholder="e.g. The Rise of Indigenous Digital Economies" maxlength="160" required>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtUrl">Article URL <span class="adm-required">*</span></label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-link adm-input-icon"></i>
+              <input type="url" id="admArtUrl" class="adm-input"
+                     placeholder="https://medium.com/@you/your-article" maxlength="512" required>
+            </div>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admArtSource">Source / Publication <span class="adm-required">*</span></label>
+            <input type="text" id="admArtSource" class="adm-input"
+                   placeholder="e.g. Medium, CNN, Self-written" maxlength="80" required>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-label" for="admArtCategory">Category</label>
+            <select id="admArtCategory" class="adm-input adm-select">
+              <option value="culture">Culture</option>
+              <option value="technology">Technology</option>
+              <option value="history">History</option>
+              <option value="aloha">Aloha</option>
+              <option value="crypto">Crypto / Web3</option>
+              <option value="environment">Environment</option>
+              <option value="community">Community</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtImage">Cover Image URL</label>
+            <div class="adm-input-wrap">
+              <i class="fas fa-image adm-input-icon"></i>
+              <input type="url" id="admArtImage" class="adm-input"
+                     placeholder="https://… (leave blank for category default)" maxlength="512">
+            </div>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtExcerpt">Your Commentary <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0">(your take on this piece)</span></label>
+            <textarea id="admArtExcerpt" class="adm-input adm-textarea"
+                      placeholder="Why this matters to the Pikoverse… what you want readers to take away…"
+                      rows="3" maxlength="400"></textarea>
+            <p class="adm-field-hint"><span id="admArtExcerptCount">0</span>/400</p>
+          </div>
+
+          <div class="adm-field adm-field--full">
+            <label class="adm-label" for="admArtTags">Tags <span class="adm-muted" style="font-weight:400;text-transform:none;letter-spacing:0">(comma separated)</span></label>
+            <input type="text" id="admArtTags" class="adm-input"
+                   placeholder="e.g. Indigenous, AI, Blockchain, Hawai'i" maxlength="200">
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admArtPublished" class="adm-toggle-input" checked>
+                <div class="adm-toggle"></div>
+              </div>
+              Published (visible on hub)
+            </label>
+          </div>
+
+          <div class="adm-field">
+            <label class="adm-toggle-label">
+              <div class="adm-toggle-wrap">
+                <input type="checkbox" id="admArtPinned" class="adm-toggle-input">
+                <div class="adm-toggle"></div>
+              </div>
+              Pin to top of Chronicle
+            </label>
+          </div>
+
+        </div>
+        <div class="adm-alert adm-alert--error" id="admArticleError" hidden>
+          <i class="fas fa-circle-exclamation"></i><span id="admArticleErrorMsg"></span>
+        </div>
+        <div class="adm-modal-footer">
+          <button type="button" class="adm-btn adm-btn--outline" id="admArticleCancelBtn">Cancel</button>
+          <button type="submit" class="adm-btn adm-btn--primary" id="admArticleSaveBtn">
+            <i class="fas fa-floppy-disk"></i>
+            <span id="admArticleSaveBtnLabel">Save Article</span>
           </button>
         </div>
       </form>

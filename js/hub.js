@@ -12,6 +12,9 @@
      STORAGE — same prefix convention as admin.js
   ───────────────────────────────────────────── */
   var IDEA_KEY       = 'amp_admin_ideas';        // community ideas
+  var POST_KEY       = 'amp_community_posts';    // direct community posts
+  var ARTICLES_KEY   = 'amp_articles_v1';        // curated articles (written by admin)
+  var SUBMISSIONS_KEY= 'amp_submissions_v1';     // user submission tracking by ID
   var SUGG_KEY       = 'amp_admin_suggestions';  // marketplace suggestions (read-only here)
   var PROJ_KEY       = 'amp_admin_projects_hub';   // community project submissions
 
@@ -24,6 +27,13 @@
 
   function saveIdeas(ideas) {
     try { localStorage.setItem(IDEA_KEY, JSON.stringify(ideas)); } catch (e) {}
+  }
+
+  function loadPosts() {
+    try { return JSON.parse(localStorage.getItem(POST_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function savePosts(posts) {
+    try { localStorage.setItem(POST_KEY, JSON.stringify(posts)); } catch(e) {}
   }
 
   function loadSuggestions() {
@@ -134,6 +144,21 @@
   function buildPulseItems() {
     var items = [];
 
+    // Community posts (newest first, highest priority)
+    loadPosts()
+      .filter(function (p) { return !p.hidden; })
+      .sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); })
+      .slice(0, 6)
+      .forEach(function (p) {
+        items.push({
+          type:  'community',
+          text:  p.title + (p.body ? ' — ' + p.body.slice(0, 80) + (p.body.length > 80 ? '…' : '') : ''),
+          name:  p.name || 'Community Member',
+          link:  p.link || null,
+          ts:    p.ts || 0,
+        });
+      });
+
     // Ideas (newest 5)
     loadIdeas()
       .filter(function (i) { return !i.dismissed; })
@@ -144,7 +169,7 @@
           type: 'idea',
           text: i.text,
           name: i.name || 'Anonymous',
-          ts: i.ts,
+          ts:   i.ts,
         });
       });
 
@@ -158,24 +183,27 @@
           type: 'suggestion',
           text: s.text,
           name: s.name || 'Anonymous',
-          ts: s.ts,
+          ts:   s.ts,
         });
       });
 
-    // Sort all by time
-    items.sort(function (a, b) { return b.ts - a.ts; });
-    return items.slice(0, 8);
+    // Sort all by time, most recent first
+    items.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+    return items.slice(0, 12);
   }
 
   function renderPulseItem(item) {
-    var icon = item.type === 'idea' ? '💡' : '🛍️';
-    var typeClass = 'piko-pulse-type--' + item.type;
+    var iconMap = { idea: '💡', suggestion: '🛍️', community: '🌺', platform: '🌐', project: '🚀', other: '💬' };
+    var icon = iconMap[item.type] || '💬';
+    var typeClass = 'piko-pulse-type--' + (item.type === 'community' ? 'other' : item.type);
     var label = item.type === 'idea' ? 'New idea' : 'Store suggestion';
 
     return '<div class="piko-pulse-item">' +
       '<div class="piko-pulse-type ' + typeClass + '">' + icon + '</div>' +
       '<div class="piko-pulse-content">' +
-        '<div class="piko-pulse-text">' + esc(item.text) + '</div>' +
+        '<div class="piko-pulse-text">' + esc(item.text) +
+          (item.link ? ' <a href="' + esc(item.link) + '" target="_blank" rel="noopener" class="piko-pulse-link" style="color:rgba(255,210,122,.7);font-size:11px;margin-left:4px"><i class="fas fa-arrow-up-right-from-square"></i></a>' : '') +
+          '</div>' +
         '<div class="piko-pulse-meta">' + label + ' · ' + timeAgo(item.ts) + '</div>' +
       '</div>' +
     '</div>';
@@ -411,6 +439,10 @@
         ideaForm.reset();
         ideaForm.hidden = true;
         if (ideaSuccess) ideaSuccess.hidden = false;
+        // Show submission ID for tracking
+        var idBox  = document.getElementById('pikoIdeaIdBox');
+        var idCode = document.getElementById('pikoIdeaIdCode');
+        if (idBox && idCode) { idCode.textContent = idea.id; idBox.hidden = false; }
         refreshPulse();
       });
     }
@@ -418,6 +450,74 @@
       ideaAgain.addEventListener('click', function() {
         if (ideaForm) ideaForm.hidden = false;
         if (ideaSuccess) ideaSuccess.hidden = true;
+      });
+    }
+
+    // Community Post form
+    var postForm    = document.getElementById('pikoPostForm');
+    var postSuccess = document.getElementById('pikoPostSuccess');
+    var postAgain   = document.getElementById('pikoPostAgain');
+    var postCount   = document.getElementById('pikoPostCount');
+
+    var postBodyEl = document.getElementById('pikoPostBody');
+    if (postBodyEl && postCount) {
+      postBodyEl.addEventListener('input', function() {
+        postCount.textContent = postBodyEl.value.length;
+      });
+    }
+
+    if (postForm) {
+      postForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var errEl = document.getElementById('pikoPostErr');
+        var title = (document.getElementById('pikoPostTitle')?.value || '').trim();
+        var body  = (document.getElementById('pikoPostBody')?.value  || '').trim();
+        if (!title) {
+          if (errEl) { errEl.textContent = 'Please add a title for your post.'; errEl.hidden = false; }
+          return;
+        }
+        if (!body) {
+          if (errEl) { errEl.textContent = 'Please write a message.'; errEl.hidden = false; }
+          return;
+        }
+        if (errEl) errEl.hidden = true;
+        var post = {
+          id:    'post-' + Date.now(),
+          title: title,
+          body:  body,
+          link:  (document.getElementById('pikoPostLink')?.value  || '').trim(),
+          name:  (document.getElementById('pikoPostName')?.value  || '').trim(),
+          ts:    Date.now(),
+          hidden: false,
+        };
+        var posts = loadPosts();
+        posts.unshift(post);
+        savePosts(posts);
+        postForm.reset();
+        if (postCount) postCount.textContent = '0';
+        postForm.hidden = true;
+        if (postSuccess) postSuccess.hidden = false;
+        refreshPulse();
+      });
+    }
+    if (postAgain) {
+      postAgain.addEventListener('click', function() {
+        if (postForm) { postForm.hidden = false; postForm.reset(); }
+        if (postSuccess) postSuccess.hidden = true;
+        if (postCount) postCount.textContent = '0';
+      });
+    }
+
+    // Wire pulse "Post" button to open modal on community post tab
+    var pulsePostBtn = document.getElementById('pikoPulsePostBtn');
+    if (pulsePostBtn) {
+      pulsePostBtn.addEventListener('click', function() {
+        openModal('post');
+        // Close pulse panel
+        var panel = document.getElementById('pikoPulsePanel');
+        var toggle = document.getElementById('pikoPulseToggle');
+        if (panel) panel.classList.remove('is-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
       });
     }
 
@@ -520,6 +620,162 @@
   }
 
   /* ─────────────────────────────────────────────
+     CHRONICLE — Article Feed
+  ───────────────────────────────────────────── */
+  var CHRON_PAGE_SIZE = 9;
+  var chronCat = 'all';
+  var chronPage = 1;
+
+  function loadArticles() {
+    try { return JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]'); } catch(e) { return []; }
+  }
+
+  function renderChronicle() {
+    var grid  = document.getElementById('pikoChronicleGrid');
+    var empty = document.getElementById('pikoChronicleEmpty');
+    var more  = document.getElementById('pikoChronicleMore');
+    if (!grid) return;
+
+    var all = loadArticles()
+      .filter(function(a) { return a.published; })
+      .sort(function(a, b) {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return (b.ts || 0) - (a.ts || 0);
+      });
+
+    var filtered = chronCat === 'all' ? all : all.filter(function(a) { return a.category === chronCat; });
+    var paged    = filtered.slice(0, chronPage * CHRON_PAGE_SIZE);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      if (empty) empty.hidden = false;
+      if (more)  more.hidden  = true;
+      return;
+    }
+    if (empty) empty.hidden = true;
+    if (more)  more.hidden  = paged.length >= filtered.length;
+
+    var catIcons  = { culture:'🌺', technology:'⚡', history:'📜', aloha:'🤙', crypto:'🔗', environment:'🌿', community:'🌐', other:'📖' };
+    var catLabels = { culture:'Culture', technology:'Technology', history:'History', aloha:'Aloha', crypto:'Web3', environment:'Environment', community:'Community', other:'Other' };
+
+    grid.innerHTML = paged.map(function(a) {
+      var icon  = catIcons[a.category]  || '📖';
+      var label = catLabels[a.category] || 'Other';
+      var tags  = (a.tags || '').split(',').map(function(t) { return t.trim(); }).filter(Boolean).slice(0, 3);
+      var imgStyle = a.image
+        ? 'background-image:url(' + JSON.stringify(a.image) + ');background-size:cover;background-position:center'
+        : '';
+      var date = a.ts ? new Date(a.ts).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
+
+      return '<a href="' + esc(a.url) + '" target="_blank" rel="noopener" class="piko-chron-card' + (a.pinned ? ' piko-chron-card--pinned' : '') + '">' +
+        '<div class="piko-chron-card-img" style="' + esc(imgStyle) + '">' +
+          (a.image ? '' : '<span class="piko-chron-default-icon">' + icon + '</span>') +
+          (a.pinned ? '<span class="piko-chron-pin-badge"><i class="fas fa-thumbtack"></i> Pinned</span>' : '') +
+        '</div>' +
+        '<div class="piko-chron-card-body">' +
+          '<div class="piko-chron-meta">' +
+            '<span class="piko-chron-cat">' + icon + ' ' + esc(label) + '</span>' +
+            '<span class="piko-chron-source">' + esc(a.source || '') + '</span>' +
+            (date ? '<span class="piko-chron-date">' + esc(date) + '</span>' : '') +
+          '</div>' +
+          '<h3 class="piko-chron-title">' + esc(a.title) + '</h3>' +
+          (a.excerpt ? '<p class="piko-chron-excerpt">"' + esc(a.excerpt) + '"</p>' : '') +
+          (tags.length ? '<div class="piko-chron-tags">' + tags.map(function(t) { return '<span class="piko-chron-tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+          '<div class="piko-chron-read">Read Article <i class="fas fa-arrow-right"></i></div>' +
+        '</div>' +
+      '</a>';
+    }).join('');
+  }
+
+  function initChronicle() {
+    renderChronicle();
+
+    // Filter buttons
+    document.querySelectorAll('[data-chron-cat]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-chron-cat]').forEach(function(b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        chronCat  = btn.getAttribute('data-chron-cat');
+        chronPage = 1;
+        renderChronicle();
+      });
+    });
+
+    // Load more
+    var moreBtn = document.getElementById('pikoChronicleMoreBtn');
+    if (moreBtn) moreBtn.addEventListener('click', function() {
+      chronPage++;
+      renderChronicle();
+    });
+  }
+
+  /* ─────────────────────────────────────────────
+     SUBMISSION TRACKING — check your submission
+  ───────────────────────────────────────────── */
+  function initSubmissionChecker() {
+    var checkBtn   = document.getElementById('pikoCheckSubBtn');
+    var checkInput = document.getElementById('pikoCheckSubInput');
+    var checkResult= document.getElementById('pikoCheckSubResult');
+    if (!checkBtn || !checkInput) return;
+
+    checkBtn.addEventListener('click', function() {
+      var rawId = (checkInput.value || '').trim();
+      if (!rawId) {
+        showCheckResult(checkResult, 'error', 'Please enter your submission ID.');
+        return;
+      }
+      // Search ideas
+      var ideas = loadIdeas();
+      var idea  = ideas.find(function(i) { return i.id === rawId; });
+
+      // Search projects
+      var projs = [];
+      try { projs = JSON.parse(localStorage.getItem('amp_admin_projects_hub') || '[]'); } catch(e) {}
+      var proj = projs.find(function(p) { return p.id === rawId; });
+
+      if (idea) {
+        var replyHtml = idea.reply
+          ? '<div class="piko-check-reply"><div class="piko-check-reply-label">💬 AMP Team Replied</div><div class="piko-check-reply-text">' + esc(idea.reply) + '</div></div>'
+          : '<p class="piko-check-pending">Your idea is being reviewed. Check back soon!</p>';
+        showCheckResult(checkResult, 'found',
+          '<div class="piko-check-card">' +
+          '<div class="piko-check-type">💡 Hub Idea</div>' +
+          '<div class="piko-check-text">' + esc(idea.text) + '</div>' +
+          '<div class="piko-check-status ' + (idea.status === 'reviewed' ? 'reviewed' : 'pending') + '">' +
+            (idea.status === 'reviewed' ? '✅ Reviewed' : '⏳ Pending') +
+          '</div>' + replyHtml + '</div>'
+        );
+      } else if (proj) {
+        var statusMap = { pending:'⏳ Pending Review', approved:'✅ Live on Showcase', dismissed:'❌ Not selected this round' };
+        showCheckResult(checkResult, 'found',
+          '<div class="piko-check-card">' +
+          '<div class="piko-check-type">🚀 Project Submission</div>' +
+          '<div class="piko-check-text"><strong>' + esc(proj.name) + '</strong><br>' + esc(proj.desc) + '</div>' +
+          '<div class="piko-check-status ' + (proj.status || 'pending') + '">' + (statusMap[proj.status] || '⏳ Pending Review') + '</div>' +
+          (proj.status === 'approved' ? '<p style="font-size:12px;color:#4caf7a;margin-top:8px">Your project is featured on the Showcase! 🎉</p>' : '') +
+          '</div>'
+        );
+      } else {
+        showCheckResult(checkResult, 'error', 'No submission found with that ID. Check that you copied it correctly.');
+      }
+    });
+
+    // Allow Enter key
+    checkInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); checkBtn.click(); }
+    });
+  }
+
+  function showCheckResult(el, type, html) {
+    if (!el) return;
+    el.className = 'piko-check-result piko-check-result--' + type;
+    el.innerHTML = html;
+    el.hidden = false;
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ─────────────────────────────────────────────
      BOOT
   ───────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
@@ -528,6 +784,8 @@
     renderShowcaseWall();
     initPulse();
     seedPulse();
+    initChronicle();
+    initSubmissionChecker();
 
     // Wire the empty showcase state button to open the modal
     var emptyBtn = document.getElementById('pikoOpenSubmitEmpty');

@@ -404,6 +404,22 @@
     // Ratings
     var ratingEl = document.getElementById('mpModalRating');
     if (ratingEl) ratingEl.innerHTML = renderStarsFull(productId);
+
+    // Story behind the design
+    var storyWrap   = document.getElementById('mpModalStory');
+    var storyLink   = document.getElementById('mpStoryLink');
+    var storyText   = document.getElementById('mpStoryText');
+    var storyExcerpt= document.getElementById('mpStoryExcerpt');
+    if (storyWrap) {
+      if (p.story || p.storyUrl) {
+        storyWrap.hidden = false;
+        if (storyLink) storyLink.href = p.storyUrl || '#';
+        if (storyText) storyText.textContent = p.storyTitle || 'Story Behind the Design';
+        if (storyExcerpt) storyExcerpt.textContent = p.story || '';
+      } else {
+        storyWrap.hidden = true;
+      }
+    }
     if (catEl)   catEl.textContent = p.category;
     if (qtyVal)  qtyVal.textContent = '1';
 
@@ -698,6 +714,103 @@
   var EMAIL_KEY = 'amp_email_list_v1';
   var EMAIL_DISMISSED_KEY = 'amp_email_dismissed';
 
+  /* ════════════════════════════════════════════════════════
+     ECOSYSTEM DOCK
+  ════════════════════════════════════════════════════════ */
+  function initEcoDock() {
+    var dock    = document.getElementById('mpEcoDock');
+    var toggle  = document.getElementById('mpEcoToggle');
+    var icon    = toggle ? toggle.querySelector('i') : null;
+    var DOCK_KEY = 'amp_eco_dock_open';
+    if (!dock) return;
+
+    // Restore last state
+    var isOpen = localStorage.getItem(DOCK_KEY) !== '0';
+    if (!isOpen) {
+      dock.classList.add('is-collapsed');
+      if (icon) icon.className = 'fas fa-chevron-up';
+    }
+
+    if (toggle) toggle.addEventListener('click', function() {
+      var collapsed = dock.classList.toggle('is-collapsed');
+      if (icon) icon.className = collapsed ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+      localStorage.setItem(DOCK_KEY, collapsed ? '0' : '1');
+    });
+  }
+
+  /* ════════════════════════════════════════════════════════
+     ORDER CONFIRMATION
+  ════════════════════════════════════════════════════════ */
+  var ORDERS_KEY = 'amp_orders_v1';
+
+  function generateOrderNum() {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var num = 'AMP-';
+    for (var i = 0; i < 6; i++) num += chars[Math.floor(Math.random() * chars.length)];
+    return num;
+  }
+
+  function saveOrder(cart, total, paymentMethod) {
+    var orders = [];
+    try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]'); } catch(e) {}
+    var order = {
+      id:        generateOrderNum(),
+      items:     cart.map(function(i) { return { name: i.name, size: i.size, qty: i.qty, price: i.price }; }),
+      total:     total,
+      method:    paymentMethod,
+      ts:        Date.now(),
+      status:    'pending_confirmation',
+    };
+    orders.unshift(order);
+    try { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch(e) {}
+    return order;
+  }
+
+  function showOrderConfirmation(order) {
+    // Hide the modal body content, show confirm screen
+    var body = document.querySelector('.mp-checkout-modal-body');
+    var confirm = document.getElementById('mpOrderConfirm');
+    var numEl   = document.getElementById('mpOrderNum');
+    var itemsEl = document.getElementById('mpOrderConfirmItems');
+    var doneBtn = document.getElementById('mpOrderConfirmDone');
+
+    if (!confirm) return;
+
+    if (body) body.style.display = 'none';
+    confirm.hidden = false;
+
+    if (numEl) numEl.textContent = order.id;
+
+    if (itemsEl) {
+      itemsEl.innerHTML = order.items.map(function(i) {
+        return '<div class="mp-confirm-item">' +
+          '<span>' + escapeHtml(i.name) + (i.size && i.size !== 'N/A' ? ' (' + escapeHtml(i.size) + ')' : '') + ' ×' + i.qty + '</span>' +
+          '<span>' + formatPrice(i.price * i.qty) + '</span>' +
+        '</div>';
+      }).join('') +
+      '<div class="mp-confirm-total"><span>Total</span><span>' + formatPrice(order.total) + '</span></div>';
+    }
+
+    if (doneBtn) {
+      doneBtn.onclick = function() {
+        // Clear cart and close
+        state.cart = [];
+        saveCart();
+        renderCart();
+        updateCartCount();
+        window._ampPromoSaving = 0;
+        // Reset modal
+        confirm.hidden = true;
+        if (body) body.style.display = '';
+        closeCheckoutModal();
+        showToast('<i class="fas fa-circle-check"></i> Order ' + order.id + ' saved!');
+      };
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════
+     EMAIL CAPTURE
+  ════════════════════════════════════════════════════════ */
   function initEmailCapture() {
     if (localStorage.getItem(EMAIL_DISMISSED_KEY)) return;
     var banner = document.getElementById('mpEmailCapture');
@@ -980,14 +1093,19 @@
         var clone = btn.cloneNode(true);
         btn.parentNode.replaceChild(clone, btn);
         clone.addEventListener('click', function(e) {
-          e.stopPropagation(); // never let click bubble to backdrop
+          e.stopPropagation();
           if (!clone.dataset.configured) {
             e.preventDefault();
             showToast('<i class="fas fa-gear"></i> Set up this payment method in Admin → Settings');
             return;
           }
-          // Real URL — open in new tab, keep modal open so user sees receipt instructions
-          // Don't close the modal — let user read the "email receipt" note
+          // Configured — record the order then show confirmation
+          var discount  = window._ampPromoSaving || 0;
+          var total     = Math.max(0, cartTotal() - discount);
+          var method    = clone.id.replace('mp','').toLowerCase();
+          var order     = saveOrder(state.cart.slice(), total, method);
+          // Let the link open (payment app) then show confirmation after short delay
+          setTimeout(function() { showOrderConfirmation(order); }, 800);
         });
       });
 
@@ -1155,6 +1273,7 @@
     updateCartCount();
     wireEvents();
     initEmailCapture();
+    initEcoDock();
   }
 
   if (document.readyState === 'loading') {

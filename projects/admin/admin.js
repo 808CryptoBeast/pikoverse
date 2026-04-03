@@ -383,6 +383,95 @@ const Auth = {
 };
 
 /* ─────────────────────────────────────────────
+   RATE LIMITER — brute-force login protection
+   5 attempts max, 15-minute lockout, persisted
+   in localStorage so it survives page refresh.
+───────────────────────────────────────────── */
+const RateLimit = {
+  KEY:          'amp_admin_login_attempts',
+  MAX_ATTEMPTS: 5,
+  LOCKOUT_MS:   15 * 60 * 1000,   // 15 minutes
+
+  _get() {
+    try { return JSON.parse(localStorage.getItem(this.KEY) || '{"count":0,"lockedUntil":0}'); }
+    catch { return { count: 0, lockedUntil: 0 }; }
+  },
+  _save(data) {
+    try { localStorage.setItem(this.KEY, JSON.stringify(data)); } catch {}
+  },
+
+  // Returns { locked: true, secondsLeft: N } or { locked: false }
+  check() {
+    const d = this._get();
+    if (d.lockedUntil && Date.now() < d.lockedUntil) {
+      return { locked: true, secondsLeft: Math.ceil((d.lockedUntil - Date.now()) / 1000) };
+    }
+    // Lockout expired — reset
+    if (d.lockedUntil && Date.now() >= d.lockedUntil) {
+      this._save({ count: 0, lockedUntil: 0 });
+    }
+    return { locked: false };
+  },
+
+  // Call on failed attempt. Returns { locked: true, secondsLeft } if now locked, else { locked: false, remaining }
+  fail() {
+    const d = this._get();
+    d.count = (d.count || 0) + 1;
+    if (d.count >= this.MAX_ATTEMPTS) {
+      d.lockedUntil = Date.now() + this.LOCKOUT_MS;
+      this._save(d);
+      return { locked: true, secondsLeft: Math.ceil(this.LOCKOUT_MS / 1000) };
+    }
+    this._save(d);
+    return { locked: false, remaining: this.MAX_ATTEMPTS - d.count };
+  },
+
+  // Call on successful login
+  reset() { this._save({ count: 0, lockedUntil: 0 }); },
+
+  // Human-readable countdown
+  formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m > 0 ? `${m}m ${s}s` : `${s}s`;
+  },
+};
+
+// Live countdown timer reference
+let _lockoutTimer = null;
+
+function startLockoutCountdown(secondsLeft) {
+  const btn = document.getElementById('admLoginBtn');
+  const form = document.getElementById('admLoginForm');
+  if (form) {
+    form.querySelectorAll('input').forEach(i => i.disabled = true);
+  }
+  if (btn) btn.disabled = true;
+
+  function tick() {
+    const status = RateLimit.check();
+    if (!status.locked) {
+      clearInterval(_lockoutTimer);
+      _lockoutTimer = null;
+      showLoginError(`Account unlocked. You may try again.`);
+      if (form) form.querySelectorAll('input').forEach(i => i.disabled = false);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Sign In';
+      }
+      return;
+    }
+    if (btn) {
+      btn.innerHTML = `<i class="fas fa-lock"></i> Locked — ${RateLimit.formatTime(status.secondsLeft)}`;
+    }
+    showLoginError(`Too many failed attempts. Try again in ${RateLimit.formatTime(status.secondsLeft)}.`);
+  }
+
+  tick();
+  _lockoutTimer = setInterval(tick, 1000);
+}
+
+/* ─────────────────────────────────────────────
    GOOGLE OAUTH CALLBACK
    Called by the Google Identity Services library
    TODO: SWAP — verify token server-side for
@@ -608,6 +697,12 @@ function openProductModal(productId = null) {
     document.getElementById('admProdBadge').value = p.badge || '';
     document.getElementById('admProdDesc').value  = p.description || '';
     document.getElementById('admDescCount').textContent = (p.description || '').length;
+    const storyTitleEl   = document.getElementById('admProdStoryTitle');
+    const storyExcerptEl = document.getElementById('admProdStoryExcerpt');
+    const storyUrlEl     = document.getElementById('admProdStoryUrl');
+    if (storyTitleEl)   storyTitleEl.value   = p.storyTitle   || '';
+    if (storyExcerptEl) storyExcerptEl.value = p.story        || '';
+    if (storyUrlEl)     storyUrlEl.value     = p.storyUrl     || '';
     document.getElementById('admProdFeatured').checked = !!p.featured;
     document.getElementById('admImgUrl').value = p.image || '';
     if (p.image) {
@@ -625,6 +720,12 @@ function openProductModal(productId = null) {
     document.getElementById('admProductId').value = '';
     document.querySelectorAll('.adm-sizes-wrap input[type=checkbox]')
       .forEach(cb => cb.checked = false);
+    const _st = document.getElementById('admProdStoryTitle');
+    const _se = document.getElementById('admProdStoryExcerpt');
+    const _su = document.getElementById('admProdStoryUrl');
+    if (_st) _st.value = '';
+    if (_se) _se.value = '';
+    if (_su) _su.value = '';
   }
 
   openModal('admProductModalBackdrop');
@@ -658,7 +759,11 @@ function getFormData() {
   const image = currentImageData || imgUrl || '';
   const price = Math.round(priceRaw * 100);
 
-  return { name, category, price, badge, description: desc, featured, image, sizes };
+  const storyTitle  = (document.getElementById('admProdStoryTitle')?.value  || '').trim();
+  const story       = (document.getElementById('admProdStoryExcerpt')?.value || '').trim();
+  const storyUrl    = (document.getElementById('admProdStoryUrl')?.value     || '').trim();
+
+  return { name, category, price, badge, description: desc, featured, image, sizes, storyTitle, story, storyUrl };
 }
 
 /* ─────────────────────────────────────────────
@@ -729,6 +834,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try { await Auth.init(); } catch (e) { console.warn('Auth.init failed:', e); }
 
+  // ── Check if currently locked out (persists across page refresh) ──
+  const lockStatus = RateLimit.check();
+  if (lockStatus.locked) {
+    startLockoutCountdown(lockStatus.secondsLeft);
+  }
+
   // If already logged in, go straight to dashboard
   const session = Auth.getSession();
   if (session) {
@@ -747,6 +858,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('admLoginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     hideLoginError();
+
+    // ── Rate limit check before attempting login ──
+    const lockCheck = RateLimit.check();
+    if (lockCheck.locked) {
+      startLockoutCountdown(lockCheck.secondsLeft);
+      return;
+    }
+
     const btn = document.getElementById('admLoginBtn');
     const resetBtn = () => {
       btn.disabled = false;
@@ -755,18 +874,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
+    // Artificial minimum delay — prevents timing attacks and feels more secure
+    const minDelay = new Promise(resolve => setTimeout(resolve, 600));
+
     try {
       const username = document.getElementById('admUsername').value.trim();
       const password = document.getElementById('admPassword').value;
 
-      const ok = await Auth.checkPassword(username, password);
+      const [ok] = await Promise.all([Auth.checkPassword(username, password), minDelay]);
+
       if (ok) {
+        RateLimit.reset();
         Auth.startSession({ name: username, method: 'password' });
         enterDashboard({ name: username });
         // Note: don't resetBtn here — login screen is hidden
       } else {
-        showLoginError('Incorrect username or password.');
-        resetBtn();
+        const result = RateLimit.fail();
+        if (result.locked) {
+          startLockoutCountdown(result.secondsLeft);
+        } else {
+          showLoginError(
+            `Incorrect username or password. ${result.remaining} attempt${result.remaining !== 1 ? 's' : ''} remaining.`
+          );
+          resetBtn();
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -1634,6 +1765,21 @@ function bindExtendedPanels() {
     if (document.getElementById('admReplyModalBackdrop').classList.contains('is-open'))
       closeModal('admReplyModalBackdrop');
   });
+
+  /* ── Orders search + filter ── */
+  const orderSearch = document.getElementById('admOrderSearch');
+  const orderFilter = document.getElementById('admOrderFilter');
+  if (orderSearch) orderSearch.addEventListener('input', () =>
+    renderOrders(orderSearch.value, orderFilter?.value));
+  if (orderFilter) orderFilter.addEventListener('change', () =>
+    renderOrders(orderSearch?.value, orderFilter.value));
+
+  /* ── Story excerpt char count ── */
+  const storyExcEl = document.getElementById('admProdStoryExcerpt');
+  if (storyExcEl) storyExcEl.addEventListener('input', e => {
+    const cnt = document.getElementById('admStoryCount');
+    if (cnt) cnt.textContent = e.target.value.length;
+  });
 }
 
 
@@ -1890,10 +2036,479 @@ window.setPanel = function(panelName) {
 })();
 
 /* ══════════════════════════════════════════
+   ORDERS PANEL
+══════════════════════════════════════════ */
+const ORDERS_KEY   = 'amp_orders_v1';
+const ARTICLES_KEY = 'amp_articles_v1';
+
+/* ══════════════════════════════════════════
+   ARTICLES — Chronicle
+══════════════════════════════════════════ */
+function loadArticles() {
+  try { return JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveArticles(articles) {
+  try { localStorage.setItem(ARTICLES_KEY, JSON.stringify(articles)); } catch(e) {}
+}
+
+let editingArticleId = null;
+let artFilter = 'all';
+
+const CAT_ICONS = {
+  culture:'🌺', technology:'⚡', history:'📜', aloha:'🤙',
+  crypto:'🔗', environment:'🌿', community:'🌐', other:'📖'
+};
+const CAT_COLORS = {
+  culture:'rgba(255,159,71,.15)', technology:'rgba(84,209,255,.12)',
+  history:'rgba(201,168,76,.15)', aloha:'rgba(255,105,180,.12)',
+  crypto:'rgba(138,82,200,.15)', environment:'rgba(76,175,122,.15)',
+  community:'rgba(84,209,255,.1)', other:'rgba(255,255,255,.05)'
+};
+
+function renderArticles() {
+  let articles = loadArticles();
+  const badge = document.getElementById('admArticlesBadge');
+  if (badge) { badge.hidden = articles.length === 0; badge.textContent = articles.length; }
+
+  const list  = document.getElementById('admArticleList');
+  const empty = document.getElementById('admArticleEmpty');
+  if (!list) return;
+
+  // Apply filter
+  let filtered = artFilter === 'all' ? articles
+    : artFilter === 'published' ? articles.filter(a => a.published && !a.pinned)
+    : artFilter === 'draft'     ? articles.filter(a => !a.published)
+    : artFilter === 'pinned'    ? articles.filter(a => a.pinned)
+    : articles;
+
+  // Sort: pinned first, then by date desc
+  filtered = [...filtered].sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return (b.ts || 0) - (a.ts || 0);
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+
+  list.innerHTML = filtered.map(a => {
+    const icon     = CAT_ICONS[a.category] || '📖';
+    const catColor = CAT_COLORS[a.category] || 'rgba(255,255,255,.05)';
+    const tags     = (a.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+    const tagHtml  = tags.map(t => `<span class="adm-proj-tech-tag">${esc(t)}</span>`).join('');
+    const date     = a.ts ? new Date(a.ts).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
+    const statusBadge = a.pinned
+      ? `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(201,168,76,.2);color:var(--gold)"><i class="fas fa-thumbtack"></i> Pinned</span>`
+      : a.published
+      ? `<span class="adm-status-chip adm-status-chip--active">Published</span>`
+      : `<span class="adm-status-chip adm-status-chip--soldout">Draft</span>`;
+
+    const imgHtml = a.image
+      ? `<img src="${esc(a.image)}" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--border-soft)">`
+      : `<div style="width:80px;height:60px;border-radius:8px;background:${catColor};border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${icon}</div>`;
+
+    return `<div class="adm-sugg-card" data-article-id="${esc(a.id)}">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        ${imgHtml}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <div>
+              <a href="${esc(a.url)}" target="_blank" rel="noopener"
+                 style="font-size:14px;font-weight:700;color:var(--text);text-decoration:none;display:block;margin-bottom:3px">
+                ${esc(a.title)} <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;opacity:.4"></i>
+              </a>
+              <div style="font-size:11px;color:var(--text-muted)">${icon} ${esc(a.source || '')} ${date ? '· ' + date : ''}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">${statusBadge}</div>
+          </div>
+          ${a.excerpt ? `<p style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:8px;font-style:italic">"${esc(a.excerpt)}"</p>` : ''}
+          ${tagHtml ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">${tagHtml}</div>` : ''}
+          <div class="adm-row-actions" style="margin-top:4px">
+            <button class="adm-icon-btn adm-icon-btn--edit" data-art-action="edit" data-id="${esc(a.id)}" title="Edit" type="button"><i class="fas fa-pen"></i></button>
+            <button class="adm-icon-btn" data-art-action="togglePin" data-id="${esc(a.id)}" title="${a.pinned ? 'Unpin' : 'Pin to top'}" type="button" style="color:${a.pinned ? 'var(--gold)' : 'var(--text-muted)'}"><i class="fas fa-thumbtack"></i></button>
+            <button class="adm-icon-btn" data-art-action="togglePublish" data-id="${esc(a.id)}" title="${a.published ? 'Unpublish' : 'Publish'}" type="button" style="color:${a.published ? 'var(--success)' : 'var(--text-muted)'}"><i class="fas ${a.published ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
+            <button class="adm-icon-btn adm-icon-btn--del" data-art-action="delete" data-id="${esc(a.id)}" title="Delete" type="button"><i class="fas fa-trash-can"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Wire article action buttons
+  list.querySelectorAll('[data-art-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const action = btn.getAttribute('data-art-action');
+      const articles = loadArticles();
+      const idx = articles.findIndex(a => a.id === id);
+      if (idx === -1) return;
+
+      if (action === 'edit') {
+        openArticleModal(id);
+      } else if (action === 'togglePin') {
+        articles[idx].pinned = !articles[idx].pinned;
+        saveArticles(articles);
+        showToast(articles[idx].pinned ? 'Article pinned to top.' : 'Article unpinned.');
+        renderArticles();
+      } else if (action === 'togglePublish') {
+        articles[idx].published = !articles[idx].published;
+        saveArticles(articles);
+        showToast(articles[idx].published ? 'Article published.' : 'Article saved as draft.');
+        renderArticles();
+      } else if (action === 'delete') {
+        if (!confirm('Delete "' + articles[idx].title + '"?')) return;
+        articles.splice(idx, 1);
+        saveArticles(articles);
+        showToast('Article deleted.');
+        renderArticles();
+      }
+    });
+  });
+}
+
+function openArticleModal(id = null) {
+  editingArticleId = id;
+  const form = document.getElementById('admArticleForm');
+  if (form) form.reset();
+  document.getElementById('admArticleError').hidden = true;
+  document.getElementById('admArtExcerptCount').textContent = '0';
+  document.getElementById('admArticleModalTitle').textContent = id ? 'Edit Article' : 'New Article';
+  document.getElementById('admArticleSaveBtnLabel').textContent = id ? 'Save Changes' : 'Save Article';
+  document.getElementById('admArtPublished').checked = true;
+  document.getElementById('admArtPinned').checked = false;
+
+  if (id) {
+    const a = loadArticles().find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('admArticleId').value     = a.id;
+    document.getElementById('admArtTitle').value      = a.title;
+    document.getElementById('admArtUrl').value        = a.url;
+    document.getElementById('admArtSource').value     = a.source || '';
+    document.getElementById('admArtCategory').value   = a.category || 'other';
+    document.getElementById('admArtImage').value      = a.image || '';
+    document.getElementById('admArtExcerpt').value    = a.excerpt || '';
+    document.getElementById('admArtExcerptCount').textContent = (a.excerpt || '').length;
+    document.getElementById('admArtTags').value       = a.tags || '';
+    document.getElementById('admArtPublished').checked = !!a.published;
+    document.getElementById('admArtPinned').checked   = !!a.pinned;
+  }
+  openModal('admArticleModalBackdrop');
+  setTimeout(() => document.getElementById('admArtTitle')?.focus(), 100);
+}
+
+function bindArticlesPanel() {
+  const addBtn = document.getElementById('admAddArticleBtn');
+  if (addBtn) addBtn.addEventListener('click', () => openArticleModal());
+
+  // Filter buttons
+  document.querySelectorAll('[data-art-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-art-filter]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      artFilter = btn.dataset.artFilter;
+      renderArticles();
+    });
+  });
+
+  // Article form submit
+  const artForm = document.getElementById('admArticleForm');
+  if (artForm) {
+    artForm.addEventListener('submit', e => {
+      e.preventDefault();
+      document.getElementById('admArticleError').hidden = true;
+
+      const title    = document.getElementById('admArtTitle').value.trim();
+      const url      = document.getElementById('admArtUrl').value.trim();
+      const source   = document.getElementById('admArtSource').value.trim();
+      const category = document.getElementById('admArtCategory').value;
+      const image    = document.getElementById('admArtImage').value.trim();
+      const excerpt  = document.getElementById('admArtExcerpt').value.trim();
+      const tags     = document.getElementById('admArtTags').value.trim();
+      const published= document.getElementById('admArtPublished').checked;
+      const pinned   = document.getElementById('admArtPinned').checked;
+
+      if (!title) { showArtError('Title is required.'); return; }
+      if (!url)   { showArtError('URL is required.'); return; }
+      if (!source){ showArtError('Source / Publication is required.'); return; }
+
+      const articles = loadArticles();
+      const data = { title, url, source, category, image, excerpt, tags, published, pinned };
+
+      if (editingArticleId) {
+        const idx = articles.findIndex(a => a.id === editingArticleId);
+        if (idx !== -1) { articles[idx] = { ...articles[idx], ...data }; }
+        saveArticles(articles);
+        showToast('Article updated.');
+      } else {
+        data.id = 'art-' + Date.now();
+        data.ts = Date.now();
+        articles.unshift(data);
+        saveArticles(articles);
+        showToast('Article added to Chronicle.');
+      }
+
+      closeModal('admArticleModalBackdrop');
+      renderArticles();
+    });
+  }
+
+  function showArtError(msg) {
+    document.getElementById('admArticleErrorMsg').textContent = msg;
+    document.getElementById('admArticleError').hidden = false;
+  }
+
+  // Close modal
+  document.getElementById('admArticleModalClose')?.addEventListener('click', () => closeModal('admArticleModalBackdrop'));
+  document.getElementById('admArticleCancelBtn')?.addEventListener('click', () => closeModal('admArticleModalBackdrop'));
+  document.getElementById('admArticleModalBackdrop')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal('admArticleModalBackdrop');
+  });
+
+  // Excerpt char count
+  document.getElementById('admArtExcerpt')?.addEventListener('input', e => {
+    document.getElementById('admArtExcerptCount').textContent = e.target.value.length;
+  });
+}
+
+function loadOrders() {
+  try { return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveOrders(orders) {
+  try { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch(e) {}
+}
+
+function renderOrders(filterText, statusFilter) {
+  const tbody  = document.getElementById('admOrdersTbody');
+  const empty  = document.getElementById('admOrdersEmpty');
+  const table  = document.getElementById('admOrdersTable');
+  const badge  = document.getElementById('admOrdersBadge');
+  if (!tbody) return;
+
+  let orders = loadOrders();
+  const pending = orders.filter(o => o.status === 'pending_confirmation').length;
+  if (badge) { badge.hidden = pending === 0; badge.textContent = pending; }
+
+  const query = (filterText || '').toLowerCase().trim();
+  const sf    = statusFilter || 'all';
+
+  if (query) orders = orders.filter(o => o.id.toLowerCase().includes(query));
+  if (sf !== 'all') orders = orders.filter(o => o.status === sf);
+
+  if (orders.length === 0) {
+    tbody.innerHTML = '';
+    if (table) table.hidden = true;
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (table) table.hidden = false;
+  if (empty) empty.hidden = true;
+
+  tbody.innerHTML = orders.map(o => {
+    const itemList = o.items.map(i =>
+      esc(i.name) + (i.size && i.size !== 'N/A' ? ' (' + esc(i.size) + ')' : '') + ' ×' + i.qty
+    ).join(', ');
+    const date = new Date(o.ts).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const statusClass = o.status === 'confirmed' ? 'adm-status-chip--active' : 'adm-status-chip--soldout';
+    const statusLabel = o.status === 'confirmed' ? 'Confirmed' : 'Awaiting';
+    const method = { mppaypal:'PayPal', mpvenmo:'Venmo', mpcashapp:'Cash App', mpstripelink:'Card' }[o.method] || o.method || '—';
+    return `<tr>
+      <td><strong style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold)">${esc(o.id)}</strong></td>
+      <td style="font-size:12px;color:var(--text-muted);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${itemList}</td>
+      <td>$${(o.total/100).toFixed(2)}</td>
+      <td><span class="adm-category-chip">${esc(method)}</span></td>
+      <td style="font-size:12px;color:var(--text-muted)">${esc(date)}</td>
+      <td><span class="adm-status-chip ${statusClass}">${statusLabel}</span></td>
+      <td>
+        <div class="adm-row-actions">
+          ${o.status !== 'confirmed' ? `<button class="adm-icon-btn" data-order-action="confirm" data-id="${esc(o.id)}" title="Mark confirmed" type="button"><i class="fas fa-circle-check" style="color:var(--success)"></i></button>` : ''}
+          <button class="adm-icon-btn adm-icon-btn--del" data-order-action="delete" data-id="${esc(o.id)}" title="Delete" type="button"><i class="fas fa-trash-can"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Bind order actions
+  tbody.querySelectorAll('[data-order-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const orders2 = loadOrders();
+      const id      = btn.dataset.id;
+      const action  = btn.dataset.orderAction || btn.getAttribute('data-order-action');
+      if (action === 'confirm') {
+        const idx = orders2.findIndex(o => o.id === id);
+        if (idx !== -1) { orders2[idx].status = 'confirmed'; saveOrders(orders2); }
+        showToast('Order ' + id + ' confirmed.');
+        renderOrders(document.getElementById('admOrderSearch')?.value, document.getElementById('admOrderFilter')?.value);
+      } else if (action === 'delete') {
+        if (!confirm('Delete order ' + id + '?')) return;
+        saveOrders(orders2.filter(o => o.id !== id));
+        renderOrders(document.getElementById('admOrderSearch')?.value, document.getElementById('admOrderFilter')?.value);
+        showToast('Order deleted.');
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════════════════
+   CUSTOMERS PANEL
+══════════════════════════════════════════ */
+function renderCustomers() {
+  const emailList  = (() => { try { return JSON.parse(localStorage.getItem('amp_email_list_v1') || '[]'); } catch(e) { return []; } })();
+  const notifyList = (() => { try { return JSON.parse(localStorage.getItem('amp_notify_v1') || '[]'); } catch(e) { return []; } })();
+  const orders     = loadOrders();
+
+  const emailCount  = document.getElementById('admCustEmailCount');
+  const notifyCount = document.getElementById('admCustNotifyCount');
+  const orderCount  = document.getElementById('admCustOrderCount');
+  if (emailCount)  emailCount.textContent  = emailList.length;
+  if (notifyCount) notifyCount.textContent = notifyList.length;
+  if (orderCount)  orderCount.textContent  = orders.length;
+
+  const list  = document.getElementById('admCustomersList');
+  const empty = document.getElementById('admCustomersEmpty');
+  if (!list) return;
+
+  const allCustomers = [];
+  emailList.forEach(email => allCustomers.push({ type: 'subscriber', email, label: '📧 Subscriber' }));
+  // Group notify by email
+  const notifyByEmail = {};
+  notifyList.forEach(n => {
+    if (!notifyByEmail[n.email]) notifyByEmail[n.email] = { email: n.email, products: [], ts: n.ts };
+    notifyByEmail[n.email].products.push(n.productName);
+  });
+  Object.values(notifyByEmail).forEach(n => allCustomers.push({
+    type: 'notify', email: n.email, products: n.products, label: '🔔 Notify Me'
+  }));
+
+  if (allCustomers.length === 0) {
+    list.innerHTML = '';
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+
+  list.innerHTML = allCustomers.map(c => `
+    <div class="adm-sugg-card" style="padding:14px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${esc(c.email)}</div>
+          ${c.products ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Waiting for: ${c.products.map(esc).join(', ')}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="adm-category-chip">${c.label}</span>
+          <a href="mailto:${esc(c.email)}" class="adm-icon-btn" title="Email this customer" style="color:var(--gold)">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderNotifySettings() {
+  const notifyList = (() => { try { return JSON.parse(localStorage.getItem('amp_notify_v1') || '[]'); } catch(e) { return []; } })();
+  const emailList  = (() => { try { return JSON.parse(localStorage.getItem('amp_email_list_v1') || '[]'); } catch(e) { return []; } })();
+
+  // Notify Me list — grouped by product
+  const notifyEl = document.getElementById('admNotifyList');
+  if (notifyEl) {
+    if (notifyList.length === 0) {
+      notifyEl.innerHTML = '<p class="adm-muted" style="padding:8px 0">No notify-me requests yet.</p>';
+    } else {
+      const byProduct = {};
+      notifyList.forEach(n => {
+        if (!byProduct[n.productId]) byProduct[n.productId] = { name: n.productName, emails: [] };
+        byProduct[n.productId].emails.push(n.email);
+      });
+      notifyEl.innerHTML = Object.entries(byProduct).map(([id, g]) => {
+        const subject = encodeURIComponent(g.name + ' is back in stock!');
+        const body    = encodeURIComponent('Great news! ' + g.name + ' is back in stock.\n\nhttps://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html\n\nMahalo! \u{1F33A} \u2014 Aloha Mass Productions');
+        const mailto  = 'mailto:' + g.emails.join(',') + '?subject=' + subject + '&body=' + body;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-soft)">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${esc(g.name)}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${g.emails.length} subscriber${g.emails.length !== 1 ? 's' : ''}</div>
+          </div>
+          <a href="${esc(mailto)}" class="adm-btn adm-btn--primary adm-btn--sm">
+            <i class="fas fa-paper-plane"></i> Email All
+          </a>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Email subscribers
+  const emailEl = document.getElementById('admEmailSubList');
+  const mailtoAll = document.getElementById('admEmailSubMailto');
+  if (emailEl) {
+    if (emailList.length === 0) {
+      emailEl.innerHTML = '<p class="adm-muted" style="padding:8px 0">No subscribers yet.</p>';
+    } else {
+      emailEl.innerHTML = emailList.map(email =>
+        `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:13px">
+          <span style="color:var(--text)">${esc(email)}</span>
+          <a href="mailto:${esc(email)}" class="adm-icon-btn" style="color:var(--gold)"><i class="fas fa-envelope"></i></a>
+        </div>`
+      ).join('');
+      if (mailtoAll) {
+        mailtoAll.style.display = '';
+        const subAll  = encodeURIComponent('News from Aloha Mass Productions');
+        const bodyAll = encodeURIComponent('Aloha! Here\'s what\'s new at AMP:\n\n[Your message here]\n\nShop now: https://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html\n\nMahalo! \u2014 Aloha Mass Productions');
+        mailtoAll.href = 'mailto:' + emailList.join(',') + '?subject=' + subAll + '&body=' + bodyAll;
+      }
+    }
+  }
+
+  // Export buttons
+  const notifyExport = document.getElementById('admNotifyExportBtn');
+  const emailExport  = document.getElementById('admEmailSubExportBtn');
+  if (notifyExport) notifyExport.onclick = () => exportCSV('notify-me', ['Email','Product','Date'], notifyList.map(n => [n.email, n.productName, new Date(n.ts).toLocaleDateString()]));
+  if (emailExport)  emailExport.onclick  = () => exportCSV('email-subscribers', ['Email'], emailList.map(e => [e]));
+}
+
+function exportCSV(filename, headers, rows) {
+  const csvRows = [headers, ...rows].map(r =>
+    r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')
+  );
+  const csv = csvRows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename + '-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Exported ' + filename + '.csv');
+}
+
+/* ══════════════════════════════════════════
+   PATCH setPanel — add orders + customers
+══════════════════════════════════════════ */
+(function patchSetPanelOrders() {
+  const _prev = window.setPanel;
+  window.setPanel = function(panelName) {
+    _prev(panelName);
+    if (panelName === 'articles') {
+      renderArticles();
+    }
+    if (panelName === 'orders') {
+      renderOrders(document.getElementById('admOrderSearch')?.value, document.getElementById('admOrderFilter')?.value);
+    }
+    if (panelName === 'customers') {
+      renderCustomers();
+    }
+    if (panelName === 'settings') {
+      renderNotifySettings();
+    }
+  };
+})();
+
+/* ══════════════════════════════════════════
    INIT HOOK — runs after existing DOMContentLoaded
 ══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
+  bindArticlesPanel();
 
   // Refresh all notification badges on load
   setTimeout(() => {
