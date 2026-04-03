@@ -740,7 +740,7 @@
     // _pikoArticles.js is a JS file committed to the repo via Admin > Chronicle > Publish to Site
     // eval() is safe here — we wrote the file ourselves, it only sets window._pikoArticles
     if (typeof fetch !== 'undefined') {
-      var _path = '/pikoverse/js/_pikoArticles.js';
+      var _path = './js/_pikoArticles.js';
       fetch(_path, { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {

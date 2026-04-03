@@ -28,7 +28,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/marketplace.css">
   <link rel="stylesheet" href="css/platform-ecosystem.css">
   <link rel="stylesheet" href="css/hub.css">
 
@@ -910,7 +909,7 @@
       <span class="piko-pulse-dot"></span>
       Live Pulse
     </button>
-  </div><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  </div><script>
   document.addEventListener("DOMContentLoaded", () => {
     // ── Pikoverse intro cards: play once, last card loops back to frame 0 then pauses ──
     const introCards = document.querySelectorAll("#amp-intro .amp-card");
@@ -984,12 +983,9 @@
   </script>
   <script src="js/main.js"></script>
   <script src="js/animations.js"></script>
-  <script src="js/dictionary.js"></script>
-  <script src="js/marketplace.js"></script>
-  <script src="js/knowledgeHub.js"></script>
-  <!-- Chronicle articles — download from Admin > Chronicle > "Publish to Site" -->
-  <!-- Drop _pikoArticles.js into your js/ folder and commit to sync all devices -->
-  <script src="js/_pikoArticles.js" onerror="window._pikoArticles=window._pikoArticles||[]"></script>
+  <!-- Published Chronicle articles — loaded before hub.js so they render immediately -->
+  <!-- Updated automatically when you click "Publish to Site" in Admin > Chronicle  -->
+  <script src="js/_pikoArticles.js"></script>
   <script src="js/hub.js"></script>
 </body>
 </html>
