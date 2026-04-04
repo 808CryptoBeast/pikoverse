@@ -1505,8 +1505,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* NO justify-content so items stack naturally from top */
-  padding: 28px 28px 28px;
+  justify-content: flex-end; /* push all content to bottom — matches other ecosystem cards */
+  padding: 28px;
   gap: 0;
 }
 
@@ -1528,7 +1528,6 @@
 
 /* Description takes up middle space */
 .amp-slide-single .amp-slide-body .project-description {
-  flex: 1; /* pushes button to bottom */
   margin-bottom: 12px;
   overflow: hidden;
 }
@@ -2213,61 +2212,7 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   AMP ECOSYSTEM CARD — Fix so content displays like other cards
-   Root cause: .amp-slide-single has no height in base CSS so it
-   collapses. Fix: pin it absolutely to fill the card, then pin
-   the body to the bottom like all other ecosystem cards.
-═══════════════════════════════════════════════════════════════ */
 
-/* Slide wrapper fills the entire card */
-.ecosystem-card.card-amp .amp-slide-single {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-
-/* Video, overlay, glow are already absolute inside — they fill correctly */
-
-/* Body pinned to BOTTOM of card — exactly like other ecosystem cards */
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 3 !important;
-  padding: 32px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  overflow: visible !important;
-}
-
-/* Ensure all content inside body is above overlays */
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body > * {
-  position: relative !important;
-  z-index: 4 !important;
-}
-
-/* Link always fully visible and clickable */
-.ecosystem-card.card-amp .amp-slide-single .amp-slide-body .project-link {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-@media (max-width: 768px) {
-  .ecosystem-card.card-amp {
-    min-height: 500px !important;
-    position: relative !important;
-  }
-  .ecosystem-card.card-amp .amp-slide-single .amp-slide-body {
-    padding: 24px !important;
-  }
-}
 
 /* ═══════════════════════════════════════════════════════════════
    AMP INTRO CARDS — Mobile fixes (Foundation / Ecosystem / Mission)
