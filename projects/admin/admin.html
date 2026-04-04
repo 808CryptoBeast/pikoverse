@@ -758,8 +758,11 @@
             <button class="adm-btn adm-btn--primary" id="admAddArticleBtn" type="button">
               <i class="fas fa-plus"></i> New Article
             </button>
-            <button class="adm-btn adm-btn--outline" id="admPublishArticlesBtn" type="button" title="Generate embed code to make articles visible on all devices">
-              <i class="fas fa-globe"></i> Publish to Site
+            <button class="adm-btn adm-btn--outline" id="admPublishArticlesBtn" type="button" title="Commits js/pikoData.js to GitHub — syncs articles, products, projects and more to all devices">
+              <i class="fas fa-globe"></i> Publish All to Site
+            </button>
+            <button class="adm-btn adm-btn--ghost" id="admCheckPublishBtn" type="button" title="Check whether the published file is live on the server">
+              <i class="fas fa-magnifying-glass"></i> Check Status
             </button>
           </div>
         </div>
@@ -1044,11 +1047,9 @@
               </div>
               <div class="adm-art-img-placeholder" id="admArtImgPlaceholder">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <span class="adm-art-img-main-text">Drag &amp; drop an image here</span>
-                <span class="adm-art-img-sub-text">or click to browse · paste a file or URL</span>
+                <span class="adm-art-img-main-text">Paste an image URL below</span>
+                <span class="adm-art-img-sub-text">Right-click any image → Copy Image Address</span>
               </div>
-              <!-- Hidden file input — triggered by clicking the zone -->
-              <input type="file" id="admArtImgFile" accept="image/*" class="adm-art-img-file" tabindex="-1">
             </div>
 
             <!-- URL input — paste a URL directly -->

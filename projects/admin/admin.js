@@ -2279,7 +2279,7 @@ function openArticleModal(id = null) {
 function checkPublishStatus() {
   var cfg = loadGhConfig();
   var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
-  var fileUrl  = repoBase + '/js/pikoArticles.js?v=' + Date.now();
+  var fileUrl  = repoBase + '/js/pikoData.js?v=' + Date.now();
 
   console.log('[Check Status] Fetching:', fileUrl);
   showToast('Checking server...');
@@ -2316,46 +2316,68 @@ function checkPublishStatus() {
     });
 }
 
-// ── "Publish to Site" — commits pikoArticles.js directly to GitHub ─────────
-// If GitHub config is set in Settings, pushes via API (zero manual steps).
-// Falls back to file download if not configured.
+// ── "Publish All to Site" — commits pikoData.js to GitHub ──────────────────
+// Bundles ALL site data into one file so every device sees the same content:
+//   articles, products, projects (approved), ideas, banner, promos, pay config
 function generateArticleEmbed() {
-  var articles = loadArticles().filter(function(a) { return a.published; });
-  if (!articles.length) {
-    showToast('No published articles yet.');
-    return;
-  }
+  var articles  = loadArticles().filter(function(a) { return a.published; });
+  var products  = [];
+  try { products  = JSON.parse(localStorage.getItem('amp_admin_products')      || '[]'); } catch(e) {}
+  var allProjs  = [];
+  try { allProjs  = JSON.parse(localStorage.getItem('amp_admin_projects_hub')  || '[]'); } catch(e) {}
+  var projects  = allProjs.filter(function(p) { return p.status === 'approved'; });
+  var ideas     = [];
+  try { ideas     = JSON.parse(localStorage.getItem('amp_admin_ideas')         || '[]'); } catch(e) {}
+  var banner    = null;
+  try { banner    = JSON.parse(localStorage.getItem('amp_admin_banner')        || 'null'); } catch(e) {}
+  var promos    = [];
+  try { promos    = JSON.parse(localStorage.getItem('amp_admin_promos')        || '[]'); } catch(e) {}
+  var payConfig = {};
+  try { payConfig = JSON.parse(localStorage.getItem('amp_pay_config')          || '{}'); } catch(e) {}
 
-  // Strip base64 images (too large for a committed file; use URL instead)
-  var clean = articles.map(function(a) {
+  // Strip base64 images from articles (too large for committed file)
+  var cleanArticles = articles.map(function(a) {
     return Object.assign({}, a, {
       image: (a.image && a.image.startsWith('data:')) ? '' : (a.image || '')
     });
   });
+  // Strip base64 images from products too
+  var cleanProducts = products.map(function(p) {
+    return Object.assign({}, p, {
+      image: (p.image && p.image.startsWith('data:')) ? '' : (p.image || '')
+    });
+  });
+
+  var data = {
+    articles:  cleanArticles,
+    products:  cleanProducts,
+    projects:  projects,
+    ideas:     ideas,
+    banner:    banner,
+    promos:    promos,
+    payConfig: payConfig
+  };
 
   var ts = new Date().toISOString();
   var fileContent = [
-    '// Pikoverse Chronicle - Published Articles',
-    '// Auto-generated. Do not edit manually.',
+    '// Pikoverse Site Data - Auto-generated. Do not edit manually.',
     '// Generated: ' + ts,
-    '',
-    'window._pikoArticles = ' + JSON.stringify(clean, null, 2) + ';',
+    'window._pikoData = ' + JSON.stringify(data, null, 2) + ';',
+    '// Backwards compat: also set _pikoArticles for any old code',
+    'window._pikoArticles = window._pikoData.articles;',
     ''
   ].join('\n');
 
   var cfg = loadGhConfig();
-
   if (cfg && cfg.token && cfg.owner && cfg.repo) {
-    // ── GitHub API path ────────────────────────────────────────────────
-    publishViaGitHub(cfg, fileContent);
+    publishViaGitHub(cfg, fileContent, 'js/pikoData.js');
   } else {
-    // ── Fallback: download the file ────────────────────────────────────
-    downloadArticleFile(fileContent);
+    downloadDataFile(fileContent);
   }
 }
 
-function publishViaGitHub(cfg, fileContent) {
-  var filePath = 'js/pikoArticles.js';
+function publishViaGitHub(cfg, fileContent, filePath) {
+  filePath = filePath || 'js/pikoData.js';
   var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
   var headers  = {
     'Authorization': 'Bearer ' + cfg.token,
@@ -2407,36 +2429,21 @@ function publishViaGitHub(cfg, fileContent) {
     });
 }
 
-function downloadArticleFile(fileContent) {
+function downloadDataFile(fileContent) {
   var blob = new Blob([fileContent], { type: 'application/javascript' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
-  a.href = url; a.download = 'pikoArticles.js';
+  a.href = url; a.download = 'pikoData.js';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-
-  var modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML = [
-    '<div style="background:#13111f;border:1px solid rgba(201,168,76,.35);border-radius:16px;padding:28px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px">',
-      '<h3 style="font-family:Orbitron,sans-serif;font-size:15px;color:#f0c96a;margin:0">_pikoArticles.js downloaded</h3>',
-      '<p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;margin:0">',
-        'Put this file in your repo&#39;s <code style="color:#f0c96a">js/</code> folder and commit. ',
-        '<strong style="color:#fff">Tip:</strong> connect GitHub in Settings to skip this step forever.',
-      '</p>',
-      '<button id="_dlClose" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:700;border:none;cursor:pointer">Got it</button>',
-    '</div>'
-  ].join('');
-  document.body.appendChild(modal);
-  document.getElementById('_dlClose').onclick = function() { modal.remove(); };
-  modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+  showToast('pikoData.js downloaded. Add to js/ folder in your repo and commit.');
 }
 
 // Guarantee global scope regardless of load order
 window.generateArticleEmbed = generateArticleEmbed;
 window.publishViaGitHub     = publishViaGitHub;
-window.downloadArticleFile  = downloadArticleFile;
+window.downloadDataFile = downloadDataFile;
 
 
 function bindArticlesPanel() {
@@ -2580,64 +2587,40 @@ function wireArticleImageZone() {
     fileInput.value = ''; // reset so same file re-selectable
   });
 
-  // ── Drag & drop ──────────────────────────────────────────────────────────
-  // Prevent browser default (which would navigate to the file)
-  ['dragenter','dragover'].forEach(function(evName) {
+  // ── Drag & drop DISABLED ────────────────────────────────────────────────
+  // File uploads store as base64 which gets stripped on Publish to Site
+  // (too large for a committed JS file). Use a URL instead — it syncs to
+  // all devices automatically.
+  ['dragenter','dragover','dragleave','drop'].forEach(function(evName) {
     zone.addEventListener(evName, function(e) {
       e.preventDefault();
       e.stopPropagation();
-      zone.classList.add('is-dragging');
+      // Show a hint pointing to the URL field
+      if (evName === 'drop' && urlInput) {
+        urlInput.focus();
+        showToast("Paste an image URL instead — use a URL so it shows on all devices.");
+      }
     });
-  });
-
-  zone.addEventListener('dragleave', function(e) {
-    e.stopPropagation();
-    // Only remove class when leaving the zone entirely
-    if (!zone.contains(e.relatedTarget)) {
-      zone.classList.remove('is-dragging');
-    }
-  });
-
-  zone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    zone.classList.remove('is-dragging');
-
-    var dt = e.dataTransfer;
-
-    // 1. File drop (from desktop/Finder)
-    if (dt.files && dt.files.length > 0) {
-      handleFile(dt.files[0]);
-      return;
-    }
-
-    // 2. Image dragged from another browser tab/page
-    var srcUrl = dt.getData('text/uri-list') || dt.getData('URL') || dt.getData('text/plain') || '';
-    if (srcUrl && (srcUrl.startsWith('http') || srcUrl.startsWith('https'))) {
-      setPreview(srcUrl.trim());
-    }
   });
 
   // ── Paste (Cmd/Ctrl+V) anywhere while article modal is open ────────────
   function handlePaste(e) {
-    // Only act when article modal is open
+    // Clipboard image paste disabled — base64 doesn't sync cross-device.
+    // URL text paste is handled by the URL input's own input event below.
     var modal = document.getElementById('admArticleModalBackdrop');
     if (!modal || !modal.classList.contains('is-open')) return;
-
+    // If user pastes an image file, warn them to use a URL
     var items = (e.clipboardData || window.clipboardData || {}).items;
-    if (!items) return;
-
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      // Image from clipboard (screenshot, copy image, etc.)
-      if (item.kind === 'file' && item.type.startsWith('image/')) {
-        e.preventDefault();
-        handleFile(item.getAsFile());
-        showToast('Image pasted from clipboard.');
-        return;
+    if (items) {
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+          e.preventDefault();
+          showToast('Paste a URL instead — right-click your image → Copy Image Address.');
+          if (urlInput) urlInput.focus();
+          return;
+        }
       }
     }
-    // Text paste goes to whichever input has focus — handled by URL input below
   }
 
   document.addEventListener('paste', handlePaste);

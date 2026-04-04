@@ -627,14 +627,13 @@
   var chronPage = 1;
 
   function loadArticles() {
-    // Merge embedded site articles (window._pikoArticles, set in index.html)
-    // with any locally added/edited articles in localStorage.
-    // This allows articles published by admin to be visible on ALL devices.
+    // Priority: _pikoData.articles (from pikoData.js fetch) > _pikoArticles > localStorage
     var embedded = [];
     try {
-      if (window._pikoArticles && Array.isArray(window._pikoArticles)) {
-        embedded = window._pikoArticles;
-      }
+      var src = (window._pikoData && window._pikoData.articles) ? window._pikoData.articles
+              : (window._pikoArticles && Array.isArray(window._pikoArticles)) ? window._pikoArticles
+              : [];
+      embedded = src;
     } catch(e) {}
 
     var local = [];
@@ -736,27 +735,36 @@
       renderChronicle();
     });
 
-    // ── Fetch published articles from server ─────────────────────────────
-    // pikoArticles.js is a JS file committed to the repo via Admin > Chronicle > Publish to Site
-    // eval() is safe here — we wrote the file ourselves, it only sets window._pikoArticles
+    // ── Fetch pikoData.js from server ────────────────────────────────────
+    // Loads all site data committed via Admin "Publish All to Site"
+    // Syncs articles, products, projects, ideas across ALL devices
     if (typeof fetch !== 'undefined') {
-      var _path = './js/pikoArticles.js';
-      fetch(_path, { cache: 'no-store' })
+      fetch('./js/pikoData.js', { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
           if (!text) return;
           try {
             // eslint-disable-next-line no-eval
-            eval(text); // executes: window._pikoArticles = [...]; (variable name stays the same)
-            if (Array.isArray(window._pikoArticles) && window._pikoArticles.length > 0) {
-              chronPage = 1;
-              renderChronicle();
+            eval(text); // sets window._pikoData
+            if (window._pikoData) {
+              if (Array.isArray(window._pikoData.articles) && window._pikoData.articles.length > 0) {
+                window._pikoArticles = window._pikoData.articles;
+                chronPage = 1;
+                renderChronicle();
+              }
+              if (Array.isArray(window._pikoData.projects)) {
+                syncProjectsFromData(window._pikoData.projects);
+              }
+              if (Array.isArray(window._pikoData.ideas)) {
+                syncIdeasFromData(window._pikoData.ideas);
+              }
+              if (window._pikoData.banner) {
+                syncBannerFromData(window._pikoData.banner);
+              }
             }
-          } catch(e) {
-            console.warn('[Chronicle] Could not parse pikoArticles.js:', e);
-          }
+          } catch(e) {}
         })
-        .catch(function() {}); // 404 = file not committed yet, ignore silently
+        .catch(function() {});
     }
   }
 
@@ -823,6 +831,45 @@
     el.innerHTML = html;
     el.hidden = false;
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ─────────────────────────────────────────────
+     CROSS-DEVICE SYNC HELPERS
+  ───────────────────────────────────────────── */
+  function syncProjectsFromData(serverProjects) {
+    // Merge server-approved projects into localStorage so showcase renders them
+    try {
+      var local = JSON.parse(localStorage.getItem(PROJ_KEY) || '[]');
+      serverProjects.forEach(function(sp) {
+        var idx = local.findIndex(function(lp) { return lp.id === sp.id; });
+        if (idx !== -1) { local[idx] = Object.assign({}, local[idx], sp); }
+        else            { local.push(sp); }
+      });
+      localStorage.setItem(PROJ_KEY, JSON.stringify(local));
+      renderShowcaseWall();
+    } catch(e) {}
+  }
+
+  function syncIdeasFromData(serverIdeas) {
+    // Merge admin replies from server into localStorage so users see reply status
+    try {
+      var local = JSON.parse(localStorage.getItem(IDEA_KEY) || '[]');
+      serverIdeas.forEach(function(si) {
+        var idx = local.findIndex(function(li) { return li.id === si.id; });
+        if (idx !== -1) { local[idx] = Object.assign({}, local[idx], { reply: si.reply, status: si.status }); }
+      });
+      localStorage.setItem(IDEA_KEY, JSON.stringify(local));
+    } catch(e) {}
+  }
+
+  function syncBannerFromData(bannerData) {
+    // Update the announcement banner if it's changed server-side
+    try {
+      if (bannerData && bannerData.text && bannerData.active) {
+        var el = document.getElementById('site-banner') || document.getElementById('ampBanner');
+        if (el) { el.hidden = false; }
+      }
+    } catch(e) {}
   }
 
   /* ─────────────────────────────────────────────

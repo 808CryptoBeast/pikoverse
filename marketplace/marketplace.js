@@ -84,21 +84,31 @@
   // Admin localStorage key — must match ADM_CONFIG.STORAGE_PREFIX + 'products' in admin.js
   var ADMIN_PRODUCTS_KEY = 'amp_admin_products';
 
-  // Load products from admin localStorage, fall back to seed
+  // Load products: pikoData.js (all devices) > localStorage (same device) > seed
   function loadProducts() {
+    // 1. pikoData.js from server — visible on all devices
+    try {
+      if (window._pikoData && Array.isArray(window._pikoData.products) && window._pikoData.products.length > 0) {
+        try { localStorage.setItem(ADMIN_PRODUCTS_KEY, JSON.stringify(window._pikoData.products)); } catch(e) {}
+        return window._pikoData.products.map(function(p) {
+          var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
+          return Object.assign({ bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp' }, seed, p);
+        });
+      }
+    } catch(e) {}
+    // 2. localStorage — same device as admin
     try {
       var raw = localStorage.getItem(ADMIN_PRODUCTS_KEY);
       if (raw) {
         var parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge in any missing fields from seed (e.g. bg) that admin doesn't set
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
             return Object.assign({ bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }
-    } catch (e) { /* fall through to seed */ }
+    } catch (e) {}
     return PRODUCT_SEED.slice();
   }
 
@@ -963,16 +973,22 @@
     var PAY_CONFIG_KEY = 'amp_pay_config';
     function getPayConfig() {
       try {
+        // pikoData.js (cross-device) > localStorage
+        if (window._pikoData && window._pikoData.payConfig) {
+          var pd = window._pikoData.payConfig;
+          if (pd.paypal || pd.venmo || pd.cashapp || pd.stripe) {
+            try { localStorage.setItem(PAY_CONFIG_KEY, JSON.stringify(pd)); } catch(e) {}
+            return pd;
+          }
+        }
         var stored = localStorage.getItem(PAY_CONFIG_KEY);
         if (stored) {
           var parsed = JSON.parse(stored);
-          // Only return stored config if at least one method is set
           if (parsed.paypal || parsed.venmo || parsed.cashapp || parsed.stripe) {
             return parsed;
           }
         }
       } catch(e) {}
-      // Default: return empty — admin must configure in Settings → Payment Methods
       return { paypal: '', venmo: '', cashapp: '', stripe: '' };
     }
 
@@ -1298,10 +1314,14 @@
   /* ── Banner ── */
   function initBanner() {
     try {
-      var raw = localStorage.getItem(BANNER_KEY);
-      if (!raw) return;
-      var b = JSON.parse(raw);
-      if (!b.active || !b.text) return;
+      // pikoData.js (cross-device) > localStorage
+      var b = (window._pikoData && window._pikoData.banner)
+            ? window._pikoData.banner
+            : JSON.parse(localStorage.getItem(BANNER_KEY) || 'null');
+      if (!b || !b.active || !b.text) return;
+
+      // Sync to localStorage so it persists if pikoData not yet loaded
+      try { localStorage.setItem(BANNER_KEY, JSON.stringify(b)); } catch(e) {}
 
       var el   = document.getElementById('mpBanner');
       var text = document.getElementById('mpBannerText');
@@ -1322,6 +1342,11 @@
 
   function getPromos() {
     try {
+      // pikoData.js (cross-device) > localStorage
+      if (window._pikoData && Array.isArray(window._pikoData.promos) && window._pikoData.promos.length > 0) {
+        try { localStorage.setItem(PROMO_KEY, JSON.stringify(window._pikoData.promos)); } catch(e) {}
+        return window._pikoData.promos;
+      }
       var raw = localStorage.getItem(PROMO_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch(e) { return []; }
@@ -1557,11 +1582,32 @@
 
   /* ── Boot ── */
   document.addEventListener('DOMContentLoaded', function() {
+    // Fetch pikoData.js first so products/banner/promos/payConfig are cross-device
+    if (typeof fetch !== 'undefined') {
+      fetch('../js/pikoData.js', { cache: 'no-store' })
+        .then(function(r) { return r.ok ? r.text() : null; })
+        .then(function(text) {
+          if (text) {
+            try {
+              // eslint-disable-next-line no-eval
+              eval(text); // sets window._pikoData
+            } catch(e) {}
+          }
+          // Init after fetch attempt (whether it succeeded or not)
+          _initMarketplace();
+        })
+        .catch(function() { _initMarketplace(); });
+    } else {
+      _initMarketplace();
+    }
+  });
+
+  function _initMarketplace() {
     initBanner();
     initPromo();
     initSuggestionPanel();
     initNav();
-  });
+  }
 
   function initNav() {
     var hamburger = document.getElementById('mpNavHamburger');
