@@ -33,8 +33,8 @@
       category: 'shirts',
       price: 3500,
       description: 'Beyond fabric and tech — AMP carries heritage forward through design. Premium heavyweight cotton, screen-printed with culturally rooted artwork.',
-      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20RYB.jpg',
-      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
+      image: 'https://pikoverse.xyz/assets/AMP%20RYB.jpg',
+      bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp',
       badge: 'featured',
       sizes: ['XS','S','M','L','XL','2XL'],
       featured: true,
@@ -46,8 +46,8 @@
       category: 'hats',
       price: 2800,
       description: 'Aloha in motion — culture expressed through identity, story, and presence. Structured 6-panel cap with embroidered Rabbit Island artwork.',
-      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Rabbit%20Island.jpg',
-      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
+      image: 'https://pikoverse.xyz/assets/AMP%20Rabbit%20Island.jpg',
+      bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp',
       badge: 'new',
       sizes: ['One Size'],
       featured: true,
@@ -59,8 +59,8 @@
       category: 'stickers',
       price: 800,
       description: 'Weatherproof vinyl stickers. Three designs, rooted in Aloha Mass Productions visual identity. Stick them anywhere.',
-      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
-      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
+      image: 'https://pikoverse.xyz/assets/AMP%20Tiki.jpg',
+      bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -72,8 +72,8 @@
       category: 'accessories',
       price: 2200,
       description: 'Heavy canvas tote with AMP logo and cultural motif. Large enough for a full market run, strong enough for years of use.',
-      image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
-      bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp',
+      image: 'https://pikoverse.xyz/assets/AMP%20Tiki.jpg',
+      bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp',
       badge: null,
       sizes: null,
       featured: false,
@@ -92,7 +92,7 @@
         try { localStorage.setItem(ADMIN_PRODUCTS_KEY, JSON.stringify(window._pikoData.products)); } catch(e) {}
         return window._pikoData.products.map(function(p) {
           var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-          return Object.assign({ bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp' }, seed, p);
+          return Object.assign({ bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp' }, seed, p);
         });
       }
     } catch(e) {}
@@ -104,7 +104,7 @@
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map(function(p) {
             var seed = PRODUCT_SEED.find(function(s) { return s.id === p.id; }) || {};
-            return Object.assign({ bg: 'https://808cryptobeast.github.io/pikoverse/assets/hawaii-mountains.jpg.webp' }, seed, p);
+            return Object.assign({ bg: 'https://pikoverse.xyz/assets/hawaii-mountains.jpg.webp' }, seed, p);
           });
         }
       }

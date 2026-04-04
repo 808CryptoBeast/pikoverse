@@ -222,7 +222,7 @@ const DEFAULT_PRODUCTS = [
     category: 'shirts',
     price: 3500,        // cents
     description: 'Bold red, yellow and blue AMP tee. Comfortable everyday wear.',
-    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20RYB.jpg',
+    image: 'https://pikoverse.xyz/assets/AMP%20RYB.jpg',
     badge: 'featured',
     sizes: ['XS','S','M','L','XL','2XL'],
     featured: true,
@@ -234,7 +234,7 @@ const DEFAULT_PRODUCTS = [
     category: 'hats',
     price: 2800,
     description: 'Classic cap featuring Rabbit Island artwork.',
-    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Rabbit%20Island.jpg',
+    image: 'https://pikoverse.xyz/assets/AMP%20Rabbit%20Island.jpg',
     badge: 'new',
     sizes: ['One Size'],
     featured: false,
@@ -246,7 +246,7 @@ const DEFAULT_PRODUCTS = [
     category: 'stickers',
     price: 800,
     description: 'Vinyl sticker of the iconic AMP Tiki. Waterproof.',
-    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMPTTiki.jpg',
+    image: 'https://pikoverse.xyz/assets/AMPTTiki.jpg',
     badge: '',
     sizes: [],
     featured: false,
@@ -258,7 +258,7 @@ const DEFAULT_PRODUCTS = [
     category: 'accessories',
     price: 2200,
     description: 'Reusable tote with the AMP Tiki logo.',
-    image: 'https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg',
+    image: 'https://pikoverse.xyz/assets/AMP%20Tiki.jpg',
     badge: '',
     sizes: ['One Size'],
     featured: false,
@@ -274,7 +274,7 @@ const DEFAULT_PRODUCTS = [
    TODO: SWAP updateProduct → PUT  /api/products/:id
    TODO: SWAP deleteProduct → DELETE /api/products/:id
 ───────────────────────────────────────────── */
-const BASE_URL = 'https://808cryptobeast.github.io/pikoverse';
+const BASE_URL = 'https://pikoverse.xyz';
 
 const ProductDB = {
   load() {
@@ -793,8 +793,140 @@ function enterDashboard(user) {
     avatar.textContent = (name[0] || 'A').toUpperCase();
   }
 
-  renderProducts();
-  setPanel('products');
+  // ── Sync pikoData.js into localStorage on every login ──────────────────
+  // This means logging in from ANY device gives you all your published content
+  // (articles, products, promos, banner, pay config, approved projects, ideas).
+  // Customer data (orders, subscribers, ratings) can't sync without a backend.
+  syncPikoDataToLocalStorage(function() {
+    renderProducts();
+    setPanel('products');
+  });
+}
+
+function syncPikoDataToLocalStorage(onDone) {
+  // Determine the path to pikoData.js relative to admin panel location
+  // Admin is at: /projects/admin/admin.html
+  // pikoData.js is at: /js/pikoData.js
+  // So relative path is: ../../js/pikoData.js
+  var dataUrl = '../../js/pikoData.js?v=' + Date.now();
+
+  // Show a subtle sync indicator
+  var syncEl = document.getElementById('admSyncStatus');
+  if (syncEl) { syncEl.textContent = 'Syncing data…'; syncEl.hidden = false; }
+
+  if (typeof fetch === 'undefined') { if (onDone) onDone(); return; }
+
+  fetch(dataUrl, { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.text() : null; })
+    .then(function(text) {
+      if (!text) {
+        if (syncEl) { syncEl.textContent = 'No published data found. Changes here are local only.'; }
+        setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
+        if (onDone) onDone();
+        return;
+      }
+      try {
+        // eslint-disable-next-line no-eval
+        eval(text); // sets window._pikoData
+        var d = window._pikoData;
+        if (!d) throw new Error('_pikoData not set');
+
+        var synced = [];
+
+        // Articles
+        if (Array.isArray(d.articles) && d.articles.length > 0) {
+          // Merge: keep local edits, add server articles not yet local
+          var localArts = [];
+          try { localArts = JSON.parse(localStorage.getItem('amp_articles_v1') || '[]'); } catch(e) {}
+          d.articles.forEach(function(sa) {
+            var idx = localArts.findIndex(function(la) { return la.id === sa.id; });
+            if (idx === -1) localArts.push(sa); // add server article if not local
+            // Don't overwrite local edits — admin on this device wins
+          });
+          localStorage.setItem('amp_articles_v1', JSON.stringify(localArts));
+          synced.push('articles');
+        }
+
+        // Products
+        if (Array.isArray(d.products) && d.products.length > 0) {
+          var localProds = [];
+          try { localProds = JSON.parse(localStorage.getItem('amp_admin_products') || '[]'); } catch(e) {}
+          d.products.forEach(function(sp) {
+            var idx = localProds.findIndex(function(lp) { return lp.id === sp.id; });
+            if (idx === -1) localProds.push(sp);
+          });
+          localStorage.setItem('amp_admin_products', JSON.stringify(localProds));
+          synced.push('products');
+        }
+
+        // Promos
+        if (Array.isArray(d.promos) && d.promos.length > 0) {
+          var localPromos = [];
+          try { localPromos = JSON.parse(localStorage.getItem('amp_admin_promos') || '[]'); } catch(e) {}
+          d.promos.forEach(function(sp) {
+            var idx = localPromos.findIndex(function(lp) { return lp.id === sp.id; });
+            if (idx === -1) localPromos.push(sp);
+          });
+          localStorage.setItem('amp_admin_promos', JSON.stringify(localPromos));
+          synced.push('promos');
+        }
+
+        // Banner
+        if (d.banner) {
+          localStorage.setItem('amp_admin_banner', JSON.stringify(d.banner));
+          synced.push('banner');
+        }
+
+        // Pay config
+        if (d.payConfig && (d.payConfig.paypal || d.payConfig.venmo || d.payConfig.cashapp || d.payConfig.stripe)) {
+          localStorage.setItem('amp_pay_config', JSON.stringify(d.payConfig));
+          synced.push('payment config');
+        }
+
+        // Approved projects — merge into local hub projects list
+        if (Array.isArray(d.projects) && d.projects.length > 0) {
+          var localProjs = [];
+          try { localProjs = JSON.parse(localStorage.getItem('amp_admin_projects_hub') || '[]'); } catch(e) {}
+          d.projects.forEach(function(sp) {
+            var idx = localProjs.findIndex(function(lp) { return lp.id === sp.id; });
+            if (idx !== -1) { localProjs[idx] = Object.assign({}, localProjs[idx], sp); }
+            else            { localProjs.push(sp); }
+          });
+          localStorage.setItem('amp_admin_projects_hub', JSON.stringify(localProjs));
+          synced.push('projects');
+        }
+
+        // Ideas — merge admin replies
+        if (Array.isArray(d.ideas) && d.ideas.length > 0) {
+          var localIdeas = [];
+          try { localIdeas = JSON.parse(localStorage.getItem('amp_admin_ideas') || '[]'); } catch(e) {}
+          d.ideas.forEach(function(si) {
+            var idx = localIdeas.findIndex(function(li) { return li.id === si.id; });
+            if (idx !== -1) { localIdeas[idx] = Object.assign({}, localIdeas[idx], si); }
+            else            { localIdeas.push(si); }
+          });
+          localStorage.setItem('amp_admin_ideas', JSON.stringify(localIdeas));
+          synced.push('ideas');
+        }
+
+        var msg = synced.length > 0
+          ? 'Synced: ' + synced.join(', ') + '.'
+          : 'Up to date.';
+        if (syncEl) { syncEl.textContent = msg; }
+        setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
+
+      } catch(e) {
+        console.warn('[Admin Sync] Could not parse pikoData.js:', e);
+        if (syncEl) { syncEl.textContent = 'Sync failed — working with local data.'; }
+        setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
+      }
+      if (onDone) onDone();
+    })
+    .catch(function() {
+      // No network or file not found — work offline with local data
+      if (syncEl) { syncEl.hidden = true; }
+      if (onDone) onDone();
+    });
 }
 
 function exitDashboard() {
@@ -2812,7 +2944,7 @@ function renderNotifySettings() {
       });
       notifyEl.innerHTML = Object.entries(byProduct).map(([id, g]) => {
         const subject = encodeURIComponent(g.name + ' is back in stock!');
-        const body    = encodeURIComponent('Great news! ' + g.name + ' is back in stock.\n\nhttps://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html\n\nMahalo! \u{1F33A} \u2014 Aloha Mass Productions');
+        const body    = encodeURIComponent('Great news! ' + g.name + ' is back in stock.\n\nhttps://pikoverse.xyz/marketplace/marketplace.html\n\nMahalo! \u{1F33A} \u2014 Aloha Mass Productions');
         const mailto  = 'mailto:' + g.emails.join(',') + '?subject=' + subject + '&body=' + body;
         return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-soft)">
           <div>
@@ -2843,7 +2975,7 @@ function renderNotifySettings() {
       if (mailtoAll) {
         mailtoAll.style.display = '';
         const subAll  = encodeURIComponent('News from Aloha Mass Productions');
-        const bodyAll = encodeURIComponent('Aloha! Here\'s what\'s new at AMP:\n\n[Your message here]\n\nShop now: https://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html\n\nMahalo! \u2014 Aloha Mass Productions');
+        const bodyAll = encodeURIComponent('Aloha! Here\'s what\'s new at AMP:\n\n[Your message here]\n\nShop now: https://pikoverse.xyz/marketplace/marketplace.html\n\nMahalo! \u2014 Aloha Mass Productions');
         mailtoAll.href = 'mailto:' + emailList.join(',') + '?subject=' + subAll + '&body=' + bodyAll;
       }
     }
