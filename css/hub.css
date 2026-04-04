@@ -2679,3 +2679,99 @@
   color: rgba(255,255,255,.3);
 }
 .piko-chronicle-empty i { font-size: 40px; margin-bottom: 14px; display: block; opacity: .3; }
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV
+   Replaces hamburger menu on mobile. Fixed to bottom of screen.
+   Shows Home, Platforms, Showcase, Chronicle, Connect.
+═══════════════════════════════════════════════════════════════ */
+.piko-mobile-nav {
+  display: none; /* hidden on desktop */
+}
+
+@media (max-width: 768px) {
+  /* Show mobile bottom nav */
+  .piko-mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2100;
+    background: rgba(6, 8, 16, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(201,168,76,.15);
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px); /* iPhone notch */
+    box-shadow: 0 -4px 24px rgba(0,0,0,.5);
+  }
+
+  .pmn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 4px 10px;
+    text-decoration: none;
+    color: rgba(255,255,255,.45);
+    font-size: 9px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pmn-item i {
+    font-size: 18px;
+    transition: transform .2s, color .2s;
+  }
+
+  .pmn-item:hover,
+  .pmn-item.is-active {
+    color: #f0c96a;
+  }
+
+  .pmn-item:hover i,
+  .pmn-item.is-active i {
+    transform: translateY(-2px);
+    color: #f0c96a;
+  }
+
+  /* Add bottom padding to body so content isn't hidden behind nav */
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Hide the desktop main-nav dropdown and hamburger on mobile */
+  .main-nav { display: none !important; }
+  .mobile-menu-toggle { display: none !important; }
+
+  /* Hide the desktop piko-dock on mobile — bottom nav replaces it */
+  .piko-dock { display: none !important; }
+
+  /* Pulse dot on mobile nav for live sections */
+  .pmn-item.pmn-showcase::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: calc(50% - 14px);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4caf7a;
+    animation: pmn-pulse 2s ease-in-out infinite;
+  }
+  .pmn-showcase { position: relative; }
+
+  @keyframes pmn-pulse {
+    0%, 100% { opacity: .6; transform: scale(1); }
+    50%       { opacity: 1;  transform: scale(1.2); }
+  }
+}
