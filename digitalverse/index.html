@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigitalVerse — Blockchain Knowledge Universe | Ikeverse</title>
+  <meta name="description" content="Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles. Critical thinking, verification skills, and deep reading lessons." />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="digitalverse.css" />
+</head>
+<body>
+
+  <!-- Reading progress bar -->
+  <div class="progress-bar" aria-hidden="true">
+    <div class="progress-bar__fill" id="progressFill"></div>
+  </div>
+
+  <!-- ────────── NAV ────────── -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="../../index.html">
+        ← Ikeverse <span>/ DigitalVerse</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#protocols">Protocols</a></li>
+        <li><a href="#lessons">Lessons</a></li>
+        <li><a href="#compare">Compare</a></li>
+        <li><a href="#critical-thinking">Shield</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+      <a class="nav__cta" href="#lessons">Start Learning</a>
+    </div>
+  </nav>
+
+  <!-- ────────── HERO ────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__kicker">💎 Digitalverse — Blockchain Knowledge Universe</div>
+      <h1 class="hero__title">
+        Understand the<br>
+        <em>Digital Future</em><br>
+        First Principles First.
+      </h1>
+      <p class="hero__sub">
+        Bitcoin, Ethereum, XRPL, Flare & Web3 — explored with historical accuracy, critical thinking, and the Aloha spirit of deep understanding over hype.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#lessons">Begin Your Journey</a>
+        <a class="btn btn--ghost" href="#protocols">Explore Protocols</a>
+      </div>
+      <div class="hero__protocols">
+        <span class="protocol-pill btc">₿ Bitcoin</span>
+        <span class="protocol-pill eth">Ξ Ethereum</span>
+        <span class="protocol-pill xrp">◈ XRPL</span>
+        <span class="protocol-pill flr">✦ Flare</span>
+        <span class="protocol-pill sgb">◉ Songbird</span>
+        <span class="protocol-pill web3">⬡ Web3</span>
+      </div>
+    </div>
+    <div class="hero__deco" aria-hidden="true">BLOCK  HEIGHT  881423
+HASH   000000000...a4f2
+TIME   2025-04-04 08:14 UTC
+DIFF   108.52 T
+TXS    3,219
+
+BLOCK  HEIGHT  881422
+HASH   000000000...9c18
+TIME   2025-04-04 08:01 UTC
+DIFF   108.52 T
+TXS    2,847
+
+// "The Times 03/Jan/2009
+//  Chancellor on brink of second
+//  bailout for banks."
+//   — Genesis Block, BTC #0
+
+LEDGER IDX    91,723,440
+CLOSE  TIME   4.1s
+TXS    42
+FEE    12 drops
+
+EPOCH  342  →  343
+SLOT   7,392,014
+VALIDATORS  1,748,291
+STAKE   34.2M ETH</div>
+    <div class="hero__scanner" aria-hidden="true"></div>
+  </section>
+
+  <!-- ────────── PROTOCOL OVERVIEW ────────── -->
+  <section class="section" id="protocols">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-header__tag">// Protocol Index</span>
+        <h2 class="section-header__title">Choose Your Learning Path</h2>
+        <p class="section-header__desc">Six deep-dive tracks. Each protocol has its own history, mechanics, and purpose. Start anywhere.</p>
+      </div>
+
+      <div class="proto-grid">
+
+        <div class="card proto-card btc">
+          <div class="card__header">
+            <div class="proto-card__icon">₿</div>
+            <div class="proto-card__name">Bitcoin</div>
+            <div class="proto-card__tagline">"Peer-to-peer electronic cash." — Satoshi Nakamoto, 2008</div>
+            <p class="proto-card__desc">The original cryptocurrency and the largest by market cap. A decentralized, censorship-resistant monetary network secured by Proof of Work. Understand Satoshi's vision, mining, halvings, and self-custody.</p>
+            <div class="chip-row">
+              <span class="chip btc">Proof of Work</span>
+              <span class="chip btc">SHA-256</span>
+              <span class="chip btc">21M Cap</span>
+              <span class="chip btc">Lightning</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('module-btc')">Start Learning →</button>
+            <span class="lessons-count">5 lessons</span>
+          </div>
+        </div>
+
+        <div class="card proto-card eth">
+          <div class="card__header">
+            <div class="proto-card__icon">Ξ</div>
+            <div class="proto-card__name">Ethereum</div>
+            <div class="proto-card__tagline">"A decentralized platform for smart contracts." — Vitalik Buterin, 2013</div>
+            <p class="proto-card__desc">The programmable blockchain. Ethereum brought smart contracts, DeFi, and NFTs to the world. Transitioned to Proof of Stake in 2022. Home to the largest developer ecosystem in crypto.</p>
+            <div class="chip-row">
+              <span class="chip eth">Proof of Stake</span>
+              <span class="chip eth">EVM</span>
+              <span class="chip eth">Smart Contracts</span>
+              <span class="chip eth">Layer 2</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('module-eth')">Start Learning →</button>
+            <span class="lessons-count">5 lessons</span>
+          </div>
+        </div>
+
+        <div class="card proto-card xrp">
+          <div class="card__header">
+            <div class="proto-card__icon">◈</div>
+            <div class="proto-card__name">XRP Ledger</div>
+            <div class="proto-card__tagline">"Fast, low-cost, scalable digital payments." — 2012</div>
+            <p class="proto-card__desc">A high-speed, energy-efficient payments ledger created in 2012. XRP settles in 3–5 seconds with minimal fees. Features a built-in DEX and AMM. Home to cross-border payment use cases via RippleNet.</p>
+            <div class="chip-row">
+              <span class="chip xrp">Consensus Protocol</span>
+              <span class="chip xrp">No Mining</span>
+              <span class="chip xrp">DEX Built-in</span>
+              <span class="chip xrp">100B Supply</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('module-xrp')">Start Learning →</button>
+            <span class="lessons-count">4 lessons</span>
+          </div>
+        </div>
+
+        <div class="card proto-card flr">
+          <div class="card__header">
+            <div class="proto-card__icon">✦</div>
+            <div class="proto-card__name">Flare Network</div>
+            <div class="proto-card__tagline">"Trustless data and interoperability for all blockchains." — 2023</div>
+            <p class="proto-card__desc">An EVM-compatible Layer 1 blockchain designed to bring trustless data acquisition and cross-chain interoperability to ecosystems previously isolated. Home to the FTSO oracle system and State Connector.</p>
+            <div class="chip-row">
+              <span class="chip flr">EVM Compatible</span>
+              <span class="chip flr">FTSO Oracle</span>
+              <span class="chip flr">State Connector</span>
+              <span class="chip flr">FLR Token</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('module-flr')">Start Learning →</button>
+            <span class="lessons-count">4 lessons</span>
+          </div>
+        </div>
+
+        <div class="card proto-card sgb">
+          <div class="card__header">
+            <div class="proto-card__icon">◉</div>
+            <div class="proto-card__name">Songbird</div>
+            <div class="proto-card__tagline">"Flare's canary network — where ideas are tested first." — 2021</div>
+            <p class="proto-card__desc">Songbird (SGB) is Flare's operational canary network — a live blockchain where new features are deployed and validated before launch on Flare mainnet. Launched September 2021, nearly two years before Flare.</p>
+            <div class="chip-row">
+              <span class="chip sgb">Canary Network</span>
+              <span class="chip sgb">SGB Token</span>
+              <span class="chip sgb">Live Mainnet</span>
+              <span class="chip sgb">FTSO</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('module-flr')">Learn in Flare Module →</button>
+            <span class="lessons-count">Included</span>
+          </div>
+        </div>
+
+        <div class="card proto-card web3">
+          <div class="card__header">
+            <div class="proto-card__icon">⬡</div>
+            <div class="proto-card__name">Web3 & Critical Thinking</div>
+            <div class="proto-card__tagline">"Your best tool in crypto is the knowledge between your ears."</div>
+            <p class="proto-card__desc">Wallets, keys, seed phrases, DeFi, NFTs, DAOs, and — crucially — how to spot scams, red flags, and manipulation. Build your psychological armor before you build your portfolio.</p>
+            <div class="chip-row">
+              <span class="chip green">Self-Custody</span>
+              <span class="chip green">DeFi</span>
+              <span class="chip green">Red Flags</span>
+              <span class="chip green">Verification</span>
+            </div>
+          </div>
+          <div class="card__footer">
+            <button class="lessons-btn" onclick="scrollToId('critical-thinking')">Build Your Shield →</button>
+            <span class="lessons-count">4 lessons</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── DEEP LESSONS ────────── -->
+  <section class="lesson-section section" id="lessons">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-header__tag">// Reading Lessons</span>
+        <h2 class="section-header__title">Deep Reading Modules</h2>
+        <p class="section-header__desc">Factual, sourced, and clearly written. Tap any lesson to expand the full reading.</p>
+      </div>
+
+      <!-- ══ MODULE 1: BITCOIN ══ -->
+      <div class="lesson-module" id="module-btc">
+        <div class="lesson-module__header">
+          <div class="lesson-module__icon" style="background:rgba(247,147,26,0.1);color:var(--btc);">₿</div>
+          <div>
+            <div class="lesson-module__title">Bitcoin Protocol</div>
+            <div class="lesson-module__subtitle">5 lessons · ~25 min read</div>
+          </div>
+        </div>
+        <div class="lessons-list">
+
+          <div class="lesson-item" id="l-btc-1">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-btc-1')">
+              <span class="lesson-item__num">BTC·01</span>
+              <span class="lesson-item__label">The Whitepaper & Satoshi's Vision</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>On <strong>October 31, 2008</strong> — in the depths of a global financial crisis — an anonymous entity using the name <strong>Satoshi Nakamoto</strong> sent a nine-page PDF to a cryptography mailing list. The title: <em>"Bitcoin: A Peer-to-Peer Electronic Cash System."</em> It proposed something radical: a way to send value between two parties on the internet without needing a bank, payment processor, or any trusted third party whatsoever.</p>
+                <div class="callout">
+                  The very first block of the Bitcoin blockchain — the Genesis Block, mined January 3, 2009 — contained an embedded message: <strong>"The Times 03/Jan/2009 Chancellor on brink of second bailout for banks."</strong> This was a real newspaper headline, chosen deliberately as both a timestamp and a statement of purpose.
+                </div>
+                <h4>The Core Problem Satoshi Solved</h4>
+                <p>Before Bitcoin, all digital payment systems required a central authority (a bank or company) to prevent <strong>double-spending</strong> — the ability to send the same digital money to two people simultaneously. A digital file can be copied; physical cash cannot. Satoshi solved this by creating a <strong>shared public ledger</strong> (the blockchain) maintained by thousands of computers worldwide, so no single party controls it.</p>
+                <h4>Key Innovations in the Whitepaper</h4>
+                <ul>
+                  <li><strong>Blockchain</strong> — transactions are grouped into blocks, each cryptographically linked to the one before it. Altering any block invalidates every block after it.</li>
+                  <li><strong>Proof of Work</strong> — computers compete to solve a mathematical puzzle. The winner adds the next block and earns newly minted Bitcoin. This "work" makes attacks financially ruinous.</li>
+                  <li><strong>Decentralization</strong> — no company, government, or individual controls Bitcoin. It runs on a network of tens of thousands of independent nodes globally.</li>
+                  <li><strong>Pseudonymity</strong> — transactions are public but linked to addresses (long strings of characters), not legal identities.</li>
+                </ul>
+                <h4>Satoshi's Disappearance</h4>
+                <p>Satoshi corresponded publicly until late 2010, then handed off development and disappeared entirely. Their true identity remains unknown. They are believed to hold roughly <strong>1 million BTC</strong> in early mined coins — coins that have never moved.</p>
+                <div class="callout success">
+                  The whitepaper is publicly available and highly readable: <strong>bitcoin.org/bitcoin.pdf</strong> — reading it is one of the most valuable hours you can spend in this space.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-btc-2">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-btc-2')">
+              <span class="lesson-item__num">BTC·02</span>
+              <span class="lesson-item__label">Proof of Work — Mining & Network Security</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Bitcoin's security comes from a mechanism called <strong>Proof of Work (PoW)</strong>. Miners — computers running specialized hardware — compete to find a number (called a <em>nonce</em>) that, when combined with the block's data and hashed using <strong>SHA-256</strong>, produces an output below a specific target. This is computationally expensive but trivially easy to verify.</p>
+                <h4>SHA-256: The Engine</h4>
+                <p>SHA-256 is a cryptographic hash function. Feed it any data, and it outputs a fixed 256-bit string. The same input always produces the same output, but changing even one character produces a completely different result — and it's computationally infeasible to reverse. Bitcoin uses it twice (SHA-256d) for added security.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">~10 min</div><div class="fact-item__key">Avg Block Time</div></div>
+                  <div class="fact-item"><div class="fact-item__val">108+ T</div><div class="fact-item__key">Difficulty (2025)</div></div>
+                  <div class="fact-item"><div class="fact-item__val">700+ EH/s</div><div class="fact-item__key">Network Hashrate</div></div>
+                  <div class="fact-item"><div class="fact-item__val">2,016</div><div class="fact-item__key">Blocks per Adjustment</div></div>
+                </div>
+                <h4>Difficulty Adjustment</h4>
+                <p>Every 2,016 blocks (~2 weeks), the Bitcoin network automatically adjusts the mining difficulty so that blocks continue to arrive approximately every 10 minutes — regardless of whether more or fewer miners join the network. This self-regulating mechanism is one of Bitcoin's most elegant designs.</p>
+                <h4>The 51% Attack</h4>
+                <p>For an attacker to rewrite Bitcoin's history, they would need to control more than 50% of the entire network's computational power — while simultaneously outpacing all honest miners. At Bitcoin's current scale (hundreds of exahashes per second), this would require billions of dollars of specialized hardware and energy, making it economically irrational even for nation-states.</p>
+                <div class="callout warning">
+                  <strong>Energy debate:</strong> Bitcoin does consume substantial electricity. However, miners increasingly use stranded or renewable energy. The energy usage secures $1+ trillion in value and replaces energy-intensive traditional banking infrastructure.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-btc-3">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-btc-3')">
+              <span class="lesson-item__num">BTC·03</span>
+              <span class="lesson-item__label">The 21 Million Cap & Halving Cycles</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Bitcoin has a <strong>hard cap of 21 million coins</strong>. This number is encoded into the software and enforced by every node on the network. No authority can change it without a majority of the network agreeing — and there is virtually no appetite to do so. This scarcity is fundamental to Bitcoin's monetary policy and is what leads many to call it "digital gold."</p>
+                <h4>How New Bitcoin is Created</h4>
+                <p>New Bitcoin enters circulation only one way: as a <strong>block reward</strong> paid to the winning miner. When Satoshi mined the Genesis Block in January 2009, the reward was <strong>50 BTC</strong> per block. The protocol dictates that this reward is cut in half every <strong>210,000 blocks</strong>, which occurs approximately every four years.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">50 BTC</div><div class="fact-item__key">2009 Reward</div></div>
+                  <div class="fact-item"><div class="fact-item__val">25 BTC</div><div class="fact-item__key">2012 Halving</div></div>
+                  <div class="fact-item"><div class="fact-item__val">12.5 BTC</div><div class="fact-item__key">2016 Halving</div></div>
+                  <div class="fact-item"><div class="fact-item__val">6.25 BTC</div><div class="fact-item__key">2020 Halving</div></div>
+                  <div class="fact-item"><div class="fact-item__val">3.125 BTC</div><div class="fact-item__key">April 2024 Halving</div></div>
+                </div>
+                <h4>The April 2024 Halving</h4>
+                <p>The most recent Bitcoin halving occurred at block <strong>840,000</strong> on April 19–20, 2024. The block reward dropped from 6.25 BTC to <strong>3.125 BTC</strong>. This is the fourth halving in Bitcoin's history. The next halving is projected around <strong>2028</strong>, when the reward will drop to 1.5625 BTC.</p>
+                <h4>When Will the Last Bitcoin be Mined?</h4>
+                <p>Due to the halving schedule, the last of the ~21 million Bitcoin will be mined around the year <strong>2140</strong>. After that, miners will be compensated entirely by <strong>transaction fees</strong> — ensuring economic incentive to secure the network continues indefinitely.</p>
+                <div class="callout">
+                  As of 2025, approximately <strong>19.85 million BTC</strong> have been mined. This means roughly <strong>1.15 million BTC</strong> remain to be produced over the next 115+ years. The issuance schedule is precisely known — something no central bank currency can claim.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-btc-4">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-btc-4')">
+              <span class="lesson-item__num">BTC·04</span>
+              <span class="lesson-item__label">Wallets, Keys & Self-Custody</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>One of Bitcoin's most powerful — and most misunderstood — aspects is ownership. When you "own" Bitcoin, you don't own a coin. You own a <strong>private key</strong>: a secret number that proves you have the right to spend the Bitcoin at a specific address. <em>"Not your keys, not your coins"</em> is the most important phrase in crypto.</p>
+                <h4>Public Key vs. Private Key</h4>
+                <ul>
+                  <li><strong>Private Key</strong> — A randomly generated 256-bit number. Think of it as your password. Never share it. Whoever has it controls the funds.</li>
+                  <li><strong>Public Key</strong> — Derived mathematically from the private key using <strong>Elliptic Curve Cryptography (secp256k1)</strong>. It can be shared freely.</li>
+                  <li><strong>Bitcoin Address</strong> — A hash of the public key. Addresses starting with "1" are legacy; "3" are SegWit; "bc1" are native SegWit (Bech32).</li>
+                </ul>
+                <h4>Seed Phrases (BIP-39)</h4>
+                <p>Modern wallets generate a <strong>seed phrase</strong> — a list of 12 or 24 common English words — that encodes your master private key. From this one phrase, all your addresses and keys can be mathematically recovered. <strong>Write it down on paper. Store it safely. Never photograph it or type it into any website.</strong></p>
+                <h4>Types of Wallets</h4>
+                <ul>
+                  <li><strong>Hardware wallets</strong> (Ledger, Trezor) — private keys stored offline. Most secure for significant holdings.</li>
+                  <li><strong>Software wallets</strong> (Sparrow, BlueWallet) — on your device. Convenient but exposed if your device is compromised.</li>
+                  <li><strong>Custodial wallets</strong> (exchanges) — the exchange holds your keys. Convenient but you are trusting a third party. Not self-custody.</li>
+                </ul>
+                <div class="callout danger">
+                  <strong>Never:</strong> enter your seed phrase into any website, app, or form that asks for it. No legitimate wallet recovery service exists. This is always a phishing scam.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-btc-5">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-btc-5')">
+              <span class="lesson-item__num">BTC·05</span>
+              <span class="lesson-item__label">Lightning Network — Layer 2 Payments</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Bitcoin's base layer processes roughly <strong>7 transactions per second</strong> — deliberately slow to prioritize security and decentralization. The <strong>Lightning Network</strong> is a Layer 2 payment protocol built on top of Bitcoin that enables near-instant, near-free transactions by moving most activity off-chain.</p>
+                <h4>How Lightning Works</h4>
+                <p>Two parties open a <strong>payment channel</strong> by locking some Bitcoin into a multi-signature on-chain transaction. They can then send value back and forth instantly — updating a shared balance sheet — without broadcasting each transaction to the main chain. When they close the channel, the final balance settles on-chain in one transaction.</p>
+                <h4>Routing Payments</h4>
+                <p>You don't need a direct channel with everyone. Lightning routes payments through a network of interconnected channels. If Alice has a channel with Bob, and Bob has one with Carol, Alice can pay Carol — with Bob acting as a routing node and earning a small fee for the service.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">&lt;1 sec</div><div class="fact-item__key">Settlement Time</div></div>
+                  <div class="fact-item"><div class="fact-item__val">&lt;1 sat</div><div class="fact-item__key">Typical Fee</div></div>
+                  <div class="fact-item"><div class="fact-item__val">1 sat</div><div class="fact-item__key">= 0.00000001 BTC</div></div>
+                  <div class="fact-item"><div class="fact-item__val">Global</div><div class="fact-item__key">Network Reach</div></div>
+                </div>
+                <h4>Real-World Use</h4>
+                <p>Lightning is active and functional. It's used for micropayments, streaming satoshis for content, international remittances, and powering the Bitcoin circular economy. Apps like <strong>Strike, Wallet of Satoshi, Phoenix</strong>, and <strong>Breez</strong> make it accessible to non-technical users. El Salvador adopted Bitcoin as legal tender in September 2021 and built national payment infrastructure on Lightning.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /module btc -->
+
+      <!-- ══ MODULE 2: ETHEREUM ══ -->
+      <div class="lesson-module" id="module-eth">
+        <div class="lesson-module__header">
+          <div class="lesson-module__icon" style="background:rgba(138,146,178,0.1);color:var(--eth);">Ξ</div>
+          <div>
+            <div class="lesson-module__title">Ethereum</div>
+            <div class="lesson-module__subtitle">5 lessons · ~25 min read</div>
+          </div>
+        </div>
+        <div class="lessons-list">
+
+          <div class="lesson-item" id="l-eth-1">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-eth-1')">
+              <span class="lesson-item__num">ETH·01</span>
+              <span class="lesson-item__label">Smart Contracts & the EVM</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p><strong>Vitalik Buterin</strong> proposed Ethereum in a whitepaper in late 2013, when he was 19 years old. His insight: Bitcoin's scripting language was intentionally limited. What if you built a blockchain with a <strong>Turing-complete</strong> programming language — one capable of running any computable program? Ethereum launched on <strong>July 30, 2015</strong>.</p>
+                <h4>Smart Contracts</h4>
+                <p>A smart contract is a program stored on the Ethereum blockchain. It executes automatically when specific conditions are met — no middleman required. Once deployed, it runs exactly as coded; no one, not even its creator, can stop it (barring an upgrade mechanism built in).</p>
+                <div class="callout">Think of a smart contract like a vending machine: you insert money, select your item, and it executes automatically without a cashier. The code is the law.</div>
+                <h4>The Ethereum Virtual Machine (EVM)</h4>
+                <p>The EVM is the runtime environment — the "computer" — that executes smart contracts on Ethereum. Every node runs the same EVM, processes the same transactions, and arrives at the same state. This creates a single, shared, <strong>decentralized world computer</strong>.</p>
+                <h4>Solidity</h4>
+                <p>Ethereum's primary programming language is <strong>Solidity</strong> — a JavaScript/C++-like language designed specifically for writing smart contracts. Developers also use <strong>Vyper</strong>, a Python-inspired alternative emphasizing security and simplicity.</p>
+                <h4>ERC Token Standards</h4>
+                <ul>
+                  <li><strong>ERC-20</strong> — The standard for fungible tokens (e.g., USDC, UNI, LINK).</li>
+                  <li><strong>ERC-721</strong> — The standard for non-fungible tokens (NFTs). Each token is unique.</li>
+                  <li><strong>ERC-1155</strong> — A multi-token standard for both fungible and non-fungible tokens, commonly used in gaming.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-eth-2">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-eth-2')">
+              <span class="lesson-item__num">ETH·02</span>
+              <span class="lesson-item__label">The Merge — From Proof of Work to Proof of Stake</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>On <strong>September 15, 2022</strong>, Ethereum completed its transition from Proof of Work to <strong>Proof of Stake</strong> in an upgrade known as <em>"The Merge."</em> It was one of the most technically complex events in blockchain history — switching the consensus mechanism of a live, trillion-dollar network while keeping it running.</p>
+                <h4>What Changed</h4>
+                <p>Under Proof of Work, miners competed using computational power. Under <strong>Proof of Stake (PoS)</strong>, validators are selected to propose and attest to blocks based on the amount of ETH they <strong>stake</strong> (lock up as collateral). Validators must stake a minimum of <strong>32 ETH</strong> to run a full validator node.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">~99.95%</div><div class="fact-item__key">Energy Reduction</div></div>
+                  <div class="fact-item"><div class="fact-item__val">32 ETH</div><div class="fact-item__key">Min. Validator Stake</div></div>
+                  <div class="fact-item"><div class="fact-item__val">~12 sec</div><div class="fact-item__key">Slot Time</div></div>
+                  <div class="fact-item"><div class="fact-item__val">34M+ ETH</div><div class="fact-item__key">Total Staked (2025)</div></div>
+                </div>
+                <h4>Slashing</h4>
+                <p>Validators who behave dishonestly — like proposing two conflicting blocks — have a portion of their staked ETH <strong>slashed</strong> (destroyed). This economic penalty replaces the wasted energy of PoW as the deterrent against cheating.</p>
+                <h4>Staking Alternatives</h4>
+                <p><strong>Liquid staking protocols</strong> like Lido (stETH), Rocket Pool (rETH), and Coinbase (cbETH) allow you to stake any amount and receive a liquid token representing your staked position.</p>
+                <div class="callout warning">Liquid staking carries smart contract risk and centralization risk. Lido alone controls over 30% of all staked ETH, which raises decentralization concerns the Ethereum community actively debates.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-eth-3">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-eth-3')">
+              <span class="lesson-item__num">ETH·03</span>
+              <span class="lesson-item__label">Gas, Gwei & Transaction Fees (EIP-1559)</span>
+              <span class="lesson-item__meta read-badge">⏱ 4 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Every operation on Ethereum costs computational resources measured in <strong>gas</strong>, denominated in <strong>Gwei</strong> (one billionth of one ETH: <em>1 ETH = 1,000,000,000 Gwei</em>). Gas fees prevent spam and compensate validators for computation.</p>
+                <h4>EIP-1559 (August 2021)</h4>
+                <p>Under EIP-1559, every transaction has a <strong>base fee</strong> — algorithmically set by the network — that is <strong>burned</strong> (permanently removed from supply). Users can add a <strong>priority fee</strong> (tip) to incentivize faster inclusion.</p>
+                <div class="callout">The burning of base fees makes Ethereum deflationary during high-demand periods. More ETH burned than issued = net reduction in supply. Since The Merge, Ethereum has burned millions of ETH.</div>
+                <h4>Reading a Gas Price</h4>
+                <ul>
+                  <li>A standard ETH transfer costs <strong>21,000 gas units</strong></li>
+                  <li>At 20 Gwei base fee: 21,000 × 20 Gwei = 420,000 Gwei = <strong>0.00042 ETH</strong></li>
+                  <li>Complex DeFi swaps can cost 200,000–500,000+ gas units</li>
+                </ul>
+                <h4>Layer 2s and Lower Fees</h4>
+                <p><strong>Layer 2 networks</strong> (Arbitrum, Optimism, Base, zkSync Era) batch thousands of transactions off-chain and post compressed proofs to Ethereum, reducing costs by 10–100x while inheriting Ethereum's security.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-eth-4">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-eth-4')">
+              <span class="lesson-item__num">ETH·04</span>
+              <span class="lesson-item__label">DeFi — Decentralized Finance</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p><strong>Decentralized Finance (DeFi)</strong> refers to financial services — lending, borrowing, trading, earning yield — built on open smart contracts rather than centralized institutions. Anyone with a wallet can access these protocols without identity verification, credit checks, or geographic restrictions.</p>
+                <h4>Core DeFi Primitives</h4>
+                <ul>
+                  <li><strong>Automated Market Makers (AMMs)</strong> — Protocols like Uniswap allow trading without an order book. Pricing is determined by the constant product formula: <em>x × y = k</em>.</li>
+                  <li><strong>Lending Protocols</strong> — Platforms like Aave and Compound allow users to deposit collateral and borrow other assets. All positions are overcollateralized; under-collateralized positions are automatically liquidated.</li>
+                  <li><strong>Stablecoins</strong> — <em>USDC, USDT</em> are centrally issued. <em>DAI</em> is algorithmically maintained by MakerDAO through crypto collateral.</li>
+                  <li><strong>Yield Aggregators</strong> — Protocols like Yearn Finance automatically move user funds across lending markets to maximize returns.</li>
+                </ul>
+                <div class="callout danger"><strong>DeFi risks are real.</strong> Smart contract bugs have cost billions. Rug pulls, oracle manipulation, and liquidation cascades are documented, recurring events. Never invest more than you can afford to lose entirely.</div>
+                <h4>TVL (Total Value Locked)</h4>
+                <p>DeFi activity is measured by <strong>Total Value Locked (TVL)</strong> — the total USD value of assets deposited in DeFi protocols. It's a useful but imperfect metric (inflated by leverage and double-counting).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-eth-5">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-eth-5')">
+              <span class="lesson-item__num">ETH·05</span>
+              <span class="lesson-item__label">Layer 2 Scaling — Rollups Explained</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Ethereum mainnet processes roughly <strong>15–30 transactions per second</strong>. The Ethereum community's scaling solution centers on <strong>rollups</strong> — Layer 2 chains that execute transactions off-chain and post cryptographic proof to Ethereum mainnet.</p>
+                <h4>Optimistic Rollups</h4>
+                <p>Optimistic rollups (Arbitrum, Optimism, Base) assume all transactions are valid by default and post batches to Ethereum. A <strong>challenge period</strong> (typically 7 days) allows fraud proofs to be submitted if invalid transactions are detected. Fast, EVM-compatible, and widely used.</p>
+                <h4>ZK-Rollups</h4>
+                <p>Zero-Knowledge rollups (zkSync Era, Starknet, Polygon zkEVM) generate a <strong>cryptographic validity proof</strong> for every batch. These proofs are verified on Ethereum and cannot be faked. No challenge period needed — withdrawals to mainnet are much faster. ZK technology is considered the long-term future of Ethereum scaling.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">Arbitrum</div><div class="fact-item__key">Largest L2 by TVL</div></div>
+                  <div class="fact-item"><div class="fact-item__val">Base</div><div class="fact-item__key">By Coinbase, OP Stack</div></div>
+                  <div class="fact-item"><div class="fact-item__val">zkSync</div><div class="fact-item__key">ZK-Rollup Pioneer</div></div>
+                  <div class="fact-item"><div class="fact-item__val">Starknet</div><div class="fact-item__key">Cairo Lang ZK-Rollup</div></div>
+                </div>
+                <h4>Proto-Danksharding (EIP-4844)</h4>
+                <p>In March 2024, Ethereum activated <strong>EIP-4844</strong> (Dencun upgrade), introducing <strong>blob transactions</strong> — a new data format for rollups to post their batches more cheaply. Immediately after activation, L2 transaction fees dropped by 90%+ on many networks.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /module eth -->
+
+      <!-- ══ MODULE 3: XRPL ══ -->
+      <div class="lesson-module" id="module-xrp">
+        <div class="lesson-module__header">
+          <div class="lesson-module__icon" style="background:rgba(37,170,225,0.1);color:var(--xrp);">◈</div>
+          <div>
+            <div class="lesson-module__title">XRP Ledger (XRPL)</div>
+            <div class="lesson-module__subtitle">4 lessons · ~20 min read</div>
+          </div>
+        </div>
+        <div class="lessons-list">
+
+          <div class="lesson-item" id="l-xrp-1">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-xrp-1')">
+              <span class="lesson-item__num">XRP·01</span>
+              <span class="lesson-item__label">XRPL Architecture & Origins</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>The XRP Ledger was created by <strong>Jed McCaleb, Arthur Britto, and David Schwartz</strong> in 2012 — before Ripple (the company) existed. They built it as a faster, more energy-efficient alternative to Bitcoin, focused on payments and value transfer. The company <strong>Ripple Labs</strong> was subsequently founded to build financial products on top of the ledger.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">2012</div><div class="fact-item__key">XRPL Launch</div></div>
+                  <div class="fact-item"><div class="fact-item__val">3–5 sec</div><div class="fact-item__key">Settlement Time</div></div>
+                  <div class="fact-item"><div class="fact-item__val">~0.00001 XRP</div><div class="fact-item__key">Avg Transaction Fee</div></div>
+                  <div class="fact-item"><div class="fact-item__val">100 Billion</div><div class="fact-item__key">Total XRP Supply</div></div>
+                </div>
+                <h4>Pre-mined Supply</h4>
+                <p>All 100 billion XRP were created at launch — there is no mining. 80 billion were given to the founding company (now Ripple Labs), and 20 billion to the founders personally. Ripple holds the majority of XRP in <strong>escrow</strong> — time-locked contracts releasing up to 1 billion XRP per month, with unused amounts returned to escrow.</p>
+                <div class="callout warning">The concentration of XRP supply in Ripple's control is a frequently cited concern about XRPL's decentralization. Understanding this concentration is important for any investor.</div>
+                <h4>Ripple vs. the XRP Ledger</h4>
+                <p>It's important to distinguish between <strong>Ripple Labs</strong> (a private company) and the <strong>XRP Ledger</strong> (an open, decentralized blockchain). The XRP Ledger is open-source and would continue to exist if Ripple ceased to operate.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-xrp-2">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-xrp-2')">
+              <span class="lesson-item__num">XRP·02</span>
+              <span class="lesson-item__label">The Consensus Protocol — No Mining Required</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>XRPL uses a unique <strong>XRP Ledger Consensus Protocol (XRPLCP)</strong> — neither Proof of Work nor Proof of Stake. It is a form of <strong>Byzantine Fault Tolerant (BFT) consensus</strong> based on trusted validator lists.</p>
+                <h4>How Consensus Works</h4>
+                <p>Validators communicate to agree on the next valid set of transactions. Each node operator maintains a <strong>Unique Node List (UNL)</strong> — a personally chosen list of validators they trust. Agreement is reached when a supermajority (80%) of trusted validators agree on a ledger state. A new ledger closes every <strong>3–5 seconds</strong>.</p>
+                <h4>No Mining, No Block Rewards</h4>
+                <p>Because XRPL doesn't use mining, it uses a fraction of Bitcoin's energy. Validators run voluntarily and are not compensated with new XRP — making the network extremely energy-efficient.</p>
+                <div class="callout success">XRPL's throughput: approximately <strong>1,500 transactions per second</strong> with confirmed settlement in 3–5 seconds. One of the fastest major blockchain networks in production.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-xrp-3">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-xrp-3')">
+              <span class="lesson-item__num">XRP·03</span>
+              <span class="lesson-item__label">Built-in DEX, AMM & Advanced Features</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>A <strong>decentralized exchange (DEX) is native to the XRPL protocol</strong> — not a smart contract layer built on top. XRPL's DEX has existed since 2013, predating Uniswap by six years.</p>
+                <h4>Native DEX</h4>
+                <p>The XRPL DEX uses an <strong>order book model</strong>. Any token issued on XRPL can be traded. <strong>Auto-bridging</strong> routes trades automatically through XRP if no direct pair exists between two tokens.</p>
+                <h4>Automated Market Maker (AMM)</h4>
+                <p>In 2024, XRPL activated <strong>AMM functionality</strong> (XLS-30d amendment). Liquidity providers can deposit token pairs into pools and earn trading fees. XRPL's AMM and order book are interoperable — the protocol automatically routes trades through whichever gives the best price.</p>
+                <h4>Issued Currencies & Stablecoins</h4>
+                <p>Any entity can issue tokens on XRPL. XRPL supports USDC, <strong>RLUSD</strong> (Ripple's stablecoin launched 2024), and many other assets. The <strong>trust line</strong> system requires users to explicitly opt in to holding any issued currency.</p>
+                <h4>NFTs on XRPL (XLS-20)</h4>
+                <p>XRPL added native NFT support in 2022 via the <strong>XLS-20</strong> amendment, enabling minting, trading, and burning of NFTs on-ledger with low fees.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-xrp-4">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-xrp-4')">
+              <span class="lesson-item__num">XRP·04</span>
+              <span class="lesson-item__label">The SEC Case & Regulatory Clarity</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>In <strong>December 2020</strong>, the SEC filed a lawsuit against Ripple Labs and executives <strong>Brad Garlinghouse</strong> and <strong>Chris Larsen</strong>, alleging XRP was an unregistered security and that Ripple conducted a $1.3 billion unregistered securities offering.</p>
+                <h4>Judge Torres' July 2023 Ruling</h4>
+                <p>In a landmark ruling on <strong>July 13, 2023</strong>, Judge Analisa Torres issued a <strong>split decision</strong>: XRP sold directly to institutional investors constituted an unregistered securities offering, but XRP sold on <strong>secondary markets</strong> (exchanges) was <strong>not</strong> a security under the Howey Test — a significant partial victory for Ripple and the industry.</p>
+                <div class="callout">The ruling was the first time a federal court found that a major cryptocurrency was not a security when sold on exchanges.</div>
+                <h4>SEC Settlement (2024)</h4>
+                <p>In <strong>October 2024</strong>, the SEC and Ripple reached a settlement. Ripple agreed to pay a reduced penalty of <strong>$125 million</strong> (down from the SEC's request for $2 billion). The SEC dropped its appeal of the secondary-market ruling, removing the largest regulatory overhang on XRP.</p>
+                <div class="callout warning"><strong>Important nuance:</strong> The ruling and settlement apply specifically to U.S. law and the facts of Ripple's conduct. They do not create blanket legal clarity for all cryptocurrencies.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /module xrp -->
+
+      <!-- ══ MODULE 4: FLARE & SONGBIRD ══ -->
+      <div class="lesson-module" id="module-flr">
+        <div class="lesson-module__header">
+          <div class="lesson-module__icon" style="background:rgba(225,27,113,0.1);color:var(--flr);">✦</div>
+          <div>
+            <div class="lesson-module__title">Flare Network & Songbird</div>
+            <div class="lesson-module__subtitle">4 lessons · ~20 min read</div>
+          </div>
+        </div>
+        <div class="lessons-list">
+
+          <div class="lesson-item" id="l-flr-1">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-flr-1')">
+              <span class="lesson-item__num">FLR·01</span>
+              <span class="lesson-item__label">What is Flare Network?</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p><strong>Flare Network</strong> is an EVM-compatible Layer 1 blockchain designed to solve a specific problem: most blockchains — especially Bitcoin and XRPL — cannot access external data or interact with other chains without trusting a centralized bridge or oracle. Flare was built from the ground up to address this through protocol-level solutions.</p>
+                <p>Flare was co-founded by <strong>Hugo Philion</strong> (CEO) and <strong>Sean Roome</strong>. Development began circa 2019. Its <strong>canary network, Songbird (SGB)</strong>, launched in September 2021. Flare mainnet launched on <strong>January 9–10, 2023</strong>.</p>
+                <div class="fact-block">
+                  <div class="fact-item"><div class="fact-item__val">2023</div><div class="fact-item__key">Flare Mainnet</div></div>
+                  <div class="fact-item"><div class="fact-item__val">2021</div><div class="fact-item__key">Songbird Launch</div></div>
+                  <div class="fact-item"><div class="fact-item__val">EVM</div><div class="fact-item__key">Compatible</div></div>
+                  <div class="fact-item"><div class="fact-item__val">FLR / SGB</div><div class="fact-item__key">Native Tokens</div></div>
+                </div>
+                <h4>Flare's Core Mission</h4>
+                <ul>
+                  <li><strong>Trustless data acquisition</strong> — getting off-chain data onto the chain without relying on a centralized provider</li>
+                  <li><strong>Cross-chain interoperability</strong> — connecting isolated blockchains so value and data can flow between them</li>
+                  <li><strong>Smart contract capability</strong> — bringing EVM programmability to ecosystems like XRP and BTC holders</li>
+                </ul>
+                <h4>Relationship to XRP</h4>
+                <p>XRP holders received a FLR token airdrop (snapshot taken December 12, 2020). While Flare is not owned by or controlled by Ripple, it was designed with XRP Ledger interoperability as a primary use case.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-flr-2">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-flr-2')">
+              <span class="lesson-item__num">FLR·02</span>
+              <span class="lesson-item__label">FTSO — Flare Time Series Oracle</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>The <strong>Flare Time Series Oracle (FTSO)</strong> is a decentralized, on-chain price feed system providing real-world data — primarily cryptocurrency and commodity prices — to Flare's smart contract ecosystem without relying on any centralized data provider.</p>
+                <h4>How FTSO Works</h4>
+                <p><strong>Data providers</strong> submit price estimates for various assets at regular intervals. The FTSO aggregates submissions using a weighted median algorithm, filters outliers, and produces a canonical price feed stored on-chain. Providers within the accepted range earn <strong>FLR token rewards</strong>.</p>
+                <h4>FTSOv2</h4>
+                <p>In 2024, Flare upgraded to <strong>FTSOv2</strong>:</p>
+                <ul>
+                  <li><strong>Anchor feeds</strong> — high-value price feeds updated every ~90 seconds</li>
+                  <li><strong>Block-latency feeds</strong> — ultra-fast feeds updated every block (~1.8 seconds), providing near real-time prices</li>
+                  <li>Expanded number of supported data types beyond price feeds</li>
+                </ul>
+                <h4>FlareDrop</h4>
+                <p>FLR held in wrapped form (WFLR) or delegated to FTSO data providers is eligible for <strong>FlareDrop</strong> — a monthly distribution of FLR tokens over 36 months from the Flare Foundation's allocation.</p>
+                <div class="callout success">Unlike Chainlink (which uses a separate oracle network), FTSO's data provision is native to Flare and incentivized directly through the network's token economics.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-flr-3">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-flr-3')">
+              <span class="lesson-item__num">FLR·03</span>
+              <span class="lesson-item__label">State Connector — Trustless Cross-Chain Data</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>The <strong>State Connector</strong> (evolving into the broader <strong>Flare Data Connector</strong>) is Flare's protocol for trustlessly proving that specific events or state changes occurred on external blockchains — without requiring Flare to trust any centralized bridge or relay.</p>
+                <h4>The Oracle Problem</h4>
+                <p>All blockchains are isolated by design. A smart contract on Ethereum cannot natively know what happened on Bitcoin's blockchain — it needs an external oracle. The problem: most bridges rely on small committees of signers who can be compromised (and have been, repeatedly).</p>
+                <h4>How the State Connector Works</h4>
+                <p>A decentralized set of <strong>attestation providers</strong> observe events on other blockchains and submit signed attestations to Flare. The protocol reaches consensus using a Merkle tree commitment scheme. Smart contracts on Flare can then verify these attestations cryptographically — proving events happened on external chains.</p>
+                <div class="callout"><strong>Use case:</strong> A user locks BTC on Bitcoin. The State Connector confirms this event on Flare. A smart contract then mints equivalent wrapped BTC on Flare — without any centralized custodian or bridge operator.</div>
+                <h4>Supported Chains</h4>
+                <p>As of 2024–2025, the Flare Data Connector supports attestation from <strong>Bitcoin, Ethereum, XRPL, Dogecoin</strong>, and others, with continued expansion planned.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-flr-4">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-flr-4')">
+              <span class="lesson-item__num">FLR·04</span>
+              <span class="lesson-item__label">Songbird — Flare's Canary Network</span>
+              <span class="lesson-item__meta read-badge">⏱ 4 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p><strong>Songbird (SGB)</strong> launched on <strong>September 16, 2021</strong> — nearly 16 months before Flare mainnet. It is Flare's <em>operational canary network</em>: a live blockchain with real economic value where new features are deployed, tested, and battle-hardened before being considered for Flare mainnet.</p>
+                <h4>What "Canary Network" Means</h4>
+                <p>The term comes from the historical practice of bringing canary birds into coal mines as early warning systems for dangerous gases. A canary network serves a similar purpose in blockchain development: a live, economically meaningful network (not a testnet) where real users test real features with real tokens, revealing bugs and attack vectors that simulated tests miss.</p>
+                <div class="callout">Other canary network examples: <strong>Kusama (KSM)</strong> is Polkadot's canary network. Canary networks sit between testnets (no real value) and mainnets (full production).</div>
+                <h4>SGB Token</h4>
+                <p>Songbird's native token is <strong>SGB</strong>. SGB holders can wrap their tokens (WSGB) and delegate to FTSO data providers on Songbird to earn rewards. XRP holders who qualified for the FLR airdrop also received an SGB airdrop.</p>
+                <h4>Songbird vs. Flare</h4>
+                <p>Songbird moves faster and takes more risk — features may break. Flare is more conservative, activating only features proven on Songbird. This staged approach is a thoughtful risk management strategy for infrastructure-critical blockchain features.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /module flr -->
+
+    </div>
+  </section>
+
+  <!-- ────────── COMPARISON TABLE ────────── -->
+  <section class="section section--sm" id="compare" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-header__tag">// Protocol Comparison</span>
+        <h2 class="section-header__title">Side-by-Side at a Glance</h2>
+      </div>
+      <div class="comparison-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th style="color:var(--btc);">₿ Bitcoin</th>
+              <th style="color:var(--eth);">Ξ Ethereum</th>
+              <th style="color:var(--xrp);">◈ XRPL</th>
+              <th style="color:var(--flr);">✦ Flare</th>
+              <th style="color:var(--sgb);">◉ Songbird</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="label-col">Launch Year</td><td>2009</td><td>2015</td><td>2012</td><td>2023</td><td>2021</td></tr>
+            <tr><td class="label-col">Consensus</td><td>Proof of Work</td><td>Proof of Stake</td><td>XRPLCP (BFT)</td><td>Avalanche-based PoS</td><td>Avalanche-based PoS</td></tr>
+            <tr><td class="label-col">Smart Contracts</td><td>Limited (Script)</td><td>Full (EVM / Solidity)</td><td>Limited (Hooks)</td><td>Full (EVM / Solidity)</td><td>Full (EVM / Solidity)</td></tr>
+            <tr><td class="label-col">Settlement Time</td><td class="mono">~60 min (6 conf.)</td><td class="mono">~12 sec</td><td class="mono">3–5 sec</td><td class="mono">~1.8 sec</td><td class="mono">~1.8 sec</td></tr>
+            <tr><td class="label-col">TPS (approx.)</td><td class="mono">7</td><td class="mono">15–30</td><td class="mono">1,500</td><td class="mono">Thousands</td><td class="mono">Thousands</td></tr>
+            <tr><td class="label-col">Token Supply</td><td class="mono">21M (hard cap)</td><td class="mono">~120M (deflationary)</td><td class="mono">100B (pre-mined)</td><td class="mono">100B (FLR)</td><td class="mono">15B (SGB)</td></tr>
+            <tr><td class="label-col">Energy Use</td><td>High (PoW)</td><td>Very Low (PoS)</td><td>Very Low (No Mining)</td><td>Low</td><td>Low</td></tr>
+            <tr><td class="label-col">Primary Use Case</td><td>Store of value, sound money</td><td>Smart contracts, DeFi, apps</td><td>Payments, DEX, bridging</td><td>Oracle data, interoperability</td><td>Feature testing (canary)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── CRITICAL THINKING ────────── -->
+  <section class="section" id="critical-thinking">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-header__tag">// Psychological Defense</span>
+        <h2 class="section-header__title">Build Your Critical Thinking Shield</h2>
+        <p class="section-header__desc">Your most valuable asset in crypto isn't your wallet — it's your ability to think clearly and verify claims.</p>
+      </div>
+
+      <div class="ct-grid" style="margin-bottom:40px;">
+        <div class="ct-card danger">
+          <div class="ct-card__icon">🚩</div>
+          <div class="ct-card__title">Red Flag Language Patterns</div>
+          <div class="ct-card__body">Certain phrases appear repeatedly in scams and misleading projects. Train yourself to recognize them instantly.</div>
+          <ul class="ct-card__list">
+            <li>"Guaranteed returns" or "risk-free"</li>
+            <li>"This is the next Bitcoin" / "100x guaranteed"</li>
+            <li>"Act now — limited time / spots"</li>
+            <li>"Insider information" or "secret opportunity"</li>
+            <li>"Just trust me / the team"</li>
+            <li>"Send crypto and receive double back"</li>
+          </ul>
+        </div>
+        <div class="ct-card warning">
+          <div class="ct-card__icon">⚠️</div>
+          <div class="ct-card__title">Manipulation Psychology</div>
+          <div class="ct-card__body">Crypto scams exploit well-documented cognitive biases. Understanding them is your first line of defense.</div>
+          <ul class="ct-card__list">
+            <li><strong>FOMO</strong> — Fear of missing out drives impulsive decisions</li>
+            <li><strong>Authority bias</strong> — Fake endorsements from celebrities or "experts"</li>
+            <li><strong>Social proof</strong> — "Everyone in my group is doing it"</li>
+            <li><strong>Sunk cost</strong> — "I've already invested so much, I can't stop"</li>
+            <li><strong>Anchoring</strong> — "This coin was $10, now it's $0.01 — so cheap!"</li>
+          </ul>
+        </div>
+        <div class="ct-card success">
+          <div class="ct-card__icon">✅</div>
+          <div class="ct-card__title">Signs of Legitimate Projects</div>
+          <div class="ct-card__body">Good projects share these traits. No single factor is definitive, but patterns matter.</div>
+          <ul class="ct-card__list">
+            <li>Transparent team with verifiable identities</li>
+            <li>Open-source code on GitHub with commit history</li>
+            <li>Clear, realistic use case and tokenomics</li>
+            <li>Independent security audits (read the reports)</li>
+            <li>Welcomes criticism and hard questions</li>
+            <li>No pressure to buy — education first</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom:24px;">
+        <span class="section-header__tag">// Skill Progression</span>
+        <h3 style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;">Verification Skills Track</h3>
+      </div>
+      <div class="skill-track">
+        <div class="skill-level">
+          <div class="skill-level__dot"></div>
+          <div class="skill-level__label">Beginner</div>
+          <ul class="skill-level__items">
+            <li>Reading whitepapers critically</li>
+            <li>Checking multiple independent sources</li>
+            <li>Understanding basic tokenomics</li>
+            <li>Identifying anonymous vs. doxxed teams</li>
+            <li>Recognizing common scam formats</li>
+          </ul>
+        </div>
+        <div class="skill-level">
+          <div class="skill-level__dot"></div>
+          <div class="skill-level__label">Intermediate</div>
+          <ul class="skill-level__items">
+            <li>Reading on-chain data (Etherscan, XRPscan)</li>
+            <li>Analyzing market metrics (TVL, volume, liquidity)</li>
+            <li>Reviewing team's GitHub activity</li>
+            <li>Reading security audit reports</li>
+            <li>Understanding vesting schedules</li>
+          </ul>
+        </div>
+        <div class="skill-level">
+          <div class="skill-level__dot"></div>
+          <div class="skill-level__label">Advanced</div>
+          <ul class="skill-level__items">
+            <li>Reading smart contract code basics</li>
+            <li>Understanding tokenomics models deeply</li>
+            <li>Identifying wash trading signals</li>
+            <li>Analyzing governance power distribution</li>
+            <li>Cross-referencing on-chain and off-chain data</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Web3 Security Lessons -->
+      <div class="lesson-module" style="margin-top:56px;margin-bottom:0;">
+        <div class="lesson-module__header">
+          <div class="lesson-module__icon" style="background:rgba(0,230,118,0.1);color:var(--green);">⬡</div>
+          <div>
+            <div class="lesson-module__title">Web3 & Security Lessons</div>
+            <div class="lesson-module__subtitle">4 lessons · ~20 min read</div>
+          </div>
+        </div>
+        <div class="lessons-list">
+
+          <div class="lesson-item" id="l-w3-1">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-w3-1')">
+              <span class="lesson-item__num">W3·01</span>
+              <span class="lesson-item__label">Wallets, Seed Phrases & Why Exchanges Are Not Banks</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>When you deposit money in a bank, the bank is legally required to return it on demand. When you deposit crypto on a centralized exchange (CEX), you are trusting a company whose legal obligations to you vary significantly by jurisdiction — and who has full control of your assets.</p>
+                <p><strong>The FTX collapse (November 2022)</strong> is the clearest modern lesson. FTX, once valued at $32 billion and run by Sam Bankman-Fried, commingled customer funds with its sister company Alameda Research. When the fraud unraveled, approximately $8 billion in customer funds was missing. Customers who held crypto on FTX lost access immediately. Those who held self-custody were unaffected.</p>
+                <div class="callout danger"><strong>Not your keys, not your coins.</strong> An exchange balance is an IOU — a promise from a company. A self-custody wallet is actual ownership. These are fundamentally different.</div>
+                <h4>The Seed Phrase Is the Key</h4>
+                <p>A seed phrase (BIP-39 standard) is a list of 12–24 words that mathematically encodes your master private key. Treat it as your single most valuable credential:</p>
+                <ul>
+                  <li>Write it on paper — not digitally</li>
+                  <li>Store copies in multiple secure physical locations</li>
+                  <li>Never photograph it, email it, or type it into anything online</li>
+                  <li>Consider a metal backup plate for fireproof storage</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-w3-2">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-w3-2')">
+              <span class="lesson-item__num">W3·02</span>
+              <span class="lesson-item__label">Common Crypto Scams — A Field Guide</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Crypto scams follow recognizable patterns. Knowing the playbook makes you exponentially harder to deceive.</p>
+                <h4>Rug Pulls</h4>
+                <p>Developers create a token, generate hype, attract liquidity, then remove all liquidity and disappear. Signs: anonymous team, no audit, no locked liquidity, unrealistic promises. The Squid Game token (2021) rose 45,000% then fell 99.99% in minutes when developers cashed out.</p>
+                <h4>Phishing</h4>
+                <p>Fake websites designed to look identical to real wallets or exchanges. Always type URLs directly. Bookmark real sites. Be extremely suspicious of any link sent via social media, Discord, or email. Verify the exact URL character by character.</p>
+                <h4>Approval Scams (Drainer Contracts)</h4>
+                <p>Malicious sites present vague approval requests that give them permission to drain your holdings. Never sign a transaction you don't fully understand. Use tools like <strong>revoke.cash</strong> to review and revoke existing approvals.</p>
+                <h4>Fake "Customer Support"</h4>
+                <p>In crypto Discords and Telegrams, scammers DM users posing as official support and ask for seed phrases "to verify your wallet." There is no legitimate support agent that will ever ask for your seed phrase.</p>
+                <h4>Pig Butchering</h4>
+                <p>A long-form social engineering scam: a stranger forms a relationship over weeks or months, gradually introduces the victim to a "great investment platform," convinces them to deposit funds, shows fake profits, then disappears with everything. Losses are often in the hundreds of thousands. The FBI and FTC have issued multiple warnings.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-w3-3">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-w3-3')">
+              <span class="lesson-item__num">W3·03</span>
+              <span class="lesson-item__label">Due Diligence — How to Research a Project</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>Every hour spent researching before committing funds is worth more than any technical indicator. A practical framework:</p>
+                <h4>Step 1: Team</h4>
+                <ul>
+                  <li>Are founders publicly named and identifiable?</li>
+                  <li>Do their LinkedIn profiles show consistent career history?</li>
+                  <li>Have any team members been involved in previous failed or fraudulent projects?</li>
+                </ul>
+                <h4>Step 2: Whitepaper & Code</h4>
+                <ul>
+                  <li>Does a whitepaper exist and is it technically coherent? Or vague marketing language?</li>
+                  <li>Is the code open-source on GitHub? When was it last committed?</li>
+                  <li>Has it been audited by a reputable firm (Trail of Bits, Halborn, OpenZeppelin, Certik)? Have you read the audit?</li>
+                </ul>
+                <h4>Step 3: Tokenomics</h4>
+                <ul>
+                  <li>What is the total supply and circulating supply?</li>
+                  <li>How much do team and investors hold, and when does it vest? Large unlocks = potential sell pressure.</li>
+                  <li>What creates demand for the token? Does it need to exist at all?</li>
+                </ul>
+                <h4>Step 4: On-Chain Data</h4>
+                <ul>
+                  <li>Check Etherscan, Dexscreener, or equivalent. Who are the top holders?</li>
+                  <li>Is trading volume organic or suspicious (too round, too regular)?</li>
+                  <li>Is liquidity locked or can developers drain it anytime?</li>
+                </ul>
+                <div class="callout success"><strong>Primary rule:</strong> If you cannot explain <em>why</em> a project would still be useful and valuable in three years, you are speculating — not investing. That's fine, but know which one you're doing.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-item" id="l-w3-4">
+            <button class="lesson-item__trigger" onclick="toggleLesson('l-w3-4')">
+              <span class="lesson-item__num">W3·04</span>
+              <span class="lesson-item__label">DAOs, Governance & On-Chain Voting</span>
+              <span class="lesson-item__meta read-badge">⏱ 5 min</span>
+              <span class="lesson-item__chevron">▾</span>
+            </button>
+            <div class="lesson-item__body">
+              <div class="lesson-content">
+                <p>A <strong>Decentralized Autonomous Organization (DAO)</strong> is an organization governed by smart contracts and token-holder votes rather than a traditional management hierarchy.</p>
+                <h4>How DAO Governance Works</h4>
+                <p>Most DAOs give governance rights to token holders proportional to their holdings. Proposals are submitted on-chain or via platforms like <strong>Snapshot</strong> (off-chain voting, gasless). Passed proposals are executed via smart contract — automatically changing protocol parameters, moving treasury funds, or updating code.</p>
+                <h4>Real Examples</h4>
+                <ul>
+                  <li><strong>MakerDAO</strong> — Governs the DAI stablecoin. MKR holders vote on collateral types, risk parameters, and fee rates.</li>
+                  <li><strong>Uniswap DAO</strong> — Governs the Uniswap protocol and its $5B+ treasury.</li>
+                  <li><strong>Flare Governance</strong> — WFLR holders vote on FTSO provider lists, protocol upgrades, and parameter changes.</li>
+                </ul>
+                <h4>DAO Risks & Realities</h4>
+                <ul>
+                  <li><strong>Plutocracy</strong> — Token-weighted voting means large holders dominate decisions.</li>
+                  <li><strong>Voter apathy</strong> — Many governance votes see under 5% participation.</li>
+                  <li><strong>Governance attacks</strong> — Beanstalk Protocol (April 2022) was drained of $182M when an attacker borrowed enough tokens to pass a malicious governance proposal in a single transaction.</li>
+                  <li><strong>Legal ambiguity</strong> — DAOs exist in a murky legal space. In many jurisdictions, DAO participants may have unexpected legal liability.</li>
+                </ul>
+                <div class="callout">DAOs are a fascinating experiment in organizational design — but they are not magic. They inherit the problems of human coordination while adding new attack vectors. Engage with eyes open.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── GLOSSARY ────────── -->
+  <section class="section section--sm" id="glossary" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-header__tag">// Reference</span>
+        <h2 class="section-header__title">Key Terms Glossary</h2>
+      </div>
+      <div class="glossary-grid">
+        <div class="glossary-item"><div class="glossary-item__term">UTXO</div><div class="glossary-item__def">Unspent Transaction Output. Bitcoin's accounting model — your "balance" is the sum of unspent outputs addressed to your keys.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Gas (Ethereum)</div><div class="glossary-item__def">A unit measuring computational work. Every EVM operation costs gas; users pay in ETH. Prevents infinite loops and spam.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Nonce</div><div class="glossary-item__def">In Bitcoin: the number miners iterate to find a valid block hash. In Ethereum: a counter tracking how many transactions an address has sent.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Mempool</div><div class="glossary-item__def">Memory pool. A waiting room of unconfirmed transactions. Miners/validators select from here based on fees offered.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Fork (Hard / Soft)</div><div class="glossary-item__def">A protocol change. Soft fork: backward-compatible. Hard fork: not backward-compatible. Bitcoin Cash (BCH) split from Bitcoin via hard fork in 2017.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">DEX</div><div class="glossary-item__def">Decentralized Exchange. Trades execute via smart contracts. No KYC, no custody. Examples: Uniswap (ETH), the native XRPL DEX.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">TVL</div><div class="glossary-item__def">Total Value Locked. USD value of assets deposited in DeFi protocols. An indicator of ecosystem activity.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Slippage</div><div class="glossary-item__def">The difference between expected and actual price in a trade. Higher in low-liquidity markets. Set slippage tolerance carefully in DEX swaps.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Impermanent Loss</div><div class="glossary-item__def">A loss experienced by liquidity providers when the price ratio of deposited tokens changes. "Impermanent" if prices revert; permanent if they don't.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Oracle</div><div class="glossary-item__def">A service that feeds off-chain data to on-chain smart contracts. Decentralized oracles (FTSO, Chainlink) reduce single-point-of-failure risk.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Multisig</div><div class="glossary-item__def">Multi-signature. A wallet requiring M-of-N private keys to authorize a transaction (e.g., 2-of-3). Used for shared treasuries and enhanced security.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Tokenomics</div><div class="glossary-item__def">The economic design of a token: supply, distribution, vesting, utility, and emission schedule. Good tokenomics align incentives; bad tokenomics invite exploitation.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Airdrop</div><div class="glossary-item__def">Free token distribution to wallets meeting specific criteria. The FLR and SGB distributions to XRP holders were airdrops.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Layer 0 / 1 / 2</div><div class="glossary-item__def">L0: underlying network infrastructure. L1: base blockchain (Bitcoin, Ethereum, XRPL). L2: protocols built on L1 for speed/features (Lightning, Arbitrum).</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">Interoperability</div><div class="glossary-item__def">The ability of different blockchains to communicate and transfer value. Achieved via bridges, wrapped tokens, and protocols like Flare's State Connector.</div></div>
+        <div class="glossary-item"><div class="glossary-item__term">ZK-Proof</div><div class="glossary-item__def">Zero-Knowledge Proof. Cryptographic method to prove knowledge of something without revealing the underlying data. Powers ZK-rollups and privacy protocols.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── CTA BANNER ────────── -->
+  <section class="section section--sm" style="padding-top:0;">
+    <div class="container">
+      <div class="callout-banner">
+        <div class="callout-banner__text">
+          <div class="callout-banner__title">Ready to go deeper?</div>
+          <div class="callout-banner__desc">Explore Ikeverse's other knowledge universes — Quantumverse, Culturverse, and Kemetverse — where ancient wisdom meets modern discovery.</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;">
+          <a class="btn btn--primary" href="../../index.html">← Back to Ikeverse</a>
+          <a class="btn btn--ghost" href="#lessons">Continue Learning</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────── FOOTER ────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div>
+          <a class="footer__logo" href="../../index.html">💎 DigitalVerse</a>
+          <p class="footer__desc">Part of the Ikeverse ecosystem. Blockchain education grounded in first principles, critical thinking, and the Aloha spirit of deep understanding.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Protocols</h4>
+          <ul>
+            <li><a href="#module-btc">Bitcoin</a></li>
+            <li><a href="#module-eth">Ethereum</a></li>
+            <li><a href="#module-xrp">XRPL</a></li>
+            <li><a href="#module-flr">Flare</a></li>
+            <li><a href="#module-flr">Songbird</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Learn</h4>
+          <ul>
+            <li><a href="#lessons">All Lessons</a></li>
+            <li><a href="#critical-thinking">Critical Thinking</a></li>
+            <li><a href="#compare">Comparisons</a></li>
+            <li><a href="#glossary">Glossary</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Ikeverse</h4>
+          <ul>
+            <li><a href="../../index.html">Home</a></li>
+            <li><a href="../../verses/culturalverse.html">Culturverse</a></li>
+            <li><a href="../../verses/quantumverse.html">Quantumverse</a></li>
+            <li><a href="../../verses/metaverse.html">Kemetverse</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">© <span id="year"></span> Ikeverse (Proprietary). Knowledge shared with Aloha spirit.</p>
+        <div class="footer__legal">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">License</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="digitalverse.js"></script>
+</body>
+</html>
