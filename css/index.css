@@ -3764,17 +3764,36 @@ section::after {
 
 }
 
+.card-history .project-icon {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
 
 .card-history .project-icon img {
-  object-fit: cover;
   width: 85%;
   height: 85%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-nalulf .project-icon {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-nalulf .project-icon img {
-  object-fit: cover;
   width: 85%;
   height: 85%;
+  object-fit: cover;
+  display: block;
 }
 
 /* ── Reduced motion ── */
@@ -7226,3 +7245,4 @@ section::after {
     0 0 0 1px rgba(255,255,255,0.08),
     0 0 16px rgba(255,210,122,0.08);
 }
+
