@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#5B9A68">
   <title>Pikoverse | Ka Ulana ʻIke | The Weaving of Knowledge</title>
 
-  <!-- Open Graph -->
+<!-- Open Graph -->
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/">
 <meta property="og:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
@@ -44,7 +44,7 @@
 </head>
 <body>
 
-  <!-- ── PROJECT DOCK ── -->
+<!-- ── PROJECT DOCK ── -->
 <div class="piko-dock" role="navigation" aria-label="Project launcher">
   <div class="piko-dock-inner">
 
@@ -422,42 +422,58 @@
       <div class="ecosystem-grid">
 
         <!-- CARD 1 — AMP -->
-        <article class="ecosystem-card card-amp amp-showcase-card" data-popup="amp">
-          <div class="amp-slide-single">
-            <video class="card-video" autoplay muted playsinline preload="metadata">
-              <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
-            </video>
-            <div class="card-video-overlay"></div>
-            <div class="card-top-glow"></div>
-            <div class="amp-slide-body">
-              <div class="project-icon">
-                <img src="assets/AMP Tiki.jpg" alt="AMP" />
-              </div>
-              <h3>AMP</h3>
-              <p class="project-subtitle">Creative, Cultural &amp; Marketplace Expression</p>
-              <p class="project-description">
-                AMP carries visual identity, storytelling, branded expression, and marketplace offerings
-                rooted in culture, heritage, and the living spirit of Aloha — a creative bridge between
-                message, design, and community-facing products.
-              </p>
-              <ul class="project-features">
-                <li>Cultural design and brand expression</li>
-                <li>Story-driven merchandise and visuals</li>
-                <li>Creative identity rooted in heritage</li>
-                <li>Apparel, goods, and future marketplace offerings</li>
-              </ul>
-              <div class="eco-card-actions">
-                <a href="marketplace/index.html" class="project-link amp-market-link">
-                  <i class="fas fa-store"></i> Visit AMP Marketplace →
-                </a>
-                <button class="eco-popup-btn" data-popup="amp" type="button">
-                  <i class="fas fa-layer-group"></i> Deeper Dive
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
+        <!-- CARD 1 — AMP -->
+<article class="ecosystem-card card-amp amp-showcase-card" data-popup="amp">
+  <div class="amp-slide-single">
+    <video class="card-video" autoplay muted playsinline preload="metadata">
+      <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
+    </video>
 
+    <div class="card-video-overlay"></div>
+    <div class="card-top-glow"></div>
+
+    <!-- Visual under construction overlay -->
+    <div
+      class="amp-card-under-construction"
+      style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(5,8,18,.18) 0%,rgba(5,8,18,.42) 45%,rgba(5,8,18,.72) 100%);pointer-events:none;">
+    </div>
+
+    <div
+      class="amp-card-status-badge"
+      style="position:absolute;top:18px;left:18px;z-index:4;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(8,12,22,.72);border:1px solid rgba(240,201,106,.35);backdrop-filter:blur(8px);color:#f0c96a;font-size:12px;font-weight:700;letter-spacing:.03em;">
+      <i class="fas fa-person-digging"></i>
+      <span>Marketplace Under Construction</span>
+    </div>
+
+    <div class="amp-slide-body">
+      <div class="project-icon">
+        <img src="assets/AMP Tiki.jpg" alt="AMP" />
+      </div>
+      <h3>AMP</h3>
+      <p class="project-subtitle">Creative, Cultural &amp; Marketplace Expression</p>
+      <p class="project-description">
+        AMP carries visual identity, storytelling, branded expression, and marketplace offerings
+        rooted in culture, heritage, and the living spirit of Aloha — a creative bridge between
+        message, design, and community-facing products.
+      </p>
+      <ul class="project-features">
+        <li>Cultural design and brand expression</li>
+        <li>Story-driven merchandise and visuals</li>
+        <li>Creative identity rooted in heritage</li>
+        <li>Apparel, goods, and future marketplace offerings</li>
+      </ul>
+
+      <div class="eco-card-actions">
+        <a href="marketplace/index.html" class="project-link amp-market-link">
+          <i class="fas fa-store"></i> View Marketplace Status →
+        </a>
+        <button class="eco-popup-btn" data-popup="amp" type="button">
+          <i class="fas fa-layer-group"></i> Deeper Dive
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
         <!-- CARD 2 — Ikeverse -->
         <article class="ecosystem-card featured-card card-ikeverse" data-popup="ikeverse">
           <video class="card-video" autoplay muted playsinline preload="metadata">
@@ -787,7 +803,7 @@
   <div class="eco-popup eco-popup--digital" id="eco-popup-digital" role="dialog" aria-modal="true" aria-labelledby="ecoPopupDigitalTitle" hidden>
     <div class="eco-popup__border" aria-hidden="true"></div>
     <div class="eco-popup__header">
-      div class="eco-popup__icon">
+      <div class="eco-popup__icon">
         <img src="assets/platform-images/digiverse.png" alt="Digitalverse" />
       </div>
       <div class="eco-popup__title-wrap">

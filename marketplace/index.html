@@ -13,24 +13,193 @@
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://pikoverse.xyz/marketplace/marketplace.html">
+  <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html">
   <meta property="og:title"       content="AMP Marketplace — Culture Through Design">
   <meta property="og:description" content="Culturally inspired apparel and goods rooted in Aloha. Every piece carries heritage forward — built within the Pikoverse ecosystem.">
-  <meta property="og:image"       content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
   <meta property="og:site_name"   content="Pikoverse">
   <meta name="twitter:card"       content="summary_large_image">
   <meta name="twitter:title"      content="AMP Marketplace — Culture Through Design">
-  <meta name="twitter:image"      content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+  <meta name="twitter:image"      content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <link rel="stylesheet" href="marketplace.css">
+
+  <style>
+    .mp-store-locked {
+      overflow: hidden;
+    }
+
+    .mp-store-locked .mp-nav,
+    .mp-store-locked .mp-hero,
+    .mp-store-locked .mp-main,
+    .mp-store-locked .mp-footer,
+    .mp-store-locked .mp-cart-drawer,
+    .mp-store-locked .mp-cart-backdrop,
+    .mp-store-locked .mp-modal-backdrop,
+    .mp-store-locked .mp-toast,
+    .mp-store-locked .mp-checkout-backdrop,
+    .mp-store-locked .mp-checkout-modal,
+    .mp-store-locked .mp-sugg-backdrop,
+    .mp-store-locked .mp-sugg-panel,
+    .mp-store-locked .mp-sugg-fab,
+    .mp-store-locked .mp-email-capture,
+    .mp-store-locked .mp-ecosystem-dock,
+    .mp-store-locked .mp-order-confirm {
+      pointer-events: none;
+      user-select: none;
+      filter: blur(3px);
+    }
+
+    .mp-uc-overlay[hidden] {
+      display: none !important;
+    }
+
+    .mp-uc-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(240, 201, 106, 0.12), transparent 35%),
+        linear-gradient(180deg, rgba(5, 8, 18, 0.82) 0%, rgba(5, 8, 18, 0.94) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .mp-uc-overlay.is-visible {
+      display: flex;
+    }
+
+    .mp-uc-card {
+      width: min(680px, 100%);
+      padding: 32px 28px;
+      border-radius: 22px;
+      background: rgba(8, 12, 22, 0.92);
+      border: 1px solid rgba(240, 201, 106, 0.24);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      text-align: center;
+    }
+
+    .mp-uc-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(240, 201, 106, 0.12);
+      border: 1px solid rgba(240, 201, 106, 0.28);
+      color: #f0c96a;
+      font-size: 30px;
+    }
+
+    .mp-uc-card h1 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.08;
+    }
+
+    .mp-uc-card p {
+      margin: 0 auto 10px;
+      max-width: 560px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .mp-uc-note {
+      color: #f0c96a !important;
+      font-weight: 700;
+      margin-top: 14px !important;
+    }
+
+    .mp-uc-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .mp-uc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .mp-uc-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .mp-uc-btn--primary {
+      background: linear-gradient(135deg, rgba(201,168,76,.28), rgba(240,201,106,.18));
+      border: 1px solid rgba(240,201,106,.35);
+      color: #f0c96a;
+      box-shadow: 0 8px 24px rgba(201,168,76,.16);
+    }
+
+    .mp-uc-btn--ghost {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.88);
+    }
+  </style>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var isAdminBypass = params.get('admin') === '1';
+
+      document.documentElement.classList.toggle('mp-admin-bypass', isAdminBypass);
+      document.documentElement.classList.toggle('mp-public-locked', !isAdminBypass);
+    })();
+  </script>
 </head>
 <body>
+  <div id="mpUnderConstruction" class="mp-uc-overlay" hidden>
+    <div class="mp-uc-card">
+      <div class="mp-uc-icon">
+        <i class="fas fa-person-digging"></i>
+      </div>
+
+      <h1>AMP Marketplace<br>Under Construction</h1>
+
+      <p>
+        The public marketplace is still being prepared. Product layout, payments, and store flows are
+        currently being finalized.
+      </p>
+
+      <p class="mp-uc-note">
+        Public access is temporarily restricted. Admin access only during buildout.
+      </p>
+
+      <div class="mp-uc-actions">
+        <a href="../index.html" class="mp-uc-btn mp-uc-btn--ghost">
+          <i class="fas fa-arrow-left"></i> Back to Pikoverse
+        </a>
+
+        <a href="../projects/admin/admin.html" class="mp-uc-btn mp-uc-btn--primary">
+          <i class="fas fa-lock"></i> Admin Login
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- ── NAV ── -->
   <nav class="mp-nav" id="mpNav" aria-label="Main navigation">
@@ -40,7 +209,7 @@
     </a>
 
     <div class="mp-nav-links" id="mpNavLinks">
-      <a href="https://pikoverse.xyz/" class="mp-nav-link">
+      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-link">
         <i class="fas fa-globe"></i>
         <span>Pikoverse</span>
       </a>
@@ -71,7 +240,7 @@
       <a href="../index.html" class="mp-nav-mobile-link">
         <img src="../assets/AMP Tiki.jpg" alt="" class="mp-nav-mobile-tiki"> Home
       </a>
-      <a href="https://pikoverse.xyz/" class="mp-nav-mobile-link">
+      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-mobile-link">
         <i class="fas fa-globe"></i> Pikoverse
       </a>
       <a href="https://808cryptobeast.github.io/Ikeverse/" class="mp-nav-mobile-link">
@@ -287,7 +456,7 @@
         <div class="mp-footer-links">
           <h4>Info</h4>
           <a href="../index.html">Home</a>
-          <a href="https://pikoverse.xyz/">Pikoverse</a>
+          <a href="https://808cryptobeast.github.io/pikoverse/">Pikoverse</a>
           <a href="https://808cryptobeast.github.io/Ikeverse/">Ikeverse</a>
         </div>
         <div class="mp-footer-links">
@@ -332,7 +501,6 @@
         Choose how you want to pay. Your order details will be pre-filled.
         We'll confirm and ship once payment is received.
       </p>
-      <!-- No payment methods configured fallback -->
       <div id="mpNoPaymentMethods" style="display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">
         <i class="fas fa-gear" style="font-size:28px;color:rgba(255,255,255,.3);margin-bottom:12px;display:block"></i>
         <p style="color:rgba(255,255,255,.7);font-size:14px;font-weight:600;margin-bottom:8px">Payment methods not configured yet</p>
@@ -494,15 +662,33 @@
     <p class="mp-order-confirm-msg">
       Your payment was sent. Please email your receipt to
       <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a>
-      with your order number.
-      Mahalo for your support! 🌺
+      with your order number in the subject line.
     </p>
     <div class="mp-order-confirm-items" id="mpOrderConfirmItems"></div>
-    <div class="mp-order-confirm-total" id="mpOrderConfirmTotal"></div>
+    <button class="mp-order-confirm-done" id="mpOrderConfirmDone" type="button">
+      <i class="fas fa-check"></i> Done
+    </button>
   </div>
 
-  <!-- Scripts -->
-  <script src="../js/hub.js"></script>
+  <script>
+    (function () {
+      var isAdminBypass = document.documentElement.classList.contains('mp-admin-bypass');
+      var overlay = document.getElementById('mpUnderConstruction');
+
+      document.body.classList.toggle('mp-store-locked', !isAdminBypass);
+
+      if (overlay) {
+        if (isAdminBypass) {
+          overlay.hidden = true;
+          overlay.classList.remove('is-visible');
+        } else {
+          overlay.hidden = false;
+          overlay.classList.add('is-visible');
+        }
+      }
+    })();
+  </script>
+
   <script src="marketplace.js"></script>
 </body>
 </html>
