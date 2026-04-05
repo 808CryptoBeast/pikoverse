@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Culturalverse — Indigenous Knowledge Platform | Ikeverse</title>
+  <meta name="description" content="Enter Culturalverse — a living platform for indigenous knowledge, ancient wisdom, and the deep connections between humanity's greatest cultural traditions." />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="culturalverse.css" />
+</head>
+<body>
+
+  <!-- Starfield -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- Reading progress -->
+  <div class="progress-bar" aria-hidden="true">
+    <div class="progress-bar__fill" id="progressFill"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════════════════════ -->
+  <nav class="cv-nav" id="cvNav">
+    <div class="cv-nav__inner">
+
+      <a class="cv-nav__brand" href="culturalverse.html">
+        <span>🌿</span>
+        <span class="cv-nav__brand-text">Culturalverse</span>
+      </a>
+
+      <ul class="cv-nav__links" id="cvNavLinks">
+
+        <!-- Cultures -->
+        <li class="cv-nav__item has-dropdown">
+          <button class="cv-nav__btn" type="button">Cultures <span class="cv-caret">▾</span></button>
+          <div class="cv-dropdown">
+            <div class="cv-dropdown__col">
+              <span class="cv-dropdown__heading">Available Now</span>
+              <a href="#kanaka" class="cv-dd-link">
+                <span>🌺</span>
+                <div><strong>Kānaka Maoli</strong><small>Hawaiian Indigenous Knowledge</small></div>
+              </a>
+              <a href="#kemet" class="cv-dd-link">
+                <span>☥</span>
+                <div><strong>Kemet</strong><small>Ancient Egyptian Wisdom</small></div>
+              </a>
+            </div>
+            <div class="cv-dropdown__col cv-dropdown__col--soon">
+              <span class="cv-dropdown__heading">Coming Soon</span>
+              <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🌏</span><div><strong>Dreamtime</strong><small>Aboriginal Australia</small></div></a>
+              <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🪘</span><div><strong>Dogon</strong><small>West Africa · Mali</small></div></a>
+              <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🕉️</span><div><strong>Vedic</strong><small>Ancient India</small></div></a>
+              <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🌽</span><div><strong>Olmec / Maya</strong><small>Mesoamerica</small></div></a>
+              <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🗿</span><div><strong>Rapa Nui</strong><small>Easter Island</small></div></a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Learn -->
+        <li class="cv-nav__item has-dropdown">
+          <button class="cv-nav__btn" type="button">Learn <span class="cv-caret">▾</span></button>
+          <div class="cv-dropdown cv-dropdown--narrow">
+            <span class="cv-dropdown__heading">Learning Tools</span>
+            <a href="index.html" class="cv-dd-link"><span>🕸️</span><div><strong>Living Knowledge Matrix</strong><small>Interconnected knowledge map</small></div></a>
+            <a href="culturalverse-lessons.html" class="cv-dd-link"><span>📖</span><div><strong>Deep Lessons</strong><small>Full reading modules</small></div></a>
+            <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🔮</span><div><strong>Reflections</strong><small>Guided practice — soon</small></div></a>
+            <a href="#" class="cv-dd-link cv-dd-link--soon"><span>⚡</span><div><strong>Mana Meter</strong><small>Track your journey — soon</small></div></a>
+          </div>
+        </li>
+
+        <!-- Bridge -->
+        <li class="cv-nav__item has-dropdown">
+          <button class="cv-nav__btn" type="button">The Bridge <span class="cv-caret">▾</span></button>
+          <div class="cv-dropdown cv-dropdown--narrow">
+            <span class="cv-dropdown__heading">Cross-Cultural Connections</span>
+            <a href="culturalverse-bridge.html" class="cv-dd-link"><span>🌐</span><div><strong>Shared Cosmologies</strong><small>Kumulipo & Kemetic creation</small></div></a>
+            <a href="#" class="cv-dd-link cv-dd-link--soon"><span>⭐</span><div><strong>Star Knowledge</strong><small>Navigation across cultures</small></div></a>
+            <a href="#" class="cv-dd-link cv-dd-link--soon"><span>💧</span><div><strong>Water & Creation</strong><small>Primordial waters worldwide</small></div></a>
+          </div>
+        </li>
+
+        <!-- Ecosystem -->
+        <li class="cv-nav__item has-dropdown">
+          <button class="cv-nav__btn" type="button">Ecosystem <span class="cv-caret">▾</span></button>
+          <div class="cv-dropdown cv-dropdown--narrow">
+            <span class="cv-dropdown__heading">Pikoverse Platforms</span>
+            <a href="https://pikoverse.xyz" target="_blank" rel="noopener" class="cv-dd-link"><span>🌐</span><div><strong>Pikoverse</strong><small>The gateway ecosystem</small></div></a>
+            <a href="digitalverse/index.html" class="cv-dd-link"><span>💎</span><div><strong>DigitalVerse</strong><small>Blockchain & Web3 learning</small></div></a>
+            <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="cv-dd-link"><span>🔍</span><div><strong>NaluLF</strong><small>Ledger forensics</small></div></a>
+            <a href="https://pikoverse.xyz/marketplace/index.html" target="_blank" rel="noopener" class="cv-dd-link"><span>🛍️</span><div><strong>AMP Marketplace</strong><small>Cultural goods</small></div></a>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="cv-nav__actions">
+        <a href="index.html" class="cv-nav__matrix-btn" title="Living Knowledge Matrix">
+          <i class="fas fa-network-wired"></i>
+          <span>Matrix</span>
+        </a>
+        <button class="cv-nav__profile-btn" id="cvProfileToggle" aria-label="Profile" title="Your Profile">
+          <i class="fas fa-circle-user"></i>
+          <span>Profile</span>
+        </button>
+        <button class="cv-nav__mobile-btn" id="cvMobileToggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════
+       PROFILE PANEL
+  ══════════════════════════════════════════════════════ -->
+  <div class="cv-profile-bg" id="cvProfileBg"></div>
+  <aside class="cv-profile" id="cvProfile" aria-hidden="true">
+    <div class="cv-profile__header">
+      <h3>Your Journey</h3>
+      <button id="cvProfileClose" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="cv-profile__user">
+      <div class="cv-profile__avatar"><i class="fas fa-circle-user"></i></div>
+      <div>
+        <span class="cv-profile__name">Aloha, Explorer</span>
+        <span class="cv-profile__level">Cultural Learner · Beginner</span>
+      </div>
+    </div>
+    <div class="cv-profile__mana">
+      <div class="cv-profile__mana-row"><span>Mana</span><span>0 / 100</span></div>
+      <div class="cv-profile__mana-track"><div class="cv-profile__mana-fill" style="width:0%"></div></div>
+    </div>
+    <div class="cv-profile__group">
+      <span class="cv-profile__group-label">My Learning</span>
+      <a href="#" class="cv-profile__link"><i class="fas fa-book-open"></i>My Lessons<span class="cv-profile__badge">0</span></a>
+      <a href="#" class="cv-profile__link"><i class="fas fa-star"></i>Achievements<span class="cv-profile__badge">0</span></a>
+      <a href="index.html" class="cv-profile__link"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</a>
+    </div>
+    <div class="cv-profile__group">
+      <span class="cv-profile__group-label">Connected Platforms</span>
+      <a href="digitalverse/index.html" class="cv-profile__link cv-profile__link--cyan"><i class="fas fa-cube"></i>DigitalVerse<span class="cv-profile__dot cv-profile__dot--cyan"></span></a>
+      <a href="https://pikoverse.xyz/marketplace/index.html" target="_blank" rel="noopener" class="cv-profile__link cv-profile__link--gold"><i class="fas fa-store"></i>AMP Marketplace<span class="cv-profile__dot cv-profile__dot--gold"></span></a>
+      <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="cv-profile__link cv-profile__link--blue"><i class="fas fa-shield-halved"></i>NaluLF<span class="cv-profile__dot cv-profile__dot--blue"></span></a>
+      <a href="https://pikoverse.xyz" target="_blank" rel="noopener" class="cv-profile__link"><i class="fas fa-globe"></i>Pikoverse</a>
+    </div>
+    <div class="cv-profile__group">
+      <span class="cv-profile__group-label">Account</span>
+      <a href="#" class="cv-profile__link cv-profile__link--soon"><i class="fas fa-gear"></i>Settings<span class="cv-profile__soon">Soon</span></a>
+      <a href="#" class="cv-profile__link cv-profile__link--soon"><i class="fas fa-right-to-bracket"></i>Sign In<span class="cv-profile__soon">Soon</span></a>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-hero" id="home">
+    <div class="cv-nebula cv-nebula--1" aria-hidden="true"></div>
+    <div class="cv-nebula cv-nebula--2" aria-hidden="true"></div>
+    <div class="cv-nebula cv-nebula--3" aria-hidden="true"></div>
+
+    <div class="cv-container cv-hero__grid">
+      <div class="cv-hero__content">
+        <div class="cv-hero__kicker">
+          <span class="cv-kicker-star">✦</span>
+          Ikeverse · Culturalverse
+          <span class="cv-kicker-star">✦</span>
+        </div>
+        <h1 class="cv-hero__title">
+          The Living<br>
+          <em>Knowledge</em><br>
+          Platform
+        </h1>
+        <p class="cv-hero__sub">
+          A sacred space where the world's indigenous wisdom traditions, ancient cosmologies,
+          and ancestral knowledge systems are honored, studied, and woven into living understanding.
+          Not history. Not mythology. <strong>Living knowledge</strong> — carried forward
+          by the peoples who have never stopped practicing it.
+        </p>
+        <div class="cv-hero__pillars">
+          <div class="cv-pillar"><span>🌺</span>Indigenous Traditions</div>
+          <div class="cv-pillar__div">✦</div>
+          <div class="cv-pillar"><span>⭐</span>Ancestral Cosmologies</div>
+          <div class="cv-pillar__div">✦</div>
+          <div class="cv-pillar"><span>🌐</span>Cross-Cultural Bridges</div>
+        </div>
+        <div class="cv-hero__actions">
+          <a href="#cultures" class="cv-btn cv-btn--primary"><i class="fas fa-globe"></i>Explore the Cultures</a>
+          <a href="index.html" class="cv-btn cv-btn--ghost"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</a>
+        </div>
+      </div>
+
+      <div class="cv-hero__orbit" aria-hidden="true">
+        <div class="cv-orbit__ring cv-orbit__ring--1">
+          <span class="cv-orbit__node" style="--a:0deg">🌺</span>
+          <span class="cv-orbit__node" style="--a:90deg">☥</span>
+          <span class="cv-orbit__node" style="--a:180deg">🌏</span>
+          <span class="cv-orbit__node" style="--a:270deg">🪘</span>
+        </div>
+        <div class="cv-orbit__ring cv-orbit__ring--2">
+          <span class="cv-orbit__node" style="--a:45deg">⭐</span>
+          <span class="cv-orbit__node" style="--a:135deg">🌊</span>
+          <span class="cv-orbit__node" style="--a:225deg">☀</span>
+          <span class="cv-orbit__node" style="--a:315deg">🔺</span>
+        </div>
+        <div class="cv-orbit__center">ʻIKE</div>
+      </div>
+    </div>
+
+    <div class="cv-hero__scroll" aria-hidden="true">
+      <span>Enter</span>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       ABOUT
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-about" id="about">
+    <div class="cv-container">
+      <div class="cv-about__grid">
+        <div class="cv-about__text">
+          <span class="cv-eyebrow">What is Culturalverse?</span>
+          <h2 class="cv-section-title">A Platform Built on<br><em>Respect & Depth</em></h2>
+          <p>
+            Culturalverse is the cultural learning universe within Ikeverse — dedicated to the
+            deep study of indigenous knowledge systems, ancient histories, and the profound
+            interconnections between the world's wisdom traditions. Every piece of knowledge
+            here belongs first to the living communities who carry it.
+          </p>
+          <p>
+            We approach each tradition with cultural protocols, proper sourcing, and the
+            understanding that these are not relics of the past — they are active, living
+            systems of thought that carry answers to the most pressing questions of our
+            present moment.
+          </p>
+          <div class="cv-about__values">
+            <div class="cv-value"><i class="fas fa-heart"></i> Respect First</div>
+            <div class="cv-value"><i class="fas fa-book"></i> Deep Study</div>
+            <div class="cv-value"><i class="fas fa-link"></i> Living Connections</div>
+            <div class="cv-value"><i class="fas fa-users"></i> Community Rooted</div>
+          </div>
+        </div>
+        <div class="cv-about__stats">
+          <div class="cv-stat"><div class="cv-stat__num">2</div><div class="cv-stat__label">Cultures Live Now</div></div>
+          <div class="cv-stat"><div class="cv-stat__num">18+</div><div class="cv-stat__label">Deep Lessons</div></div>
+          <div class="cv-stat"><div class="cv-stat__num">5+</div><div class="cv-stat__label">Cultures Coming</div></div>
+          <div class="cv-stat"><div class="cv-stat__num">∞</div><div class="cv-stat__label">Connections</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       CULTURE CARDS
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-cultures" id="cultures">
+    <div class="cv-container">
+      <div class="cv-section-header">
+        <span class="cv-eyebrow">✦ The Cultures ✦</span>
+        <h2 class="cv-section-title">Enter a <em>World of Knowledge</em></h2>
+        <p class="cv-section-desc">Two civilizations. Two sides of the Earth. One cosmic understanding. Begin here.</p>
+      </div>
+
+      <!-- ── KĀNAKA MAOLI ── -->
+      <div class="cv-culture-card cv-culture-card--hawaii" id="kanaka">
+
+        <div class="cv-card-aurora cv-card-aurora--hawaii" aria-hidden="true">
+          <div class="cv-aurora__wave cv-aurora__wave--1"></div>
+          <div class="cv-aurora__wave cv-aurora__wave--2"></div>
+          <div class="cv-aurora__wave cv-aurora__wave--3"></div>
+        </div>
+
+        <div class="cv-card-header">
+          <div class="cv-card-badge cv-card-badge--hawaii">🌺 Module One</div>
+          <h2 class="cv-card-title">Kānaka Maoli</h2>
+          <p class="cv-card-tagline">People of the Land · Children of the Star Navigators</p>
+          <blockquote class="cv-card-quote">
+            "Aloha is the intelligence with which we meet the challenges of our existence."
+            <cite>— Aunty Pilahi Paki</cite>
+          </blockquote>
+        </div>
+
+        <div class="cv-card-body">
+          <p class="cv-card-intro">
+            The Native Hawaiian people developed one of the most sophisticated civilizations in
+            the Pacific over more than 1,500 years of island life. Their knowledge systems —
+            from the 2,102-line cosmic creation chant of the Kumulipo to the engineering
+            precision of 400+ fishponds — represent a complete and deeply integrated
+            understanding of the universe, the land, and the human place within both.
+            This is not ancient history. It is a living tradition.
+          </p>
+
+          <div class="cv-knowledge-grid">
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🌊</span>
+              <div>
+                <strong>The Kumulipo</strong>
+                <p>2,102-line sacred creation chant. 16 wā. Pō (darkness) to Ao (light). The genealogy of the cosmos — from coral polyp to human chief. Translated by Queen Liliʻuokalani (1897). One of humanity's most profound creation narratives.</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">⭐</span>
+              <div>
+                <strong>Wayfinding — Star Navigation</strong>
+                <p>32-house star compass. Hokūleʻa (Arcturus) as Hawaiʻi's zenith star. Reading ocean swells, bird behavior, cloud formations over unseen islands. 2,500 miles open ocean without instruments. Revived by Nainoa Thompson — first traditional voyage to Tahiti in 600 years (1976).</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🌿</span>
+              <div>
+                <strong>Ahupuaʻa System</strong>
+                <p>Complete ecological land divisions from mountain (mauka) to sea (makai). Five ecological zones from wao akua (realm of gods) to kai (ocean). Managed by konohiki resource managers. Sustained 300,000–1,000,000 people for 1,000+ years. Zero waste. Completely circular.</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🌱</span>
+              <div>
+                <strong>Loʻi Kalo — Sacred Taro</strong>
+                <p>Kalo as the literal elder sibling of humanity — Hāloa, born before the first human. 300+ named varieties. Sophisticated ʻauwai irrigation systems. The most sacred agricultural relationship in Hawaiian culture. To tend kalo is to tend your ancestor.</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🐠</span>
+              <div>
+                <strong>Loko Iʻa — Fishponds</strong>
+                <p>400+ fishponds at European contact — the most extensive indigenous aquaculture in the Pacific. The mākāhā sluice gate: juvenile fish swim in, grow too large to exit. Self-sustaining ecosystems. Some covering 400+ acres. Several still being actively restored today.</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🏛️</span>
+              <div>
+                <strong>Heiau — Sacred Temples</strong>
+                <p>Stone temple platforms built for specific divine purposes — warfare (luakini), healing (māhiki), agriculture, navigation. Oriented astronomically. Some among the largest stone structures in the Pacific. Whalers and missionaries both feared and dismantled them.</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">💃</span>
+              <div>
+                <strong>Hula & Oli (Chant)</strong>
+                <p>Living historical record. Every movement encodes genealogy, geography, spiritual practice, and natural phenomenon. The body as sacred text. Hula was banned by missionaries (1820s) — its survival is an act of resistance. Currently experiencing a profound renaissance (Hawaiian Renaissance, 1970s–present).</p>
+              </div>
+            </div>
+            <div class="cv-k-item">
+              <span class="cv-k-icon">🗣️</span>
+              <div>
+                <strong>ʻŌlelo Hawaiʻi — Language</strong>
+                <p>One of the most musical languages in the world. 5 vowels, 8 consonants. Every word carries layers of meaning. Declared a state language of Hawaiʻi (1978). By 1981, fewer than 50 children spoke it as a first language. Today: Hawaiian language immersion schools (Pūnana Leo) have revived it for thousands of children.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="cv-concepts">
+            <span class="cv-concept cv-concept--hawaii">Aloha</span>
+            <span class="cv-concept cv-concept--hawaii">Pono</span>
+            <span class="cv-concept cv-concept--hawaii">Mālama ʻĀina</span>
+            <span class="cv-concept cv-concept--hawaii">ʻOhana</span>
+            <span class="cv-concept cv-concept--hawaii">Mana</span>
+            <span class="cv-concept cv-concept--hawaii">Kapu</span>
+            <span class="cv-concept cv-concept--hawaii">Aloha ʻĀina</span>
+            <span class="cv-concept cv-concept--hawaii">Kuleana</span>
+            <span class="cv-concept cv-concept--hawaii">Haumāna</span>
+            <span class="cv-concept cv-concept--hawaii">Naʻauao</span>
+          </div>
+
+          <div class="cv-quick-facts">
+            <div class="cv-qf"><span class="cv-qf__val">~300–600 CE</span><span class="cv-qf__key">First Settlement of Hawaiʻi</span></div>
+            <div class="cv-qf"><span class="cv-qf__val">300k–1M</span><span class="cv-qf__key">Population at 1778 Contact</span></div>
+            <div class="cv-qf"><span class="cv-qf__val">8 Main Islands</span><span class="cv-qf__key">+ 124 Smaller Islands</span></div>
+            <div class="cv-qf"><span class="cv-qf__val">Austronesian</span><span class="cv-qf__key">Language Family</span></div>
+          </div>
+
+          <div class="cv-figure cv-figure--hawaii">
+            <div class="cv-figure__icon">👑</div>
+            <div>
+              <strong>Queen Liliʻuokalani (1838–1917)</strong>
+              <p>Last sovereign monarch of the Kingdom of Hawaiʻi. Composer of Aloha ʻOe. Translated the Kumulipo into English (1897). Illegally overthrown by American businessmen backed by U.S. Marines in 1893. She refused to sign a document surrendering sovereignty to avoid bloodshed among her people. Her steadfast dignity in defeat is one of history's most profound examples of leadership through Aloha — placing the wellbeing of her people above her own power.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cv-card-footer">
+          <a href="culturalverse-lessons.html" class="cv-btn cv-btn--hawaii"><i class="fas fa-leaf"></i>Enter Kānaka Maoli Lessons</a>
+          <a href="index.html" class="cv-btn cv-btn--ghost-hawaii"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</a>
+        </div>
+      </div>
+
+      <!-- ── KEMET ── -->
+      <div class="cv-culture-card cv-culture-card--kemet" id="kemet">
+
+        <div class="cv-card-aurora cv-card-aurora--kemet" aria-hidden="true">
+          <div class="cv-pyramid-bg" aria-hidden="true"></div>
+        </div>
+
+        <div class="cv-card-header">
+          <div class="cv-card-badge cv-card-badge--kemet">☥ Module Two</div>
+          <h2 class="cv-card-title cv-card-title--gold">Kemet</h2>
+          <p class="cv-card-tagline">The Black Land · Three Thousand Years of Recorded Wisdom</p>
+          <blockquote class="cv-card-quote cv-card-quote--gold">
+            "If you are excellent, establish your household, love your wife with ardor, fill her belly, clothe her back. The medicine for her limbs is to anoint her. Gladden her heart as long as you live."
+            <cite>— The Maxims of Ptahhotep, ~2400 BCE</cite>
+          </blockquote>
+        </div>
+
+        <div class="cv-card-body">
+          <p class="cv-card-intro">
+            The ancient Egyptians called their land Kemet — "the Black Land" — for the dark,
+            fertile soil of the Nile's annual flood. They were African. Their civilization
+            endured for over 3,000 years — longer than the span from the fall of Rome to today —
+            and produced knowledge in cosmology, mathematics, medicine, architecture, ethics,
+            and philosophy that shaped every major civilization that followed. They were not
+            the ancestors of Western civilization. They <em>were</em> African civilization
+            at its height, and the world has never fully reckoned with that.
+          </p>
+
+          <div class="cv-knowledge-grid cv-knowledge-grid--kemet">
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">☀</span>
+              <div>
+                <strong>Creation Cosmogonies</strong>
+                <p>Three major traditions: Heliopolitan Ennead (Nun → Atum → 9 divine principles), Memphite Theology (Ptah creates through thought and speech — 2,700 years before the Gospel of John), Hermopolitan Ogdoad (8 primordial paired forces of water, darkness, infinity, and the hidden). All begin in darkness and water.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">⚖️</span>
+              <div>
+                <strong>Maʻat — Cosmic Order</strong>
+                <p>The foundational principle of Kemetic civilization: truth, justice, balance, cosmic harmony. The Feather of Maʻat. The Hall of Two Truths. The Weighing of the Heart — Anubis, Thoth, and Ammit. The 42 Declarations of Innocence. The pharaoh's primary duty was to uphold Maʻat. Its opposite: Isfet — chaos, injustice, disorder.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">𓂀</span>
+              <div>
+                <strong>Medu Netjer — Hieroglyphics</strong>
+                <p>"Words of the Gods" — one of the oldest writing systems on Earth (~3200 BCE). 700+ standard signs. Three types: logograms (word-signs), phonetic signs, determinatives. The Rosetta Stone (196 BCE) — key to decipherment by Champollion (1822). Sacred script where every symbol carries spiritual weight.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">🔺</span>
+              <div>
+                <strong>Sacred Architecture & Geometry</strong>
+                <p>The Great Pyramid of Giza (built ~2560 BCE): 2.3 million stone blocks, precision within 5 cm across 230m base. Aligned to true north within 0.05°. The three Giza pyramids mirror Orion's Belt. Temple axes track solstice and star rises. The benben — the primordial mound — encoded in every pyramid's form.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">🌊</span>
+              <div>
+                <strong>The Nile — Sacred River System</strong>
+                <p>The annual inundation as the renewal of creation — Nun returning. Nilometers measuring flood levels for agricultural planning (3,000+ years of data). Three seasons: Akhet (flood), Peret (growing), Shemu (harvest). Every aspect of Egyptian life, calendar, and cosmology organized around the Nile's rhythm.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">📜</span>
+              <div>
+                <strong>Sacred Texts & Literature</strong>
+                <p>Pyramid Texts (~2400 BCE) — the oldest religious writings in the world. Coffin Texts. Book of the Dead (Book of Coming Forth by Day). The Maxims of Ptahhotep (~2400 BCE) — first recorded wisdom literature. The Shabaka Stone — Memphite Theology of creation through speech. The Book of Thoth.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">⚕️</span>
+              <div>
+                <strong>Medicine & Science</strong>
+                <p>Edwin Smith Papyrus (~1600 BCE, based on older text): first recorded surgical manual. 48 documented cases with diagnosis, prognosis, treatment. Ebers Papyrus: 700+ remedies. They understood the cardiovascular system. Performed brain surgery. First dentistry records. Their medical knowledge was sought across the ancient world.</p>
+              </div>
+            </div>
+            <div class="cv-k-item cv-k-item--kemet">
+              <span class="cv-k-icon">🌟</span>
+              <div>
+                <strong>The Duat — Afterlife Cosmology</strong>
+                <p>A complete cosmological system for the soul's journey after death. 12 gates of the night — one for each hour. Ra's nightly passage through the underworld and dawn resurrection. The Field of Reeds (Aaru): the eternal paradise. The Weighing of the Heart. Soul components: Ka (life force), Ba (personality), Akh (immortal spirit).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="cv-concepts">
+            <span class="cv-concept cv-concept--kemet">Maʻat</span>
+            <span class="cv-concept cv-concept--kemet">Ka · Ba · Akh</span>
+            <span class="cv-concept cv-concept--kemet">Neteru</span>
+            <span class="cv-concept cv-concept--kemet">Duat</span>
+            <span class="cv-concept cv-concept--kemet">Isfet</span>
+            <span class="cv-concept cv-concept--kemet">Medu Netjer</span>
+            <span class="cv-concept cv-concept--kemet">Nun</span>
+            <span class="cv-concept cv-concept--kemet">Per Ankh</span>
+            <span class="cv-concept cv-concept--kemet">Benben</span>
+            <span class="cv-concept cv-concept--kemet">Ennead</span>
+          </div>
+
+          <div class="cv-quick-facts">
+            <div class="cv-qf cv-qf--kemet"><span class="cv-qf__val">~3100 BCE</span><span class="cv-qf__key">Unification of Upper & Lower Kemet</span></div>
+            <div class="cv-qf cv-qf--kemet"><span class="cv-qf__val">30+ Dynasties</span><span class="cv-qf__key">Over 3,000 Years of Civilization</span></div>
+            <div class="cv-qf cv-qf--kemet"><span class="cv-qf__val">~2400 BCE</span><span class="cv-qf__key">Oldest Religious Writings</span></div>
+            <div class="cv-qf cv-qf--kemet"><span class="cv-qf__val">Nile Valley, Africa</span><span class="cv-qf__key">Northeastern Africa</span></div>
+          </div>
+
+          <div class="cv-figure cv-figure--kemet">
+            <div class="cv-figure__icon">⚕️</div>
+            <div>
+              <strong>Imhotep (~2650 BCE) — The First Recorded Genius</strong>
+              <p>Chancellor of the Pharaoh Djoser. High priest of Ra. Physician. Architect. Astronomer. Poet. Imhotep designed the Step Pyramid at Saqqara — the world's first large-scale cut stone structure, built ~4,600 years ago. His medical writings were used for 2,000 years. He was later deified as the god of medicine and wisdom — one of the few non-royal Kemetic humans to achieve godhood. He was not a myth. He was a man who changed the world.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cv-card-footer">
+          <a href="culturalverse-lessons.html" class="cv-btn cv-btn--kemet"><i class="fas fa-ankh"></i>Enter Kemet Lessons</a>
+          <a href="culturalverse-bridge.html" class="cv-btn cv-btn--ghost-kemet"><i class="fas fa-arrows-left-right"></i>The Bridge</a>
+        </div>
+      </div>
+
+      <!-- Coming Soon -->
+      <div class="cv-coming-soon">
+        <span class="cv-eyebrow">✦ Always Expanding ✦</span>
+        <h3 class="cv-coming-soon__title">More Cultures Being Woven In</h3>
+        <div class="cv-soon-grid">
+          <div class="cv-soon-card"><span>🌏</span><strong>Dreamtime</strong><small>Aboriginal Australia</small></div>
+          <div class="cv-soon-card"><span>🪘</span><strong>Dogon</strong><small>West Africa · Mali</small></div>
+          <div class="cv-soon-card"><span>🕉️</span><strong>Vedic</strong><small>Ancient India</small></div>
+          <div class="cv-soon-card"><span>🌽</span><strong>Olmec / Maya</strong><small>Mesoamerica</small></div>
+          <div class="cv-soon-card"><span>🗿</span><strong>Rapa Nui</strong><small>Easter Island</small></div>
+          <div class="cv-soon-card cv-soon-card--open"><span>✦</span><strong>And More</strong><small>The weaving continues</small></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       THE BRIDGE TEASER
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-bridge-teaser" id="bridge">
+    <div class="cv-container">
+      <div class="cv-bridge-inner">
+        <div class="cv-bridge-side cv-bridge-side--hawaii">
+          <span class="cv-bridge-glyph">🌺</span>
+          <strong>Kānaka Maoli</strong>
+          <span class="cv-bridge-pill">Pono — Cosmic Balance</span>
+          <span class="cv-bridge-pill">Kumulipo — Pō to Ao</span>
+          <span class="cv-bridge-pill">Creation from dark waters</span>
+          <span class="cv-bridge-pill">Paired beings throughout</span>
+        </div>
+        <div class="cv-bridge-center">
+          <div class="cv-bridge-center__line"></div>
+          <div class="cv-bridge-center__icon">🌐</div>
+          <div class="cv-bridge-center__line"></div>
+          <h3>The Bridge</h3>
+          <p>Two civilizations. Two sides of the Earth. Five profound cosmological connections.</p>
+          <a href="culturalverse-bridge.html" class="cv-btn cv-btn--bridge">
+            <i class="fas fa-arrows-left-right"></i> Explore the Connections
+          </a>
+        </div>
+        <div class="cv-bridge-side cv-bridge-side--kemet">
+          <span class="cv-bridge-glyph">☥</span>
+          <strong>Kemet</strong>
+          <span class="cv-bridge-pill">Maʻat — Cosmic Order</span>
+          <span class="cv-bridge-pill">Nun — Primordial Darkness</span>
+          <span class="cv-bridge-pill">Creation from dark waters</span>
+          <span class="cv-bridge-pill">Ogdoad — four paired forces</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       LIVING KNOWLEDGE MATRIX
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-matrix-section" id="matrix">
+    <div class="cv-container">
+      <div class="cv-matrix-inner">
+        <div class="cv-matrix-text">
+          <span class="cv-eyebrow">🕸️ The Living Knowledge Matrix</span>
+          <h2 class="cv-section-title">Knowledge as a <em>Web</em></h2>
+          <p>The Living Knowledge Matrix is Ikeverse's dynamic visualization system — an
+          interactive, interconnected map showing how Hawaiian navigation connects to Kemetic
+          astronomy, how the Kumulipo echoes Dreamtime creation, how Maʻat resonates with Pono,
+          how ancient minds on opposite ends of the Earth perceived the same cosmic realities.</p>
+          <p>Not a list. Not a database. A living web — and every thread leads somewhere profound.</p>
+          <a href="index.html" class="cv-btn cv-btn--primary"><i class="fas fa-network-wired"></i>Enter the Matrix</a>
+        </div>
+        <div class="cv-matrix-visual" aria-hidden="true">
+          <svg viewBox="0 0 280 280" class="cv-matrix-svg">
+            <defs>
+              <radialGradient id="nodeGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(60,179,113,0.6)"/>
+                <stop offset="100%" stop-color="rgba(60,179,113,0)"/>
+              </radialGradient>
+            </defs>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="140" y2="30"/>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="250" y2="80"/>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="250" y2="200"/>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="140" y2="250"/>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="30" y2="200"/>
+            <line class="cv-matrix-line" x1="140" y1="140" x2="30" y2="80"/>
+            <circle class="cv-matrix-node-circle" cx="140" cy="140" r="28"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="140" cy="30" r="14"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="250" cy="80" r="14"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="250" cy="200" r="14"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="140" cy="250" r="14"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="30" cy="200" r="14"/>
+            <circle class="cv-matrix-node-circle cv-matrix-node-circle--sm" cx="30" cy="80" r="14"/>
+          </svg>
+          <div class="cv-matrix-label cv-matrix-label--c">ʻIKE</div>
+          <div class="cv-matrix-label cv-matrix-label--1">🌺</div>
+          <div class="cv-matrix-label cv-matrix-label--2">☥</div>
+          <div class="cv-matrix-label cv-matrix-label--3">⭐</div>
+          <div class="cv-matrix-label cv-matrix-label--4">🌊</div>
+          <div class="cv-matrix-label cv-matrix-label--5">🔺</div>
+          <div class="cv-matrix-label cv-matrix-label--6">🌿</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       ECOSYSTEM
+  ══════════════════════════════════════════════════════ -->
+  <section class="cv-ecosystem" id="ecosystem">
+    <div class="cv-container">
+      <span class="cv-eyebrow">✦ Connected Platforms ✦</span>
+      <h2 class="cv-section-title">Part of the <em>Pikoverse Ecosystem</em></h2>
+      <div class="cv-eco-grid">
+        <a href="https://pikoverse.xyz" target="_blank" rel="noopener" class="cv-eco-card">
+          <span class="cv-eco-card__icon">🌐</span>
+          <h4>Pikoverse</h4>
+          <p>The gateway ecosystem — culture, knowledge, technology, and community woven together.</p>
+          <span class="cv-eco-arrow">Visit →</span>
+        </a>
+        <a href="digitalverse/index.html" class="cv-eco-card cv-eco-card--digital">
+          <span class="cv-eco-card__icon">💎</span>
+          <h4>DigitalVerse</h4>
+          <p>Blockchain knowledge — Bitcoin, Ethereum, XRPL, Flare from first principles.</p>
+          <span class="cv-eco-arrow">Enter →</span>
+        </a>
+        <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="cv-eco-card cv-eco-card--nalulf">
+          <span class="cv-eco-card__icon">🔍</span>
+          <h4>NaluLF</h4>
+          <p>XRPL ledger forensics — investigate the blockchain with the literacy DigitalVerse built.</p>
+          <span class="cv-eco-arrow">Investigate →</span>
+        </a>
+        <a href="https://pikoverse.xyz/marketplace/index.html" target="_blank" rel="noopener" class="cv-eco-card cv-eco-card--amp">
+          <span class="cv-eco-card__icon">🛍️</span>
+          <h4>AMP Marketplace</h4>
+          <p>Cultural goods rooted in heritage — every purchase supports the Pikoverse ecosystem.</p>
+          <span class="cv-eco-arrow">Shop →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="cv-footer">
+    <div class="cv-container">
+      <div class="cv-footer__inner">
+        <div>
+          <a href="culturalverse.html" class="cv-footer__logo">🌿 Culturalverse</a>
+          <p class="cv-footer__desc">Part of the Ikeverse ecosystem. Indigenous knowledge presented with cultural respect, careful sourcing, and the understanding that these traditions belong to living communities. Approach with Aloha.</p>
+          <div class="cv-footer__eco">
+            <a href="https://pikoverse.xyz" target="_blank" rel="noopener">Pikoverse</a>
+            <a href="digitalverse/index.html">DigitalVerse</a>
+            <a href="https://pikoverse.xyz/marketplace/index.html" target="_blank" rel="noopener">AMP</a>
+            <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener">NaluLF</a>
+          </div>
+        </div>
+        <div class="cv-footer__col">
+          <h4>Cultures</h4>
+          <ul>
+            <li><a href="#kanaka">🌺 Kānaka Maoli</a></li>
+            <li><a href="#kemet">☥ Kemet</a></li>
+            <li><a href="#cultures" class="cv-footer__soon">🌏 Dreamtime — Soon</a></li>
+            <li><a href="#cultures" class="cv-footer__soon">🪘 Dogon — Soon</a></li>
+          </ul>
+        </div>
+        <div class="cv-footer__col">
+          <h4>Learn</h4>
+          <ul>
+            <li><a href="index.html">🕸️ Living Knowledge Matrix</a></li>
+            <li><a href="culturalverse-lessons.html">📖 Deep Lessons</a></li>
+            <li><a href="culturalverse-bridge.html">🌐 The Bridge</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cv-footer__bottom">
+        <p>© <span id="year"></span> Ikeverse (Proprietary). Cultural knowledge is presented with respect for source communities. These traditions belong to living peoples — approach with Aloha.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="culturalverse.js"></script>
+</body>
+</html>
