@@ -9,10 +9,10 @@
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://pikoverse.xyz/">
+  <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/">
   <meta property="og:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
   <meta property="og:description" content="A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together through learning, preservation, and digital innovation.">
-  <meta property="og:image"       content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
   <meta property="og:locale"      content="en_US">
   <meta property="og:site_name"   content="Pikoverse">
 
@@ -20,7 +20,7 @@
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="Pikoverse — Ka Ulana ʻIke">
   <meta name="twitter:description" content="Aloha, indigenous knowledge, culture, history, and emerging technologies woven together. Built from Hawaiʻi.">
-  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+  <meta name="twitter:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
@@ -28,20 +28,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/marketplace.css">
   <link rel="stylesheet" href="css/platform-ecosystem.css">
+  <link rel="stylesheet" href="css/ecosystem-popups.css">
   <link rel="stylesheet" href="css/hub.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
+
   <!-- ── PROJECT DOCK ── -->
   <div class="piko-dock" role="navigation" aria-label="Project launcher">
     <div class="piko-dock-inner">
 
       <span class="piko-dock-label">Pikoverse</span>
 
-      <a href="/marketplace/index.html" class="dock-node" data-status="live">
+      <a href="marketplace/index.html" class="dock-node" data-status="live">
         <div class="dock-icon-wrap">
           <div class="dock-icon"><img src="assets/AMP Tiki.jpg" alt="AMP"></div>
           <div class="dock-status-ring"></div>
@@ -75,7 +77,7 @@
         </div>
         <span class="dock-node-name">Cosmic Weave</span>
         <div class="dock-tooltip">
-          <span class="dock-tooltip-name">Cosmic Weave Globe</span>
+          <span class="dock-tooltip-name">Cosmic Weave</span>
           <span class="dock-tooltip-status">● Live</span>
         </div>
       </a>
@@ -140,7 +142,8 @@
 
     </div>
   </div>
-  <!-- HEADER -->
+
+  <!-- ── HEADER ── -->
   <header class="site-header">
     <div class="container">
 
@@ -163,16 +166,20 @@
           <li><a href="#aloha-foundation">Aloha</a></li>
           <li><a href="#ecosystem">Platforms</a></li>
           <li><a href="#showcase">Showcase</a></li>
-              <li><a href="#chronicle">Chronicle</a></li>
+          <li><a href="#chronicle">Chronicle</a></li>
           <li><a href="#contact" class="nav-highlight">Connect</a></li>
         </ul>
       </nav>
 
-
+      <button class="mobile-menu-toggle" aria-label="Open mobile menu"
+        aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
 
     </div>
   </header>
-  <!-- HERO -->
+
+  <!-- ── HERO ── -->
   <section id="intro" class="hero-section">
     <div class="container hero-grid">
       <div class="hero-content" data-animate="fade-up">
@@ -207,7 +214,8 @@
       </div>
     </div>
   </section>
-  <!-- PIKOVERSE INTRO -->
+
+  <!-- ── PIKOVERSE INTRO ── -->
   <section id="amp-intro" class="amp-intro-section">
     <div class="container">
       <p class="eyebrow">Gateway Ecosystem</p>
@@ -283,7 +291,8 @@
       </div>
     </div>
   </section>
-  <!-- ALOHA FOUNDATION -->
+
+  <!-- ── ALOHA FOUNDATION ── -->
   <section id="aloha-foundation" class="meaning-section">
     <div class="container">
       <h2>The Deeper Meaning of Aloha</h2>
@@ -333,7 +342,7 @@
     </div>
   </section>
 
-  <!-- LIVING ALOHA -->
+  <!-- ── LIVING ALOHA ── -->
   <section id="lifestyle" class="lifestyle-section">
     <div class="container">
       <h2>Living Aloha Every Day</h2>
@@ -357,7 +366,8 @@
       </div>
     </div>
   </section>
-  <!-- PLATFORM ECOSYSTEM -->
+
+  <!-- ── PLATFORM ECOSYSTEM ── -->
   <section id="ecosystem" class="ecosystem-section">
     <div class="container">
       <div class="section-header ecosystem-header">
@@ -373,7 +383,7 @@
       <div class="ecosystem-grid">
 
         <!-- CARD 1 — AMP -->
-        <article class="ecosystem-card card-amp amp-showcase-card">
+        <article class="ecosystem-card card-amp amp-showcase-card" data-popup="amp">
           <div class="amp-slide-single">
             <video class="card-video" autoplay muted playsinline preload="metadata">
               <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
@@ -397,15 +407,20 @@
                 <li>Creative identity rooted in heritage</li>
                 <li>Apparel, goods, and future marketplace offerings</li>
               </ul>
-              <a href="marketplace/index.html" class="project-link amp-market-link">
-                <i class="fas fa-store"></i> Visit AMP Marketplace →
-              </a>
+              <div class="eco-card-actions">
+                <a href="marketplace/index.html" class="project-link amp-market-link">
+                  <i class="fas fa-store"></i> Visit AMP Marketplace →
+                </a>
+                <button class="eco-popup-btn" data-popup="amp" type="button">
+                  <i class="fas fa-layer-group"></i> Deeper Dive
+                </button>
+              </div>
             </div>
           </div>
         </article>
 
         <!-- CARD 2 — Ikeverse -->
-        <article class="ecosystem-card featured-card card-ikeverse">
+        <article class="ecosystem-card featured-card card-ikeverse" data-popup="ikeverse">
           <video class="card-video" autoplay muted playsinline preload="metadata">
             <source src="assets/platform-images/ikeverse-bg.mp4" type="video/mp4">
           </video>
@@ -425,11 +440,18 @@
             <li>Technology, blockchain, AI, and cryptography modules</li>
             <li>Future support for decentralized preservation</li>
           </ul>
-          <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link">Enter Ikeverse →</a>
+          <div class="eco-card-actions">
+            <a href="https://808cryptobeast.github.io/Ikeverse/verses/culturalverse.html" class="project-link">
+              Enter Culturalverse →
+            </a>
+            <button class="eco-popup-btn" data-popup="ikeverse" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
         </article>
 
         <!-- CARD 3 — Historical Data Aggregator -->
-        <article class="ecosystem-card card-history">
+        <article class="ecosystem-card card-history" data-popup="history">
           <video class="card-video" autoplay muted playsinline preload="metadata">
             <source src="assets/platform-images/historical-bg.mp4" type="video/mp4">
           </video>
@@ -448,36 +470,403 @@
             <li>Preservation-oriented information design</li>
             <li>Future-ready decentralized archival direction</li>
           </ul>
-          <a href="#contact" class="project-link">Follow the Build →</a>
+          <div class="eco-card-actions">
+            <a href="#contact" class="project-link">Follow the Build →</a>
+            <button class="eco-popup-btn" data-popup="history" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
         </article>
 
-        <!-- CARD 4 — NaluLF -->
-        <article class="ecosystem-card card-nalulf">
+        <!-- CARD 4 — DigitalVerse -->
+        <article class="ecosystem-card card-digital" data-popup="digital">
           <video class="card-video" autoplay muted playsinline preload="metadata">
             <source src="assets/platform-images/nalulf-bg.mp4" type="video/mp4">
           </video>
           <div class="card-video-overlay"></div>
-          <div class="card-top-glow"></div>
-          <div class="project-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" /></div>
-          <h3>Nalu Ledger Forensics / NaluLF</h3>
-          <p class="project-subtitle">XRPL Data Aggregation &amp; Forensics</p>
+          <div class="card-top-glow card-top-glow--cyan"></div>
+          <div class="project-icon project-icon--digital">
+            <span class="digital-icon-glyph">💎</span>
+          </div>
+          <h3>DigitalVerse</h3>
+          <p class="project-subtitle">Blockchain &amp; Web3 Knowledge Universe</p>
           <p class="project-description">
-            A deep-inspection XRPL platform focused on ledger monitoring, account intelligence,
-            fraud detection signals, behavioral patterns, and investigative data gathering.
+            A deep-reading blockchain education platform covering Bitcoin, Ethereum, XRPL, Flare &amp;
+            Songbird from first principles — paired with critical thinking, scam defense, and
+            verification skills to navigate Web3 with wisdom, not hype.
           </p>
           <ul class="project-features">
-            <li>XRPL monitoring and ledger analytics</li>
-            <li>Fraud detection and suspicious pattern analysis</li>
-            <li>Wallet, token, and transaction inspection</li>
-            <li>Forensic workflows for investigators and builders</li>
+            <li>18 deep reading lessons across 5 protocol modules</li>
+            <li>Bitcoin, Ethereum, XRPL, Flare &amp; Songbird</li>
+            <li>Web3 security, scam field guide &amp; due diligence</li>
+            <li>Protocol comparison table &amp; key terms glossary</li>
+            <li>Built inside Ikeverse — bridging to NaluLF forensics</li>
           </ul>
-          <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="project-link">Explore NaluLF →</a>
+          <div class="eco-card-actions">
+            <a href="digitalverse/index.html" class="project-link project-link--digital">
+              <i class="fas fa-cube"></i> Enter DigitalVerse →
+            </a>
+            <button class="eco-popup-btn eco-popup-btn--digital" data-popup="digital" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
         </article>
 
       </div>
     </div>
   </section>
-  <!-- PARALLAX QUOTE -->
+
+  <!-- ══════════════════════════════════════════════════════
+       ECOSYSTEM POPUP MODALS
+  ══════════════════════════════════════════════════════ -->
+
+  <!-- Shared backdrop -->
+  <div class="eco-popup-backdrop" id="ecoPopupBackdrop" aria-hidden="true"></div>
+
+  <!-- POPUP: AMP -->
+  <div class="eco-popup" id="eco-popup-amp" role="dialog" aria-modal="true" aria-labelledby="ecoPopupAmpTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon">
+        <img src="assets/AMP Tiki.jpg" alt="AMP" />
+      </div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow">Pikoverse Platform</span>
+        <h3 class="eco-popup__title" id="ecoPopupAmpTitle">AMP</h3>
+        <p class="eco-popup__subtitle">Creative, Cultural &amp; Marketplace Expression</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="eco-popup__body">
+      <p>
+        AMP is the creative and commercial heartbeat of Pikoverse — where culture becomes visible
+        through design, storytelling, and tangible goods. Rooted in Aloha and the spirit of
+        <strong>mālama</strong> (stewardship), every AMP product is designed to carry meaning beyond
+        the aesthetic. It is not merchandise for the sake of merchandise; it is identity made wearable,
+        heritage made holdable.
+      </p>
+      <h4 class="eco-popup__section-title">What AMP Carries</h4>
+      <ul class="eco-popup__list">
+        <li>Cultural graphic design rooted in Hawaiian, indigenous, and ancestral symbolism</li>
+        <li>Story-driven apparel, goods, and limited offerings connected to real histories and values</li>
+        <li>Visual identity systems built around Aloha, Pono, and knowledge preservation</li>
+        <li>A community-facing marketplace where culture is the product, not just the backdrop</li>
+        <li>Future: blockchain-verified provenance for cultural goods on XRPL</li>
+      </ul>
+      <h4 class="eco-popup__section-title">The Bigger Role</h4>
+      <p>
+        AMP funds and sustains the broader Pikoverse ecosystem. Every marketplace purchase supports
+        the development of Ikeverse, DigitalVerse, the Historical Data Aggregator, and NaluLF.
+        This means buying culture directly powers the preservation of culture.
+      </p>
+      <div class="eco-popup__nalulf-path">
+        <div class="eco-popup__nalulf-icon">🔗</div>
+        <div>
+          <strong>Future NaluLF Integration</strong>
+          <p>As Pikoverse scales, AMP marketplace transactions will be anchored to the XRPL —
+          enabling NaluLF to verify purchase provenance, authenticate limited-edition cultural goods,
+          and provide a transparent ledger trail for collectors and community members.</p>
+        </div>
+      </div>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="marketplace/index.html" class="eco-popup__cta eco-popup__cta--primary">
+        <i class="fas fa-store"></i> Visit AMP Marketplace
+      </a>
+      <a href="#contact" class="eco-popup__cta eco-popup__cta--ghost">
+        <i class="fas fa-paper-plane"></i> Connect with Us
+      </a>
+    </div>
+  </div>
+
+  <!-- POPUP: Ikeverse -->
+  <div class="eco-popup" id="eco-popup-ikeverse" role="dialog" aria-modal="true" aria-labelledby="ecoPopupIkeverseTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon">
+        <img src="assets/goldenp.jpg" alt="Ikeverse" />
+      </div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow">Pikoverse Platform</span>
+        <h3 class="eco-popup__title" id="ecoPopupIkeverseTitle">Ikeverse</h3>
+        <p class="eco-popup__subtitle">Where Ancient Wisdom Meets Modern Discovery</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="eco-popup__body">
+      <p>
+        Ikeverse — from <em>Ike</em> (Hawaiian: knowledge, awareness, sight) — is the
+        overarching learning ecosystem within Pikoverse. It is organized into distinct universes,
+        each exploring a different dimension of human knowledge, from ancestral wisdom and
+        indigenous culture to blockchain technology and quantum science. Every path is built
+        with cultural respect, time-based lessons, and the Mana system to honor the depth
+        of what is being learned.
+      </p>
+
+      <!-- CULTURALVERSE -->
+      <h4 class="eco-popup__section-title">🌿 Culturalverse — The Learning Platform</h4>
+      <p>
+        Culturalverse is the primary learning section of Ikeverse — the place where the actual
+        knowledge paths live. It houses structured learning modules covering Hawaiian language
+        and culture, the Kumulipo, ancestral navigation, Dreamtime protocols, Kemet wisdom, and
+        the broader connections between indigenous knowledge traditions across the world.
+        This is where learners enter the curriculum, follow guided paths, and build genuine
+        cultural understanding grounded in respect and sourcing.
+      </p>
+      <ul class="eco-popup__list">
+        <li>Hawaiian language, Kumulipo, and ancestral navigation</li>
+        <li>Dreamtime protocols and Oceanic knowledge traditions</li>
+        <li>Kemet wisdom and African knowledge systems</li>
+        <li>Cross-cultural connections and living indigenous practices</li>
+        <li>Cultural protocols and sensitivity embedded into each lesson</li>
+      </ul>
+      <a href="https://808cryptobeast.github.io/Ikeverse/verses/culturalverse.html"
+         class="eco-popup__cta eco-popup__cta--primary"
+         style="display:inline-flex;margin:10px 0 24px;">
+        <i class="fas fa-leaf"></i> Enter Culturalverse
+      </a>
+
+      <!-- LIVING KNOWLEDGE MATRIX -->
+      <h4 class="eco-popup__section-title">🕸️ The Living Knowledge Matrix</h4>
+      <p>
+        The Living Knowledge Matrix is Ikeverse's dynamic knowledge visualization system — a
+        living, interconnected map of ideas, cultures, histories, and concepts that shows how
+        seemingly separate fields of human understanding are actually deeply woven together.
+        Rather than presenting knowledge as isolated subjects, the Matrix reveals the threads
+        that connect Hawaiian navigation to quantum physics, Kemetic cosmology to modern
+        cryptography, and ancestral wisdom to emerging technology. It is knowledge as a web,
+        not a list — honoring the way indigenous traditions have always understood the world:
+        as relationship, not separation.
+      </p>
+      <ul class="eco-popup__list">
+        <li>Interactive cross-domain knowledge connections</li>
+        <li>Visual mapping of cultural, scientific, and ancestral threads</li>
+        <li>Living system — grows as Ikeverse content expands</li>
+        <li>Bridges indigenous wisdom traditions with modern discovery</li>
+        <li>Housed within Culturalverse as a navigation and exploration tool</li>
+      </ul>
+      <a href="https://808cryptobeast.github.io/Ikeverse/" target="_blank" rel="noopener"
+         class="eco-popup__cta eco-popup__cta--primary"
+         style="display:inline-flex;margin:10px 0 24px;">
+        <i class="fas fa-network-wired"></i> Enter the Living Knowledge Matrix
+      </a>
+
+      <div class="eco-popup__nalulf-path">
+        <div class="eco-popup__nalulf-icon">🔗</div>
+        <div>
+          <strong>Ikeverse → DigitalVerse → NaluLF: The Full Path</strong>
+          <p>
+            Culturalverse builds cultural and ancestral literacy. DigitalVerse — also housed
+            within Ikeverse — builds blockchain and Web3 literacy, specifically covering XRPL
+            in depth. That XRPL knowledge then has a direct forensic application in
+            <strong>NaluLF (Nalu Ledger Forensics)</strong>, where learners apply what they
+            studied to live ledger investigation. The path across Ikeverse is intentional:
+            <em>understand culture → understand the chain → investigate the chain.</em>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="https://808cryptobeast.github.io/Ikeverse/verses/culturalverse.html"
+         class="eco-popup__cta eco-popup__cta--primary">
+        <i class="fas fa-leaf"></i> Enter Culturalverse
+      </a>
+      <a href="marketplace/index.html" class="eco-popup__cta eco-popup__cta--ghost">
+        <i class="fas fa-store"></i> AMP Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- POPUP: Historical Data Aggregator -->
+  <div class="eco-popup" id="eco-popup-history" role="dialog" aria-modal="true" aria-labelledby="ecoPopupHistoryTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon">
+        <img src="assets/platform-images/HDA.png" alt="Historical Data Aggregator" />
+      </div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow">Pikoverse Platform — In Development</span>
+        <h3 class="eco-popup__title" id="ecoPopupHistoryTitle">Historical Data Aggregator</h3>
+        <p class="eco-popup__subtitle">Memory, Preservation &amp; Research</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="eco-popup__body">
+      <p>
+        The Historical Data Aggregator (HDA) is Pikoverse's most ambitious long-form infrastructure
+        project — a living research and preservation system designed to gather, organize, cross-reference,
+        and protect historical knowledge from cultures and timelines that have been systematically
+        marginalized, erased, or misrepresented in mainstream archives.
+      </p>
+      <h4 class="eco-popup__section-title">What It Will Do</h4>
+      <ul class="eco-popup__list">
+        <li>Aggregate curated historical records across indigenous cultures and overlooked civilizations</li>
+        <li>Build cross-cultural connection maps — finding where histories intersect and diverge</li>
+        <li>Apply timeline visualization tools that make deep history accessible and navigable</li>
+        <li>Create preservation-first information design: structured for longevity, not engagement metrics</li>
+        <li>Provide researchers, educators, and community members a trusted, sourced foundation</li>
+      </ul>
+      <h4 class="eco-popup__section-title">Decentralized Future</h4>
+      <p>
+        The HDA is being built with a decentralized archival direction in mind. Historical records
+        stored on immutable ledgers cannot be quietly revised. The vision includes XRPL-anchored
+        document provenance — ensuring that what is preserved, stays preserved, and that any changes
+        are permanently traceable.
+      </p>
+      <div class="eco-popup__nalulf-path">
+        <div class="eco-popup__nalulf-icon">🔗</div>
+        <div>
+          <strong>Future NaluLF Integration</strong>
+          <p>
+            NaluLF's forensic ledger capabilities will eventually serve the HDA by verifying when
+            historical documents were anchored on-chain, tracking their provenance, and ensuring
+            the integrity of preservation records. This creates an immutable chain of custody for
+            cultural memory.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="#contact" class="eco-popup__cta eco-popup__cta--primary">
+        <i class="fas fa-paper-plane"></i> Follow the Build
+      </a>
+      <a href="marketplace/index.html" class="eco-popup__cta eco-popup__cta--ghost">
+        <i class="fas fa-store"></i> AMP Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- POPUP: DigitalVerse -->
+  <div class="eco-popup eco-popup--digital" id="eco-popup-digital" role="dialog" aria-modal="true" aria-labelledby="ecoPopupDigitalTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon eco-popup__icon--digital">
+        <span style="font-size:2.2rem;position:relative;z-index:2;">💎</span>
+      </div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow eco-popup__eyebrow--cyan">Ikeverse · DigitalVerse</span>
+        <h3 class="eco-popup__title" id="ecoPopupDigitalTitle">DigitalVerse</h3>
+        <p class="eco-popup__subtitle">Blockchain Knowledge Universe — First Principles to Frontier</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="eco-popup__body">
+      <p>
+        DigitalVerse is the blockchain and Web3 universe within Ikeverse — a deep-reading,
+        factually grounded learning platform covering five major protocols and a full critical
+        thinking curriculum. It is not hype, not speculation, not surface-level explainers.
+        It is first-principles education designed to build genuine understanding and
+        psychological resilience in the Web3 space.
+      </p>
+      <h4 class="eco-popup__section-title">The 5 Protocol Modules — 18 Deep Lessons</h4>
+      <div class="eco-popup__protocol-grid">
+        <div class="eco-popup__protocol eco-popup__protocol--btc">
+          <span>₿</span>
+          <div>
+            <strong>Bitcoin</strong>
+            <p>Whitepaper, Proof of Work, SHA-256, halvings, wallets, Lightning Network</p>
+          </div>
+        </div>
+        <div class="eco-popup__protocol eco-popup__protocol--eth">
+          <span>Ξ</span>
+          <div>
+            <strong>Ethereum</strong>
+            <p>Smart contracts, EVM, The Merge, EIP-1559, DeFi, L2 rollups, EIP-4844</p>
+          </div>
+        </div>
+        <div class="eco-popup__protocol eco-popup__protocol--xrp">
+          <span>◈</span>
+          <div>
+            <strong>XRP Ledger</strong>
+            <p>Origins, consensus protocol, native DEX/AMM, RLUSD, SEC case &amp; settlement</p>
+          </div>
+        </div>
+        <div class="eco-popup__protocol eco-popup__protocol--flr">
+          <span>✦</span>
+          <div>
+            <strong>Flare &amp; Songbird</strong>
+            <p>FTSOv2 oracle, State Connector, cross-chain data, Songbird canary network</p>
+          </div>
+        </div>
+        <div class="eco-popup__protocol eco-popup__protocol--web3">
+          <span>⬡</span>
+          <div>
+            <strong>Web3 &amp; Security</strong>
+            <p>Seed phrases, FTX collapse, scam field guide, due diligence, DAOs &amp; governance</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="eco-popup__nalulf-path eco-popup__nalulf-path--digital">
+        <div class="eco-popup__nalulf-icon eco-popup__nalulf-icon--cyan">🔍</div>
+        <div>
+          <strong>DigitalVerse → NaluLF: Learn the Protocol, Then Investigate the Chain</strong>
+          <p>
+            DigitalVerse and <strong>NaluLF (Nalu Ledger Forensics)</strong> are designed as a
+            two-stage system. DigitalVerse teaches you the <em>fundamentals</em> — how XRPL consensus
+            works, what a trust line is, how transactions are structured, what the DEX does.
+            NaluLF is where you take that knowledge and apply it forensically to <em>live XRPL data</em>:
+            tracing wallet activity, identifying suspicious patterns, analyzing token behavior,
+            and conducting ledger investigations.
+          </p>
+          <p style="margin-top:10px;">
+            The path is: <strong>DigitalVerse (understand) → NaluLF (investigate)</strong>.
+            You cannot fully use NaluLF without the XRPL literacy that DigitalVerse builds.
+            And DigitalVerse's lessons are only fully realized when you take them into live-ledger
+            practice on NaluLF.
+          </p>
+        </div>
+      </div>
+
+      <!-- NaluLF dedicated section -->
+      <div class="eco-popup__nalulf-section">
+        <div class="eco-popup__nalulf-section-header">
+          <div class="eco-popup__nalulf-section-icon">
+            <img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" />
+          </div>
+          <div>
+            <h4 class="eco-popup__nalulf-section-title">NaluLF — Nalu Ledger Forensics</h4>
+            <p class="eco-popup__nalulf-section-sub">XRPL Data Aggregation &amp; Forensics</p>
+          </div>
+        </div>
+        <p class="eco-popup__nalulf-section-desc">
+          NaluLF is a deep-inspection XRPL platform focused on ledger monitoring, account
+          intelligence, fraud detection signals, behavioral pattern analysis, and investigative
+          data gathering. It is the forensic investigation layer of the Pikoverse blockchain
+          ecosystem — built for those who have moved beyond learning the chain and are ready
+          to read it with a detective's eye.
+        </p>
+        <ul class="eco-popup__list" style="margin-bottom:16px;">
+          <li>XRPL ledger monitoring and real-time analytics</li>
+          <li>Fraud detection and suspicious pattern recognition</li>
+          <li>Wallet, token, and transaction deep inspection</li>
+          <li>Forensic workflows for investigators and builders</li>
+        </ul>
+        <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener"
+           class="eco-popup__cta eco-popup__cta--nalulf">
+          <i class="fas fa-shield-halved"></i> Open NaluLF
+        </a>
+      </div>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="digitalverse/index.html" class="eco-popup__cta eco-popup__cta--cyan">
+        <i class="fas fa-cube"></i> Enter DigitalVerse
+      </a>
+      <a href="marketplace/index.html" class="eco-popup__cta eco-popup__cta--ghost">
+        <i class="fas fa-store"></i> AMP Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- ── PARALLAX QUOTE ── -->
   <section id="parallax-quote" class="parallax-quote-section">
     <div class="overlay"></div>
     <div class="container">
@@ -494,7 +883,7 @@
       </div>
     </div>
   </section>
-  <!-- ── COMMUNITY SHOWCASE ── -->
+
   <!-- ── SUBMISSION CHECKER ── -->
   <section class="piko-check-section" id="pikoCheckSection">
     <div class="piko-check-inner">
@@ -517,6 +906,7 @@
     </div>
   </section>
 
+  <!-- ── COMMUNITY SHOWCASE ── -->
   <section id="showcase" class="piko-showcase-section">
     <div class="piko-showcase-inner">
 
@@ -586,9 +976,8 @@
 
     </div>
   </section>
-  <!-- ══════════════════════════════════════════════════════
-       PIKOVERSE CHRONICLE
-  ══════════════════════════════════════════════════════ -->
+
+  <!-- ── PIKOVERSE CHRONICLE ── -->
   <section id="chronicle" class="piko-chronicle-section">
     <div class="piko-chronicle-inner">
 
@@ -612,7 +1001,6 @@
         </div>
       </div>
 
-      <!-- Article grid — injected by hub.js -->
       <div class="piko-chronicle-grid" id="pikoChronicleGrid"></div>
 
       <div class="piko-chronicle-empty" id="pikoChronicleEmpty" hidden>
@@ -629,7 +1017,7 @@
     </div>
   </section>
 
-  <!-- FINAL CTA -->
+  <!-- ── FINAL CTA ── -->
   <section id="connect" class="final-cta-section">
     <div class="container">
       <div class="final-cta-box">
@@ -647,7 +1035,8 @@
       </div>
     </div>
   </section>
-  <!-- FOOTER -->
+
+  <!-- ── FOOTER ── -->
   <footer id="contact" class="site-footer">
     <div class="footer-overlay"></div>
     <div class="container">
@@ -675,7 +1064,7 @@
         </div>
         <div class="footer-contact">
           <h3>Contact</h3>
-          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#9df4f3fbf2ddfcf1f2f5fcf0fceeeeedeff2f9e8fee9f4f2f3b3fef2f0"><span class="__cf_email__" data-cfemail="b0d9ded6dff0d1dcdfd8d1ddd1c3c3c0c2dfd4c5d3c4d9dfde9ed3dfdd">[email&#160;protected]</span></a></p>
+          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#b1d8dfd7def1d0ddded9d0dcd0c2c2c1c3ded5c4d2c5d8dedf9fd2dedc"><span class="__cf_email__" data-cfemail="f59c9b939ab594999a9d949894868685879a918096819c9a9bdb969a98">[email&#160;protected]</span></a></p>
           <p>Built from Hawaiʻi with cultural respect and future vision.</p>
           <div class="social-links">
             <a href="#" aria-label="Facebook"><i class="social-icon facebook"></i></a>
@@ -694,6 +1083,7 @@
       </div>
     </div>
   </footer>
+
   <!-- ── COMBINED SUBMIT MODAL ── -->
   <div class="piko-modal-backdrop" id="pikoSubmitBackdrop" aria-hidden="true">
     <div class="piko-modal" role="dialog" aria-modal="true" aria-labelledby="pikoModalTitle">
@@ -705,7 +1095,6 @@
         </button>
       </div>
 
-      <!-- Tabs -->
       <div class="piko-modal-tabs">
         <button class="piko-modal-tab is-active" data-tab="project" type="button">
           <i class="fas fa-rocket"></i> Submit a Project
@@ -729,13 +1118,11 @@
           <form id="pikoProjectForm" novalidate>
             <input type="hidden" id="pikoProjectStageValue" value="idea">
             <input type="hidden" id="pikoProjectTechValue" value="[]">
-
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectName">Project Name <span class="hub-req">*</span></label>
               <input type="text" id="pikoProjectName" class="hub-input"
                 placeholder="What's it called?" maxlength="80" required>
             </div>
-
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectDesc">Description <span class="hub-req">*</span></label>
               <textarea id="pikoProjectDesc" class="hub-textarea"
@@ -743,7 +1130,6 @@
                 rows="3" maxlength="400" required></textarea>
               <p class="hub-hint">Max 400 characters</p>
             </div>
-
             <div class="hub-field">
               <label class="hub-label">Stage</label>
               <div class="hub-stage-wrap">
@@ -752,19 +1138,16 @@
                 <button class="hub-stage-btn" data-stage="live" type="button">🚀 Live</button>
               </div>
             </div>
-
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectLink">Project Link</label>
               <input type="url" id="pikoProjectLink" class="hub-input"
                 placeholder="https://your-project.com" maxlength="300">
             </div>
-
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectContact">Contact / Social <span class="hub-opt">(optional)</span></label>
               <input type="text" id="pikoProjectContact" class="hub-input"
                 placeholder="email, @handle, or Discord" maxlength="120">
             </div>
-
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectTechInput">Tools &amp; Tech</label>
               <input type="text" id="pikoProjectTechInput" class="hub-input"
@@ -773,18 +1156,15 @@
               <div class="hub-tags-wrap" id="pikoProjectTechTags"></div>
               <p class="hub-hint">Up to 8 tags</p>
             </div>
-
             <div id="pikoProjectErr" class="hub-hint hub-hint--err" hidden></div>
-
             <button type="submit" class="hub-submit-btn hub-submit-btn--blue">
               <i class="fas fa-rocket"></i> Submit Project
             </button>
           </form>
-
           <div id="pikoProjectSuccess" class="piko-modal-success" hidden>
             <i class="fas fa-hourglass-half"></i>
             <h4>Submitted! 🤙</h4>
-            <p>Your project is under review. Once approved it will appear in the Community Showcase. We'll reach out via the contact info you provided if we have questions.</p>
+            <p>Your project is under review. Once approved it will appear in the Community Showcase.</p>
             <button class="piko-modal-again" id="pikoProjectAgain" type="button">Submit another</button>
           </div>
         </div>
@@ -821,7 +1201,6 @@
               <i class="fas fa-paper-plane"></i> Submit Idea
             </button>
           </form>
-
           <div id="pikoIdeaSuccess" class="piko-modal-success" hidden>
             <i class="fas fa-circle-check"></i>
             <h4>Mahalo! 🌺</h4>
@@ -879,12 +1258,12 @@
     </div>
   </div>
 
-  <!-- Floating submit button -->
+  <!-- ── FLOATING SUBMIT BUTTON ── -->
   <button class="piko-share-fab" id="pikoShareFab" type="button" aria-label="Share a project or idea">
     <i class="fas fa-rocket"></i>
   </button>
 
-  <!-- Live Pulse -->
+  <!-- ── LIVE PULSE ── -->
   <div class="piko-pulse" id="pikoPulse">
     <div class="piko-pulse-panel" id="pikoPulsePanel">
       <div class="piko-pulse-header">
@@ -906,9 +1285,12 @@
       <span class="piko-pulse-dot"></span>
       Live Pulse
     </button>
-  </div><script>
+  </div>
+
+  <!-- ── INLINE SCRIPTS ── -->
+  <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // ── Pikoverse intro cards: play once, last card loops back to frame 0 then pauses ──
+    // Pikoverse intro cards: play once, last card loops back to frame 0 then pauses
     const introCards = document.querySelectorAll("#amp-intro .amp-card");
     introCards.forEach((card, index) => {
       const video = card.querySelector(".amp-card-video");
@@ -927,35 +1309,29 @@
       else video.addEventListener("loadeddata", tryPlay, { once: true });
     });
 
-    // ── Lazy-load ecosystem card videos via IntersectionObserver ──
-    // Replaces autoplay on all .card-video and .amp-card-video elements
-    // so off-screen videos don't load or play until they scroll into view.
+    // Lazy-load ecosystem card videos via IntersectionObserver
     if ("IntersectionObserver" in window) {
       const lazyVideos = document.querySelectorAll(
         ".ecosystem-card .card-video, .amp-slide-single .card-video"
       );
-
       const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           const video = entry.target;
           if (entry.isIntersecting) {
-            // Trigger src load if using <source> tags
-            if (!video.src && video.querySelector("source")) {
-              video.load();
-            }
+            if (!video.src && video.querySelector("source")) { video.load(); }
             video.play().catch(() => {});
             videoObserver.unobserve(video);
           }
         });
       }, { rootMargin: "100px" });
-
       lazyVideos.forEach(v => videoObserver.observe(v));
     }
   });
   </script>
+
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // ── Mobile nav toggle ──────────────────────────────────────────────────
+    // Mobile nav toggle
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const mainNav      = document.querySelector('.main-nav');
     if (mobileToggle && mainNav) {
@@ -978,35 +1354,14 @@
     }
   });
   </script>
-  <!-- ── MOBILE BOTTOM NAV ── -->
-  <nav class="piko-mobile-nav" aria-label="Mobile navigation">
-    <a href="#intro" class="pmn-item pmn-home">
-      <i class="fas fa-house"></i>
-      <span>Home</span>
-    </a>
-    <a href="#ecosystem" class="pmn-item pmn-platforms">
-      <i class="fas fa-layer-group"></i>
-      <span>Platforms</span>
-    </a>
-    <a href="#showcase" class="pmn-item pmn-showcase">
-      <i class="fas fa-rocket"></i>
-      <span>Showcase</span>
-    </a>
-    <a href="#chronicle" class="pmn-item pmn-chronicle">
-      <i class="fas fa-newspaper"></i>
-      <span>Chronicle</span>
-    </a>
-    <a href="#contact" class="pmn-item pmn-connect">
-      <i class="fas fa-paper-plane"></i>
-      <span>Connect</span>
-    </a>
-  </nav>
 
+  <!-- ── EXTERNAL SCRIPTS ── -->
   <script src="js/main.js"></script>
   <script src="js/animations.js"></script>
-  <!-- Published Chronicle articles — loaded before hub.js so they render immediately -->
-  <!-- Updated automatically when you click "Publish to Site" in Admin > Chronicle  -->
-  <script src="js/_pikoArticles.js"></script>
+  <script src="js/marketplace.js"></script>
+  <script src="js/knowledgeHub.js"></script>
   <script src="js/hub.js"></script>
+  <script src="js/ecosystem-popups.js"></script>
+
 </body>
 </html>
