@@ -1446,117 +1446,38 @@
    ══════════════════════════════════════════════ */
 
 /* Give the card a defined min-height so the absolute child has a canvas */
-/* ── AMP card: position:relative so absolute child fills it ── */
+/* ── AMP card — matches other ecosystem cards exactly ──
+   platform-ecosystem.css sets padding:0 on .card-amp so we restore it here.
+   justify-content:flex-end inherited from .ecosystem-card base.           ── */
 .ecosystem-card.card-amp {
-  min-height: 580px;
-  position: relative; /* ensures amp-slide-single fills the card */
-}
-
-/* Fill card exactly like other ecosystem cards */
-.amp-slide-single {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
+  padding: 32px !important;
   overflow: hidden;
+  min-height: 620px;
 }
-
-/* Video fills behind everything */
-.amp-slide-single .card-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.ecosystem-card.card-amp .project-link {
+  color: var(--hub-gold-light);
+}
+.ecosystem-card.card-amp .project-link:hover {
+  color: #fff;
+}
+/* Ensure video/overlay/glow don't mess up with the restored padding */
+.ecosystem-card.card-amp .card-video,
+.ecosystem-card.card-amp .card-video-overlay,
+.ecosystem-card.card-amp .card-top-glow {
+  position: absolute !important;
   z-index: 0;
-  filter: saturate(1.05) contrast(1.04) brightness(.65);
-  transition: filter .4s ease;
 }
-.ecosystem-card.card-amp:hover .amp-slide-single .card-video {
-  filter: saturate(1.10) contrast(1.06) brightness(.80);
-}
-
-/* Dark gradient — heavier at bottom so text reads */
-.amp-slide-single .card-video-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    180deg,
-    rgba(8,11,20,.10) 0%,
-    rgba(8,11,20,.35) 35%,
-    rgba(8,11,20,.88) 100%
-  );
-}
-
-/* Gold top shimmer */
-.amp-slide-single .card-top-glow {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 120px;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(255,210,122,.09), transparent);
-}
-
-/* Body: icon pinned top, text middle, button bottom — mirrors other cards */
-.amp-slide-single .amp-slide-body {
+.ecosystem-card.card-amp .card-video-overlay { z-index: 1; }
+.ecosystem-card.card-amp .card-top-glow     { z-index: 1; }
+/* All direct content children sit above the video */
+.ecosystem-card.card-amp > *:not(.card-video):not(.card-video-overlay):not(.card-top-glow) {
   position: relative;
-  z-index: 2;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* push all content to bottom — matches other ecosystem cards */
-  padding: 28px;
-  gap: 0;
+  z-index: 3;
 }
-
-/* Icon at top with breathing room */
-.amp-slide-single .amp-slide-body .project-icon {
-  margin-bottom: 16px;
-  margin-top: 0;
-}
-
-/* Title immediately under icon */
-.amp-slide-single .amp-slide-body h3 {
-  margin-bottom: 6px;
-}
-
-/* Subtitle under title */
-.amp-slide-single .amp-slide-body .project-subtitle {
-  margin-bottom: 12px;
-}
-
-/* Description takes up middle space */
-.amp-slide-single .amp-slide-body .project-description {
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-
-/* Feature list */
-.amp-slide-single .amp-slide-body .project-features {
-  margin-bottom: 16px;
-}
-
-/* Button anchored at bottom */
-.amp-slide-single .amp-slide-body .project-link {
-  margin-top: auto;
-  align-self: flex-start;
-}
-
-/* ── Mobile: card needs explicit height since child is absolute ── */
 @media (max-width: 768px) {
-  .ecosystem-card.card-amp {
-    min-height: 520px;
-    /* Clip the top so content doesn't overflow above the card */
-    overflow: hidden;
-  }
-  .amp-slide-single .amp-slide-body {
-    padding: 22px;
-  }
-  .amp-slide-single .amp-slide-body .project-description {
-    display: none; /* hide long desc on small screens, keep icon/title/features/button */
-  }
+  .ecosystem-card.card-amp { padding: 24px !important; min-height: 520px; }
 }
+
 
 @media (max-width: 480px) {
   .ecosystem-card.card-amp {
@@ -2682,96 +2603,202 @@
 
 
 
+
+
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE BOTTOM NAV
-   Replaces hamburger menu on mobile. Fixed to bottom of screen.
-   Shows Home, Platforms, Showcase, Chronicle, Connect.
+   ALOHA FOUNDATION CARDS — meaning-card alignment fix
 ═══════════════════════════════════════════════════════════════ */
-.piko-mobile-nav {
-  display: none; /* hidden on desktop */
+.meaning-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 260px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end; /* pin content to bottom */
 }
 
+.meaning-card .card-content {
+  width: 100%;
+  padding: 24px 20px 20px;
+  background: linear-gradient(0deg, rgba(6,8,16,.92) 0%, rgba(6,8,16,.6) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meaning-card .card-content h3 {
+  font-family: 'Orbitron', 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0c96a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.meaning-card .card-content .meaning-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin: 0 0 6px;
+}
+
+.meaning-card .card-content p:not(.meaning-subtitle) {
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE HAMBURGER NAV — dropdown with icons
+═══════════════════════════════════════════════════════════════ */
+
+/* Hamburger button — only visible on mobile */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: 1px solid rgba(201,168,76,.25);
+  border-radius: 8px;
+  color: rgba(255,255,255,.8);
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, color .2s;
+  flex-shrink: 0;
+}
+.mobile-menu-toggle:hover {
+  background: rgba(201,168,76,.1);
+  color: #f0c96a;
+}
+.mobile-menu-toggle.is-open {
+  background: rgba(201,168,76,.12);
+  color: #f0c96a;
+}
+
+/* Dropdown nav panel */
+.mobile-nav-dropdown {
+  display: none;
+  flex-direction: column;
+  background: rgba(6, 8, 18, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(201,168,76,.15);
+  padding: 8px 0;
+  position: relative;
+  z-index: 1900;
+}
+
+.mobile-nav-dropdown.is-open {
+  display: flex;
+}
+
+.mnd-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  text-decoration: none;
+  color: rgba(255,255,255,.7);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .15s, color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mnd-item:last-child { border-bottom: none; }
+.mnd-item i {
+  width: 20px;
+  text-align: center;
+  color: var(--hub-gold, #c9a84c);
+  font-size: 15px;
+}
+.mnd-item:hover,
+.mnd-item:active {
+  background: rgba(201,168,76,.07);
+  color: #f0c96a;
+}
+.mnd-connect {
+  color: #f0c96a;
+  font-weight: 700;
+}
+.mnd-connect i { color: #f0c96a; }
+
 @media (max-width: 768px) {
-  /* Show mobile bottom nav */
-  .piko-mobile-nav {
+  .mobile-menu-toggle {
     display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2100;
-    background: rgba(6, 8, 16, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(201,168,76,.15);
-    padding: 0;
-    padding-bottom: env(safe-area-inset-bottom, 0px); /* iPhone notch */
-    box-shadow: 0 -4px 24px rgba(0,0,0,.5);
   }
-
-  .pmn-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px 4px 10px;
-    text-decoration: none;
-    color: rgba(255,255,255,.45);
-    font-size: 9px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    transition: color .2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .pmn-item i {
-    font-size: 18px;
-    transition: transform .2s, color .2s;
-  }
-
-  .pmn-item:hover,
-  .pmn-item.is-active {
-    color: #f0c96a;
-  }
-
-  .pmn-item:hover i,
-  .pmn-item.is-active i {
-    transform: translateY(-2px);
-    color: #f0c96a;
-  }
-
-  /* Add bottom padding to body so content isn't hidden behind nav */
-  body {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-  }
-
-  /* Hide the desktop main-nav dropdown and hamburger on mobile */
+  /* Hide desktop nav links on mobile */
   .main-nav { display: none !important; }
-  .mobile-menu-toggle { display: none !important; }
-
-  /* Hide the desktop piko-dock on mobile — bottom nav replaces it */
-  .piko-dock { display: none !important; }
-
-  /* Pulse dot on mobile nav for live sections */
-  .pmn-item.pmn-showcase::after {
-    content: '';
-    position: absolute;
-    top: 8px;
-    right: calc(50% - 14px);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #4caf7a;
-    animation: pmn-pulse 2s ease-in-out infinite;
+  /* Remove the old piko-dock margin fix */
+  .piko-dock {
+    margin-top: 0 !important;
   }
-  .pmn-showcase { position: relative; }
+}
 
-  @keyframes pmn-pulse {
-    0%, 100% { opacity: .6; transform: scale(1); }
-    50%       { opacity: 1;  transform: scale(1.2); }
+
+/* ─────────────────────────────────────────────────────────────
+   ALOHA FOUNDATION CARD ALIGNMENT FIX
+   The translateY(1rem) on .card-content hides content on mobile
+   (no hover state on touch screens). Always show content fully.
+   Also fix internal spacing so h3 / subtitle pill / description
+   all sit cleanly without overlap.
+───────────────────────────────────────────────────────────── */
+
+/* Always show content fully — remove the hidden offset */
+.meaning-card .card-content {
+  transform: translateY(0) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+/* Give the card-content glass panel more breathing room */
+.meaning-card .card-content::before {
+  height: 100% !important;
+  top: 0 !important;
+  border-radius: 16px !important;
+}
+
+/* Title */
+.meaning-card h3 {
+  font-size: clamp(1.35rem, 3.5vw, 1.8rem);
+  margin-bottom: 6px !important;
+  line-height: 1.2;
+}
+
+/* Subtitle pill */
+.meaning-card .meaning-subtitle {
+  margin-bottom: 10px !important;
+  margin-top: 2px;
+}
+
+/* Body description */
+.meaning-card p:last-child {
+  font-size: 0.92rem !important;
+  line-height: 1.65 !important;
+  margin-top: 0 !important;
+}
+
+/* On mobile — always visible, no clip */
+@media (max-width: 768px) {
+  .meaning-card {
+    min-height: 18rem !important;
+    align-items: flex-end !important;
   }
+  .meaning-card .card-content {
+    transform: none !important;
+    padding: 1.15rem !important;
+  }
+  .meaning-card h3 { font-size: 1.35rem !important; }
+  .meaning-card p:last-child { font-size: 0.9rem !important; }
 }

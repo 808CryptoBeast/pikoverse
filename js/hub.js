@@ -620,47 +620,47 @@
   }
 
   /* ─────────────────────────────────────────────
-     MOBILE BOTTOM NAV — active state on scroll
+     MOBILE NAV — hamburger toggles dropdown
   ───────────────────────────────────────────── */
   function initMobileNav() {
-    var items = document.querySelectorAll('.pmn-item');
-    if (!items.length) return;
+    var toggle   = document.getElementById('mobileMenuToggle');
+    var dropdown = document.getElementById('mobileNavDropdown');
+    if (!toggle || !dropdown) return;
 
-    var sections = [
-      { id: 'intro',           el: null, item: document.querySelector('.pmn-home') },
-      { id: 'ecosystem',       el: null, item: document.querySelector('.pmn-platforms') },
-      { id: 'showcase',        el: null, item: document.querySelector('.pmn-showcase') },
-      { id: 'chronicle',       el: null, item: document.querySelector('.pmn-chronicle') },
-      { id: 'contact',         el: null, item: document.querySelector('.pmn-connect') },
-    ];
-
-    sections.forEach(function(s) {
-      s.el = document.getElementById(s.id);
+    // Toggle open/close
+    toggle.addEventListener('click', function() {
+      var isOpen = dropdown.classList.toggle('is-open');
+      toggle.classList.toggle('is-open', isOpen);
+      toggle.setAttribute('aria-expanded', isOpen);
+      dropdown.setAttribute('aria-hidden', !isOpen);
     });
 
-    function updateActive() {
-      var scrollY = window.scrollY + window.innerHeight * 0.4;
-      var current = sections[0];
-      sections.forEach(function(s) {
-        if (s.el && s.el.offsetTop <= scrollY) current = s;
-      });
-      items.forEach(function(i) { i.classList.remove('is-active'); });
-      if (current && current.item) current.item.classList.add('is-active');
-    }
-
-    window.addEventListener('scroll', updateActive, { passive: true });
-    updateActive();
-
-    // Smooth scroll on tap
-    items.forEach(function(item) {
+    // Close on any nav item tap + smooth scroll
+    dropdown.querySelectorAll('.mnd-item').forEach(function(item) {
       item.addEventListener('click', function(e) {
         var href = item.getAttribute('href');
         if (href && href.startsWith('#')) {
           e.preventDefault();
+          // Close menu
+          dropdown.classList.remove('is-open');
+          toggle.classList.remove('is-open');
+          toggle.setAttribute('aria-expanded', 'false');
+          dropdown.setAttribute('aria-hidden', 'true');
+          // Smooth scroll
           var target = document.getElementById(href.slice(1));
           if (target) target.scrollIntoView({ behavior: 'smooth' });
         }
       });
+    });
+
+    // Close on outside tap
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#mobileMenuToggle') && !e.target.closest('#mobileNavDropdown')) {
+        dropdown.classList.remove('is-open');
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        dropdown.setAttribute('aria-hidden', 'true');
+      }
     });
   }
 
