@@ -275,18 +275,21 @@ function sbSubmitComment(comment) {
           '<i class="fas fa-paper-plane"></i> Connect with ' + esc(author) + '</a>';
       }
 
-      // Comment section — only shown when Supabase is configured
+      // Comment section — collapsible, easy to tap
       var commentSection = sbReady()
         ? '<div class="piko-board-comments" id="piko-comments-' + esc(idea.id) + '">' +
-            '<div class="piko-board-comments-list" id="piko-clist-' + esc(idea.id) + '">' +
-              '<span class="piko-board-comments-loading">Loading comments…</span>' +
-            '</div>' +
-            '<div class="piko-board-comment-form">' +
-              '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
-              '<textarea class="piko-comment-text" placeholder="Share your thoughts on this idea…" rows="2" maxlength="400"></textarea>' +
-              '<button class="piko-comment-submit" data-idea-id="' + esc(idea.id) + '">' +
-                '<i class="fas fa-paper-plane"></i> Post Comment' +
-              '</button>' +
+            '<button class="piko-comment-toggle" data-target="' + esc(idea.id) + '" type="button">' +
+              '<i class="fas fa-comment"></i> <span class="piko-comment-count">Comments</span>' +
+            '</button>' +
+            '<div class="piko-comment-body" id="piko-cbody-' + esc(idea.id) + '" hidden>' +
+              '<div class="piko-board-comments-list" id="piko-clist-' + esc(idea.id) + '"></div>' +
+              '<div class="piko-board-comment-form">' +
+                '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
+                '<textarea class="piko-comment-text" placeholder="Share your thoughts…" rows="2" maxlength="400"></textarea>' +
+                '<button class="piko-comment-submit" data-idea-id="' + esc(idea.id) + '" type="button">' +
+                  '<i class="fas fa-paper-plane"></i> Post' +
+                '</button>' +
+              '</div>' +
             '</div>' +
           '</div>'
         : '';
@@ -308,13 +311,16 @@ function sbSubmitComment(comment) {
       '</div>';
     }).join('');
 
-    // Load comments for each card (if Supabase ready)
+    // Wire comment toggles (lazy — loads on tap)
     if (sbReady()) {
-      ideas.forEach(function(idea) {
-        loadAndRenderComments(idea.id);
-      });
+      wireCommentToggles(grid);
+    }
 
-      // Wire comment submit buttons
+    // LEGACY inline wiring (kept for safety)
+    if (sbReady()) {
+      ideas.forEach(function(idea) { void idea; }); // count fetched on toggle open
+
+      // Wire comment submit buttons (now handled by wireCommentToggles)
       grid.querySelectorAll('.piko-comment-submit').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var ideaId = btn.dataset.ideaId;
@@ -346,11 +352,17 @@ function sbSubmitComment(comment) {
     }
   }
 
-  function loadAndRenderComments(ideaId) {
-    var listEl = document.getElementById('piko-clist-' + ideaId);
+  function loadAndRenderComments(ideaId, forceOpen) {
+    var listEl    = document.getElementById('piko-clist-' + ideaId);
+    var toggleBtn = document.querySelector('[data-target="' + ideaId + '"]');
+    var countEl   = toggleBtn ? toggleBtn.querySelector('.piko-comment-count') : null;
     if (!listEl) return;
+
     sbLoadComments(ideaId).then(function(comments) {
-      if (!comments || comments.length === 0) {
+      var count = comments ? comments.length : 0;
+      if (countEl) countEl.textContent = count + ' Comment' + (count !== 1 ? 's' : '');
+
+      if (!comments || count === 0) {
         listEl.innerHTML = '<span class="piko-board-no-comments">No comments yet — be the first!</span>';
         return;
       }
@@ -371,6 +383,58 @@ function sbSubmitComment(comment) {
       }).join('');
     }).catch(function() {
       listEl.innerHTML = '<span class="piko-board-no-comments">Could not load comments.</span>';
+    });
+  }
+
+  // Wire comment toggle buttons (called after grid renders)
+  function wireCommentToggles(container) {
+    (container || document).querySelectorAll('.piko-comment-toggle').forEach(function(btn) {
+      if (btn._wired) return;
+      btn._wired = true;
+      var targetId = btn.dataset.target;
+      var body = document.getElementById('piko-cbody-' + targetId);
+      btn.addEventListener('click', function() {
+        if (!body) return;
+        var opening = body.hidden;
+        body.hidden = !opening;
+        btn.classList.toggle('is-open', opening);
+        if (opening) {
+          // Load comments when first opened
+          loadAndRenderComments(targetId);
+        }
+      });
+    });
+
+    // Wire submit buttons
+    (container || document).querySelectorAll('.piko-comment-submit').forEach(function(btn) {
+      if (btn._wired) return;
+      btn._wired = true;
+      btn.addEventListener('click', function() {
+        var ideaId = btn.dataset.ideaId;
+        var form   = btn.closest('.piko-board-comment-form');
+        if (!form) return;
+        var text = form.querySelector('.piko-comment-text').value.trim();
+        var name = form.querySelector('.piko-comment-name').value.trim();
+        if (!text) { form.querySelector('.piko-comment-text').focus(); return; }
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        sbSubmitComment({
+          id:      'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+          idea_id: ideaId,
+          text:    text,
+          name:    name || null,
+          ts:      Date.now(),
+        }).then(function() {
+          form.querySelector('.piko-comment-text').value = '';
+          form.querySelector('.piko-comment-name').value = '';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+          loadAndRenderComments(ideaId);
+        }).catch(function() {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        });
+      });
     });
   }
 
@@ -617,13 +681,20 @@ function sbSubmitComment(comment) {
       backdrop.classList.add('is-open');
       backdrop.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       if (tab) switchTab(tab);
     }
     function closeModal() {
       backdrop.classList.remove('is-open');
       backdrop.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      // Force reflow to restore scroll
+      document.body.getBoundingClientRect();
     }
+    // Expose globally so emptyBtn and other callers use the same close
+    window._pikoOpenModal  = openModal;
+    window._pikoCloseModal = closeModal;
 
     if (fab)       fab.addEventListener('click', function() { openModal('project'); });
     if (inlineBtn) inlineBtn.addEventListener('click', function() { openModal('project'); });
@@ -885,38 +956,9 @@ function sbSubmitComment(comment) {
       if (empty) empty.hidden = true;
       grid.innerHTML = approved.map(renderProjectCard).join('');
 
-    // Wire comment buttons and load comments for each project (Supabase only)
+    // Wire comment toggles for projects (lazy — loads on tap)
     if (sbReady()) {
-      approved.forEach(function(p) {
-        loadAndRenderComments('proj-' + p.id);
-      });
-      grid.querySelectorAll('.piko-comment-submit').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var ideaId = btn.dataset.ideaId;
-          var card   = btn.closest('.ecosystem-project-card');
-          var text   = card.querySelector('.piko-comment-text').value.trim();
-          var name   = card.querySelector('.piko-comment-name').value.trim();
-          if (!text) return;
-          btn.disabled = true;
-          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-          sbSubmitComment({
-            id:      'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-            idea_id: ideaId,
-            text:    text,
-            name:    name || null,
-            ts:      Date.now(),
-          }).then(function() {
-            card.querySelector('.piko-comment-text').value = '';
-            card.querySelector('.piko-comment-name').value = '';
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
-            loadAndRenderComments(ideaId);
-          }).catch(function() {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
-          });
-        });
-      });
+      wireCommentToggles(grid);
     }
     }
   }
@@ -1354,19 +1396,15 @@ function sbSubmitComment(comment) {
     var emptyBtn = document.getElementById('pikoOpenSubmitEmpty');
     if (emptyBtn) {
       emptyBtn.addEventListener('click', function() {
-        var backdrop = document.getElementById('pikoSubmitBackdrop');
-        if (backdrop) {
-          backdrop.classList.add('is-open');
-          backdrop.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
-          // Switch to project tab
-          document.querySelectorAll('.piko-modal-tab').forEach(function(b) {
-            b.classList.toggle('is-active', b.dataset.tab === 'project');
-          });
-          document.querySelectorAll('.piko-tab-pane').forEach(function(p) {
-            p.classList.toggle('is-active', p.id === 'pikoTabProject');
-          });
-        }
+        if (window._pikoOpenModal) window._pikoOpenModal('project');
+      });
+    }
+    // Also wire pikoOpenSubmit (inline header button) via global
+    var inlineSubmit = document.getElementById('pikoOpenSubmit');
+    if (inlineSubmit && !inlineSubmit._wired) {
+      inlineSubmit._wired = true;
+      inlineSubmit.addEventListener('click', function() {
+        if (window._pikoOpenModal) window._pikoOpenModal('project');
       });
     }
   });
