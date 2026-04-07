@@ -3,692 +3,1009 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="AMP Marketplace — Creative expression within the Pikoverse ecosystem. Culturally inspired design rooted in Aloha.">
-  <meta name="theme-color" content="#0a0e17">
-
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-
-  <title>AMP Marketplace — Aloha Mass Productions</title>
+  <meta name="description" content="Pikoverse — Ka Ulana ʻIke, The Weaving of Knowledge. A cultural, educational, and technology-driven gateway connecting Aloha, indigenous knowledge, history, AMP, Ikeverse, Nalu Ledger Forensics, and emerging technologies.">
+  <meta name="theme-color" content="#5B9A68">
+  <title>Pikoverse | Ka Ulana ʻIke | The Weaving of Knowledge</title>
 
   <!-- Open Graph -->
   <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://808cryptobeast.github.io/pikoverse/marketplace/marketplace.html">
-  <meta property="og:title"       content="AMP Marketplace — Culture Through Design">
-  <meta property="og:description" content="Culturally inspired apparel and goods rooted in Aloha. Every piece carries heritage forward — built within the Pikoverse ecosystem.">
-  <meta property="og:image"       content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
+  <meta property="og:url"         content="https://pikoverse.xyz/">
+  <meta property="og:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
+  <meta property="og:description" content="A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together through learning, preservation, and digital innovation.">
+  <meta property="og:image"       content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+  <meta property="og:locale"      content="en_US">
   <meta property="og:site_name"   content="Pikoverse">
-  <meta name="twitter:card"       content="summary_large_image">
-  <meta name="twitter:title"      content="AMP Marketplace — Culture Through Design">
-  <meta name="twitter:image"      content="https://808cryptobeast.github.io/pikoverse/assets/AMP%20Tiki.jpg">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Pikoverse — Ka Ulana ʻIke">
+  <meta name="twitter:description" content="Aloha, indigenous knowledge, culture, history, and emerging technologies woven together. Built from Hawaiʻi.">
+  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/AMP%20Tiki.jpg">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.json">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="marketplace.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/platform-ecosystem.css">
+  <link rel="stylesheet" href="css/hub.css">
 
-  <style>
-    .mp-store-locked {
-      overflow: hidden;
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    .mp-store-locked .mp-nav,
-    .mp-store-locked .mp-hero,
-    .mp-store-locked .mp-main,
-    .mp-store-locked .mp-footer,
-    .mp-store-locked .mp-cart-drawer,
-    .mp-store-locked .mp-cart-backdrop,
-    .mp-store-locked .mp-modal-backdrop,
-    .mp-store-locked .mp-toast,
-    .mp-store-locked .mp-checkout-backdrop,
-    .mp-store-locked .mp-checkout-modal,
-    .mp-store-locked .mp-sugg-backdrop,
-    .mp-store-locked .mp-sugg-panel,
-    .mp-store-locked .mp-sugg-fab,
-    .mp-store-locked .mp-email-capture,
-    .mp-store-locked .mp-ecosystem-dock,
-    .mp-store-locked .mp-order-confirm {
-      pointer-events: none;
-      user-select: none;
-      filter: blur(3px);
-    }
-
-    .mp-uc-overlay[hidden] {
-      display: none !important;
-    }
-
-    .mp-uc-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at top, rgba(240, 201, 106, 0.12), transparent 35%),
-        linear-gradient(180deg, rgba(5, 8, 18, 0.82) 0%, rgba(5, 8, 18, 0.94) 100%);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .mp-uc-overlay.is-visible {
-      display: flex;
-    }
-
-    .mp-uc-card {
-      width: min(680px, 100%);
-      padding: 32px 28px;
-      border-radius: 22px;
-      background: rgba(8, 12, 22, 0.92);
-      border: 1px solid rgba(240, 201, 106, 0.24);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-      text-align: center;
-    }
-
-    .mp-uc-icon {
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(240, 201, 106, 0.12);
-      border: 1px solid rgba(240, 201, 106, 0.28);
-      color: #f0c96a;
-      font-size: 30px;
-    }
-
-    .mp-uc-card h1 {
-      margin: 0 0 12px;
-      color: #fff;
-      font-size: clamp(28px, 5vw, 42px);
-      line-height: 1.08;
-    }
-
-    .mp-uc-card p {
-      margin: 0 auto 10px;
-      max-width: 560px;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.65;
-      font-size: 15px;
-    }
-
-    .mp-uc-note {
-      color: #f0c96a !important;
-      font-weight: 700;
-      margin-top: 14px !important;
-    }
-
-    .mp-uc-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    .mp-uc-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 18px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 14px;
-      transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
-    }
-
-    .mp-uc-btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .mp-uc-btn--primary {
-      background: linear-gradient(135deg, rgba(201,168,76,.28), rgba(240,201,106,.18));
-      border: 1px solid rgba(240,201,106,.35);
-      color: #f0c96a;
-      box-shadow: 0 8px 24px rgba(201,168,76,.16);
-    }
-
-    .mp-uc-btn--ghost {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.88);
-    }
-  </style>
-
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var isAdminBypass = params.get('admin') === '1';
-
-      document.documentElement.classList.toggle('mp-admin-bypass', isAdminBypass);
-      document.documentElement.classList.toggle('mp-public-locked', !isAdminBypass);
-    })();
-  </script>
 </head>
 <body>
-  <div id="mpUnderConstruction" class="mp-uc-overlay" hidden>
-    <div class="mp-uc-card">
-      <div class="mp-uc-icon">
-        <i class="fas fa-person-digging"></i>
-      </div>
+  <!-- ── PROJECT DOCK ── -->
+  <div class="piko-dock" role="navigation" aria-label="Project launcher">
+    <div class="piko-dock-inner">
 
-      <h1>AMP Marketplace<br>Under Construction</h1>
+      <span class="piko-dock-label">Pikoverse</span>
 
-      <p>
-        The public marketplace is still being prepared. Product layout, payments, and store flows are
-        currently being finalized.
-      </p>
+      <a href="/marketplace/index.html" class="dock-node" data-status="live">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon"><img src="assets/AMP Tiki.jpg" alt="AMP"></div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">AMP</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">AMP Marketplace</span>
+          <span class="dock-tooltip-status">● Live</span>
+        </div>
+      </a>
 
-      <p class="mp-uc-note">
-        Public access is temporarily restricted. Admin access only during buildout.
-      </p>
+      <a href="https://808cryptobeast.github.io/Ikeverse/" class="dock-node" data-status="beta" data-section="ecosystem">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon"><img src="assets/goldenp.jpg" alt="Ikeverse"></div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Ikeverse</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Ikeverse</span>
+          <span class="dock-tooltip-status">◉ Beta</span>
+        </div>
+      </a>
 
-      <div class="mp-uc-actions">
-        <a href="../index.html" class="mp-uc-btn mp-uc-btn--ghost">
-          <i class="fas fa-arrow-left"></i> Back to Pikoverse
-        </a>
+      <a href="cosmic-weave.html" class="dock-node" data-status="live">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon">🌌</div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Cosmic Weave</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Cosmic Weave Globe</span>
+          <span class="dock-tooltip-status">● Live</span>
+        </div>
+      </a>
 
-        <a href="../projects/admin/admin.html" class="mp-uc-btn mp-uc-btn--primary">
-          <i class="fas fa-lock"></i> Admin Login
-        </a>
-      </div>
+      <div class="dock-divider"></div>
+
+      <a href="#ecosystem" class="dock-node" data-status="soon">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon"><img src="assets/platform-images/HDA.png" alt="HDA"></div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Historical</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Historical Data Aggregator</span>
+          <span class="dock-tooltip-status">○ Coming Soon</span>
+        </div>
+      </a>
+
+      <a href="https://808cryptobeast.github.io/NaluLF/" class="dock-node" data-status="beta">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF"></div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">NaluLF</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Nalu Ledger Forensics</span>
+          <span class="dock-tooltip-status">◉ Beta</span>
+        </div>
+      </a>
+
+      <div class="dock-divider"></div>
+
+      <a href="#showcase" class="dock-node" data-status="live">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon">🚀</div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Showcase</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Community Showcase</span>
+          <span class="dock-tooltip-status">● Open</span>
+        </div>
+      </a>
+
+      <div class="dock-divider"></div>
+
+      <a href="projects/admin/admin.html" class="dock-node dock-node--admin" data-status="live">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon" style="font-size:16px">⚙️</div>
+          <div class="dock-status-ring"></div>
+          <div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">Admin</span>
+        <div class="dock-tooltip">
+          <span class="dock-tooltip-name">Admin Panel</span>
+          <span class="dock-tooltip-status">🔒 Login required</span>
+        </div>
+      </a>
+
     </div>
   </div>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container">
 
-  <!-- ── NAV ── -->
-  <nav class="mp-nav" id="mpNav" aria-label="Main navigation">
-
-    <a href="../index.html" class="mp-nav-logo" aria-label="Home — Aloha Mass Productions">
-      <img src="../assets/AMP Tiki.jpg" alt="AMP Tiki">
-    </a>
-
-    <div class="mp-nav-links" id="mpNavLinks">
-      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-link">
-        <i class="fas fa-globe"></i>
-        <span>Pikoverse</span>
-      </a>
-      <a href="https://808cryptobeast.github.io/Ikeverse/" class="mp-nav-link">
-        <i class="fas fa-eye"></i>
-        <span>Ikeverse</span>
-      </a>
-      <a href="../about.html" class="mp-nav-link">
-        <i class="fas fa-leaf"></i>
-        <span>About</span>
-      </a>
-    </div>
-
-    <div class="mp-nav-right">
-      <a href="../projects/admin/admin.html" class="mp-nav-admin-btn" title="Admin" aria-label="Admin panel">
-        <i class="fas fa-sliders"></i>
-      </a>
-      <button class="mp-nav-cart" id="mpCartBtn" aria-label="Open cart" type="button">
-        <i class="fas fa-shopping-bag"></i>
-        <span class="mp-nav-cart-count" id="mpCartCount" aria-live="polite">0</span>
-      </button>
-      <button class="mp-nav-hamburger" id="mpNavHamburger" aria-label="Toggle menu" type="button">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-
-    <div class="mp-nav-mobile" id="mpNavMobile" aria-hidden="true">
-      <a href="../index.html" class="mp-nav-mobile-link">
-        <img src="../assets/AMP Tiki.jpg" alt="" class="mp-nav-mobile-tiki"> Home
-      </a>
-      <a href="https://808cryptobeast.github.io/pikoverse/" class="mp-nav-mobile-link">
-        <i class="fas fa-globe"></i> Pikoverse
-      </a>
-      <a href="https://808cryptobeast.github.io/Ikeverse/" class="mp-nav-mobile-link">
-        <i class="fas fa-eye"></i> Ikeverse
-      </a>
-      <a href="../about.html" class="mp-nav-mobile-link">
-        <i class="fas fa-leaf"></i> About
-      </a>
-    </div>
-
-    <div class="mp-nav-scanline" aria-hidden="true"></div>
-  </nav>
-
-  <!-- ── ANNOUNCEMENT BANNER ── -->
-  <div id="mpBanner" class="mp-banner" hidden>
-    <i class="fas fa-bullhorn" aria-hidden="true"></i>
-    <span id="mpBannerText"></span>
-    <button class="mp-banner-close" id="mpBannerClose" type="button" aria-label="Close banner">×</button>
-  </div>
-
-  <!-- ── HERO ── -->
-  <header class="mp-hero">
-    <div class="mp-hero-bg" aria-hidden="true">
-      <div class="mp-hero-glow mp-hero-glow--left"></div>
-      <div class="mp-hero-glow mp-hero-glow--right"></div>
-      <div class="mp-hero-grid"></div>
-    </div>
-    <div class="mp-hero-content">
-      <div class="mp-eyebrow">
-        <span class="mp-eyebrow-dot"></span>
-        AMP Marketplace
-      </div>
-      <h1 class="mp-hero-title">
-        Culture Through<br>
-        <em>Design</em>
-      </h1>
-      <p class="mp-hero-subtitle">
-        Every piece carries heritage forward — rooted in Aloha, expressed through identity.
-      </p>
-    </div>
-  </header>
-
-  <!-- ── MAIN ── -->
-  <main class="mp-main" id="mp-main">
-    <div class="mp-container">
-
-      <div class="mp-topbar">
-        <div class="mp-search-wrap">
-          <i class="fas fa-search mp-search-icon" aria-hidden="true"></i>
-          <input type="search" id="mpSearch" class="mp-search"
-                 placeholder="Search products..." aria-label="Search products"
-                 autocomplete="off" spellcheck="false" maxlength="80">
-          <button class="mp-search-clear" id="mpSearchClear" aria-label="Clear search" type="button" hidden>
-            <i class="fas fa-times"></i>
-          </button>
+      <div class="brand-wrap">
+        <a href="#intro" class="logo" aria-label="Pikoverse home">
+          <video class="logo-video" autoplay muted loop playsinline preload="metadata"
+            aria-label="Pikoverse Logo Animation">
+            <source src="assets/intro/pikoverse-intro.mp4" type="video/mp4">
+          </video>
+        </a>
+        <div class="brand-text">
+          <span class="brand-name">Pikoverse</span>
+          <span class="brand-subtitle">Ka Ulana ʻIke</span>
         </div>
       </div>
 
-      <nav class="mp-categories" aria-label="Product categories">
-        <button class="mp-cat-btn is-active" data-cat="all" type="button">All Items</button>
-        <button class="mp-cat-btn" data-cat="shirts" type="button">
-          <i class="fas fa-shirt"></i> Shirts
-        </button>
-        <button class="mp-cat-btn" data-cat="hats" type="button">
-          <i class="fas fa-hat-cowboy"></i> Hats
-        </button>
-        <button class="mp-cat-btn" data-cat="stickers" type="button">
-          <i class="fas fa-star"></i> Stickers
-        </button>
-        <button class="mp-cat-btn" data-cat="accessories" type="button">
-          <i class="fas fa-gem"></i> Accessories
-        </button>
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <ul>
+          <li><a href="#intro">Home</a></li>
+          <li><a href="#aloha-foundation">Aloha</a></li>
+          <li><a href="#ecosystem">Platforms</a></li>
+          <li><a href="#showcase">Showcase</a></li>
+              <li><a href="#chronicle">Chronicle</a></li>
+          <li><a href="#contact" class="nav-highlight">Connect</a></li>
+        </ul>
       </nav>
 
-      <div class="mp-toolbar">
-        <p class="mp-results-count" id="mpResultsCount" aria-live="polite">Showing all items</p>
-        <div class="mp-sort-wrap">
-          <label for="mpSort" class="mp-sort-label">Sort by</label>
-          <select id="mpSort" class="mp-sort" aria-label="Sort products">
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A–Z</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="mp-grid" id="mpGrid" role="list" aria-label="Products"></div>
-
-      <div class="mp-empty" id="mpEmpty" hidden>
-        <i class="fas fa-search"></i>
-        <p>No products found for "<span id="mpEmptyTerm"></span>"</p>
-        <button class="mp-empty-reset" id="mpEmptyReset" type="button">Clear search</button>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- ── PRODUCT QUICK-VIEW MODAL ── -->
-  <div class="mp-modal-backdrop" id="mpModalBackdrop" aria-hidden="true">
-    <div class="mp-modal" id="mpModal" role="dialog" aria-modal="true" aria-labelledby="mpModalTitle">
-      <button class="mp-modal-close" id="mpModalClose" aria-label="Close" type="button">
-        <i class="fas fa-times"></i>
+      <!-- Hamburger toggle for mobile -->
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open mobile menu" aria-expanded="false">
+        <i class="fas fa-bars"></i>
       </button>
-      <div class="mp-modal-inner">
-        <div class="mp-modal-gallery">
-          <img src="" alt="" id="mpModalImg" class="mp-modal-img" loading="lazy">
-          <div class="mp-modal-badge" id="mpModalBadge"></div>
-        </div>
-        <div class="mp-modal-info">
-          <div class="mp-modal-cat" id="mpModalCat"></div>
-          <h2 class="mp-modal-title" id="mpModalTitle"></h2>
-          <div class="mp-modal-rating" id="mpModalRating"></div>
-          <p class="mp-modal-desc" id="mpModalDesc"></p>
-          <div class="mp-modal-price" id="mpModalPrice"></div>
-          <div class="mp-modal-story" id="mpModalStory" hidden>
-            <a class="mp-story-link" id="mpStoryLink" href="#" target="_blank" rel="noopener">
-              <i class="fas fa-book-open"></i>
-              <span id="mpStoryText">Story Behind the Design</span>
-              <i class="fas fa-arrow-up-right-from-square"></i>
-            </a>
-            <p class="mp-story-excerpt" id="mpStoryExcerpt"></p>
-          </div>
-          <div class="mp-modal-sizes" id="mpModalSizes" hidden>
-            <p class="mp-modal-sizes-label">Size</p>
-            <div class="mp-size-grid" id="mpSizeGrid"></div>
-          </div>
-          <div class="mp-modal-qty">
-            <p class="mp-modal-sizes-label">Quantity</p>
-            <div class="mp-qty-wrap">
-              <button class="mp-qty-btn" id="mpQtyDown" aria-label="Decrease quantity" type="button">−</button>
-              <span class="mp-qty-val" id="mpQtyVal" aria-live="polite">1</span>
-              <button class="mp-qty-btn" id="mpQtyUp" aria-label="Increase quantity" type="button">+</button>
-            </div>
-          </div>
-          <div class="mp-modal-actions">
-            <button class="mp-add-to-cart-btn" id="mpAddToCart" type="button">
-              <i class="fas fa-shopping-bag"></i> Add to Cart
-            </button>
-            <button class="mp-wishlist-btn" id="mpWishlist" aria-label="Save to wishlist" type="button">
-              <i class="far fa-heart"></i>
-            </button>
-          </div>
-          <div class="mp-trust">
-            <div class="mp-trust-item"><i class="fas fa-shield-halved"></i><span>Secure checkout</span></div>
-            <div class="mp-trust-item"><i class="fas fa-truck"></i><span>Free shipping over $75</span></div>
-            <div class="mp-trust-item"><i class="fas fa-rotate-left"></i><span>30-day returns</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- ── CART DRAWER ── -->
-  <div class="mp-cart-backdrop" id="mpCartBackdrop" aria-hidden="true"></div>
-  <aside class="mp-cart-drawer" id="mpCartDrawer" aria-label="Shopping cart" aria-hidden="true">
-    <div class="mp-cart-header">
-      <h2 class="mp-cart-title"><i class="fas fa-shopping-bag"></i> Your Cart</h2>
-      <button class="mp-cart-close" id="mpCartClose" aria-label="Close cart" type="button">
-        <i class="fas fa-times"></i>
-      </button>
     </div>
-    <div class="mp-cart-body" id="mpCartBody"></div>
-    <div class="mp-cart-footer" id="mpCartFooter">
-      <div class="mp-promo-wrap">
-        <div class="mp-promo-row">
-          <input type="text" id="mpPromoInput" class="mp-promo-input"
-                 placeholder="Promo code" maxlength="30" autocomplete="off" aria-label="Promo code">
-          <button type="button" class="mp-promo-apply" id="mpPromoApply">Apply</button>
+
+    <!-- Mobile dropdown nav — shown when hamburger tapped -->
+    <nav class="mobile-nav-dropdown" id="mobileNavDropdown" aria-hidden="true">
+      <a href="#intro" class="mnd-item">
+        <i class="fas fa-house"></i> Home
+      </a>
+      <a href="#aloha-foundation" class="mnd-item">
+        <i class="fas fa-heart"></i> Aloha
+      </a>
+      <a href="#ecosystem" class="mnd-item">
+        <i class="fas fa-layer-group"></i> Platforms
+      </a>
+      <a href="#showcase" class="mnd-item">
+        <i class="fas fa-rocket"></i> Showcase
+      </a>
+      <a href="#chronicle" class="mnd-item">
+        <i class="fas fa-newspaper"></i> Chronicle
+      </a>
+      <a href="#contact" class="mnd-item mnd-connect">
+        <i class="fas fa-paper-plane"></i> Connect
+      </a>
+    </nav>
+  </header>
+  <!-- HERO -->
+  <section id="intro" class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-content" data-animate="fade-up">
+        <p class="eyebrow">Pikoverse</p>
+        <h1>
+          <span class="highlight">Ka Ulana ʻIke</span><br>
+          The Weaving of Knowledge
+        </h1>
+        <p class="subtitle">
+          A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies
+          are woven together through learning, preservation, research, storytelling, and digital innovation.
+        </p>
+        <div class="hero-cta">
+          <a href="#ecosystem" class="cta-btn primary-btn">Explore the Ecosystem</a>
+          <a href="#aloha-foundation" class="cta-btn secondary-btn">The Foundation of Aloha</a>
         </div>
-        <p class="mp-promo-feedback" id="mpPromoFeedback" hidden></p>
+        <div class="hero-tags">
+          <span>Aloha</span><span>Culture</span><span>History</span>
+          <span>Blockchain</span><span>AI</span><span>Learning</span>
+        </div>
       </div>
-      <div class="mp-promo-savings" id="mpPromoSavings" hidden>
-        <span>Promo discount</span>
-        <span id="mpPromoSavingsAmt" style="color:#4caf7a"></span>
+
+      <div class="hero-image" data-animate="fade-in">
+        <div class="hero-media-shell">
+          <div class="hero-media-border"></div>
+          <div class="hero-media-sweep"></div>
+          <video class="tiki-image hero-video" autoplay muted playsinline preload="metadata"
+            aria-label="Pikoverse gateway visual">
+            <source src="assets/intro/pikoverse-intro.mp4" type="video/mp4">
+          </video>
+        </div>
       </div>
-      <div class="mp-cart-subtotal">
-        <span>Subtotal</span>
-        <span id="mpCartSubtotal">$0.00</span>
+    </div>
+  </section>
+  <!-- PIKOVERSE INTRO -->
+  <section id="amp-intro" class="amp-intro-section">
+    <div class="container">
+      <p class="eyebrow">Gateway Ecosystem</p>
+      <h2>Pikoverse</h2>
+
+      <div class="amplify-frame">
+        <div class="amplify-frame-border"></div>
+        <div class="amplify-animation">
+          <span class="amplify-word">Weaving</span>
+          <span class="amplify-word changing-word">Aloha</span>
+          <span class="amplify-word changing-word">Knowledge</span>
+          <span class="amplify-word changing-word">Culture</span>
+          <span class="amplify-word changing-word">History</span>
+          <span class="amplify-word changing-word">Innovation</span>
+        </div>
       </div>
-      <p class="mp-cart-note">
-        <i class="fas fa-lock"></i> Taxes and shipping calculated at checkout
+
+      <p class="section-intro">
+        <strong>Ka Ulana ʻIke</strong> — The Weaving of Knowledge — is the guiding spirit of Pikoverse.
+        It is the umbrella ecosystem that brings together AMP, Ikeverse, Nalu Ledger Forensics,
+        historical research systems, and future knowledge platforms into one connected gateway
+        where culture, learning, preservation, and digital innovation move together rather than apart.
       </p>
-      <button class="mp-checkout-btn" id="mpCheckoutBtn" type="button">
-        <i class="fas fa-lock"></i> Secure Checkout
-      </button>
-      <button class="mp-cart-continue" id="mpCartContinue" type="button">
-        Continue Shopping
-      </button>
-    </div>
-  </aside>
 
-  <!-- ── TOAST ── -->
-  <div class="mp-toast" id="mpToast" role="status" aria-live="polite" aria-hidden="true"></div>
+      <div class="amp-grid">
+        <div class="amp-card amp-foundation">
+          <video class="amp-card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/amp/foundation.mp4" type="video/mp4">
+          </video>
+          <div class="amp-card-overlay"></div>
+          <div class="amp-card-border"></div>
+          <div class="amp-card-sweep"></div>
+          <div class="amp-card-content">
+            <h3>Our Foundation</h3>
+            <p>Rooted in Aloha, mālama, ʻike, and respect for ancestral knowledge, Pikoverse begins
+            with values before platform design. Its foundation is not only technical or visual,
+            but ethical and relational — honoring the land, the people, the stories, and the
+            wisdom traditions that give meaning to what is being built.</p>
+          </div>
+        </div>
 
-  <!-- ── FOOTER ── -->
-  <footer class="mp-footer">
-    <div class="mp-container">
-      <div class="mp-footer-grid">
-        <div class="mp-footer-brand">
-          <a href="../index.html" class="mp-footer-logo-link" aria-label="Aloha Mass Productions">
-            <img src="../assets/AMPTTiki.jpg" alt="AMP" class="mp-footer-logo-img">
-          </a>
-          <p>Creative expression within the Pikoverse ecosystem — rooted in Aloha, carried forward through design.</p>
+        <div class="amp-card amp-ecosystem">
+          <video class="amp-card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/amp/ecosystem.mp4" type="video/mp4">
+          </video>
+          <div class="amp-card-overlay"></div>
+          <div class="amp-card-border"></div>
+          <div class="amp-card-sweep"></div>
+          <div class="amp-card-content">
+            <h3>Our Ecosystem</h3>
+            <p>Pikoverse is a gateway into culture, education, historical preservation, technology,
+            blockchain analytics, creative expression, and future-facing learning systems. Each
+            branch serves a distinct purpose, yet all remain connected through one larger vision:
+            to weave together memory, meaning, access, and innovation into a living, expanding realm.</p>
+          </div>
         </div>
-        <div class="mp-footer-links">
-          <h4>Shop</h4>
-          <a href="#" data-cat-link="shirts">Shirts</a>
-          <a href="#" data-cat-link="hats">Hats</a>
-          <a href="#" data-cat-link="stickers">Stickers</a>
-          <a href="#" data-cat-link="accessories">Accessories</a>
-        </div>
-        <div class="mp-footer-links">
-          <h4>Info</h4>
-          <a href="../index.html">Home</a>
-          <a href="https://808cryptobeast.github.io/pikoverse/">Pikoverse</a>
-          <a href="https://808cryptobeast.github.io/Ikeverse/">Ikeverse</a>
-        </div>
-        <div class="mp-footer-links">
-          <h4>Policies</h4>
-          <a href="#shipping">Shipping</a>
-          <a href="#returns">Returns</a>
-          <a href="#privacy">Privacy</a>
+
+        <div class="amp-card amp-mission">
+          <video class="amp-card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/amp/ecosystem-2.mp4" type="video/mp4">
+          </video>
+          <div class="amp-card-overlay"></div>
+          <div class="amp-card-border"></div>
+          <div class="amp-card-sweep"></div>
+          <div class="amp-card-content">
+            <h3>Our Mission</h3>
+            <p>To weave knowledge across worlds — honoring heritage, expanding access to learning,
+            and building tools that preserve and illuminate what matters. Pikoverse exists to
+            connect ancestral understanding with emerging systems so that culture is not left behind
+            by the future, but carried forward with intention, care, and purpose.</p>
+          </div>
         </div>
       </div>
-      <div class="mp-footer-bottom">
-        <p>© 2026 Aloha Mass Productions. All rights reserved.</p>
-        <div class="mp-footer-badges">
-          <span><i class="fas fa-lock"></i> SSL Secured</span>
-          <span><i class="fas fa-shield-halved"></i> Safe Checkout</span>
-          <a href="../projects/admin/admin.html" class="mp-footer-admin-link" title="Admin">
+    </div>
+  </section>
+  <!-- ALOHA FOUNDATION -->
+  <section id="aloha-foundation" class="meaning-section">
+    <div class="container">
+      <h2>The Deeper Meaning of Aloha</h2>
+      <p class="section-intro">
+        Pikoverse is grounded in Aloha not merely as a greeting, but as a way of being — relational,
+        ethical, spiritual, and lived. These values shape how we approach culture, stewardship,
+        education, history, and innovation.
+      </p>
+      <div class="meaning-grid">
+        <div class="meaning-card" style="background-image: url('assets/images/akahai.jpg'); --delay: 0;">
+          <div class="card-content"><h3>Akahai</h3><p class="meaning-subtitle">Kindness</p><p>Tenderness in action — strength with gentleness, honoring others with respect.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/lokahi.jpg'); --delay: 0.1;">
+          <div class="card-content"><h3>Lōkahi</h3><p class="meaning-subtitle">Unity</p><p>Harmony through connectedness — working together in alignment with ʻohana and ʻāina.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/oluolu.jpg'); --delay: 0.2;">
+          <div class="card-content"><h3>ʻOluʻolu</h3><p class="meaning-subtitle">Agreeable</p><p>A pleasant spirit — graciousness and a calm presence in all interactions.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/haahaa.jpg'); --delay: 0.3;">
+          <div class="card-content"><h3>Haʻahaʻa</h3><p class="meaning-subtitle">Humility</p><p>True strength lies in modesty — knowing your place with reverence for others.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/ahonui.jpg'); --delay: 0.4;">
+          <div class="card-content"><h3>Ahonui</h3><p class="meaning-subtitle">Patience</p><p>Persevering with grace — enduring with a peaceful and steadfast heart.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/pono.jpg'); --delay: 0.5;">
+          <div class="card-content"><h3>Pono</h3><p class="meaning-subtitle">Righteousness</p><p>Living with integrity — seeking what is just and balanced in thought and deed.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/nauau.jpg'); --delay: 0.6;">
+          <div class="card-content"><h3>Naʻauao</h3><p class="meaning-subtitle">Intuitive Wisdom</p><p>Knowledge that comes from the soul — a truth felt deeply, guiding right action through inner knowing.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/malama.jpg'); --delay: 0.7;">
+          <div class="card-content"><h3>Mālama</h3><p class="meaning-subtitle">Care</p><p>To protect and preserve — taking responsibility for people, places, and purpose.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/hoomanawainui.jpg'); --delay: 0.8;">
+          <div class="card-content"><h3>Hoʻomanawanui</h3><p class="meaning-subtitle">Steadfastness</p><p>The courage to continue — enduring trials with a calm and faithful heart.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/hoohanau.jpg'); --delay: 0.9;">
+          <div class="card-content"><h3>Hoʻohānau</h3><p class="meaning-subtitle">Creativity</p><p>Bringing spirit into form — expressing truth, beauty, and innovation rooted in ʻike.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/ikepo.jpg'); --delay: 1;">
+          <div class="card-content"><h3>ʻIke Pō</h3><p class="meaning-subtitle">Deep Insight</p><p>Wisdom from the unseen — ancestral understanding from the darkness of creation.</p></div>
+        </div>
+        <div class="meaning-card" style="background-image: url('assets/images/oiaio.jpg'); --delay: 1.1;">
+          <div class="card-content"><h3>ʻOiaʻiʻo</h3><p class="meaning-subtitle">Truth &amp; Honesty</p><p>To speak and live in truth — unwavering integrity rooted in the foundation of your spirit.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVING ALOHA -->
+  <section id="lifestyle" class="lifestyle-section">
+    <div class="container">
+      <h2>Living Aloha Every Day</h2>
+      <div class="practices-grid">
+        <div class="practice-card">
+          <h3>Morning Gratitude</h3>
+          <p>Begin each day by expressing gratitude for the gift of life and the beauty that surrounds you.</p>
+        </div>
+        <div class="practice-card">
+          <h3>Mindful Connection</h3>
+          <p>Take time to truly see and hear those around you, acknowledging their presence with your full attention.</p>
+        </div>
+        <div class="practice-card">
+          <h3>Environmental Respect</h3>
+          <p>Honor and protect the land, water, and air that sustains all life, practicing mālama ʻāina (care for the land).</p>
+        </div>
+        <div class="practice-card">
+          <h3>Community Service</h3>
+          <p>Share your time and talents with your community, recognizing that we are all connected in the circle of life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- PLATFORM ECOSYSTEM -->
+  <section id="ecosystem" class="ecosystem-section">
+    <div class="container">
+      <div class="section-header ecosystem-header">
+        <p class="eyebrow">Platform Ecosystem</p>
+        <h2>The Pikoverse Ecosystem</h2>
+        <p class="section-intro">
+          Each branch within Pikoverse serves a different role, but all are connected by the same vision:
+          preserving knowledge, expanding access, honoring culture, and building meaningful systems
+          for the future.
+        </p>
+      </div>
+
+      <div class="ecosystem-grid">
+
+        <!-- CARD 1 — AMP -->
+        <article class="ecosystem-card card-amp">
+          <video class="card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/platform-images/amp-bg.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-overlay"></div>
+          <div class="card-top-glow"></div>
+          <div class="project-icon"><img src="assets/AMP Tiki.jpg" alt="AMP" /></div>
+          <h3>AMP</h3>
+          <p class="project-subtitle">Creative, Cultural &amp; Marketplace Expression</p>
+          <p class="project-description">
+            AMP carries visual identity, storytelling, branded expression, and marketplace offerings
+            rooted in culture, heritage, and the living spirit of Aloha — a creative bridge between
+            message, design, and community-facing products.
+          </p>
+          <ul class="project-features">
+            <li>Cultural design and brand expression</li>
+            <li>Story-driven merchandise and visuals</li>
+            <li>Creative identity rooted in heritage</li>
+            <li>Apparel, goods, and future marketplace offerings</li>
+          </ul>
+          <a href="marketplace/index.html" class="project-link">
+            <i class="fas fa-store"></i> Visit AMP Marketplace →
+          </a>
+        </article>
+
+        <!-- CARD 2 — Ikeverse -->
+        <article class="ecosystem-card featured-card card-ikeverse">
+          <video class="card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/platform-images/ikeverse-bg.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-overlay"></div>
+          <div class="card-top-glow"></div>
+          <div class="project-icon"><img src="assets/goldenp.jpg" alt="Ikeverse" /></div>
+          <h3>Ikeverse</h3>
+          <p class="project-subtitle">Cultural Learning Platform</p>
+          <p class="project-description">
+            A living learning hub centered on indigenous cultures, ancestral knowledge, ancient histories,
+            global cultural interconnections, and the evolving relationship between humanity and technology.
+          </p>
+          <ul class="project-features">
+            <li>Indigenous cultural learning paths</li>
+            <li>Ancient history and global connections</li>
+            <li>Interactive education and storytelling</li>
+            <li>Technology, blockchain, AI, and cryptography modules</li>
+            <li>Future support for decentralized preservation</li>
+          </ul>
+          <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link">Enter Ikeverse →</a>
+        </article>
+
+        <!-- CARD 3 — Historical Data Aggregator -->
+        <article class="ecosystem-card card-history">
+          <video class="card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/platform-images/historical-bg.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-overlay"></div>
+          <div class="card-top-glow"></div>
+          <div class="project-icon"><img src="assets/platform-images/HDA.png" alt="Historical Data Aggregator" /></div>
+          <h3>Historical Data Aggregator</h3>
+          <p class="project-subtitle">Memory, Preservation, and Research</p>
+          <p class="project-description">
+            A developing system for gathering, organizing, and preserving historical knowledge across
+            cultures, timelines, and sources — with a focus on indigenous narratives and overlooked histories.
+          </p>
+          <ul class="project-features">
+            <li>Curated historical knowledge aggregation</li>
+            <li>Cross-cultural connections and timeline mapping</li>
+            <li>Preservation-oriented information design</li>
+            <li>Future-ready decentralized archival direction</li>
+          </ul>
+          <a href="#contact" class="project-link">Follow the Build →</a>
+        </article>
+
+        <!-- CARD 4 — NaluLF -->
+        <article class="ecosystem-card card-nalulf">
+          <video class="card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/platform-images/nalulf-bg.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-overlay"></div>
+          <div class="card-top-glow"></div>
+          <div class="project-icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" /></div>
+          <h3>Nalu Ledger Forensics / NaluLF</h3>
+          <p class="project-subtitle">XRPL Data Aggregation &amp; Forensics</p>
+          <p class="project-description">
+            A deep-inspection XRPL platform focused on ledger monitoring, account intelligence,
+            fraud detection signals, behavioral patterns, and investigative data gathering.
+          </p>
+          <ul class="project-features">
+            <li>XRPL monitoring and ledger analytics</li>
+            <li>Fraud detection and suspicious pattern analysis</li>
+            <li>Wallet, token, and transaction inspection</li>
+            <li>Forensic workflows for investigators and builders</li>
+          </ul>
+          <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="project-link">Explore NaluLF →</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+  <!-- PARALLAX QUOTE -->
+  <section id="parallax-quote" class="parallax-quote-section">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="quote-layout">
+        <div class="quote-image-wrap">
+          <img src="assets/queen-liliu.jpg" alt="Portrait of Queen Liliʻuokalani" class="quote-portrait">
+        </div>
+        <div class="quote-content">
+          <blockquote>
+            "I could not turn back the time for the political change, but there is still time to save our heritage. You must remember never cease to act because you fear you may fail. The way to lose an earthly kingdom is to be inflexible, intolerant, and prejudicial. Another way is to be too flexible, tolerant of too many wrongs and without judgement at all. It's a razor's edge. It is the width of a blade of pili grass. To gain the kingdom of heaven is to bear what is not said, to see what cannot be seen, and to know the unknowable — that is Aloha. All things in this world are two; in heaven there is but One."
+          </blockquote>
+          <cite>— Queen Liliʻuokalani</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ── COMMUNITY SHOWCASE ── -->
+  <!-- ── SUBMISSION CHECKER ── -->
+  <section class="piko-check-section" id="pikoCheckSection">
+    <div class="piko-check-inner">
+      <div class="piko-check-heading">
+        <i class="fas fa-search"></i>
+        <div>
+          <h3>Check Your Submission</h3>
+          <p>Got a submission ID from an idea or project you submitted? See if the AMP team has responded.</p>
+        </div>
+      </div>
+      <div class="piko-check-form">
+        <input type="text" id="pikoCheckSubInput" class="piko-check-input"
+               placeholder="e.g. idea-1717000000000 or post-1717000000000"
+               maxlength="80" autocomplete="off" spellcheck="false">
+        <button class="piko-check-btn" id="pikoCheckSubBtn" type="button">
+          <i class="fas fa-search"></i> Check Status
+        </button>
+      </div>
+      <div id="pikoCheckSubResult" class="piko-check-result" hidden></div>
+    </div>
+  </section>
+
+  <section id="showcase" class="piko-showcase-section">
+    <div class="piko-showcase-inner">
+
+      <div class="piko-showcase-header">
+        <span class="piko-showcase-eyebrow">Community Builds</span>
+        <h2>Project Showcase</h2>
+        <p>
+          Projects built within the Pikoverse ecosystem — from the AMP team and from the community.
+          Have something to share? Hit the button below.
+        </p>
+        <button class="piko-share-fab-inline" id="pikoOpenSubmit" type="button">
+          <i class="fas fa-rocket"></i> Share Your Project or Idea
+        </button>
+      </div>
+
+      <!-- Featured: Root Stall -->
+      <div class="piko-showcase-featured">
+        <div class="piko-featured-card">
+          <div class="piko-featured-img"
+            style="background-image: url('assets/rootstall_landing.jpeg')">
+            <div class="piko-featured-img-overlay"></div>
+            <div class="piko-featured-badge">Featured</div>
+          </div>
+          <div class="piko-featured-body">
+            <div class="piko-featured-meta">
+              <img src="assets/rootstall_w.jpeg" alt="Root Stall" class="piko-featured-logo">
+              <div>
+                <h3 class="piko-featured-name">Root Stall</h3>
+                <p class="piko-featured-sub">Hawaiʻi's First Digital Farmers Market</p>
+              </div>
+              <span class="piko-featured-stage piko-stage--live">🚀 Live</span>
+            </div>
+            <p class="piko-featured-desc">
+              Root Stall is a community-first digital farmers market app built to connect local farmers,
+              vendors, and communities across Hawaiʻi. It creates a digital bridge between the people,
+              the ʻāina, and the local goods that sustain everyday life — making it easier to discover,
+              support, and engage with Hawaiʻi's local food systems.
+            </p>
+            <div class="piko-featured-tags">
+              <span>Community</span><span>Food Systems</span>
+              <span>Hawaiʻi</span><span>Local Economy</span>
+            </div>
+            <a href="projects/rootstall.html" class="piko-featured-link">
+              <i class="fas fa-arrow-up-right-from-square"></i> Explore Root Stall
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Community approved projects wall -->
+      <div class="piko-showcase-wall-header">
+        <span class="piko-wall-label">More Community Projects</span>
+        <span class="piko-wall-count"><strong id="pikoShowcaseCount">0</strong> projects</span>
+      </div>
+      <div class="piko-showcase-grid" id="pikoShowcaseGrid"></div>
+      <div class="piko-showcase-empty" id="pikoShowcaseEmpty" hidden>
+        <i class="fas fa-rocket"></i>
+        <h4 style="color:#fff;margin-bottom:8px;font-size:16px">No approved projects yet</h4>
+        <p style="max-width:400px;margin:0 auto 20px">
+          Building something connected to Pikoverse, Aloha, culture, or technology?
+          Submit it and the AMP team will review it.
+        </p>
+        <button class="piko-share-fab-inline" id="pikoOpenSubmitEmpty" type="button">
+          <i class="fas fa-rocket"></i> Submit Your Project
+        </button>
+      </div>
+
+    </div>
+  </section>
+  <!-- ══════════════════════════════════════════════════════
+       PIKOVERSE CHRONICLE
+  ══════════════════════════════════════════════════════ -->
+  <section id="chronicle" class="piko-chronicle-section">
+    <div class="piko-chronicle-inner">
+
+      <div class="piko-chronicle-header">
+        <div>
+          <div class="piko-showcase-eyebrow">Pikoverse Chronicle</div>
+          <h2 class="piko-chronicle-title">Reads &amp; Perspectives</h2>
+          <p class="piko-chronicle-sub">
+            Culture, technology, history, and the ideas shaping the Pikoverse worldview —
+            curated by the AMP team.
+          </p>
+        </div>
+        <div class="piko-chronicle-filters" id="pikoChronicleFilters">
+          <button class="piko-chron-filter is-active" data-chron-cat="all" type="button">All</button>
+          <button class="piko-chron-filter" data-chron-cat="culture" type="button">🌺 Culture</button>
+          <button class="piko-chron-filter" data-chron-cat="history" type="button">📜 History</button>
+          <button class="piko-chron-filter" data-chron-cat="technology" type="button">⚡ Technology</button>
+          <button class="piko-chron-filter" data-chron-cat="aloha" type="button">🤙 Aloha</button>
+          <button class="piko-chron-filter" data-chron-cat="crypto" type="button">🔗 Web3</button>
+          <button class="piko-chron-filter" data-chron-cat="environment" type="button">🌿 Environment</button>
+        </div>
+      </div>
+
+      <!-- Article grid — injected by hub.js -->
+      <div class="piko-chronicle-carousel-wrap" id="pikoChronicleWrap">
+        <button class="piko-chron-arrow piko-chron-arrow--prev" id="pikoChronPrev" type="button" aria-label="Previous articles">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="piko-chronicle-grid" id="pikoChronicleGrid"></div>
+        <button class="piko-chron-arrow piko-chron-arrow--next" id="pikoChronNext" type="button" aria-label="Next articles">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="piko-chron-dots" id="pikoChronDots"></div>
+
+      <div class="piko-chronicle-empty" id="pikoChronicleEmpty" hidden>
+        <i class="fas fa-newspaper"></i>
+        <p>No articles published yet. Check back soon.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="connect" class="final-cta-section">
+    <div class="container">
+      <div class="final-cta-box">
+        <p class="eyebrow">Build with meaning</p>
+        <h2>Pikoverse — Ka Ulana ʻIke</h2>
+        <p>
+          Pikoverse is not just a website. It is a woven ecosystem of culture, research, learning,
+          preservation, creativity, and technology — designed to connect what has been, what is,
+          and what is still becoming.
+        </p>
+        <div class="cta-buttons">
+          <a href="#ecosystem" class="cta-btn cta-primary">Explore the Platforms</a>
+          <a href="#showcase" class="cta-btn cta-secondary">View the Showcase</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- FOOTER -->
+  <footer id="contact" class="site-footer">
+    <div class="footer-overlay"></div>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="#intro" class="footer-logo" aria-label="Pikoverse home">
+            <video class="footer-logo-video" autoplay muted playsinline preload="metadata">
+              <source src="assets/intro/pikoverse-intro.mp4" type="video/mp4">
+            </video>
+          </a>
+          <p class="footer-brand-title">Pikoverse — Ka Ulana ʻIke</p>
+          <p class="footer-brand-text">
+            A woven ecosystem of culture, research, learning, preservation, creativity,
+            and technology — built from Hawaiʻi with respect, care, and future vision.
+          </p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#intro">Home</a></li>
+            <li><a href="#aloha-foundation">Aloha</a></li>
+            <li><a href="#ecosystem">Platforms</a></li>
+            <li><a href="#showcase">Showcase</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h3>Contact</h3>
+          <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#9df4f3fbf2ddfcf1f2f5fcf0fceeeeedeff2f9e8fee9f4f2f3b3fef2f0"><span class="__cf_email__" data-cfemail="b0d9ded6dff0d1dcdfd8d1ddd1c3c3c0c2dfd4c5d3c4d9dfde9ed3dfdd">[email&#160;protected]</span></a></p>
+          <p>Built from Hawaiʻi with cultural respect and future vision.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="social-icon facebook"></i></a>
+            <a href="#" aria-label="Instagram"><i class="social-icon instagram"></i></a>
+            <a href="#" aria-label="Twitter"><i class="social-icon twitter"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Pikoverse. All rights reserved.
+          <a href="projects/admin/admin.html" class="footer-admin-access" aria-label="Admin" title="Admin">
             <i class="fas fa-sliders"></i>
           </a>
-        </div>
+        </p>
+        <p><small>Pikoverse approaches Hawaiian culture and indigenous knowledge with respect, care, and responsibility.</small></p>
       </div>
     </div>
   </footer>
+  <!-- ── COMBINED SUBMIT MODAL ── -->
+  <div class="piko-modal-backdrop" id="pikoSubmitBackdrop" aria-hidden="true">
+    <div class="piko-modal" role="dialog" aria-modal="true" aria-labelledby="pikoModalTitle">
 
-  <!-- ── CHECKOUT MODAL ── -->
-  <div class="mp-checkout-backdrop" id="mpCheckoutBackdrop" aria-hidden="true"></div>
-  <div class="mp-checkout-modal" id="mpCheckoutModal" role="dialog" aria-modal="true" aria-labelledby="mpCheckoutTitle">
-    <div class="mp-checkout-modal-header">
-      <h3 id="mpCheckoutTitle"><i class="fas fa-lock"></i> Checkout</h3>
-      <button class="mp-checkout-modal-close" id="mpCheckoutModalClose" type="button" aria-label="Close">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="mp-checkout-modal-body">
-      <div class="mp-checkout-summary">
-        <div class="mp-checkout-summary-label">Order Summary</div>
-        <div id="mpCheckoutItems" class="mp-checkout-items"></div>
-        <div class="mp-checkout-total-row">
-          <span>Total</span>
-          <span id="mpCheckoutTotal" class="mp-checkout-total-val">$0.00</span>
+      <div class="piko-modal-header">
+        <h3 id="pikoModalTitle">Share with Pikoverse</h3>
+        <button class="piko-modal-close" id="pikoModalClose" type="button" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="piko-modal-tabs">
+        <button class="piko-modal-tab is-active" data-tab="project" type="button">
+          <i class="fas fa-rocket"></i> Submit a Project
+        </button>
+        <button class="piko-modal-tab" data-tab="idea" type="button">
+          <i class="fas fa-lightbulb"></i> Share an Idea
+        </button>
+        <button class="piko-modal-tab" data-tab="post" type="button">
+          <i class="fas fa-pen-to-square"></i> Community Post
+        </button>
+      </div>
+
+      <div class="piko-modal-body">
+
+        <!-- PROJECT TAB -->
+        <div class="piko-tab-pane is-active" id="pikoTabProject">
+          <p class="piko-modal-intro">
+            Building something connected to Pikoverse, Aloha, culture, or technology?
+            Submit it — approved projects appear in the Community Showcase.
+          </p>
+          <form id="pikoProjectForm" novalidate>
+            <input type="hidden" id="pikoProjectStageValue" value="idea">
+            <input type="hidden" id="pikoProjectTechValue" value="[]">
+
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectName">Project Name <span class="hub-req">*</span></label>
+              <input type="text" id="pikoProjectName" class="hub-input"
+                placeholder="What's it called?" maxlength="80" required>
+            </div>
+
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectDesc">Description <span class="hub-req">*</span></label>
+              <textarea id="pikoProjectDesc" class="hub-textarea"
+                placeholder="What does it do? What problem does it solve?"
+                rows="3" maxlength="400" required></textarea>
+              <p class="hub-hint">Max 400 characters</p>
+            </div>
+
+            <div class="hub-field">
+              <label class="hub-label">Stage</label>
+              <div class="hub-stage-wrap">
+                <button class="hub-stage-btn" data-stage="idea" type="button">💡 Idea</button>
+                <button class="hub-stage-btn" data-stage="building" type="button">🔨 Building</button>
+                <button class="hub-stage-btn" data-stage="live" type="button">🚀 Live</button>
+              </div>
+            </div>
+
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectLink">Project Link</label>
+              <input type="url" id="pikoProjectLink" class="hub-input"
+                placeholder="https://your-project.com" maxlength="300">
+            </div>
+
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectContact">Contact / Social <span class="hub-opt">(optional)</span></label>
+              <input type="text" id="pikoProjectContact" class="hub-input"
+                placeholder="email, @handle, or Discord" maxlength="120">
+            </div>
+
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectTechInput">Tools &amp; Tech</label>
+              <input type="text" id="pikoProjectTechInput" class="hub-input"
+                placeholder="Type a tool and press Enter — e.g. React"
+                maxlength="40" autocomplete="off">
+              <div class="hub-tags-wrap" id="pikoProjectTechTags"></div>
+              <p class="hub-hint">Up to 8 tags</p>
+            </div>
+
+            <div id="pikoProjectErr" class="hub-hint hub-hint--err" hidden></div>
+
+            <button type="submit" class="hub-submit-btn hub-submit-btn--blue">
+              <i class="fas fa-rocket"></i> Submit Project
+            </button>
+          </form>
+
+          <div id="pikoProjectSuccess" class="piko-modal-success" hidden>
+            <i class="fas fa-hourglass-half"></i>
+            <h4>Submitted! 🤙</h4>
+            <p>Your project is under review. Once approved it will appear in the Community Showcase. We'll reach out via the contact info you provided if we have questions.</p>
+            <button class="piko-modal-again" id="pikoProjectAgain" type="button">Submit another</button>
+          </div>
         </div>
-      </div>
-      <p class="mp-checkout-instructions">
-        Choose how you want to pay. Your order details will be pre-filled.
-        We'll confirm and ship once payment is received.
-      </p>
-      <div id="mpNoPaymentMethods" style="display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">
-        <i class="fas fa-gear" style="font-size:28px;color:rgba(255,255,255,.3);margin-bottom:12px;display:block"></i>
-        <p style="color:rgba(255,255,255,.7);font-size:14px;font-weight:600;margin-bottom:8px">Payment methods not configured yet</p>
-        <p style="color:rgba(255,255,255,.4);font-size:12px;line-height:1.6">
-          The store owner needs to add PayPal, Venmo, Cash App, or Stripe in<br>
-          <strong style="color:rgba(255,255,255,.6)">Admin → Settings → Payment Methods</strong>
-        </p>
-      </div>
 
-      <div class="mp-payment-grid">
-        <a id="mpPayPal" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--paypal">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
-          </svg>
-          <span>Pay with PayPal</span>
-        </a>
-        <a id="mpVenmo" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--venmo">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M19.174 0c.72 1.197 1.044 2.43 1.044 3.988 0 4.976-4.249 11.44-7.698 15.976H5.3L2.136 1.043l6.217-.59 1.618 13.047c1.51-2.466 3.376-6.346 3.376-8.987 0-1.44-.248-2.43-.66-3.228z"/>
-          </svg>
-          <span>Pay with Venmo</span>
-        </a>
-        <a id="mpCashApp" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--cashapp">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M19.11 4.89C17.15 2.93 14.53 1.8 11.76 1.8c-5.49 0-9.96 4.47-9.96 9.96 0 2.77 1.13 5.39 3.09 7.35l.02.02c1.96 1.94 4.57 3.07 7.32 3.07 5.49 0 9.96-4.47 9.96-9.96 0-2.75-1.11-5.36-3.08-7.35zm-3.02 10.15c-.3.86-.96 1.44-1.84 1.61l-.15.03v.74c0 .14-.11.25-.25.25h-1.24c-.14 0-.25-.11-.25-.25v-.7c-.7-.09-1.33-.38-1.79-.82-.47-.45-.74-1.05-.74-1.68 0-.14.11-.25.25-.25h1.33c.12 0 .22.08.24.2.06.3.24.55.51.73.28.18.62.27.97.26.36 0 .69-.09.92-.26.23-.16.35-.38.35-.62 0-.25-.12-.45-.36-.6-.24-.15-.63-.28-1.14-.39-.94-.2-1.64-.52-2.08-.93-.44-.42-.67-.96-.67-1.6 0-.82.38-1.49 1.09-1.91.32-.19.7-.3 1.1-.35v-.71c0-.14.11-.25.25-.25h1.24c.14 0 .25.11.25.25v.72c.6.1 1.11.35 1.51.74.41.39.64.9.65 1.46 0 .14-.11.25-.25.25h-1.28c-.12 0-.22-.08-.25-.2-.04-.24-.17-.44-.37-.58-.21-.14-.48-.21-.77-.21-.3 0-.56.07-.75.2-.18.13-.28.31-.28.52 0 .21.1.37.31.5.23.14.63.26 1.18.38.97.2 1.68.52 2.13.94.45.43.68.99.68 1.67 0 .56-.17 1.04-.51 1.43z"/>
-          </svg>
-          <span>Pay with Cash App</span>
-        </a>
-        <a id="mpStripeLink" href="#" target="_blank" rel="noopener" class="mp-payment-btn mp-payment-btn--stripe" hidden>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-            <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
-          </svg>
-          <span>Pay with Card</span>
-        </a>
+        <!-- IDEA TAB -->
+        <div class="piko-tab-pane" id="pikoTabIdea">
+          <p class="piko-modal-intro">
+            Have an idea for a new platform, feature, or content direction?
+            Every idea is read by the AMP team.
+          </p>
+          <form id="pikoIdeaForm" novalidate>
+            <div class="hub-field">
+              <label class="hub-label" for="pikoIdeaCategory">Category</label>
+              <select id="pikoIdeaCategory" class="hub-input">
+                <option value="platform">New Platform</option>
+                <option value="feature">Feature Request</option>
+                <option value="content">Content / Story</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="hub-field">
+              <label class="hub-label" for="pikoIdeaText">Your Idea <span class="hub-req">*</span></label>
+              <textarea id="pikoIdeaText" class="hub-textarea"
+                placeholder="Describe your idea…" maxlength="500" rows="4" required></textarea>
+              <p class="hub-hint">Max 500 characters</p>
+            </div>
+            <div class="hub-field">
+              <label class="hub-label" for="pikoIdeaName">Your Name <span class="hub-opt">(optional)</span></label>
+              <input type="text" id="pikoIdeaName" class="hub-input"
+                placeholder="What should we call you?" maxlength="60">
+            </div>
+            <div id="pikoIdeaErr" class="hub-hint hub-hint--err" hidden></div>
+            <button type="submit" class="hub-submit-btn">
+              <i class="fas fa-paper-plane"></i> Submit Idea
+            </button>
+          </form>
+
+          <div id="pikoIdeaSuccess" class="piko-modal-success" hidden>
+            <i class="fas fa-circle-check"></i>
+            <h4>Mahalo! 🌺</h4>
+            <p>Your idea has been submitted. The AMP team reads every one.</p>
+            <div class="piko-modal-id-box" id="pikoIdeaIdBox" hidden>
+              <p class="piko-modal-id-label">Your Submission ID — save this to check for replies:</p>
+              <code class="piko-modal-id-code" id="pikoIdeaIdCode"></code>
+            </div>
+            <button class="piko-modal-again" id="pikoIdeaAgain" type="button">Submit another</button>
+          </div>
+        </div>
+
+        <!-- COMMUNITY POST TAB -->
+        <div class="piko-tab-pane" id="pikoTabPost">
+          <p class="piko-modal-intro">
+            Share news, updates, or anything worth saying with the Pikoverse community.
+            Posts appear live in the Pulse feed.
+          </p>
+          <form class="piko-modal-form" id="pikoPostForm" novalidate>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostTitle">Post Title <span style="color:#e05252">*</span></label>
+              <input type="text" id="pikoPostTitle" class="piko-modal-input"
+                     placeholder="What's happening?" maxlength="100" required>
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostBody">Message <span style="color:#e05252">*</span></label>
+              <textarea id="pikoPostBody" class="piko-modal-input piko-modal-textarea"
+                        placeholder="Share the update, story, or news…" rows="4" maxlength="500" required></textarea>
+              <p class="piko-modal-hint"><span id="pikoPostCount">0</span>/500</p>
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostLink">Link <span class="piko-modal-optional">(optional)</span></label>
+              <input type="url" id="pikoPostLink" class="piko-modal-input"
+                     placeholder="https://…" maxlength="512">
+            </div>
+            <div class="piko-modal-field">
+              <label class="piko-modal-label" for="pikoPostName">Your Name <span class="piko-modal-optional">(optional)</span></label>
+              <input type="text" id="pikoPostName" class="piko-modal-input"
+                     placeholder="Community member" maxlength="60">
+            </div>
+            <p class="piko-modal-err" id="pikoPostErr" hidden></p>
+            <button type="submit" class="piko-modal-submit">
+              <i class="fas fa-paper-plane"></i> Post to Community
+            </button>
+          </form>
+          <div id="pikoPostSuccess" class="piko-modal-success" hidden>
+            <i class="fas fa-circle-check"></i>
+            <h4>Posted! 🌺</h4>
+            <p>Your post is now live in the Pulse feed.</p>
+            <button class="piko-modal-again" id="pikoPostAgain" type="button">Post again</button>
+          </div>
+        </div>
+
       </div>
-      <p class="mp-checkout-note">
-        <i class="fas fa-info-circle"></i>
-        After payment, email your receipt to
-        <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a>
-        and we'll confirm your order within 24 hours.
-      </p>
     </div>
   </div>
 
-  <!-- ── SUGGESTION PANEL ── -->
-  <div class="mp-sugg-backdrop" id="mpSuggBackdrop"></div>
-  <aside class="mp-sugg-panel" id="mpSuggPanel" aria-label="Suggestions">
-    <div class="mp-sugg-panel-header">
-      <div class="mp-sugg-panel-title">
-        <i class="fas fa-lightbulb" style="margin-right:8px;color:#c9a84c"></i>
-        Share a Suggestion
-      </div>
-      <button class="mp-sugg-panel-close" id="mpSuggClose" aria-label="Close" type="button">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="mp-sugg-panel-body" id="mpSuggPanelBody">
-      <div id="mpSuggFormWrap">
-        <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px;line-height:1.5">
-          Have an idea for a new product, design, or improvement? We read every suggestion.
-        </p>
-        <form class="mp-sugg-form" id="mpSuggForm" novalidate>
-          <div class="mp-sugg-field">
-            <label class="mp-sugg-label" for="mpSuggText">Your Suggestion <span style="color:#e05252">*</span></label>
-            <textarea id="mpSuggText" class="mp-sugg-input mp-sugg-textarea"
-                      placeholder="I'd love to see…" maxlength="500" rows="4" required></textarea>
-            <p class="mp-sugg-hint"><span id="mpSuggCount">0</span>/500</p>
-          </div>
-          <div class="mp-sugg-field">
-            <label class="mp-sugg-label" for="mpSuggName">Your Name <span style="color:rgba(255,255,255,.3)">(optional)</span></label>
-            <input type="text" id="mpSuggName" class="mp-sugg-input"
-                   placeholder="What should we call you?" maxlength="60">
-          </div>
-          <div class="mp-sugg-field">
-            <label class="mp-sugg-label" for="mpSuggEmail">Email <span style="color:rgba(255,255,255,.3)">(optional — for follow-up)</span></label>
-            <input type="email" id="mpSuggEmail" class="mp-sugg-input"
-                   placeholder="you@email.com" maxlength="120">
-          </div>
-          <div class="mp-sugg-field" id="mpSuggErrWrap" hidden>
-            <p style="color:#e05252;font-size:12px" id="mpSuggErr"></p>
-          </div>
-          <button type="submit" class="mp-sugg-submit-btn">
-            <i class="fas fa-paper-plane"></i> Submit Suggestion
-          </button>
-        </form>
-      </div>
-      <div id="mpSuggSuccessWrap" hidden>
-        <div class="mp-sugg-success">
-          <i class="fas fa-circle-check"></i>
-          <h4>Thank you! 🌺</h4>
-          <p>Your suggestion has been sent to the AMP team. We read every one.</p>
-          <button class="mp-sugg-success-back" id="mpSuggBackBtn" type="button">Submit another</button>
-        </div>
-      </div>
-      <div class="mp-sugg-divider"><span>Community Suggestions</span></div>
-      <div class="mp-sugg-wall" id="mpSuggWall"></div>
-    </div>
-  </aside>
-
-  <!-- Floating suggestion button -->
-  <button class="mp-sugg-fab" id="mpSuggFab" type="button" aria-label="Share a suggestion">
-    <i class="fas fa-lightbulb"></i>
+  <!-- Floating submit button -->
+  <button class="piko-share-fab" id="pikoShareFab" type="button" aria-label="Share a project or idea">
+    <i class="fas fa-rocket"></i>
   </button>
 
-  <!-- ── EMAIL CAPTURE BANNER ── -->
-  <div class="mp-email-capture" id="mpEmailCapture">
-    <div class="mp-email-capture-inner">
-      <button class="mp-email-close" id="mpEmailClose" type="button" aria-label="Close">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="mp-email-icon">🌺</div>
-      <h3 class="mp-email-title">Get 10% Off Your First Order</h3>
-      <p class="mp-email-sub">Join the AMP community. Culture-rooted drops, new products, and Pikoverse updates.</p>
-      <form class="mp-email-form" id="mpEmailForm" novalidate>
-        <input type="email" id="mpEmailInput" class="mp-email-input"
-               placeholder="your@email.com" maxlength="120" required>
-        <button type="submit" class="mp-email-btn">
-          <i class="fas fa-paper-plane"></i> Subscribe
-        </button>
-      </form>
-      <div id="mpEmailSuccess" class="mp-email-success" hidden>
-        <i class="fas fa-circle-check"></i> Mahalo! Use code <strong>WELCOME10</strong> at checkout.
+  <!-- Live Pulse -->
+  <div class="piko-pulse" id="pikoPulse">
+    <div class="piko-pulse-panel" id="pikoPulsePanel">
+      <div class="piko-pulse-header">
+        <span class="piko-pulse-title">Live Activity</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="piko-pulse-post-btn" id="pikoPulsePostBtn" type="button" title="Post to community">
+            <i class="fas fa-pen-to-square"></i>
+          </button>
+          <button class="piko-pulse-refresh" id="pikoPulseRefresh" type="button" aria-label="Refresh">
+            <i class="fas fa-arrows-rotate"></i>
+          </button>
+        </div>
       </div>
-      <p class="mp-email-note">No spam. Unsubscribe anytime.</p>
+      <div class="piko-pulse-list" id="pikoPulseList"></div>
+      <div class="piko-pulse-empty" id="pikoPulseEmpty" hidden>No recent activity yet.</div>
     </div>
-  </div>
-
-  <!-- ── ECOSYSTEM DOCK ── -->
-  <div class="mp-ecosystem-dock" id="mpEcoDock">
-    <div class="mp-eco-label">Pikoverse</div>
-    <div class="mp-eco-links">
-      <a href="../index.html" class="mp-eco-link" title="Pikoverse Hub">
-        <i class="fas fa-house"></i>
-        <span>Hub</span>
-      </a>
-      <a href="https://808cryptobeast.github.io/Ikeverse/" target="_blank" rel="noopener" class="mp-eco-link" title="Ikeverse">
-        <i class="fas fa-eye"></i>
-        <span>Ikeverse</span>
-      </a>
-      <a href="../cosmic-weave.html" class="mp-eco-link" title="Cosmic Weave">
-        <i class="fas fa-globe"></i>
-        <span>Cosmic</span>
-      </a>
-      <a href="../index.html#showcase" class="mp-eco-link" title="Showcase">
-        <i class="fas fa-rocket"></i>
-        <span>Showcase</span>
-      </a>
-    </div>
-    <button class="mp-eco-toggle" id="mpEcoToggle" type="button" aria-label="Toggle ecosystem dock">
-      <i class="fas fa-chevron-down"></i>
+    <button class="piko-pulse-toggle" id="pikoPulseToggle"
+      type="button" aria-expanded="false" aria-controls="pikoPulsePanel">
+      <span class="piko-pulse-dot"></span>
+      Live Pulse
     </button>
-  </div>
-
-  <!-- ── ORDER CONFIRMATION ── -->
-  <div class="mp-order-confirm" id="mpOrderConfirm" hidden>
-    <div class="mp-order-confirm-icon">🌺</div>
-    <h3 class="mp-order-confirm-title">Order Submitted!</h3>
-    <div class="mp-order-confirm-num">Order <span id="mpOrderNum"></span></div>
-    <p class="mp-order-confirm-msg">
-      Your payment was sent. Please email your receipt to
-      <a href="mailto:info@alohamassproduction.com">info@alohamassproduction.com</a>
-      with your order number in the subject line.
-    </p>
-    <div class="mp-order-confirm-items" id="mpOrderConfirmItems"></div>
-    <button class="mp-order-confirm-done" id="mpOrderConfirmDone" type="button">
-      <i class="fas fa-check"></i> Done
-    </button>
-  </div>
-
-  <script>
-    (function () {
-      var isAdminBypass = document.documentElement.classList.contains('mp-admin-bypass');
-      var overlay = document.getElementById('mpUnderConstruction');
-
-      document.body.classList.toggle('mp-store-locked', !isAdminBypass);
-
-      if (overlay) {
-        if (isAdminBypass) {
-          overlay.hidden = true;
-          overlay.classList.remove('is-visible');
-        } else {
-          overlay.hidden = false;
-          overlay.classList.add('is-visible');
-        }
+  </div><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // ── Pikoverse intro cards: play once, last card loops back to frame 0 then pauses ──
+    const introCards = document.querySelectorAll("#amp-intro .amp-card");
+    introCards.forEach((card, index) => {
+      const video = card.querySelector(".amp-card-video");
+      if (!video) return;
+      video.loop = false;
+      const tryPlay = () => {
+        const p = video.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      };
+      if (index === introCards.length - 1) {
+        video.addEventListener("ended", () => { video.currentTime = 0; video.pause(); });
+      } else {
+        video.addEventListener("ended", () => { video.pause(); });
       }
-    })();
-  </script>
+      if (video.readyState >= 2) tryPlay();
+      else video.addEventListener("loadeddata", tryPlay, { once: true });
+    });
 
-  <script src="marketplace.js"></script>
+    // ── Lazy-load ecosystem card videos via IntersectionObserver ──
+    // Replaces autoplay on all .card-video and .amp-card-video elements
+    // so off-screen videos don't load or play until they scroll into view.
+    if ("IntersectionObserver" in window) {
+      const lazyVideos = document.querySelectorAll(
+        ".ecosystem-card .card-video"
+      );
+
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            // Trigger src load if using <source> tags
+            if (!video.src && video.querySelector("source")) {
+              video.load();
+            }
+            video.play().catch(() => {});
+            videoObserver.unobserve(video);
+          }
+        });
+      }, { rootMargin: "100px" });
+
+      lazyVideos.forEach(v => videoObserver.observe(v));
+    }
+  });
+  </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // ── Mobile nav toggle ──────────────────────────────────────────────────
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+    const mainNav      = document.querySelector('.main-nav');
+    if (mobileToggle && mainNav) {
+      mobileToggle.addEventListener('click', () => {
+        const isOpen = mainNav.classList.toggle('show');
+        mobileToggle.setAttribute('aria-expanded', isOpen);
+      });
+      mainNav.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          mainNav.classList.remove('show');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.main-nav') && !e.target.closest('.mobile-menu-toggle')) {
+          mainNav.classList.remove('show');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  });
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/animations.js"></script>
+  <!-- Published Chronicle articles — loaded before hub.js so they render immediately -->
+  <!-- Updated automatically when you click "Publish to Site" in Admin > Chronicle  -->
+  <script src="js/_pikoArticles.js"></script>
+  <script src="js/hub.js"></script>
 </body>
 </html>

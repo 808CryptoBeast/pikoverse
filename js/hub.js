@@ -700,10 +700,11 @@
     return merged;
   }
 
+  var chronIndex = 0; // current carousel position
+
   function renderChronicle() {
     var grid  = document.getElementById('pikoChronicleGrid');
     var empty = document.getElementById('pikoChronicleEmpty');
-    var more  = document.getElementById('pikoChronicleMore');
     if (!grid) return;
 
     var all = loadArticles()
@@ -715,19 +716,23 @@
       });
 
     var filtered = chronCat === 'all' ? all : all.filter(function(a) { return a.category === chronCat; });
-    var paged    = filtered.slice(0, chronPage * CHRON_PAGE_SIZE);
 
     if (filtered.length === 0) {
       grid.innerHTML = '';
       if (empty) empty.hidden = false;
-      if (more)  more.hidden  = true;
+      updateCarouselControls(0);
       return;
     }
     if (empty) empty.hidden = true;
-    if (more)  more.hidden  = paged.length >= filtered.length;
+
+    // All articles shown — carousel handles paging
+    var paged = filtered;
 
     var catIcons  = { culture:'🌺', technology:'⚡', history:'📜', aloha:'🤙', crypto:'🔗', environment:'🌿', community:'🌐', other:'📖' };
     var catLabels = { culture:'Culture', technology:'Technology', history:'History', aloha:'Aloha', crypto:'Web3', environment:'Environment', community:'Community', other:'Other' };
+
+    // Reset carousel to start when category changes
+    chronIndex = Math.min(chronIndex, Math.max(0, paged.length - 1));
 
     grid.innerHTML = paged.map(function(a) {
       var icon  = catIcons[a.category]  || '📖';
@@ -756,6 +761,67 @@
         '</div>' +
       '</a>';
     }).join('');
+
+    // Update carousel position and controls
+    updateCarouselControls(filtered.length);
+  }
+
+  function updateCarouselControls(total) {
+    var isMobile = window.innerWidth <= 768;
+    var prevBtn = document.getElementById('pikoChronPrev');
+    var nextBtn = document.getElementById('pikoChronNext');
+    var dotsEl  = document.getElementById('pikoChronDots');
+    var grid    = document.getElementById('pikoChronicleGrid');
+
+    if (!prevBtn || !nextBtn) return;
+
+    // Desktop: show 3 per page; Mobile: 1 per page
+    var perPage = isMobile ? 1 : 3;
+    var pages   = Math.ceil(total / perPage);
+    var curPage = isMobile ? chronIndex : Math.floor(chronIndex / perPage);
+
+    // Clamp
+    if (curPage >= pages) { curPage = Math.max(0, pages - 1); chronIndex = curPage * perPage; }
+
+    prevBtn.disabled = curPage <= 0;
+    nextBtn.disabled = curPage >= pages - 1;
+
+    // Move grid
+    if (grid) {
+      if (isMobile) {
+        // Each card is 100% + 16px margin
+        var cardWidth = grid.parentElement ? grid.parentElement.offsetWidth : window.innerWidth;
+        grid.style.transform = 'translateX(-' + (chronIndex * (cardWidth + 16)) + 'px)';
+      } else {
+        // Desktop: hide/show groups of 3
+        var cards = grid.querySelectorAll('.piko-chron-card');
+        var start = curPage * 3;
+        cards.forEach(function(card, i) {
+          card.style.display = (i >= start && i < start + 3) ? '' : 'none';
+        });
+        grid.style.transform = '';
+      }
+    }
+
+    // Dots (mobile only)
+    if (dotsEl) {
+      dotsEl.innerHTML = '';
+      if (isMobile && pages > 1) {
+        for (var p = 0; p < pages; p++) {
+          var dot = document.createElement('button');
+          dot.className = 'piko-chron-dot' + (p === curPage ? ' is-active' : '');
+          dot.setAttribute('aria-label', 'Go to article ' + (p + 1));
+          dot.setAttribute('data-page', p);
+          dot.addEventListener('click', (function(page) {
+            return function() {
+              chronIndex = page;
+              updateCarouselControls(total);
+            };
+          })(p));
+          dotsEl.appendChild(dot);
+        }
+      }
+    }
   }
 
   function initChronicle() {
@@ -769,16 +835,68 @@
         btn.classList.add('is-active');
         chronCat  = btn.getAttribute('data-chron-cat');
         chronPage = 1;
+        chronIndex = 0;
         renderChronicle();
       });
     });
 
-    // Load more
-    var moreBtn = document.getElementById('pikoChronicleMoreBtn');
-    if (moreBtn) moreBtn.addEventListener('click', function() {
-      chronPage++;
-      renderChronicle();
+    // Prev/Next arrow buttons
+    var prevBtn = document.getElementById('pikoChronPrev');
+    var nextBtn = document.getElementById('pikoChronNext');
+    var isMobile = function() { return window.innerWidth <= 768; };
+
+    function getTotalFiltered() {
+      return loadArticles()
+        .filter(function(a) { return a.published; })
+        .filter(function(a) { return chronCat === 'all' || a.category === chronCat; }).length;
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', function() {
+      var perPage = isMobile() ? 1 : 3;
+      if (chronIndex >= perPage) {
+        chronIndex -= perPage;
+        updateCarouselControls(getTotalFiltered());
+      }
     });
+
+    if (nextBtn) nextBtn.addEventListener('click', function() {
+      var perPage = isMobile() ? 1 : 3;
+      var total   = getTotalFiltered();
+      var pages   = Math.ceil(total / perPage);
+      var curPage = Math.floor(chronIndex / perPage);
+      if (curPage < pages - 1) {
+        chronIndex += perPage;
+        updateCarouselControls(total);
+      }
+    });
+
+    // Touch/swipe support on mobile
+    var grid = document.getElementById('pikoChronicleGrid');
+    if (grid) {
+      var touchStartX = 0;
+      grid.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      grid.addEventListener('touchend', function(e) {
+        var diff = touchStartX - e.changedTouches[0].clientX;
+        var total = getTotalFiltered();
+        if (Math.abs(diff) > 50) {
+          if (diff > 0 && chronIndex < total - 1) {
+            chronIndex++;
+            updateCarouselControls(total);
+          } else if (diff < 0 && chronIndex > 0) {
+            chronIndex--;
+            updateCarouselControls(total);
+          }
+        }
+      }, { passive: true });
+    }
+
+    // Re-calculate on resize (desktop↔mobile breakpoint)
+    window.addEventListener('resize', function() {
+      chronIndex = 0;
+      renderChronicle();
+    }, { passive: true });
 
     // ── Fetch pikoData.js from server ────────────────────────────────────
     // Loads all site data committed via Admin "Publish All to Site"
