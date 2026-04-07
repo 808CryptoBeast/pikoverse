@@ -118,7 +118,24 @@
       "stock": null
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "id": "proj-1775592758617",
+      "name": "Tide Share",
+      "desc": "Is a fundraising app built on the XRPL using blockchain, cryptography and defi for complete transparency and immutability. Rootes in Hawaiian Values, Kuleana, Ohana , Kokua, Hoomau. it creates a self renewing community pool: families contribute , departing memebers get a return, leftover funds roll to the next season breaking barriers for kids without financial backing",
+      "stage": "idea",
+      "link": "",
+      "contact": "",
+      "tech": [
+        "XRP Ledger",
+        "JS",
+        "Python",
+        "DB"
+      ],
+      "ts": 1775592758617,
+      "status": "approved"
+    }
+  ],
   "ideas": [
     {
       "id": "seed-rootstall",
