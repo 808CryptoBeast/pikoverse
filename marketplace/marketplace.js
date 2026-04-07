@@ -1584,13 +1584,13 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Fetch pikoData.js first so products/banner/promos/payConfig are cross-device
     if (typeof fetch !== 'undefined') {
-      fetch('../js/pikoData.js', { cache: 'no-store' })
+      fetch('../js/pikoData.json', { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
           if (text) {
             try {
-              // eslint-disable-next-line no-eval
-              eval(text); // sets window._pikoData
+              // Pure JSON.parse — no eval(), no antivirus warnings
+              window._pikoData = JSON.parse(text);
             } catch(e) {}
           }
           // Init after fetch attempt (whether it succeeded or not)

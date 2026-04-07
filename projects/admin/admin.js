@@ -808,7 +808,7 @@ function syncPikoDataToLocalStorage(onDone) {
   // Admin is at: /projects/admin/admin.html
   // pikoData.js is at: /js/pikoData.js
   // So relative path is: ../../js/pikoData.js
-  var dataUrl = '../../js/pikoData.js?v=' + Date.now();
+  var dataUrl = '../../js/pikoData.json?v=' + Date.now();
 
   // Show a subtle sync indicator
   var syncEl = document.getElementById('admSyncStatus');
@@ -826,10 +826,9 @@ function syncPikoDataToLocalStorage(onDone) {
         return;
       }
       try {
-        // eslint-disable-next-line no-eval
-        eval(text); // sets window._pikoData
-        var d = window._pikoData;
-        if (!d) throw new Error('_pikoData not set');
+        // Pure JSON.parse — no eval(), no antivirus false positives
+        var d = JSON.parse(text);
+        if (!d || typeof d !== 'object') throw new Error('Invalid pikoData.json');
 
         var synced = [];
 
@@ -2411,7 +2410,7 @@ function openArticleModal(id = null) {
 function checkPublishStatus() {
   var cfg = loadGhConfig();
   var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
-  var fileUrl  = repoBase + '/js/pikoData.js?v=' + Date.now();
+  var fileUrl  = repoBase + '/js/pikoData.json?v=' + Date.now();
 
   console.log('[Check Status] Fetching:', fileUrl);
   showToast('Checking server...');
@@ -2431,13 +2430,18 @@ function checkPublishStatus() {
     .then(function(text) {
       if (!text) return;
       try {
-        var match = text.match(/window[.]_pikoArticles\s*=\s*(\[[\s\S]*\])/);
-        if (!match) { showToast('⚠️ File exists but looks empty or malformed. Try Publish to Site again.'); return; }
-        var articles = JSON.parse(match[1]);
-        if (!Array.isArray(articles) || articles.length === 0) {
-          showToast('⚠️ File is live but has 0 articles. Publish at least one article first.');
+        // pikoData.json is pure JSON — parse directly, no regex needed
+        var data = JSON.parse(text);
+        if (!data || typeof data !== 'object') {
+          showToast('⚠️ File exists but could not be parsed. Try Publish to Site again.');
+          return;
+        }
+        var arts = Array.isArray(data.articles) ? data.articles : [];
+        var prods = Array.isArray(data.products) ? data.products : [];
+        if (arts.length === 0 && prods.length === 0) {
+          showToast('⚠️ File is live but has no articles or products yet. Click Publish All to Site first.');
         } else {
-          showToast('✅ ' + articles.length + ' article' + (articles.length === 1 ? '' : 's') + ' live on the server and visible on all devices.');
+          showToast('✅ Live: ' + arts.length + ' article' + (arts.length === 1 ? '' : 's') + ', ' + prods.length + ' product' + (prods.length === 1 ? '' : 's') + ' — synced to all devices.');
         }
       } catch(e) {
         showToast('⚠️ File exists but could not be parsed. Try Publish to Site again.');
@@ -2490,19 +2494,12 @@ function generateArticleEmbed() {
     payConfig: payConfig
   };
 
-  var ts = new Date().toISOString();
-  var fileContent = [
-    '// Pikoverse Site Data - Auto-generated. Do not edit manually.',
-    '// Generated: ' + ts,
-    'window._pikoData = ' + JSON.stringify(data, null, 2) + ';',
-    '// Backwards compat: also set _pikoArticles for any old code',
-    'window._pikoArticles = window._pikoData.articles;',
-    ''
-  ].join('\n');
+  // Pure JSON — no eval() needed, no antivirus false positives
+  var fileContent = JSON.stringify(data, null, 2);
 
   var cfg = loadGhConfig();
   if (cfg && cfg.token && cfg.owner && cfg.repo) {
-    publishViaGitHub(cfg, fileContent, 'js/pikoData.js');
+    publishViaGitHub(cfg, fileContent, 'js/pikoData.json');
   } else {
     downloadDataFile(fileContent);
   }
@@ -2565,11 +2562,11 @@ function downloadDataFile(fileContent) {
   var blob = new Blob([fileContent], { type: 'application/javascript' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
-  a.href = url; a.download = 'pikoData.js';
+  a.href = url; a.download = 'pikoData.json';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('pikoData.js downloaded. Add to js/ folder in your repo and commit.');
+  showToast('pikoData.json downloaded. Add to js/ folder in your repo and commit.');
 }
 
 // Guarantee global scope regardless of load order

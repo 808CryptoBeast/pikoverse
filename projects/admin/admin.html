@@ -178,6 +178,7 @@
       </nav>
 
       <div class="adm-sidebar-footer">
+        <div id="admSyncStatus" class="adm-sync-status" hidden></div>
         <div class="adm-sidebar-user">
           <div class="adm-sidebar-avatar" id="admSidebarAvatar">A</div>
           <div class="adm-sidebar-user-info">
@@ -493,6 +494,49 @@
             </div>
           </div>
 
+
+          <div class="adm-settings-card">
+            <h4><i class="fab fa-github"></i> GitHub Auto-Publish</h4>
+            <p class="adm-field-hint" style="margin-bottom:14px;color:var(--text-muted);font-size:12px;line-height:1.6">
+              Connect to GitHub so "Publish to Site" commits articles directly to your repo — no manual file dragging.
+              <a href="https://github.com/settings/tokens/new?scopes=repo&description=Pikoverse+Admin" target="_blank" rel="noopener" style="color:var(--gold)">Generate a token →</a>
+            </p>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhOwner">GitHub Username</label>
+              <input type="text" id="admGhOwner" class="adm-input" placeholder="808cryptobeast" maxlength="60">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhRepo">Repository Name</label>
+              <input type="text" id="admGhRepo" class="adm-input" placeholder="pikoverse" maxlength="100">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhBranch">Branch</label>
+              <input type="text" id="admGhBranch" class="adm-input" placeholder="main" maxlength="60">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label" for="admGhToken">Personal Access Token</label>
+              <div class="adm-input-wrap">
+                <i class="fas fa-key adm-input-icon"></i>
+                <input type="password" id="admGhToken" class="adm-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" maxlength="200" autocomplete="off">
+              </div>
+              <p class="adm-field-hint">Needs <code>repo</code> scope. Stored only in this browser.</p>
+            </div>
+            <div class="adm-alert adm-alert--success" id="admGhSaveOk" hidden>
+              <i class="fas fa-circle-check"></i> GitHub connected. "Publish to Site" will now auto-commit.
+            </div>
+            <div style="display:flex;gap:8px">
+              <button type="button" class="adm-btn adm-btn--primary" id="admGhSaveBtn">
+                <i class="fas fa-plug"></i> Save Connection
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admGhTestBtn">
+                <i class="fas fa-circle-check"></i> Test
+              </button>
+              <button type="button" class="adm-btn adm-btn--ghost" id="admGhClearBtn" style="color:var(--danger);border-color:var(--danger);opacity:.7">
+                Clear
+              </button>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -714,6 +758,12 @@
             </div>
             <button class="adm-btn adm-btn--primary" id="admAddArticleBtn" type="button">
               <i class="fas fa-plus"></i> New Article
+            </button>
+            <button class="adm-btn adm-btn--outline" id="admPublishArticlesBtn" type="button" title="Commits js/pikoData.json to GitHub — syncs articles, products, projects and more to all devices">
+              <i class="fas fa-globe"></i> Publish All to Site
+            </button>
+            <button class="adm-btn adm-btn--ghost" id="admCheckPublishBtn" type="button" title="Check whether the published file is live on the server">
+              <i class="fas fa-magnifying-glass"></i> Check Status
             </button>
           </div>
         </div>
@@ -998,11 +1048,9 @@
               </div>
               <div class="adm-art-img-placeholder" id="admArtImgPlaceholder">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <span class="adm-art-img-main-text">Drag &amp; drop an image here</span>
-                <span class="adm-art-img-sub-text">or click to browse · paste a file or URL</span>
+                <span class="adm-art-img-main-text">Paste an image URL below</span>
+                <span class="adm-art-img-sub-text">Right-click any image → Copy Image Address</span>
               </div>
-              <!-- Hidden file input — triggered by clicking the zone -->
-              <input type="file" id="admArtImgFile" accept="image/*" class="adm-art-img-file" tabindex="-1">
             </div>
 
             <!-- URL input — paste a URL directly -->
