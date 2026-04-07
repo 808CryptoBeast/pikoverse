@@ -2408,7 +2408,7 @@ function openArticleModal(id = null) {
 function checkPublishStatus() {
   var cfg = loadGhConfig();
   var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
-  var fileUrl  = repoBase + '/js/pikoData.jsonon?v=' + Date.now();
+  var fileUrl  = repoBase + '/js/pikoData.json?v=' + Date.now();
 
   console.log('[Check Status] Fetching:', fileUrl);
   showToast('Checking server...');
