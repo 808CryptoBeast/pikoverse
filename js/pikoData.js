@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  const pikoData = {
+  window._pikoData = {
     articles: [
       {
         title: "Quantum Entanglement, Consciousness and Indigenous Knowledge: Bridging Ancient Hawaiian Wisdom with modern Physics",
@@ -29,14 +29,7 @@
         description: "Bold red, yellow and blue AMP tee. Comfortable everyday wear.",
         image: "https://808cryptobeast.github.io/pikoverse/assets/AMP RYB.jpg",
         badge: "featured",
-        sizes: [
-          "XS",
-          "S",
-          "M",
-          "L",
-          "XL",
-          "2XL"
-        ],
+        sizes: ["XS", "S", "M", "L", "XL", "2XL"],
         featured: true,
         soldOut: false,
         stock: null
@@ -49,9 +42,7 @@
         description: "Classic cap featuring Rabbit Island artwork.",
         image: "https://808cryptobeast.github.io/pikoverse/assets/AMP Rabbit Island.jpg",
         badge: "new",
-        sizes: [
-          "One Size"
-        ],
+        sizes: ["One Size"],
         featured: false,
         soldOut: false,
         stock: null
@@ -77,9 +68,7 @@
         description: "Reusable tote with the AMP Tiki logo.",
         image: "https://808cryptobeast.github.io/pikoverse/assets/AMP Tiki.jpg",
         badge: "",
-        sizes: [
-          "One Size"
-        ],
+        sizes: ["One Size"],
         featured: false,
         soldOut: false,
         stock: null
@@ -122,6 +111,4 @@
     promos: [],
     payConfig: {}
   };
-
-  window._pikoData = pikoData;
 })();

@@ -880,27 +880,37 @@
 
     if (pikoDataLoadPromise) return pikoDataLoadPromise;
 
-    pikoDataLoadPromise = fetch('./js/pikoData.js?v=' + Date.now(), {
-      cache: 'no-store'
-    })
-      .then(function (r) {
-        return r.ok ? r.text() : null;
-      })
-      .then(function (text) {
-        if (!text) return null;
+    pikoDataLoadPromise = new Promise(function (resolve) {
+      var existing = document.querySelector('script[data-piko-data="true"]');
 
-        try {
-          var parsed = JSON.parse(text);
-          window._pikoData = parsed;
-          return parsed;
-        } catch (e) {
-          console.error('Failed to parse pikoData.js as JSON:', e);
-          return null;
+      function finish() {
+        resolve(window._pikoData || null);
+      }
+
+      function fail() {
+        resolve(null);
+      }
+
+      if (existing) {
+        if (window._pikoData && typeof window._pikoData === 'object') {
+          finish();
+          return;
         }
-      })
-      .catch(function () {
-        return null;
-      });
+
+        existing.addEventListener('load', finish, { once: true });
+        existing.addEventListener('error', fail, { once: true });
+        return;
+      }
+
+      var script = document.createElement('script');
+      script.src = './js/pikoData.js?v=' + Date.now();
+      script.defer = true;
+      script.async = true;
+      script.setAttribute('data-piko-data', 'true');
+      script.onload = finish;
+      script.onerror = fail;
+      document.head.appendChild(script);
+    });
 
     return pikoDataLoadPromise;
   }
@@ -1083,6 +1093,7 @@
 
   /* ─────────────────────────────────────────────
      SEED PULSE — curated entries shown on first visit
+     so the feed is never empty for new visitors
   ───────────────────────────────────────────── */
   function seedPulse() {
     var SEED_KEY = 'amp_pulse_seeded_v1';
