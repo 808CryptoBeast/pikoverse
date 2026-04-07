@@ -884,6 +884,40 @@ function sbSubmitComment(comment) {
     } else {
       if (empty) empty.hidden = true;
       grid.innerHTML = approved.map(renderProjectCard).join('');
+
+    // Wire comment buttons and load comments for each project (Supabase only)
+    if (sbReady()) {
+      approved.forEach(function(p) {
+        loadAndRenderComments('proj-' + p.id);
+      });
+      grid.querySelectorAll('.piko-comment-submit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var ideaId = btn.dataset.ideaId;
+          var card   = btn.closest('.ecosystem-project-card');
+          var text   = card.querySelector('.piko-comment-text').value.trim();
+          var name   = card.querySelector('.piko-comment-name').value.trim();
+          if (!text) return;
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          sbSubmitComment({
+            id:      'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+            idea_id: ideaId,
+            text:    text,
+            name:    name || null,
+            ts:      Date.now(),
+          }).then(function() {
+            card.querySelector('.piko-comment-text').value = '';
+            card.querySelector('.piko-comment-name').value = '';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
+            loadAndRenderComments(ideaId);
+          }).catch(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
+          });
+        });
+      });
+    }
     }
   }
 

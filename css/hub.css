@@ -2989,6 +2989,10 @@
   .piko-modal-backdrop {
     align-items: flex-end !important;
     padding: 0 !important;
+    display: none;
+  }
+  .piko-modal-backdrop.is-open {
+    display: flex !important;
   }
 
   /* ── Pulse widget hidden on very small screens ── */
