@@ -2658,43 +2658,50 @@
 ═══════════════════════════════════════════════════════════════ */
 
 /* Hamburger button — only visible on mobile */
+/* ── Mobile menu toggle — overrides index.css span-based hamburger ── */
 .mobile-menu-toggle {
   display: none;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(201,168,76,.3);
-  border-radius: 10px;
-  width: 44px;
-  height: 44px;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(201,168,76,.3) !important;
+  border-radius: 10px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
   transition: background .2s, border-color .2s, box-shadow .2s;
   flex-shrink: 0;
-  padding: 0;
+  padding: 0 !important;
   overflow: hidden;
   position: relative;
+  flex-direction: row !important; /* override index.css flex-direction:column */
 }
-/* Ikeverse icon image inside the button */
+/* Hide the old index.css span bars */
+.mobile-menu-toggle span {
+  display: none !important;
+}
+/* Ikeverse icon image */
 .mobile-menu-toggle img {
-  width: 32px;
-  height: 32px;
+  width: 34px !important;
+  height: 34px !important;
   object-fit: cover;
-  border-radius: 6px;
-  display: block;
+  border-radius: 7px;
+  display: block !important;
   pointer-events: none;
   transition: transform .2s;
 }
 .mobile-menu-toggle:hover {
-  background: rgba(201,168,76,.12);
-  border-color: rgba(201,168,76,.6);
+  background: rgba(201,168,76,.12) !important;
+  border-color: rgba(201,168,76,.6) !important;
   box-shadow: 0 0 16px rgba(201,168,76,.2);
 }
 .mobile-menu-toggle:hover img {
   transform: scale(1.08);
 }
 .mobile-menu-toggle.is-open {
-  background: rgba(201,168,76,.15);
-  border-color: rgba(201,168,76,.7);
+  background: rgba(201,168,76,.15) !important;
+  border-color: rgba(201,168,76,.7) !important;
   box-shadow: 0 0 20px rgba(201,168,76,.25);
 }
 
@@ -2750,7 +2757,9 @@
 
 @media (max-width: 768px) {
   .mobile-menu-toggle {
-    display: flex;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   /* Hide desktop nav links on mobile */
   .main-nav { display: none !important; }
@@ -3056,4 +3065,95 @@
   }
   .piko-showcase-section { padding: 50px 12px; }
   .ecosystem-card { min-height: 420px !important; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   AMP INTRO SECTION (from index.css - referenced in index.html)
+═══════════════════════════════════════════════════════════════ */
+.amp-intro-section {
+  position: relative;
+  padding: 110px 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255, 210, 122, 0.08), transparent 26%),
+    radial-gradient(circle at 85% 18%, rgba(84, 209, 255, 0.08), transparent 24%),
+    radial-gradient(circle at 50% 80%, rgba(138, 110, 255, 0.06), transparent 28%),
+    linear-gradient(180deg, #171614 0%, #201d1a 100%);
+  color: #fff;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV (piko-mobile-nav)
+═══════════════════════════════════════════════════════════════ */
+.piko-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .piko-mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2100;
+    background: rgba(6, 8, 16, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(201,168,76,.15);
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 24px rgba(0,0,0,.5);
+  }
+
+  .pmn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 4px;
+    text-decoration: none;
+    color: rgba(255,255,255,.45);
+    font-size: 9px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pmn-item i {
+    font-size: 18px;
+    transition: transform .2s, color .2s;
+  }
+
+  .pmn-item:hover,
+  .pmn-item.is-active {
+    color: #f0c96a;
+  }
+
+  .pmn-item:hover i,
+  .pmn-item.is-active i {
+    transform: translateY(-2px);
+    color: #f0c96a;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN SYNC STATUS
+═══════════════════════════════════════════════════════════════ */
+.adm-sync-status {
+  font-size: 10px;
+  color: var(--text-muted, rgba(255,255,255,.45));
+  padding: 6px 12px;
+  margin: 0 0 6px;
+  border-radius: 6px;
+  background: rgba(201,168,76,.08);
+  border: 1px solid rgba(201,168,76,.15);
+  text-align: center;
+  line-height: 1.4;
 }
