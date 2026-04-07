@@ -122,20 +122,106 @@
         '</div>';
     }
 
+    // Connect button if submitter shared contact
+    var connectHtml = '';
+    if (idea.shareContact && idea.contact) {
+      var isEmail = idea.contact.indexOf('@') > -1;
+      var href = isEmail ? 'mailto:' + encodeURIComponent(idea.contact) : '#';
+      var label = isEmail ? 'Email' : 'Connect';
+      connectHtml = '<a href="' + href + '" class="piko-idea-connect" target="_blank" rel="noopener">' +
+        '<i class="fas fa-paper-plane"></i> ' + label + ' with ' + esc(idea.name || 'Submitter') +
+      '</a>';
+    }
+
     return '<div class="piko-idea-card" data-id="' + esc(idea.id) + '">' +
       '<div class="piko-idea-header">' +
         '<span class="piko-idea-category ' + catClass + '">' + esc(catLabel) + '</span>' +
         '<span class="piko-idea-date">' + fmtDate(idea.ts) + '</span>' +
       '</div>' +
       '<p class="piko-idea-text">' + esc(idea.text) + '</p>' +
+      replyHtml +
       '<div class="piko-idea-footer">' +
         '<div class="piko-idea-author">' +
           '<div class="piko-idea-author-avatar">' + esc(authorInitial) + '</div>' +
           authorName +
         '</div>' +
+        connectHtml +
       '</div>' +
-      replyHtml +
     '</div>';
+  }
+
+
+
+  /* ─────────────────────────────────────────────
+     COMMUNITY IDEAS BOARD (public-facing wall)
+  ───────────────────────────────────────────── */
+  var boardCat = 'all';
+
+  function renderCommunityBoard() {
+    var grid  = document.getElementById('pikoBoardGrid');
+    var empty = document.getElementById('pikoBoardEmpty');
+    if (!grid) return;
+
+    var ideas = loadIdeas()
+      .filter(function(i) { return !i.dismissed && i.status !== 'dismissed'; })
+      .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
+
+    if (boardCat !== 'all') {
+      ideas = ideas.filter(function(i) { return i.category === boardCat; });
+    }
+
+    if (ideas.length === 0) {
+      grid.innerHTML = '';
+      if (empty) empty.hidden = false;
+      return;
+    }
+    if (empty) empty.hidden = true;
+
+    var catColors = { platform:'rgba(201,168,76,.12)', feature:'rgba(84,209,255,.10)', content:'rgba(76,175,122,.10)', other:'rgba(255,255,255,.05)' };
+    var catTextColors = { platform:'#f0c96a', feature:'#54d1ff', content:'#4caf7a', other:'rgba(255,255,255,.5)' };
+    var catIcons = { platform:'🚀', feature:'⚡', content:'📖', other:'💡' };
+
+    grid.innerHTML = ideas.map(function(idea) {
+      var cat    = idea.category || 'other';
+      var label  = cat.charAt(0).toUpperCase() + cat.slice(1);
+      var icon   = catIcons[cat] || '💡';
+      var bg     = catColors[cat] || catColors.other;
+      var col    = catTextColors[cat] || catTextColors.other;
+      var initial = idea.name ? idea.name[0].toUpperCase() : '?';
+      var author  = idea.name || 'Anonymous';
+      var date    = idea.ts ? new Date(idea.ts).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
+
+      var replyHtml = '';
+      if (idea.reply) {
+        replyHtml = '<div class="piko-idea-reply" style="margin-top:12px">' +
+          '<div class="piko-idea-reply-label"><i class="fas fa-star"></i> AMP Team replied</div>' +
+          '<div class="piko-idea-reply-text">' + esc(idea.reply) + '</div>' +
+          '</div>';
+      }
+
+      var connectHtml = '';
+      if (idea.shareContact && idea.contact) {
+        var isEmail = idea.contact.indexOf('@') > -1 && idea.contact.indexOf('http') === -1;
+        var href = isEmail ? 'mailto:' + encodeURIComponent(idea.contact) : esc(idea.contact);
+        connectHtml = '<a href="' + href + '" class="piko-idea-connect" target="_blank" rel="noopener">' +
+          '<i class="fas fa-paper-plane"></i> Connect with ' + esc(author) + '</a>';
+      }
+
+      return '<div class="piko-board-card">' +
+        '<div class="piko-board-card-header">' +
+          '<span class="piko-board-cat" style="background:' + bg + ';color:' + col + '">' + icon + ' ' + esc(label) + '</span>' +
+          '<span class="piko-board-date">' + esc(date) + '</span>' +
+        '</div>' +
+        '<p class="piko-board-text">' + esc(idea.text) + '</p>' +
+        replyHtml +
+        '<div class="piko-board-footer">' +
+          '<div class="piko-idea-author">' +
+            '<div class="piko-idea-author-avatar">' + esc(initial) + '</div>' + esc(author) +
+          '</div>' +
+          connectHtml +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 
       /* ─────────────────────────────────────────────
@@ -343,8 +429,11 @@
       ? '<a href="' + esc(p.link) + '" class="epc-link" target="_blank" rel="noopener noreferrer">' +
         '<i class="fas fa-arrow-up-right-from-square"></i> View Project</a>'
       : '';
+    var isEmail = p.contact && p.contact.indexOf('@') > -1;
     var contactHtml = p.contact
-      ? '<span><i class="fas fa-envelope"></i> ' + esc(p.contact) + '</span>'
+      ? (isEmail
+          ? '<a href="mailto:' + encodeURIComponent(p.contact) + '" class="piko-idea-connect"><i class="fas fa-paper-plane"></i> Connect with ' + esc(p.name) + '</a>'
+          : '<span><i class="fas fa-user"></i> ' + esc(p.contact) + '</span>')
       : '';
 
     return '<div class="ecosystem-project-card">' +
@@ -427,6 +516,8 @@
           id: 'idea-' + Date.now(),
           text: text,
           name: (document.getElementById('pikoIdeaName')?.value || '').trim(),
+          contact: (document.getElementById('pikoIdeaContact')?.value || '').trim(),
+          shareContact: !!(document.getElementById('pikoIdeaShareContact')?.checked),
           category: document.getElementById('pikoIdeaCategory')?.value || 'other',
           ts: Date.now(),
           dismissed: false,
@@ -444,6 +535,7 @@
         var idCode = document.getElementById('pikoIdeaIdCode');
         if (idBox && idCode) { idCode.textContent = idea.id; idBox.hidden = false; }
         refreshPulse();
+        renderCommunityBoard();
       });
     }
     if (ideaAgain) {
@@ -1026,6 +1118,20 @@
   ───────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
     initDock();
+  renderCommunityBoard();
+
+  // ── Community Board filters ──
+  document.querySelectorAll('[data-board-cat]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('[data-board-cat]').forEach(function(b) {
+        b.classList.remove('is-active');
+      });
+      btn.classList.add('is-active');
+      boardCat = btn.getAttribute('data-board-cat');
+      renderCommunityBoard();
+    });
+  });
+
     initMobileNav();
     initSubmitModal();
     renderShowcaseWall();

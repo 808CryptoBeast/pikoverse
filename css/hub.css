@@ -3157,3 +3157,144 @@
   text-align: center;
   line-height: 1.4;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMUNITY IDEAS BOARD
+═══════════════════════════════════════════════════════════════ */
+.piko-board-section {
+  padding: 80px 0 60px;
+  background: linear-gradient(180deg, #0b0919 0%, #080714 100%);
+  position: relative;
+  border-top: 1px solid rgba(84,209,255,.08);
+}
+.piko-board-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.piko-board-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.piko-board-header h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(20px, 3.5vw, 28px);
+  font-weight: 800;
+  color: #fff;
+  margin: 6px 0 10px;
+}
+.piko-board-header p {
+  font-size: 14px;
+  color: rgba(255,255,255,.5);
+  max-width: 480px;
+  line-height: 1.6;
+}
+.piko-board-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+/* Board grid */
+.piko-board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* Board card */
+.piko-board-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color .2s, background .2s, transform .2s;
+}
+.piko-board-card:hover {
+  border-color: rgba(84,209,255,.2);
+  background: rgba(255,255,255,.04);
+  transform: translateY(-2px);
+}
+.piko-board-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.piko-board-cat {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.piko-board-date {
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+}
+.piko-board-text {
+  font-size: 13px;
+  color: rgba(255,255,255,.78);
+  line-height: 1.65;
+  margin: 0;
+}
+.piko-board-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.piko-board-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,.3);
+}
+.piko-board-empty i { font-size: 36px; display: block; margin-bottom: 12px; opacity: .3; }
+
+/* Connect button */
+.piko-idea-connect {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(84,209,255,.08);
+  border: 1px solid rgba(84,209,255,.25);
+  color: #54d1ff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  text-decoration: none;
+  transition: background .18s, border-color .18s, transform .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.piko-idea-connect:hover {
+  background: rgba(84,209,255,.18);
+  border-color: rgba(84,209,255,.5);
+  transform: translateY(-1px);
+  color: #7ae4ff;
+}
+.piko-idea-connect i { font-size: 10px; }
+
+@media (max-width: 768px) {
+  .piko-board-section { padding: 60px 0 40px; }
+  .piko-board-inner { padding: 0 16px; }
+  .piko-board-header { flex-direction: column; gap: 16px; }
+  .piko-board-grid { grid-template-columns: 1fr; }
+  .piko-board-filters { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+  .piko-board-filters::-webkit-scrollbar { display: none; }
+}

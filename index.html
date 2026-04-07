@@ -515,6 +515,31 @@
       </div>
     </div>
   </section>
+  <!-- ── COMMUNITY IDEAS BOARD ── -->
+  <section id="community-board" class="piko-board-section">
+    <div class="piko-board-inner">
+      <div class="piko-board-header">
+        <div>
+          <span class="piko-showcase-eyebrow">Community</span>
+          <h2>Ideas &amp; Conversations</h2>
+          <p>What the Pikoverse community is thinking, building, and exploring. Submit your own idea to join the conversation.</p>
+        </div>
+        <div class="piko-board-filters" id="pikoBoardFilters">
+          <button class="piko-chron-filter is-active" data-board-cat="all" type="button">All</button>
+          <button class="piko-chron-filter" data-board-cat="platform" type="button">🚀 Platform</button>
+          <button class="piko-chron-filter" data-board-cat="feature" type="button">⚡ Feature</button>
+          <button class="piko-chron-filter" data-board-cat="content" type="button">📖 Content</button>
+          <button class="piko-chron-filter" data-board-cat="other" type="button">💡 Other</button>
+        </div>
+      </div>
+      <div class="piko-board-grid" id="pikoBoardGrid"></div>
+      <div class="piko-board-empty" id="pikoBoardEmpty" hidden>
+        <i class="fas fa-lightbulb"></i>
+        <p>No ideas shared yet. Be the first — submit an idea above!</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ── COMMUNITY SHOWCASE ── -->
   <!-- ── SUBMISSION CHECKER ── -->
   <section class="piko-check-section" id="pikoCheckSection">
@@ -954,6 +979,17 @@
               <label class="hub-label" for="pikoIdeaName">Your Name <span class="hub-opt">(optional)</span></label>
               <input type="text" id="pikoIdeaName" class="hub-input"
                 placeholder="What should we call you?" maxlength="60">
+            </div>
+            <div class="hub-field">
+              <label class="hub-label" for="pikoIdeaContact">Email or @handle <span class="hub-opt">(optional)</span></label>
+              <input type="text" id="pikoIdeaContact" class="hub-input"
+                placeholder="your@email.com or @yourhandle" maxlength="120">
+            </div>
+            <div class="hub-field" style="flex-direction:row;align-items:center;gap:10px">
+              <input type="checkbox" id="pikoIdeaShareContact" style="width:16px;height:16px;accent-color:#f0c96a;flex-shrink:0;cursor:pointer">
+              <label for="pikoIdeaShareContact" style="font-size:12px;color:rgba(255,255,255,.55);cursor:pointer;margin:0">
+                Show my contact info on the community board so others can reach out
+              </label>
             </div>
             <div id="pikoIdeaErr" class="hub-hint hub-hint--err" hidden></div>
             <button type="submit" class="hub-submit-btn">
