@@ -415,6 +415,76 @@
           </div>
 
           <div class="adm-settings-card">
+            <h4><i class="fas fa-database"></i> Community Board — Supabase</h4>
+            <p class="adm-muted">Connect Supabase to make community ideas and comments visible across all devices in real-time. Free tier is more than enough.</p>
+            <ol class="adm-setup-steps">
+              <li>Go to <strong>supabase.com</strong> → New project</li>
+              <li>In SQL Editor, run the setup SQL shown below</li>
+              <li>Go to Project Settings → API → copy your URL and <strong>anon</strong> key</li>
+              <li>Paste them here and click Save</li>
+            </ol>
+            <details style="margin-bottom:14px">
+              <summary style="cursor:pointer;font-size:12px;color:var(--gold);font-weight:700;padding:8px 0">
+                <i class="fas fa-code"></i> Show SQL Setup Script
+              </summary>
+              <pre class="adm-code-block" style="font-size:11px;background:rgba(0,0,0,.3);padding:12px;border-radius:8px;overflow-x:auto;margin-top:8px;color:rgba(255,255,255,.7);line-height:1.6">create table community_ideas (
+  id text primary key,
+  text text not null,
+  name text,
+  contact text,
+  share_contact boolean default false,
+  category text default 'other',
+  ts bigint,
+  status text default 'pending',
+  reply text
+);
+
+create table idea_comments (
+  id text primary key,
+  idea_id text references community_ideas(id),
+  text text not null,
+  name text,
+  ts bigint
+);
+
+-- Allow public read + insert (no update/delete)
+alter table community_ideas enable row level security;
+alter table idea_comments enable row level security;
+
+create policy "public read ideas"
+  on community_ideas for select using (status != 'dismissed');
+create policy "public insert ideas"
+  on community_ideas for insert with check (true);
+create policy "public read comments"
+  on idea_comments for select using (true);
+create policy "public insert comments"
+  on idea_comments for insert with check (true);</pre>
+            </details>
+            <div class="adm-field">
+              <label class="adm-label">Supabase Project URL</label>
+              <input type="url" id="admSupabaseUrl" class="adm-input"
+                     placeholder="https://xxxx.supabase.co" maxlength="256">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label">Supabase Anon Key</label>
+              <input type="text" id="admSupabaseKey" class="adm-input"
+                     placeholder="eyJhbGciOiJ..." maxlength="512">
+              <p class="adm-field-hint">Use the <strong>anon</strong> key — it's safe for the browser (RLS restricts what it can do)</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="adm-btn adm-btn--primary" id="admSaveSupabaseBtn">
+                <i class="fas fa-floppy-disk"></i> Save & Connect
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admTestSupabaseBtn">
+                <i class="fas fa-plug"></i> Test Connection
+              </button>
+            </div>
+            <div class="adm-alert adm-alert--success" id="admSupabaseOk" hidden>
+              <i class="fas fa-circle-check"></i> Supabase connected — community board is now cross-device!
+            </div>
+          </div>
+
+          <div class="adm-settings-card">
             <h4><i class="fas fa-credit-card"></i> Payment Methods</h4>
             <p class="adm-muted">Set your payment handles. Leave blank to hide that option at checkout. Changes take effect immediately.</p>
             <div class="adm-field">

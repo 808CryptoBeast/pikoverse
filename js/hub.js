@@ -1,3 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════
+   SUPABASE — Community Board (ideas + comments)
+   Set your URL and anon key in Admin → Settings → Community Board
+   or paste them directly here for quick setup.
+═══════════════════════════════════════════════════════════════ */
+var SUPABASE_URL  = localStorage.getItem('amp_supabase_url')  || '';
+var SUPABASE_KEY  = localStorage.getItem('amp_supabase_key')  || '';
+
+function sbReady() { return !!(SUPABASE_URL && SUPABASE_KEY); }
+
+function sbFetch(path, method, body) {
+  method = method || 'GET';
+  var opts = {
+    method: method,
+    headers: {
+      'apikey':        SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type':  'application/json',
+      'Prefer':        method === 'POST' ? 'return=representation' : '',
+    },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(SUPABASE_URL + '/rest/v1' + path, opts)
+    .then(function(r) { return r.ok ? r.json() : r.json().then(function(e) { throw e; }); });
+}
+
+// Fetch all non-dismissed ideas (newest first)
+function sbLoadIdeas(cat) {
+  var filter = '?select=*&status=neq.dismissed&order=ts.desc';
+  if (cat && cat !== 'all') filter += '&category=eq.' + encodeURIComponent(cat);
+  return sbFetch('/community_ideas' + filter);
+}
+
+// Submit a new idea
+function sbSubmitIdea(idea) {
+  return sbFetch('/community_ideas', 'POST', idea);
+}
+
+// Fetch comments for an idea
+function sbLoadComments(ideaId) {
+  return sbFetch('/idea_comments?idea_id=eq.' + encodeURIComponent(ideaId) + '&order=ts.asc');
+}
+
+// Submit a comment
+function sbSubmitComment(comment) {
+  return sbFetch('/idea_comments', 'POST', comment);
+}
+
 /* ============================================================
    PIKOVERSE HUB — hub.js
    Place in: js/hub.js
@@ -162,6 +210,23 @@
     var empty = document.getElementById('pikoBoardEmpty');
     if (!grid) return;
 
+    if (sbReady()) {
+      // ── Supabase path — cross-device ──
+      grid.innerHTML = '<div class="piko-board-loading"><i class="fas fa-spinner fa-spin"></i> Loading community ideas...</div>';
+      sbLoadIdeas(boardCat).then(function(ideas) {
+        renderBoardCards(ideas, grid, empty);
+      }).catch(function(err) {
+        console.warn('[Board] Supabase error, falling back to local:', err);
+        renderBoardLocal(grid, empty);
+      });
+      return;
+    }
+
+    // ── Fallback: localStorage ──
+    renderBoardLocal(grid, empty);
+  }
+
+  function renderBoardLocal(grid, empty) {
     var ideas = loadIdeas()
       .filter(function(i) { return !i.dismissed && i.status !== 'dismissed'; })
       .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
@@ -169,8 +234,11 @@
     if (boardCat !== 'all') {
       ideas = ideas.filter(function(i) { return i.category === boardCat; });
     }
+    renderBoardCards(ideas, grid, empty);
+  }
 
-    if (ideas.length === 0) {
+  function renderBoardCards(ideas, grid, empty) {
+    if (!ideas || ideas.length === 0) {
       grid.innerHTML = '';
       if (empty) empty.hidden = false;
       return;
@@ -200,14 +268,30 @@
       }
 
       var connectHtml = '';
-      if (idea.shareContact && idea.contact) {
+      if (idea.share_contact && idea.contact) {
         var isEmail = idea.contact.indexOf('@') > -1 && idea.contact.indexOf('http') === -1;
         var href = isEmail ? 'mailto:' + encodeURIComponent(idea.contact) : esc(idea.contact);
         connectHtml = '<a href="' + href + '" class="piko-idea-connect" target="_blank" rel="noopener">' +
           '<i class="fas fa-paper-plane"></i> Connect with ' + esc(author) + '</a>';
       }
 
-      return '<div class="piko-board-card">' +
+      // Comment section — only shown when Supabase is configured
+      var commentSection = sbReady()
+        ? '<div class="piko-board-comments" id="piko-comments-' + esc(idea.id) + '">' +
+            '<div class="piko-board-comments-list" id="piko-clist-' + esc(idea.id) + '">' +
+              '<span class="piko-board-comments-loading">Loading comments…</span>' +
+            '</div>' +
+            '<div class="piko-board-comment-form">' +
+              '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
+              '<textarea class="piko-comment-text" placeholder="Share your thoughts on this idea…" rows="2" maxlength="400"></textarea>' +
+              '<button class="piko-comment-submit" data-idea-id="' + esc(idea.id) + '">' +
+                '<i class="fas fa-paper-plane"></i> Post Comment' +
+              '</button>' +
+            '</div>' +
+          '</div>'
+        : '';
+
+      return '<div class="piko-board-card" data-idea-id="' + esc(idea.id) + '">' +
         '<div class="piko-board-card-header">' +
           '<span class="piko-board-cat" style="background:' + bg + ';color:' + col + '">' + icon + ' ' + esc(label) + '</span>' +
           '<span class="piko-board-date">' + esc(date) + '</span>' +
@@ -220,8 +304,74 @@
           '</div>' +
           connectHtml +
         '</div>' +
+        commentSection +
       '</div>';
     }).join('');
+
+    // Load comments for each card (if Supabase ready)
+    if (sbReady()) {
+      ideas.forEach(function(idea) {
+        loadAndRenderComments(idea.id);
+      });
+
+      // Wire comment submit buttons
+      grid.querySelectorAll('.piko-comment-submit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var ideaId = btn.dataset.ideaId;
+          var card   = btn.closest('.piko-board-card');
+          var text   = card.querySelector('.piko-comment-text').value.trim();
+          var name   = card.querySelector('.piko-comment-name').value.trim();
+          if (!text) return;
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          sbSubmitComment({
+            id:      'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+            idea_id: ideaId,
+            text:    text,
+            name:    name || null,
+            ts:      Date.now(),
+          }).then(function() {
+            card.querySelector('.piko-comment-text').value = '';
+            card.querySelector('.piko-comment-name').value = '';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
+            loadAndRenderComments(ideaId);
+          }).catch(function(err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
+            console.warn('Comment submit error:', err);
+          });
+        });
+      });
+    }
+  }
+
+  function loadAndRenderComments(ideaId) {
+    var listEl = document.getElementById('piko-clist-' + ideaId);
+    if (!listEl) return;
+    sbLoadComments(ideaId).then(function(comments) {
+      if (!comments || comments.length === 0) {
+        listEl.innerHTML = '<span class="piko-board-no-comments">No comments yet — be the first!</span>';
+        return;
+      }
+      listEl.innerHTML = comments.map(function(c) {
+        var name    = c.name || 'Anonymous';
+        var initial = name[0].toUpperCase();
+        var date    = c.ts ? new Date(c.ts).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
+        return '<div class="piko-comment-card">' +
+          '<div class="piko-comment-header">' +
+            '<div class="piko-idea-author">' +
+              '<div class="piko-idea-author-avatar" style="background:rgba(84,209,255,.12);color:#54d1ff;border-color:rgba(84,209,255,.2)">' + esc(initial) + '</div>' +
+              esc(name) +
+            '</div>' +
+            '<span class="piko-board-date">' + esc(date) + '</span>' +
+          '</div>' +
+          '<p class="piko-comment-text">' + esc(c.text) + '</p>' +
+        '</div>';
+      }).join('');
+    }).catch(function() {
+      listEl.innerHTML = '<span class="piko-board-no-comments">Could not load comments.</span>';
+    });
   }
 
       /* ─────────────────────────────────────────────
@@ -524,18 +674,44 @@
           reply: '',
           status: 'pending',
         };
-        var ideas = loadIdeas();
-        ideas.push(idea);
-        saveIdeas(ideas);
-        ideaForm.reset();
-        ideaForm.hidden = true;
-        if (ideaSuccess) ideaSuccess.hidden = false;
-        // Show submission ID for tracking
-        var idBox  = document.getElementById('pikoIdeaIdBox');
-        var idCode = document.getElementById('pikoIdeaIdCode');
-        if (idBox && idCode) { idCode.textContent = idea.id; idBox.hidden = false; }
-        refreshPulse();
-        renderCommunityBoard();
+        function finishIdeaSubmit() {
+          ideaForm.reset();
+          ideaForm.hidden = true;
+          if (ideaSuccess) ideaSuccess.hidden = false;
+          var idBox  = document.getElementById('pikoIdeaIdBox');
+          var idCode = document.getElementById('pikoIdeaIdCode');
+          if (idBox && idCode) { idCode.textContent = idea.id; idBox.hidden = false; }
+          refreshPulse();
+          renderCommunityBoard();
+        }
+
+        if (sbReady()) {
+          // Supabase — visible on all devices immediately
+          var sbIdea = {
+            id:            idea.id,
+            text:          idea.text,
+            name:          idea.name || null,
+            contact:       idea.contact || null,
+            share_contact: idea.shareContact || false,
+            category:      idea.category,
+            ts:            idea.ts,
+            status:        'pending',
+            reply:         null,
+          };
+          sbSubmitIdea(sbIdea)
+            .then(function() { finishIdeaSubmit(); })
+            .catch(function(err) {
+              console.warn('[Idea] Supabase submit failed, saving locally:', err);
+              var ideas = loadIdeas(); ideas.push(idea); saveIdeas(ideas);
+              finishIdeaSubmit();
+            });
+        } else {
+          // Fallback: localStorage only
+          var ideas = loadIdeas();
+          ideas.push(idea);
+          saveIdeas(ideas);
+          finishIdeaSubmit();
+        }
       });
     }
     if (ideaAgain) {

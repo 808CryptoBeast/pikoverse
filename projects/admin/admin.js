@@ -3027,10 +3027,57 @@ function exportCSV(filename, headers, rows) {
 /* ══════════════════════════════════════════
    INIT HOOK — runs after existing DOMContentLoaded
 ══════════════════════════════════════════ */
+
+/* ── Supabase settings ── */
+function bindSupabaseSettings() {
+  var urlEl  = document.getElementById('admSupabaseUrl');
+  var keyEl  = document.getElementById('admSupabaseKey');
+  var saveBtn = document.getElementById('admSaveSupabaseBtn');
+  var testBtn = document.getElementById('admTestSupabaseBtn');
+  var okEl    = document.getElementById('admSupabaseOk');
+  if (!urlEl) return;
+
+  // Pre-fill
+  var savedUrl = localStorage.getItem('amp_supabase_url');
+  var savedKey = localStorage.getItem('amp_supabase_key');
+  if (savedUrl) { urlEl.value = savedUrl; if (okEl) okEl.hidden = false; }
+  if (savedKey) keyEl.value = savedKey;
+
+  if (saveBtn) saveBtn.addEventListener('click', function() {
+    var url = urlEl.value.trim().replace(/\/$/, '');
+    var key = keyEl.value.trim();
+    if (!url || !key) { showToast('Enter both URL and anon key.'); return; }
+    localStorage.setItem('amp_supabase_url', url);
+    localStorage.setItem('amp_supabase_key', key);
+    if (okEl) okEl.hidden = false;
+    showToast('Supabase config saved.');
+  });
+
+  if (testBtn) testBtn.addEventListener('click', function() {
+    var url = urlEl.value.trim().replace(/\/$/, '');
+    var key = keyEl.value.trim();
+    if (!url || !key) { showToast('Save your config first.'); return; }
+    showToast('Testing connection…');
+    fetch(url + '/rest/v1/community_ideas?limit=1', {
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
+    }).then(function(r) {
+      if (r.ok) {
+        showToast('✅ Connected! community_ideas table found.');
+        if (okEl) okEl.hidden = false;
+      } else if (r.status === 404 || r.status === 400) {
+        showToast('⚠️ Connected but table not found — run the SQL setup script first.');
+      } else {
+        showToast('❌ Auth failed (' + r.status + '). Check your anon key.');
+      }
+    }).catch(function() { showToast('❌ Could not reach Supabase. Check your URL.'); });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
   bindArticlesPanel();
   bindGhSettings();
+  bindSupabaseSettings();
 
   // Refresh all notification badges on load
   setTimeout(() => {
