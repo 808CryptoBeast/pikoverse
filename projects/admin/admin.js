@@ -793,7 +793,7 @@ function enterDashboard(user) {
     avatar.textContent = (name[0] || 'A').toUpperCase();
   }
 
-  // ── Sync pikoData.js into localStorage on every login ──────────────────
+  // ── Sync pikoData.json into localStorage on every login ──────────────────
   // This means logging in from ANY device gives you all your published content
   // (articles, products, promos, banner, pay config, approved projects, ideas).
   // Customer data (orders, subscribers, ratings) can't sync without a backend.
@@ -804,10 +804,8 @@ function enterDashboard(user) {
 }
 
 function syncPikoDataToLocalStorage(onDone) {
-  // Determine the path to pikoData.js relative to admin panel location
-  // Admin is at: /projects/admin/admin.html
-  // pikoData.js is at: /js/pikoData.js
-  // So relative path is: ../../js/pikoData.js
+  // Fetches pikoData.json from the repo root js/ folder
+  // Admin lives at /projects/admin/ so path is ../../js/pikoData.json
   var dataUrl = '../../js/pikoData.json?v=' + Date.now();
 
   // Show a subtle sync indicator
@@ -820,7 +818,7 @@ function syncPikoDataToLocalStorage(onDone) {
     .then(function(r) { return r.ok ? r.text() : null; })
     .then(function(text) {
       if (!text) {
-        if (syncEl) { syncEl.textContent = 'No published data found. Changes here are local only.'; }
+        if (syncEl) { syncEl.textContent = 'No published pikoData.json yet. Click Publish All to Site first.'; }
         setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
         if (onDone) onDone();
         return;
@@ -915,7 +913,7 @@ function syncPikoDataToLocalStorage(onDone) {
         setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
 
       } catch(e) {
-        console.warn('[Admin Sync] Could not parse pikoData.js:', e);
+        console.warn('[Admin Sync] Could not parse pikoData.json:', e);
         if (syncEl) { syncEl.textContent = 'Sync failed — working with local data.'; }
         setTimeout(function() { if (syncEl) syncEl.hidden = true; }, 3000);
       }
@@ -2410,7 +2408,7 @@ function openArticleModal(id = null) {
 function checkPublishStatus() {
   var cfg = loadGhConfig();
   var repoBase = cfg ? ('https://' + cfg.owner + '.github.io/' + cfg.repo) : window.location.origin;
-  var fileUrl  = repoBase + '/js/pikoData.json?v=' + Date.now();
+  var fileUrl  = repoBase + '/js/pikoData.jsonon?v=' + Date.now();
 
   console.log('[Check Status] Fetching:', fileUrl);
   showToast('Checking server...');
@@ -2506,7 +2504,7 @@ function generateArticleEmbed() {
 }
 
 function publishViaGitHub(cfg, fileContent, filePath) {
-  filePath = filePath || 'js/pikoData.js';
+  filePath = filePath || 'js/pikoData.json';
   var apiBase  = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + filePath;
   var headers  = {
     'Authorization': 'Bearer ' + cfg.token,
@@ -2703,18 +2701,24 @@ function wireArticleImageZone() {
     reader.readAsDataURL(file);
   }
 
-  // ── Click zone → open file picker ───────────────────────────────────────
+  // ── Click zone → focus URL input (file picker removed — use URL instead) ──
   zone.addEventListener('click', function(e) {
-    if (clearBtn && clearBtn.contains(e.target)) return; // don't open picker on clear
-    fileInput.click();
+    if (clearBtn && clearBtn.contains(e.target)) return;
+    if (urlInput) {
+      urlInput.focus();
+      showToast('Right-click any image → Copy Image Address → paste here.');
+    }
   });
 
-  fileInput.addEventListener('change', function() {
-    if (fileInput.files && fileInput.files[0]) {
-      handleFile(fileInput.files[0]);
-    }
-    fileInput.value = ''; // reset so same file re-selectable
-  });
+  // File input disabled — admArtImgFile removed from HTML
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files && fileInput.files[0]) {
+        handleFile(fileInput.files[0]);
+      }
+      fileInput.value = '';
+    });
+  }
 
   // ── Drag & drop DISABLED ────────────────────────────────────────────────
   // File uploads store as base64 which gets stripped on Publish to Site
