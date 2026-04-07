@@ -768,58 +768,64 @@
 
   function updateCarouselControls(total) {
     var isMobile = window.innerWidth <= 768;
-    var prevBtn = document.getElementById('pikoChronPrev');
-    var nextBtn = document.getElementById('pikoChronNext');
-    var dotsEl  = document.getElementById('pikoChronDots');
-    var grid    = document.getElementById('pikoChronicleGrid');
+    var prevBtn  = document.getElementById('pikoChronPrev');
+    var nextBtn  = document.getElementById('pikoChronNext');
+    var dotsEl   = document.getElementById('pikoChronDots');
+    var grid     = document.getElementById('pikoChronicleGrid');
 
-    if (!prevBtn || !nextBtn) return;
-
-    // Desktop: show 3 per page; Mobile: 1 per page
-    var perPage = isMobile ? 1 : 3;
-    var pages   = Math.ceil(total / perPage);
-    var curPage = isMobile ? chronIndex : Math.floor(chronIndex / perPage);
-
-    // Clamp
-    if (curPage >= pages) { curPage = Math.max(0, pages - 1); chronIndex = curPage * perPage; }
-
-    prevBtn.disabled = curPage <= 0;
-    nextBtn.disabled = curPage >= pages - 1;
-
-    // Move grid
-    if (grid) {
-      if (isMobile) {
-        // Each card is 100% + 16px margin
-        var cardWidth = grid.parentElement ? grid.parentElement.offsetWidth : window.innerWidth;
-        grid.style.transform = 'translateX(-' + (chronIndex * (cardWidth + 16)) + 'px)';
-      } else {
-        // Desktop: hide/show groups of 3
+    // Desktop arrows — hide/show groups of 3
+    if (prevBtn && nextBtn && !isMobile) {
+      var pages   = Math.ceil(total / 3);
+      var curPage = Math.floor(chronIndex / 3);
+      if (curPage >= pages) { curPage = Math.max(0, pages - 1); chronIndex = curPage * 3; }
+      prevBtn.disabled = curPage <= 0;
+      nextBtn.disabled = curPage >= pages - 1;
+      if (grid) {
         var cards = grid.querySelectorAll('.piko-chron-card');
         var start = curPage * 3;
         cards.forEach(function(card, i) {
           card.style.display = (i >= start && i < start + 3) ? '' : 'none';
         });
-        grid.style.transform = '';
       }
     }
 
-    // Dots (mobile only)
-    if (dotsEl) {
+    // Mobile dots — driven by scroll position
+    if (isMobile && dotsEl && grid) {
       dotsEl.innerHTML = '';
-      if (isMobile && pages > 1) {
-        for (var p = 0; p < pages; p++) {
+      if (total > 1) {
+        for (var p = 0; p < total; p++) {
           var dot = document.createElement('button');
-          dot.className = 'piko-chron-dot' + (p === curPage ? ' is-active' : '');
-          dot.setAttribute('aria-label', 'Go to article ' + (p + 1));
-          dot.setAttribute('data-page', p);
-          dot.addEventListener('click', (function(page) {
+          dot.className = 'piko-chron-dot' + (p === chronIndex ? ' is-active' : '');
+          dot.setAttribute('aria-label', 'Article ' + (p + 1));
+          dot.setAttribute('data-idx', p);
+          dot.addEventListener('click', (function(idx) {
             return function() {
-              chronIndex = page;
-              updateCarouselControls(total);
+              var cards = grid.querySelectorAll('.piko-chron-card');
+              if (cards[idx]) {
+                cards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                chronIndex = idx;
+                updateCarouselControls(total);
+              }
             };
           })(p));
           dotsEl.appendChild(dot);
         }
+      }
+
+      // Listen to scroll to update active dot
+      if (!grid._scrollListener) {
+        grid._scrollListener = function() {
+          var cards = grid.querySelectorAll('.piko-chron-card');
+          if (!cards.length) return;
+          var cardW = cards[0].offsetWidth + 12; // 12 = gap
+          var idx   = Math.round(grid.scrollLeft / cardW);
+          if (idx !== chronIndex) {
+            chronIndex = idx;
+            var dots = dotsEl.querySelectorAll('.piko-chron-dot');
+            dots.forEach(function(d, i) { d.classList.toggle('is-active', i === idx); });
+          }
+        };
+        grid.addEventListener('scroll', grid._scrollListener, { passive: true });
       }
     }
   }
@@ -870,29 +876,8 @@
       }
     });
 
-    // Touch/swipe support on mobile
-    var grid = document.getElementById('pikoChronicleGrid');
-    if (grid) {
-      var touchStartX = 0;
-      grid.addEventListener('touchstart', function(e) {
-        touchStartX = e.touches[0].clientX;
-      }, { passive: true });
-      grid.addEventListener('touchend', function(e) {
-        var diff = touchStartX - e.changedTouches[0].clientX;
-        var total = getTotalFiltered();
-        if (Math.abs(diff) > 50) {
-          if (diff > 0 && chronIndex < total - 1) {
-            chronIndex++;
-            updateCarouselControls(total);
-          } else if (diff < 0 && chronIndex > 0) {
-            chronIndex--;
-            updateCarouselControls(total);
-          }
-        }
-      }, { passive: true });
-    }
-
-    // Re-calculate on resize (desktop↔mobile breakpoint)
+    // CSS scroll-snap handles all touch swiping natively on mobile
+    // No JS needed for swipe — just update dots on resize
     window.addEventListener('resize', function() {
       chronIndex = 0;
       renderChronicle();
