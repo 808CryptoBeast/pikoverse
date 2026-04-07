@@ -11,13 +11,16 @@
   /* ─────────────────────────────────────────────
      STORAGE — same prefix convention as admin.js
   ───────────────────────────────────────────── */
-  var IDEA_KEY        = 'amp_admin_ideas';          // community ideas
-  var POST_KEY        = 'amp_community_posts';      // direct community posts
-  var ARTICLES_KEY    = 'amp_articles_v1';          // curated articles (written by admin)
-  var SUBMISSIONS_KEY = 'amp_submissions_v1';       // user submission tracking by ID
-  var SUGG_KEY        = 'amp_admin_suggestions';    // marketplace suggestions (read-only here)
-  var PROJ_KEY        = 'amp_admin_projects_hub';   // community project submissions
+  var IDEA_KEY        = 'amp_admin_ideas';         // community ideas
+  var POST_KEY        = 'amp_community_posts';     // direct community posts
+  var ARTICLES_KEY    = 'amp_articles_v1';         // curated articles (written by admin)
+  var SUBMISSIONS_KEY = 'amp_submissions_v1';      // user submission tracking by ID
+  var SUGG_KEY        = 'amp_admin_suggestions';   // marketplace suggestions (read-only here)
+  var PROJ_KEY        = 'amp_admin_projects_hub';  // community project submissions
 
+  /* ─────────────────────────────────────────────
+     LOAD / SAVE HELPERS
+  ───────────────────────────────────────────── */
   function loadIdeas() {
     try {
       var raw = localStorage.getItem(IDEA_KEY);
@@ -44,8 +47,19 @@
     } catch (e) { return []; }
   }
 
+  function loadProjects() {
+    try {
+      var raw = localStorage.getItem(PROJ_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function saveProjects(projects) {
+    try { localStorage.setItem(PROJ_KEY, JSON.stringify(projects)); } catch (e) {}
+  }
+
   /* ─────────────────────────────────────────────
-     XSS sanitise
+     XSS SANITIZE
   ───────────────────────────────────────────── */
   function esc(str) {
     return String(str || '')
@@ -154,7 +168,6 @@
   function buildPulseItems() {
     var items = [];
 
-    // Community posts (newest first, highest priority)
     loadPosts()
       .filter(function (p) { return !p.hidden; })
       .sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); })
@@ -169,7 +182,6 @@
         });
       });
 
-    // Ideas (newest 5)
     loadIdeas()
       .filter(function (i) { return !i.dismissed; })
       .sort(function (a, b) { return b.ts - a.ts; })
@@ -183,7 +195,6 @@
         });
       });
 
-    // Marketplace suggestions (newest 5, only reviewed ones)
     loadSuggestions()
       .filter(function (s) { return s.status === 'reviewed' || s.reply; })
       .sort(function (a, b) { return b.ts - a.ts; })
@@ -197,7 +208,6 @@
         });
       });
 
-    // Sort all by time, most recent first
     items.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
     return items.slice(0, 12);
   }
@@ -213,7 +223,9 @@
     };
     var icon = iconMap[item.type] || '💬';
     var typeClass = 'piko-pulse-type--' + (item.type === 'community' ? 'other' : item.type);
-    var label = item.type === 'idea' ? 'New idea' : (item.type === 'community' ? 'Community post' : 'Store suggestion');
+    var label = item.type === 'idea'
+      ? 'New idea'
+      : (item.type === 'community' ? 'Community post' : 'Store suggestion');
 
     return (
       '<div class="piko-pulse-item">' +
@@ -270,7 +282,6 @@
       });
     }
 
-    // Close on outside click
     document.addEventListener('click', function (e) {
       if (!e.target.closest('#pikoPulseToggle') && !e.target.closest('#pikoPulsePanel')) {
         panel.classList.remove('is-open');
@@ -278,7 +289,6 @@
       }
     });
 
-    // Auto refresh every 30s
     setInterval(function () {
       if (panel.classList.contains('is-open')) refreshPulse();
     }, 30000);
@@ -287,18 +297,6 @@
   /* ─────────────────────────────────────────────
      PROJECT SUBMISSIONS
   ───────────────────────────────────────────── */
-  function loadProjects() {
-    try {
-      var raw = localStorage.getItem(PROJ_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
-  }
-
-  function saveProjects(projects) {
-    try { localStorage.setItem(PROJ_KEY, JSON.stringify(projects)); } catch (e) {}
-  }
-
-  // Tag input controller
   function initTagInput(inputId, hiddenId, wrapId) {
     var input = document.getElementById(inputId);
     var hidden = document.getElementById(hiddenId);
@@ -411,7 +409,6 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // Tabs
     document.querySelectorAll('.piko-modal-tab').forEach(function (btn) {
       btn.addEventListener('click', function () {
         switchTab(btn.dataset.tab);
@@ -493,8 +490,8 @@
     var postSuccess = document.getElementById('pikoPostSuccess');
     var postAgain = document.getElementById('pikoPostAgain');
     var postCount = document.getElementById('pikoPostCount');
-
     var postBodyEl = document.getElementById('pikoPostBody');
+
     if (postBodyEl && postCount) {
       postBodyEl.addEventListener('input', function () {
         postCount.textContent = postBodyEl.value.length;
@@ -565,12 +562,10 @@
       });
     }
 
-    // Wire pulse "Post" button to open modal on community post tab
     var pulsePostBtn = document.getElementById('pikoPulsePostBtn');
     if (pulsePostBtn) {
       pulsePostBtn.addEventListener('click', function () {
         openModal('post');
-
         var panel = document.getElementById('pikoPulsePanel');
         var toggle = document.getElementById('pikoPulseToggle');
         if (panel) panel.classList.remove('is-open');
@@ -755,7 +750,6 @@
   var pikoDataLoadPromise = null;
 
   function loadArticles() {
-    // Priority: _pikoData.articles (from pikoData.js script) > localStorage
     var embedded = [];
     try {
       embedded = (window._pikoData && Array.isArray(window._pikoData.articles))
@@ -768,7 +762,6 @@
       local = JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]');
     } catch (e2) {}
 
-    // Merge: local overrides embedded (by id). Local-only additions included.
     if (!embedded.length) return local;
     if (!local.length) return embedded;
 
@@ -887,45 +880,34 @@
 
     if (pikoDataLoadPromise) return pikoDataLoadPromise;
 
-    pikoDataLoadPromise = new Promise(function (resolve) {
-      var existing = document.querySelector('script[data-piko-data="true"]');
-      if (existing) {
-        existing.addEventListener('load', function () {
-          resolve(window._pikoData || null);
-        }, { once: true });
+    pikoDataLoadPromise = fetch('./js/pikoData.js?v=' + Date.now(), {
+      cache: 'no-store'
+    })
+      .then(function (r) {
+        return r.ok ? r.text() : null;
+      })
+      .then(function (text) {
+        if (!text) return null;
 
-        existing.addEventListener('error', function () {
-          resolve(null);
-        }, { once: true });
-
-        return;
-      }
-
-      var script = document.createElement('script');
-      script.src = './js/pikoData.js?v=' + Date.now();
-      script.defer = true;
-      script.async = true;
-      script.setAttribute('data-piko-data', 'true');
-
-      script.onload = function () {
-        resolve(window._pikoData || null);
-      };
-
-      script.onerror = function () {
-        resolve(null);
-      };
-
-      document.head.appendChild(script);
-    });
+        try {
+          var parsed = JSON.parse(text);
+          window._pikoData = parsed;
+          return parsed;
+        } catch (e) {
+          console.error('Failed to parse pikoData.js as JSON:', e);
+          return null;
+        }
+      })
+      .catch(function () {
+        return null;
+      });
 
     return pikoDataLoadPromise;
   }
 
   function initChronicle() {
-    // Render immediately with whatever is already in localStorage
     renderChronicle();
 
-    // Wire filter buttons
     document.querySelectorAll('[data-chron-cat]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('[data-chron-cat]').forEach(function (b) {
@@ -938,7 +920,6 @@
       });
     });
 
-    // Load more
     var moreBtn = document.getElementById('pikoChronicleMoreBtn');
     if (moreBtn) {
       moreBtn.addEventListener('click', function () {
@@ -947,7 +928,6 @@
       });
     }
 
-    // Load pikoData.js from server so published data syncs across devices
     loadServerPikoData()
       .then(function (data) {
         if (!data) return;
@@ -1103,7 +1083,6 @@
 
   /* ─────────────────────────────────────────────
      SEED PULSE — curated entries shown on first visit
-     so the feed is never empty for new visitors
   ───────────────────────────────────────────── */
   function seedPulse() {
     var SEED_KEY = 'amp_pulse_seeded_v1';
