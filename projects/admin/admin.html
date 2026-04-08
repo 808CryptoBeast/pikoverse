@@ -458,7 +458,19 @@ create policy "public insert ideas"
 create policy "public read comments"
   on idea_comments for select using (true);
 create policy "public insert comments"
-  on idea_comments for insert with check (true);</pre>
+  on idea_comments for insert with check (true);
+
+-- Upvotes table
+create table idea_upvotes (
+  id text primary key,
+  idea_id text references community_ideas(id),
+  ts bigint
+);
+alter table idea_upvotes enable row level security;
+create policy "public read upvotes"
+  on idea_upvotes for select using (true);
+create policy "public insert upvotes"
+  on idea_upvotes for insert with check (true);</pre>
             </details>
             <div class="adm-field">
               <label class="adm-label">Supabase Project URL</label>

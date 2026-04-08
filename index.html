@@ -452,7 +452,7 @@
             <li>Future support for decentralized preservation</li>
           </ul>
           <div class="eco-card-actions">
-            <a href="https://808cryptobeast.github.io/Ikeverse/verses/culturalverse.html" class="project-link" target="_blank" rel="noopener">
+            <a href="/ikeverse/culturalverse.html" class="project-link" target="_blank" rel="noopener">
               🌿 Enter Culturalverse →
             </a>
             <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link" target="_blank" rel="noopener" style="margin-top:6px">
@@ -546,32 +546,7 @@
       </div>
     </div>
   </section>
-  <!-- ── COMMUNITY IDEAS BOARD ── -->
-  <section id="community-board" class="piko-board-section">
-    <div class="piko-board-inner">
-      <div class="piko-board-header">
-        <div>
-          <span class="piko-showcase-eyebrow">Community</span>
-          <h2>Ideas &amp; Conversations</h2>
-          <p>What the Pikoverse community is thinking, building, and exploring. Submit your own idea to join the conversation.</p>
-        </div>
-        <div class="piko-board-filters" id="pikoBoardFilters">
-          <button class="piko-chron-filter is-active" data-board-cat="all" type="button">All</button>
-          <button class="piko-chron-filter" data-board-cat="platform" type="button">🚀 Platform</button>
-          <button class="piko-chron-filter" data-board-cat="feature" type="button">⚡ Feature</button>
-          <button class="piko-chron-filter" data-board-cat="content" type="button">📖 Content</button>
-          <button class="piko-chron-filter" data-board-cat="other" type="button">💡 Other</button>
-        </div>
-      </div>
-      <div class="piko-board-grid" id="pikoBoardGrid"></div>
-      <div class="piko-board-empty" id="pikoBoardEmpty" hidden>
-        <i class="fas fa-lightbulb"></i>
-        <p>No ideas shared yet. Be the first — submit an idea above!</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── COMMUNITY SHOWCASE ── -->
+  <!-- ── COMMUNITY HUB ── -->
   <!-- ── SUBMISSION CHECKER ── -->
   <section class="piko-check-section" id="pikoCheckSection">
     <div class="piko-check-inner">
@@ -643,22 +618,79 @@
         </div>
       </div>
 
-      <!-- Community approved projects wall -->
-      <div class="piko-showcase-wall-header">
-        <span class="piko-wall-label">More Community Projects</span>
-        <span class="piko-wall-count"><strong id="pikoShowcaseCount">0</strong> projects</span>
-      </div>
-      <div class="piko-showcase-grid" id="pikoShowcaseGrid"></div>
-      <div class="piko-showcase-empty" id="pikoShowcaseEmpty" hidden>
-        <i class="fas fa-rocket"></i>
-        <h4 style="color:#fff;margin-bottom:8px;font-size:16px">No approved projects yet</h4>
-        <p style="max-width:400px;margin:0 auto 20px">
-          Building something connected to Pikoverse, Aloha, culture, or technology?
-          Submit it and the AMP team will review it.
-        </p>
-        <button class="piko-share-fab-inline" id="pikoOpenSubmitEmpty" type="button">
-          <i class="fas fa-rocket"></i> Submit Your Project
-        </button>
+      <!-- ── UNIFIED COMMUNITY HUB TABS ── -->
+      <div class="piko-hub-tabs-wrap">
+
+        <!-- Tab bar -->
+        <div class="piko-hub-tab-bar">
+          <button class="piko-hub-tab is-active" data-hub-tab="projects" type="button">
+            <i class="fas fa-rocket"></i> Projects
+            <span class="piko-hub-tab-count" id="hubTabProjectsCount"></span>
+          </button>
+          <button class="piko-hub-tab" data-hub-tab="ideas" type="button">
+            <i class="fas fa-lightbulb"></i> Ideas
+            <span class="piko-hub-tab-count" id="hubTabIdeasCount"></span>
+          </button>
+          <button class="piko-hub-tab" data-hub-tab="activity" type="button">
+            <span class="piko-pulse-dot" style="width:7px;height:7px;flex-shrink:0"></span>
+            Activity
+          </button>
+        </div>
+
+        <!-- Search bar (ideas + projects) -->
+        <div class="piko-hub-search-wrap" id="pikoHubSearchWrap">
+          <i class="fas fa-search piko-hub-search-icon"></i>
+          <input type="search" id="pikoHubSearch" class="piko-hub-search"
+                 placeholder="Search projects and ideas…" maxlength="80" autocomplete="off">
+        </div>
+
+        <!-- PROJECTS TAB -->
+        <div class="piko-hub-pane is-active" id="pikoHubPaneProjects">
+          <div class="piko-hub-pane-toolbar">
+            <span class="piko-wall-count"><strong id="pikoShowcaseCount">0</strong> projects</span>
+          </div>
+          <div class="piko-showcase-grid" id="pikoShowcaseGrid"></div>
+          <div class="piko-showcase-empty" id="pikoShowcaseEmpty" hidden>
+            <i class="fas fa-rocket"></i>
+            <h4 style="color:#fff;margin-bottom:8px;font-size:16px">No approved projects yet</h4>
+            <p style="max-width:400px;margin:0 auto 20px">Building something connected to Pikoverse? Submit it and the AMP team will review it.</p>
+            <button class="piko-share-fab-inline" id="pikoOpenSubmitEmpty" type="button">
+              <i class="fas fa-rocket"></i> Submit Your Project
+            </button>
+          </div>
+        </div>
+
+        <!-- IDEAS TAB -->
+        <div class="piko-hub-pane" id="pikoHubPaneIdeas">
+          <div class="piko-hub-pane-toolbar">
+            <div class="piko-board-filters" id="pikoBoardFilters">
+              <button class="piko-chron-filter is-active" data-board-cat="all" type="button">All</button>
+              <button class="piko-chron-filter" data-board-cat="platform" type="button">🚀 Platform</button>
+              <button class="piko-chron-filter" data-board-cat="feature" type="button">⚡ Feature</button>
+              <button class="piko-chron-filter" data-board-cat="content" type="button">📖 Content</button>
+              <button class="piko-chron-filter" data-board-cat="other" type="button">💡 Other</button>
+            </div>
+          </div>
+          <div class="piko-board-grid" id="pikoBoardGrid"></div>
+          <div class="piko-board-empty" id="pikoBoardEmpty" hidden>
+            <i class="fas fa-lightbulb"></i>
+            <p>No ideas yet. Be the first — share an idea above!</p>
+          </div>
+        </div>
+
+        <!-- ACTIVITY TAB -->
+        <div class="piko-hub-pane" id="pikoHubPaneActivity">
+          <div class="piko-hub-activity-feed" id="pikoActivityFeed">
+            <div class="piko-pulse-list" id="pikoPulseList" style="max-height:none"></div>
+            <div class="piko-pulse-empty" id="pikoPulseEmpty" hidden>No recent activity yet.</div>
+          </div>
+          <div class="piko-hub-post-bar">
+            <button class="piko-share-fab-inline" id="pikoActivityPostBtn" type="button">
+              <i class="fas fa-pen-to-square"></i> Post to Community
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>

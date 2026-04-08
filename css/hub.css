@@ -3514,3 +3514,220 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
   border-color: rgba(84,209,255,.5);
   color: #7ae4ff;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ECOSYSTEM CARD ICONS — unified size matching HDA style
+   All four cards: same 100×100 square, cover fit, centered
+═══════════════════════════════════════════════════════════════ */
+.ecosystem-card .project-icon {
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  border-radius: 22px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0;
+  margin-bottom: 1.2rem;
+}
+
+.ecosystem-card .project-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+  border-radius: 20px !important;
+}
+
+/* Per-card ring color */
+.card-amp .project-icon      { border: 1px solid rgba(240,201,106,.35) !important; }
+.card-ikeverse .project-icon { border: 1px solid rgba(84,209,255,.3) !important; }
+.card-history .project-icon  { border: 1px solid rgba(157,100,255,.3) !important; }
+.card-digital .project-icon  { border: 1px solid rgba(84,209,255,.4) !important; }
+
+/* Comment textarea input (renamed from piko-comment-text to avoid class conflict) */
+.piko-comment-input {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 7px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+  width: 100%;
+  transition: border-color .18s;
+}
+.piko-comment-input:focus { border-color: rgba(84,209,255,.4); }
+.piko-comment-input::placeholder { color: rgba(255,255,255,.2); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   UNIFIED COMMUNITY HUB — tabs, search, upvotes
+═══════════════════════════════════════════════════════════════ */
+.piko-hub-tabs-wrap {
+  margin-top: 40px;
+}
+
+/* Tab bar */
+.piko-hub-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.piko-hub-tab-bar::-webkit-scrollbar { display: none; }
+
+.piko-hub-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(255,255,255,.45);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: color .18s, border-color .18s;
+  white-space: nowrap;
+  margin-bottom: -1px;
+  -webkit-tap-highlight-color: transparent;
+}
+.piko-hub-tab:hover { color: rgba(255,255,255,.75); }
+.piko-hub-tab.is-active {
+  color: #f0c96a;
+  border-bottom-color: #f0c96a;
+}
+.piko-hub-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: rgba(201,168,76,.15);
+  color: #f0c96a;
+  font-size: 10px;
+  font-weight: 800;
+}
+.piko-hub-tab-count:empty { display: none; }
+
+/* Search */
+.piko-hub-search-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+.piko-hub-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.3);
+  font-size: 13px;
+  pointer-events: none;
+}
+.piko-hub-search {
+  width: 100%;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 11px 16px 11px 38px;
+  color: #fff;
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+  transition: border-color .18s, background .18s;
+}
+.piko-hub-search:focus {
+  border-color: rgba(201,168,76,.4);
+  background: rgba(255,255,255,.07);
+}
+.piko-hub-search::placeholder { color: rgba(255,255,255,.25); }
+
+/* Panes */
+.piko-hub-pane        { display: none; }
+.piko-hub-pane.is-active { display: block; animation: hubPaneIn .2s ease; }
+@keyframes hubPaneIn {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.piko-hub-pane-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Activity feed */
+.piko-hub-activity-feed {
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 14px;
+  overflow: hidden;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.1) transparent;
+}
+.piko-hub-activity-feed .piko-pulse-list {
+  padding: 8px;
+}
+.piko-hub-activity-feed .piko-pulse-item {
+  border-radius: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  padding: 12px;
+}
+.piko-hub-post-bar {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Upvote button */
+.piko-upvote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.45);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, color .18s;
+  flex-shrink: 0;
+}
+.piko-upvote-btn:hover {
+  background: rgba(201,168,76,.1);
+  border-color: rgba(201,168,76,.3);
+  color: #f0c96a;
+}
+.piko-upvote-btn.is-voted {
+  background: rgba(201,168,76,.15);
+  border-color: rgba(201,168,76,.4);
+  color: #f0c96a;
+  cursor: default;
+}
+.piko-upvote-btn i { font-size: 10px; }
+
+@media (max-width: 768px) {
+  .piko-hub-tab { padding: 11px 16px; font-size: 12px; }
+  .piko-hub-activity-feed { max-height: 400px; }
+}

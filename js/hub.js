@@ -25,10 +25,19 @@ function sbFetch(path, method, body) {
 }
 
 // Fetch all non-dismissed ideas (newest first)
-function sbLoadIdeas(cat) {
+function sbLoadIdeas(cat, search) {
   var filter = '?select=*&status=neq.dismissed&order=ts.desc';
   if (cat && cat !== 'all') filter += '&category=eq.' + encodeURIComponent(cat);
-  return sbFetch('/community_ideas' + filter);
+  return sbFetch('/community_ideas' + filter).then(function(ideas) {
+    if (search && search.length > 1) {
+      var q = search.toLowerCase();
+      return ideas.filter(function(i) {
+        return (i.text || '').toLowerCase().includes(q) ||
+               (i.name || '').toLowerCase().includes(q);
+      });
+    }
+    return ideas;
+  });
 }
 
 // Submit a new idea
@@ -44,6 +53,23 @@ function sbLoadComments(ideaId) {
 // Submit a comment
 function sbSubmitComment(comment) {
   return sbFetch('/idea_comments', 'POST', comment);
+}
+
+// Upvote an idea (anonymous — uses localStorage to prevent double-vote per browser)
+function sbUpvote(ideaId) {
+  var votedKey = 'piko_voted_' + ideaId;
+  if (localStorage.getItem(votedKey)) return Promise.resolve({ already: true });
+  return sbFetch('/idea_upvotes', 'POST', {
+    id:       'vote-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    idea_id:  ideaId,
+    ts:       Date.now(),
+  }).then(function(r) {
+    localStorage.setItem(votedKey, '1');
+    return r;
+  });
+}
+function sbGetUpvotes(ideaId) {
+  return sbFetch('/idea_upvotes?idea_id=eq.' + encodeURIComponent(ideaId) + '&select=id');
 }
 
 /* ============================================================
@@ -204,6 +230,7 @@ function sbSubmitComment(comment) {
      COMMUNITY IDEAS BOARD (public-facing wall)
   ───────────────────────────────────────────── */
   var boardCat = 'all';
+  var hubSearchQuery = '';
 
   function renderCommunityBoard() {
     var grid  = document.getElementById('pikoBoardGrid');
@@ -213,7 +240,7 @@ function sbSubmitComment(comment) {
     if (sbReady()) {
       // ── Supabase path — cross-device ──
       grid.innerHTML = '<div class="piko-board-loading"><i class="fas fa-spinner fa-spin"></i> Loading community ideas...</div>';
-      sbLoadIdeas(boardCat).then(function(ideas) {
+      sbLoadIdeas(boardCat, hubSearchQuery).then(function(ideas) {
         renderBoardCards(ideas, grid, empty);
       }).catch(function(err) {
         console.warn('[Board] Supabase error, falling back to local:', err);
@@ -231,9 +258,11 @@ function sbSubmitComment(comment) {
       .filter(function(i) { return !i.dismissed && i.status !== 'dismissed'; })
       .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
 
-    if (boardCat !== 'all') {
-      ideas = ideas.filter(function(i) { return i.category === boardCat; });
-    }
+    if (boardCat !== 'all') ideas = ideas.filter(function(i) { return i.category === boardCat; });
+    if (hubSearchQuery) ideas = ideas.filter(function(i) {
+      return i.text.toLowerCase().includes(hubSearchQuery) ||
+             (i.name || '').toLowerCase().includes(hubSearchQuery);
+    });
     renderBoardCards(ideas, grid, empty);
   }
 
@@ -285,13 +314,20 @@ function sbSubmitComment(comment) {
               '<div class="piko-board-comments-list" id="piko-clist-' + esc(idea.id) + '"></div>' +
               '<div class="piko-board-comment-form">' +
                 '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
-                '<textarea class="piko-comment-text" placeholder="Share your thoughts…" rows="2" maxlength="400"></textarea>' +
+                '<textarea class="piko-comment-input" placeholder="Share your thoughts…" rows="2" maxlength="400"></textarea>' +
                 '<button class="piko-comment-submit" data-idea-id="' + esc(idea.id) + '" type="button">' +
                   '<i class="fas fa-paper-plane"></i> Post' +
                 '</button>' +
               '</div>' +
             '</div>' +
           '</div>'
+        : '';
+
+      var voted = !!localStorage.getItem('piko_voted_' + idea.id);
+      var upvoteBtn = sbReady()
+        ? '<button class="piko-upvote-btn' + (voted ? ' is-voted' : '') + '" data-idea-id="' + esc(idea.id) + '" type="button">' +
+            '<i class="fas fa-arrow-up"></i> <span class="piko-upvote-count">–</span>' +
+          '</button>'
         : '';
 
       return '<div class="piko-board-card" data-idea-id="' + esc(idea.id) + '">' +
@@ -305,51 +341,45 @@ function sbSubmitComment(comment) {
           '<div class="piko-idea-author">' +
             '<div class="piko-idea-author-avatar">' + esc(initial) + '</div>' + esc(author) +
           '</div>' +
-          connectHtml +
+          '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
+            upvoteBtn + connectHtml +
+          '</div>' +
         '</div>' +
         commentSection +
       '</div>';
     }).join('');
 
-    // Wire comment toggles (lazy — loads on tap)
+    // Wire comment toggles + upvotes
     if (sbReady()) {
       wireCommentToggles(grid);
-    }
-
-    // LEGACY inline wiring (kept for safety)
-    if (sbReady()) {
-      ideas.forEach(function(idea) { void idea; }); // count fetched on toggle open
-
-      // Wire comment submit buttons (now handled by wireCommentToggles)
-      grid.querySelectorAll('.piko-comment-submit').forEach(function(btn) {
+      // Load upvote counts
+      ideas.forEach(function(idea) {
+        sbGetUpvotes(idea.id).then(function(votes) {
+          var countEl = grid.querySelector('[data-idea-id="' + idea.id + '"] .piko-upvote-count');
+          if (countEl && votes) countEl.textContent = votes.length;
+        }).catch(function(){});
+      });
+      // Wire upvote buttons
+      grid.querySelectorAll('.piko-upvote-btn').forEach(function(btn) {
+        if (btn._wired) return;
+        btn._wired = true;
         btn.addEventListener('click', function() {
+          if (btn.classList.contains('is-voted')) return;
           var ideaId = btn.dataset.ideaId;
-          var card   = btn.closest('.piko-board-card');
-          var text   = card.querySelector('.piko-comment-text').value.trim();
-          var name   = card.querySelector('.piko-comment-name').value.trim();
-          if (!text) return;
-          btn.disabled = true;
-          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-          sbSubmitComment({
-            id:      'cmt-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-            idea_id: ideaId,
-            text:    text,
-            name:    name || null,
-            ts:      Date.now(),
-          }).then(function() {
-            card.querySelector('.piko-comment-text').value = '';
-            card.querySelector('.piko-comment-name').value = '';
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
-            loadAndRenderComments(ideaId);
-          }).catch(function(err) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
-            console.warn('Comment submit error:', err);
-          });
+          sbUpvote(ideaId).then(function(r) {
+            if (r && r.already) return;
+            btn.classList.add('is-voted');
+            var c = btn.querySelector('.piko-upvote-count');
+            if (c) c.textContent = parseInt(c.textContent || 0) + 1;
+          }).catch(function(){});
         });
       });
     }
+
+    // Update tab count
+    var ideasCount = document.getElementById('hubTabIdeasCount');
+    if (ideasCount) ideasCount.textContent = ideas.length || '';
+
   }
 
   function loadAndRenderComments(ideaId, forceOpen) {
@@ -413,7 +443,7 @@ function sbSubmitComment(comment) {
         var ideaId = btn.dataset.ideaId;
         var form   = btn.closest('.piko-board-comment-form');
         if (!form) return;
-        var text = form.querySelector('.piko-comment-text').value.trim();
+        var text = (form.querySelector('.piko-comment-input') || form.querySelector('.piko-comment-text')).value.trim();
         var name = form.querySelector('.piko-comment-name').value.trim();
         if (!text) { form.querySelector('.piko-comment-text').focus(); return; }
         btn.disabled = true;
@@ -425,7 +455,7 @@ function sbSubmitComment(comment) {
           name:    name || null,
           ts:      Date.now(),
         }).then(function() {
-          form.querySelector('.piko-comment-text').value = '';
+          (form.querySelector('.piko-comment-input') || form.querySelector('.piko-comment-text')).value = '';
           form.querySelector('.piko-comment-name').value = '';
           btn.disabled = false;
           btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
@@ -661,7 +691,7 @@ function sbSubmitComment(comment) {
             '<div class="piko-board-comments-list" id="piko-clist-' + esc(cid) + '"></div>' +
             '<div class="piko-board-comment-form">' +
               '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
-              '<textarea class="piko-comment-text" placeholder="What do you think about this project?" rows="2" maxlength="400"></textarea>' +
+              '<textarea class="piko-comment-input" placeholder="What do you think about this project?" rows="2" maxlength="400"></textarea>' +
               '<button class="piko-comment-submit" data-idea-id="' + esc(cid) + '" type="button">' +
                 '<i class="fas fa-paper-plane"></i> Post' +
               '</button>' +
@@ -975,7 +1005,18 @@ function sbSubmitComment(comment) {
       if (empty) empty.hidden = false;
     } else {
       if (empty) empty.hidden = true;
-      grid.innerHTML = approved.map(renderProjectCard).join('');
+      if (hubSearchQuery) {
+      approved = approved.filter(function(p) {
+        return (p.name || '').toLowerCase().includes(hubSearchQuery) ||
+               (p.desc || '').toLowerCase().includes(hubSearchQuery) ||
+               (p.tech || []).join(' ').toLowerCase().includes(hubSearchQuery);
+      });
+    }
+    // Update project tab count
+    var projCount = document.getElementById('hubTabProjectsCount');
+    if (projCount) projCount.textContent = approved.length || '';
+
+    grid.innerHTML = approved.map(renderProjectCard).join('');
 
     // Wire comment toggles for projects (lazy — loads on tap)
     if (sbReady()) {
@@ -1392,6 +1433,63 @@ function sbSubmitComment(comment) {
   document.addEventListener('DOMContentLoaded', function () {
     initDock();
   renderCommunityBoard();
+
+  // ── Community Hub tabs ──
+  function switchHubTab(tabName) {
+    document.querySelectorAll('.piko-hub-tab').forEach(function(b) {
+      b.classList.toggle('is-active', b.dataset.hubTab === tabName);
+    });
+    document.querySelectorAll('.piko-hub-pane').forEach(function(p) {
+      p.classList.toggle('is-active', p.id === 'pikoHubPane' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+    });
+    var searchWrap = document.getElementById('pikoHubSearchWrap');
+    if (searchWrap) searchWrap.hidden = tabName === 'activity';
+    if (tabName === 'projects') renderShowcaseWall();
+    if (tabName === 'ideas')    renderCommunityBoard();
+    if (tabName === 'activity') refreshPulse();
+  }
+
+  document.querySelectorAll('.piko-hub-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() { switchHubTab(btn.dataset.hubTab); });
+  });
+
+  // Activity post button
+  var activityPostBtn = document.getElementById('pikoActivityPostBtn');
+  if (activityPostBtn) {
+    activityPostBtn.addEventListener('click', function() {
+      if (window._pikoOpenModal) window._pikoOpenModal('post');
+    });
+  }
+
+  // ── Hub search ──
+  var hubSearch = document.getElementById('pikoHubSearch');
+  if (hubSearch) {
+    var hubSearchTimer;
+    hubSearch.addEventListener('input', function() {
+      clearTimeout(hubSearchTimer);
+      hubSearchTimer = setTimeout(function() {
+        var q = hubSearch.value.trim().toLowerCase();
+        hubSearchQuery = q;
+        // Search active tab
+        var activeTab = document.querySelector('.piko-hub-tab.is-active');
+        var tab = activeTab ? activeTab.dataset.hubTab : 'projects';
+        if (tab === 'projects') renderShowcaseWall();
+        else renderCommunityBoard();
+      }, 250);
+    });
+  }
+
+  // ── Pulse toggle now scrolls to community hub ──
+  var pulseToggle = document.getElementById('pikoPulseToggle');
+  if (pulseToggle) {
+    pulseToggle.addEventListener('click', function() {
+      var hub = document.getElementById('showcase');
+      if (hub) {
+        hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        switchHubTab('activity');
+      }
+    });
+  }
 
   // ── Community Board filters ──
   document.querySelectorAll('[data-board-cat]').forEach(function(btn) {
