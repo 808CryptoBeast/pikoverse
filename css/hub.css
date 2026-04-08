@@ -2612,20 +2612,28 @@
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  min-height: 260px;
+  min-height: 280px;
   background-size: cover;
   background-position: center;
   display: flex;
-  align-items: flex-end; /* pin content to bottom */
+  align-items: center; /* center vertically */
 }
 
 .meaning-card .card-content {
   width: 100%;
-  padding: 24px 20px 20px;
-  background: linear-gradient(0deg, rgba(6,8,16,.92) 0%, rgba(6,8,16,.6) 60%, transparent 100%);
+  padding: 28px 22px;
+  background: linear-gradient(
+    0deg,
+    rgba(6,8,16,.95) 0%,
+    rgba(6,8,16,.82) 50%,
+    rgba(6,8,16,.55) 80%,
+    rgba(6,8,16,.25) 100%
+  );
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;  /* center text horizontally */
+  text-align: center;
+  gap: 6px;
 }
 
 .meaning-card .card-content h3 {
@@ -2778,12 +2786,14 @@
    all sit cleanly without overlap.
 ───────────────────────────────────────────────────────────── */
 
-/* Always show content fully — remove the hidden offset */
+/* Always show content fully — remove the hidden offset from index.css */
 .meaning-card .card-content {
   transform: translateY(0) !important;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 6px;
   width: 100%;
 }
 
@@ -2818,11 +2828,13 @@
 @media (max-width: 768px) {
   .meaning-card {
     min-height: 18rem !important;
-    align-items: flex-end !important;
+    align-items: center !important;
   }
   .meaning-card .card-content {
     transform: none !important;
-    padding: 1.15rem !important;
+    padding: 1.25rem 1rem !important;
+    align-items: center !important;
+    text-align: center !important;
   }
   .meaning-card h3 { font-size: 1.35rem !important; }
   .meaning-card p:last-child { font-size: 0.9rem !important; }
