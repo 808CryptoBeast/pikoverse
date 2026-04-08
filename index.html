@@ -420,9 +420,14 @@
             <li>Creative identity rooted in heritage</li>
             <li>Apparel, goods, and future marketplace offerings</li>
           </ul>
-          <a href="marketplace/index.html" class="project-link">
-            <i class="fas fa-store"></i> Visit AMP Marketplace →
-          </a>
+          <div class="eco-card-actions">
+            <a href="marketplace/index.html" class="project-link amp-market-link">
+              <i class="fas fa-store"></i> Visit AMP Marketplace →
+            </a>
+            <button class="eco-popup-btn" data-popup="amp" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
         </article>
 
         <!-- CARD 2 — Ikeverse -->
@@ -432,7 +437,7 @@
           </video>
           <div class="card-video-overlay"></div>
           <div class="card-top-glow"></div>
-          <div class="project-icon"><img src="assets/goldenp.jpg" alt="Ikeverse" /></div>
+          <div class="project-icon"><img src="assets/platform-images/Ikeverse-icon.png" alt="Ikeverse" onerror="this.src='assets/goldenp.jpg'"></div>
           <h3>Ikeverse</h3>
           <p class="project-subtitle">Cultural Learning Platform</p>
           <p class="project-description">
@@ -446,7 +451,17 @@
             <li>Technology, blockchain, AI, and cryptography modules</li>
             <li>Future support for decentralized preservation</li>
           </ul>
-          <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link">Enter Ikeverse →</a>
+          <div class="eco-card-actions">
+            <a href="https://808cryptobeast.github.io/Ikeverse/verses/culturalverse.html" class="project-link" target="_blank" rel="noopener">
+              🌿 Enter Culturalverse →
+            </a>
+            <a href="https://808cryptobeast.github.io/Ikeverse/" class="project-link" target="_blank" rel="noopener" style="margin-top:6px">
+              Ikeverse Hub →
+            </a>
+            <button class="eco-popup-btn" data-popup="ikeverse" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
         </article>
 
         <!-- CARD 3 — Historical Data Aggregator -->
@@ -927,7 +942,7 @@
           <i class="fas fa-lightbulb"></i> Share an Idea
         </button>
         <button class="piko-modal-tab" data-tab="post" type="button">
-          <i class="fas fa-pen-to-square"></i> Community Post
+          <i class="fas fa-comments"></i> Discussion
         </button>
       </div>
 
@@ -1061,8 +1076,8 @@
         <!-- COMMUNITY POST TAB -->
         <div class="piko-tab-pane" id="pikoTabPost">
           <p class="piko-modal-intro">
-            Share news, updates, or anything worth saying with the Pikoverse community.
-            Posts appear live in the Pulse feed.
+            Start a community discussion, share news, or post anything worth saying.
+            Posts appear live in the <strong style="color:#f0c96a">Pulse feed</strong> and are visible to everyone.
           </p>
           <form class="piko-modal-form" id="pikoPostForm" novalidate>
             <div class="piko-modal-field">

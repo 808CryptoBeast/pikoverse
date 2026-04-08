@@ -650,7 +650,27 @@ function sbSubmitComment(comment) {
           : '<span><i class="fas fa-user"></i> ' + esc(p.contact) + '</span>')
       : '';
 
-    return '<div class="ecosystem-project-card">' +
+    // Use project id prefixed so comments stay separate from ideas in same table
+    var cid = 'proj-' + p.id;
+    var commentSection = sbReady()
+      ? '<div class="piko-board-comments">' +
+          '<button class="piko-comment-toggle" data-target="' + esc(cid) + '" type="button">' +
+            '<i class="fas fa-comment"></i> <span class="piko-comment-count">Comments</span>' +
+          '</button>' +
+          '<div class="piko-comment-body" id="piko-cbody-' + esc(cid) + '" hidden>' +
+            '<div class="piko-board-comments-list" id="piko-clist-' + esc(cid) + '"></div>' +
+            '<div class="piko-board-comment-form">' +
+              '<input type="text" class="piko-comment-name" placeholder="Your name (optional)" maxlength="60">' +
+              '<textarea class="piko-comment-text" placeholder="What do you think about this project?" rows="2" maxlength="400"></textarea>' +
+              '<button class="piko-comment-submit" data-idea-id="' + esc(cid) + '" type="button">' +
+                '<i class="fas fa-paper-plane"></i> Post' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      : '';
+
+    return '<div class="ecosystem-project-card" data-proj-id="' + esc(p.id) + '">' +
       '<div class="epc-header">' +
         '<span class="epc-name">' + esc(p.name) + '</span>' +
         '<span class="epc-stage ' + stageClass + '">' + stageLabel(p.stage) + '</span>' +
@@ -664,6 +684,7 @@ function sbSubmitComment(comment) {
         '</div>' +
         linkHtml +
       '</div>' +
+      commentSection +
     '</div>';
   }
 
