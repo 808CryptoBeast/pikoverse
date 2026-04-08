@@ -289,11 +289,13 @@ function sbGetUpvotes(ideaId) {
       var date    = idea.ts ? new Date(idea.ts).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
 
       var replyHtml = '';
+      var repliedBadge = '';
       if (idea.reply) {
         replyHtml = '<div class="piko-idea-reply" style="margin-top:12px">' +
           '<div class="piko-idea-reply-label"><i class="fas fa-star"></i> AMP Team replied</div>' +
           '<div class="piko-idea-reply-text">' + esc(idea.reply) + '</div>' +
           '</div>';
+        repliedBadge = '<span class="piko-amp-replied-badge"><i class="fas fa-star"></i> AMP replied</span>';
       }
 
       var connectHtml = '';
@@ -334,6 +336,7 @@ function sbGetUpvotes(ideaId) {
         '<div class="piko-board-card-header">' +
           '<span class="piko-board-cat" style="background:' + bg + ';color:' + col + '">' + icon + ' ' + esc(label) + '</span>' +
           '<span class="piko-board-date">' + esc(date) + '</span>' +
+          repliedBadge +
         '</div>' +
         '<p class="piko-board-text">' + esc(idea.text) + '</p>' +
         replyHtml +
@@ -673,6 +676,14 @@ function sbGetUpvotes(ideaId) {
       ? '<a href="' + esc(p.link) + '" class="epc-link" target="_blank" rel="noopener noreferrer">' +
         '<i class="fas fa-arrow-up-right-from-square"></i> View Project</a>'
       : '';
+    var updateBtn = '<button class="piko-proj-update-btn" data-proj-id="' + esc(p.id) + '" data-proj-name="' + esc(p.name) + '" type="button">' +
+      '<i class="fas fa-bullhorn"></i> Post Update</button>';
+    var collabBadge = p.lookingForCollabs
+      ? '<span class="piko-collab-badge"><i class="fas fa-users"></i> Seeking Collaborators</span>'
+      : '';
+    var inspiredBadge = p.inspiredBy
+      ? '<span class="piko-inspired-badge"><i class="fas fa-lightbulb"></i> Inspired by idea</span>'
+      : '';
     var isEmail = p.contact && p.contact.indexOf('@') > -1;
     var contactHtml = p.contact
       ? (isEmail
@@ -705,6 +716,7 @@ function sbGetUpvotes(ideaId) {
         '<span class="epc-name">' + esc(p.name) + '</span>' +
         '<span class="epc-stage ' + stageClass + '">' + stageLabel(p.stage) + '</span>' +
       '</div>' +
+      (collabBadge || inspiredBadge ? '<div class="epc-badges">' + collabBadge + inspiredBadge + '</div>' : '') +
       '<p class="epc-desc">' + esc(p.desc) + '</p>' +
       (tagsHtml ? '<div class="epc-tags">' + tagsHtml + '</div>' : '') +
       '<div class="epc-footer">' +
@@ -712,7 +724,9 @@ function sbGetUpvotes(ideaId) {
           '<div class="epc-author-avatar">' + esc(initial) + '</div>' +
           (contactHtml || 'Community') +
         '</div>' +
-        linkHtml +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
+          linkHtml + updateBtn +
+        '</div>' +
       '</div>' +
       commentSection +
     '</div>';
@@ -957,6 +971,8 @@ function sbGetUpvotes(ideaId) {
           stage: stageInput?.value || 'idea',
           link: (document.getElementById('pikoProjectLink')?.value || '').trim(),
           contact: (document.getElementById('pikoProjectContact')?.value || '').trim(),
+          inspiredBy: (document.getElementById('pikoProjectInspiredBy')?.value || '').trim(),
+          lookingForCollabs: !!(document.getElementById('pikoProjectCollabs')?.checked),
           tech: tech,
           ts: Date.now(),
           status: 'pending',
@@ -1022,7 +1038,129 @@ function sbGetUpvotes(ideaId) {
     if (sbReady()) {
       wireCommentToggles(grid);
     }
+
+    // Wire project update buttons
+    grid.querySelectorAll('.piko-proj-update-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var projName = btn.dataset.projName;
+        // Open Discussion modal pre-filled
+        if (window._pikoOpenModal) {
+          window._pikoOpenModal('post');
+          setTimeout(function() {
+            var titleEl = document.getElementById('pikoPostTitle');
+            if (titleEl && !titleEl.value) titleEl.value = '🔨 Project Update: ' + projName;
+            if (titleEl) titleEl.focus();
+          }, 100);
+        }
+      });
+    });
     }
+  }
+
+
+  /* ─────────────────────────────────────────────
+     GLOBAL SEARCH
+  ───────────────────────────────────────────── */
+  function initGlobalSearch() {
+    var toggle   = document.getElementById('pikoSearchToggle');
+    var dropdown = document.getElementById('pikoSearchDropdown');
+    var input    = document.getElementById('pikoGlobalSearchInput');
+    var results  = document.getElementById('pikoGlobalResults');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', function() {
+      dropdown.hidden = !dropdown.hidden;
+      if (!dropdown.hidden) { setTimeout(function() { input.focus(); }, 80); }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#pikoGlobalSearchWrap')) dropdown.hidden = true;
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { dropdown.hidden = true; }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        dropdown.hidden = false;
+        setTimeout(function() { input.focus(); }, 80);
+      }
+    });
+
+    var searchTimer;
+    input.addEventListener('input', function() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function() {
+        doGlobalSearch(input.value.trim());
+      }, 200);
+    });
+  }
+
+  function doGlobalSearch(q) {
+    var results = document.getElementById('pikoGlobalResults');
+    if (!results) return;
+    if (!q || q.length < 2) { results.innerHTML = ''; return; }
+    var ql = q.toLowerCase();
+    var hits = [];
+
+    // Search articles
+    loadArticles()
+      .filter(function(a) { return a.published; })
+      .forEach(function(a) {
+        if ((a.title || '').toLowerCase().includes(ql) ||
+            (a.excerpt || '').toLowerCase().includes(ql) ||
+            (a.source || '').toLowerCase().includes(ql)) {
+          hits.push({ type:'article', icon:'📰', label: a.title, sub: a.source, href: a.url, target:'_blank' });
+        }
+      });
+
+    // Search projects
+    loadProjects()
+      .filter(function(p) { return p.status === 'approved'; })
+      .forEach(function(p) {
+        if ((p.name || '').toLowerCase().includes(ql) ||
+            (p.desc || '').toLowerCase().includes(ql)) {
+          hits.push({ type:'project', icon:'🚀', label: p.name, sub: 'Community Project', href:'#showcase', tab:'projects' });
+        }
+      });
+
+    // Search ideas (local)
+    loadIdeas()
+      .filter(function(i) { return !i.dismissed; })
+      .forEach(function(i) {
+        if ((i.text || '').toLowerCase().includes(ql)) {
+          hits.push({ type:'idea', icon:'💡', label: i.text.slice(0,60) + (i.text.length > 60 ? '…' : ''), sub:'Community Idea', href:'#showcase', tab:'ideas' });
+        }
+      });
+
+    if (hits.length === 0) {
+      results.innerHTML = '<div class="piko-search-empty">No results for "' + esc(q) + '"</div>';
+      return;
+    }
+
+    results.innerHTML = hits.slice(0,8).map(function(h) {
+      return '<a class="piko-search-result" href="' + esc(h.href || '#') + '" ' +
+        (h.target ? 'target="' + h.target + '" rel="noopener"' : '') +
+        (h.tab ? ' data-search-tab="' + h.tab + '"' : '') + '>' +
+        '<span class="piko-search-result-icon">' + h.icon + '</span>' +
+        '<span>' +
+          '<span class="piko-search-result-label">' + esc(h.label) + '</span>' +
+          '<span class="piko-search-result-sub">' + esc(h.sub) + '</span>' +
+        '</span>' +
+      '</a>';
+    }).join('');
+
+    // Wire result clicks
+    results.querySelectorAll('[data-search-tab]').forEach(function(a) {
+      a.addEventListener('click', function() {
+        var tab = a.dataset.searchTab;
+        document.getElementById('pikoGlobalSearchWrap').querySelector('#pikoSearchDropdown').hidden = true;
+        setTimeout(function() {
+          var hub = document.getElementById('showcase');
+          if (hub) hub.scrollIntoView({ behavior:'smooth' });
+          if (typeof switchHubTab === 'function') switchHubTab(tab);
+        }, 300);
+      });
+    });
   }
 
   /* ─────────────────────────────────────────────
@@ -1283,11 +1421,34 @@ function sbGetUpvotes(ideaId) {
     });
 
     // CSS scroll-snap handles all touch swiping natively on mobile
-    // No JS needed for swipe — just update dots on resize
     window.addEventListener('resize', function() {
       chronIndex = 0;
       renderChronicle();
     }, { passive: true });
+
+    // Chronicle email subscribe
+    var subBtn   = document.getElementById('pikoChronSubBtn');
+    var subEmail = document.getElementById('pikoChronSubEmail');
+    var subSucc  = document.getElementById('pikoChronSubSuccess');
+    var subForm  = document.getElementById('pikoChronSubForm');
+    if (subBtn && subEmail) {
+      subBtn.addEventListener('click', function() {
+        var email = subEmail.value.trim();
+        if (!email || !email.includes('@')) {
+          subEmail.focus(); return;
+        }
+        // Save to amp_email_list_v1 (same list as marketplace)
+        try {
+          var list = JSON.parse(localStorage.getItem('amp_email_list_v1') || '[]');
+          if (!list.includes(email)) { list.push(email); localStorage.setItem('amp_email_list_v1', JSON.stringify(list)); }
+        } catch(e) {}
+        if (subForm)  subForm.hidden  = true;
+        if (subSucc)  subSucc.hidden  = false;
+      });
+      subEmail.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') subBtn.click();
+      });
+    }
 
     // ── Fetch pikoData.js from server ────────────────────────────────────
     // Loads all site data committed via Admin "Publish All to Site"
@@ -1433,6 +1594,7 @@ function sbGetUpvotes(ideaId) {
   document.addEventListener('DOMContentLoaded', function () {
     initDock();
   renderCommunityBoard();
+  initGlobalSearch();
 
   // ── Community Hub tabs ──
   function switchHubTab(tabName) {

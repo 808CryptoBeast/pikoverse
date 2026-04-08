@@ -158,7 +158,19 @@
         </div>
       </div>
 
-      <nav class="main-nav" aria-label="Primary Navigation">
+      <!-- Global search -->
+    <div class="piko-global-search-wrap" id="pikoGlobalSearchWrap">
+      <button class="piko-global-search-toggle" id="pikoSearchToggle" type="button" aria-label="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <div class="piko-global-search-dropdown" id="pikoSearchDropdown" hidden>
+        <input type="search" id="pikoGlobalSearchInput" class="piko-global-search-input"
+               placeholder="Search articles, projects, ideas…" maxlength="80" autocomplete="off">
+        <div class="piko-global-results" id="pikoGlobalResults"></div>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="Primary Navigation">
         <ul>
           <li><a href="#intro">Home</a></li>
           <li><a href="#aloha-foundation">Aloha</a></li>
@@ -526,6 +538,40 @@
           </div>
         </article>
 
+        <!-- CARD 5 — NaluLF -->
+        <article class="ecosystem-card card-nalulf" data-popup="nalulf">
+          <video class="card-video" autoplay muted playsinline preload="metadata">
+            <source src="assets/platform-images/nalulf-bg.mp4" type="video/mp4">
+          </video>
+          <div class="card-video-overlay"></div>
+          <div class="card-top-glow" style="background:linear-gradient(180deg,rgba(76,200,160,.1),transparent)"></div>
+          <div class="project-icon">
+            <img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" />
+          </div>
+          <h3>NaluLF</h3>
+          <p class="project-subtitle">Nalu Ledger Forensics — XRPL Investigation</p>
+          <p class="project-description">
+            The forensic investigation layer of the Pikoverse blockchain ecosystem.
+            Deep-inspection XRPL platform for ledger monitoring, wallet analysis,
+            fraud detection, and investigative data gathering. Built for those ready
+            to read the chain with a detective's eye.
+          </p>
+          <ul class="project-features">
+            <li>XRPL ledger monitoring and real-time analytics</li>
+            <li>Fraud detection and suspicious pattern recognition</li>
+            <li>Wallet, token, and transaction deep inspection</li>
+            <li>Forensic workflows — the applied layer after DigitalVerse</li>
+          </ul>
+          <div class="eco-card-actions">
+            <a href="https://808cryptobeast.github.io/NaluLF/" class="project-link" target="_blank" rel="noopener">
+              <i class="fas fa-shield-halved"></i> Open NaluLF →
+            </a>
+            <button class="eco-popup-btn" data-popup="nalulf" type="button">
+              <i class="fas fa-layer-group"></i> Deeper Dive
+            </button>
+          </div>
+        </article>
+
       </div>
     </div>
   </section>
@@ -737,6 +783,25 @@
       <div class="piko-chronicle-empty" id="pikoChronicleEmpty" hidden>
         <i class="fas fa-newspaper"></i>
         <p>No articles published yet. Check back soon.</p>
+      </div>
+
+      <!-- Chronicle email subscribe -->
+      <div class="piko-chronicle-subscribe" id="pikoChronicleSubscribe">
+        <i class="fas fa-envelope-open-text"></i>
+        <div>
+          <p class="piko-chron-sub-label">Get new articles by email</p>
+          <p class="piko-chron-sub-hint">Join the list — new Chronicle reads delivered when published.</p>
+        </div>
+        <div class="piko-chron-sub-form" id="pikoChronSubForm">
+          <input type="email" id="pikoChronSubEmail" class="piko-chron-sub-input"
+                 placeholder="your@email.com" maxlength="120">
+          <button class="piko-chron-sub-btn" id="pikoChronSubBtn" type="button">
+            Subscribe
+          </button>
+        </div>
+        <p class="piko-chron-sub-success" id="pikoChronSubSuccess" hidden>
+          <i class="fas fa-circle-check"></i> You're on the list. Mahalo! 🌺
+        </p>
       </div>
 
     </div>
@@ -1024,6 +1089,20 @@
               <input type="text" id="pikoProjectContact" class="hub-input"
                 placeholder="email, @handle, or Discord" maxlength="120">
             </div>
+            <div class="hub-field">
+              <label class="hub-label" for="pikoProjectInspiredBy">Inspired by an idea? <span class="hub-opt">(optional)</span></label>
+              <input type="text" id="pikoProjectInspiredBy" class="hub-input"
+                placeholder="Paste an idea ID from the community board e.g. idea-1234567890"
+                maxlength="80" autocomplete="off">
+              <p class="hub-hint">Links your project back to the community idea that sparked it</p>
+            </div>
+            <div class="hub-field" style="flex-direction:row;align-items:center;gap:10px">
+              <input type="checkbox" id="pikoProjectCollabs" style="width:16px;height:16px;accent-color:#54d1ff;flex-shrink:0;cursor:pointer">
+              <label for="pikoProjectCollabs" style="font-size:12px;color:rgba(255,255,255,.65);cursor:pointer;margin:0">
+                <i class="fas fa-users" style="color:#54d1ff;margin-right:5px"></i>
+                Looking for collaborators — show a badge on my project card
+              </label>
+            </div>
 
             <div class="hub-field">
               <label class="hub-label" for="pikoProjectTechInput">Tools &amp; Tech</label>
@@ -1279,4 +1358,43 @@
   <script src="js/hub.js"></script>
   <script src="js/ecosystem-popups.js"></script>
 </body>
-</html>
+</html  <!-- POPUP: NaluLF -->
+  <div class="eco-popup" id="eco-popup-nalulf" role="dialog" aria-modal="true" aria-labelledby="ecoPopupNaluLFTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon"><img src="assets/platform-images/NLF-Shield-blue.jpg" alt="NaluLF" /></div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow">Pikoverse Platform — Beta</span>
+        <h3 class="eco-popup__title" id="ecoPopupNaluLFTitle">NaluLF</h3>
+        <p class="eco-popup__subtitle">Nalu Ledger Forensics — XRPL Investigation Platform</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="eco-popup__body">
+      <p>NaluLF is the forensic investigation layer of the Pikoverse blockchain ecosystem — a deep-inspection XRPL platform built for those ready to read the chain with a detective's eye.</p>
+      <h4 class="eco-popup__section-title">What NaluLF Does</h4>
+      <ul class="eco-popup__list">
+        <li>XRPL ledger monitoring and real-time transaction analytics</li>
+        <li>Fraud detection signals and suspicious pattern recognition</li>
+        <li>Wallet, token, and trust line deep inspection</li>
+        <li>Account behavioral analysis and timeline reconstruction</li>
+        <li>Forensic workflows for investigators, not speculators</li>
+        <li>DEX activity analysis — wash trading signals, AMM behavior</li>
+      </ul>
+      <h4 class="eco-popup__section-title">The Path: DigitalVerse → NaluLF</h4>
+      <p>DigitalVerse teaches the fundamentals. NaluLF is where you apply them forensically to live XRPL data. The path is intentional: <strong>understand the chain, then investigate it.</strong></p>
+      <div class="eco-popup__nalulf-path">
+        <div class="eco-popup__nalulf-icon">🔗</div>
+        <div>
+          <strong>Future: Historical Data Aggregator Integration</strong>
+          <p>NaluLF's provenance capabilities will anchor historical documents on-chain — creating immutable records of when cultural knowledge was preserved and by whom.</p>
+        </div>
+      </div>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="https://808cryptobeast.github.io/NaluLF/" target="_blank" rel="noopener" class="eco-popup__cta eco-popup__cta--primary"><i class="fas fa-shield-halved"></i> Open NaluLF</a>
+      <a href="digitalverse/index.html" class="eco-popup__cta eco-popup__cta--ghost"><i class="fas fa-cube"></i> Enter DigitalVerse First</a>
+    </div>
+  </div>
+
+>
