@@ -1163,6 +1163,81 @@ function sbGetUpvotes(ideaId) {
     });
   }
 
+
+  /* ─────────────────────────────────────────────
+     SMART TOP NAV — hide on scroll down, show on scroll up
+  ───────────────────────────────────────────── */
+  function initSmartNav() {
+    var header = document.querySelector('.site-header') || document.querySelector('header');
+    if (!header) return;
+
+    var lastY    = window.scrollY;
+    var ticking  = false;
+    var THRESHOLD = 80; // px scrolled before we start hiding
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          var currentY = window.scrollY;
+          var diff     = currentY - lastY;
+
+          if (currentY < THRESHOLD) {
+            // Near top — always show
+            header.classList.remove('nav-hidden');
+            header.classList.remove('nav-scrolled');
+          } else if (diff > 4) {
+            // Scrolling DOWN — hide
+            header.classList.add('nav-hidden');
+            header.classList.add('nav-scrolled');
+          } else if (diff < -4) {
+            // Scrolling UP — show
+            header.classList.remove('nav-hidden');
+            header.classList.add('nav-scrolled');
+          }
+
+          lastY   = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* Update mobile bottom nav profile label */
+  function updateMobileProfileLabel() {
+    try {
+      var p  = JSON.parse(localStorage.getItem('piko_profile_v1') || 'null');
+      var el = document.getElementById('pikoMobileProfileLabel');
+      if (el && p && p.display_name) {
+        el.textContent = p.display_name.split(' ')[0].slice(0, 8);
+      }
+      // Highlight active bottom nav item based on scroll
+      var items = document.querySelectorAll('.pmn-item');
+      var sections = [
+        { id: 'intro',        el: document.getElementById('intro') },
+        { id: 'ecosystem',    el: document.getElementById('ecosystem') },
+        { id: 'showcase',     el: document.getElementById('showcase') },
+        { id: 'chronicle',    el: document.getElementById('chronicle') },
+      ];
+      function updateActiveNav() {
+        var scrollY = window.scrollY + 120;
+        var active  = null;
+        sections.forEach(function(s) {
+          if (s.el && s.el.offsetTop <= scrollY) active = s.id;
+        });
+        items.forEach(function(item) {
+          var href = item.getAttribute('href') || '';
+          var isActive = href === '#' + active;
+          item.classList.toggle('is-active', isActive);
+        });
+      }
+      window.addEventListener('scroll', updateActiveNav, { passive: true });
+      updateActiveNav();
+    } catch(e) {}
+  }
+
   /* ─────────────────────────────────────────────
      MOBILE NAV — hamburger toggles dropdown
   ───────────────────────────────────────────── */
@@ -1594,6 +1669,8 @@ function sbGetUpvotes(ideaId) {
   document.addEventListener('DOMContentLoaded', function () {
     initDock();
   renderCommunityBoard();
+  initSmartNav();
+  updateMobileProfileLabel();
 
   // ── Update profile nav link with user name ──
   (function() {

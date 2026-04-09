@@ -1338,9 +1338,11 @@
   <script src="js/animations.js"></script>
   <!-- Published Chronicle articles — loaded before hub.js so they render immediately -->
   <!-- ── MOBILE BOTTOM NAV ── -->
-  <nav class="piko-mobile-nav" aria-label="Mobile navigation">
+  <!-- BOTTOM MOBILE NAV -->
+  <nav class="piko-mobile-nav" id="pikoMobileNav" aria-label="Mobile navigation">
     <a href="#intro" class="pmn-item pmn-home">
-      <i class="fas fa-house"></i>
+      <img src="assets/goldenp.jpg" alt="Home" class="pmn-logo-img"
+           onerror="this.src='assets/AMP Tiki.jpg'">
       <span>Home</span>
     </a>
     <a href="#ecosystem" class="pmn-item pmn-platforms">
@@ -1349,15 +1351,15 @@
     </a>
     <a href="#showcase" class="pmn-item pmn-showcase">
       <i class="fas fa-rocket"></i>
-      <span>Showcase</span>
+      <span>Hub</span>
     </a>
     <a href="#chronicle" class="pmn-item pmn-chronicle">
       <i class="fas fa-newspaper"></i>
       <span>Chronicle</span>
     </a>
-    <a href="#contact" class="pmn-item pmn-connect">
-      <i class="fas fa-paper-plane"></i>
-      <span>Connect</span>
+    <a href="profile.html" class="pmn-item pmn-profile" id="pikoMobileProfileLink">
+      <i class="fas fa-user-astronaut"></i>
+      <span id="pikoMobileProfileLabel">Join</span>
     </a>
   </nav>
 
