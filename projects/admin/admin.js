@@ -3028,6 +3028,106 @@ function exportCSV(filename, headers, rows) {
    INIT HOOK — runs after existing DOMContentLoaded
 ══════════════════════════════════════════ */
 
+
+/* ── Cloudflare Worker settings ── */
+function bindWorkerSettings() {
+  var urlEl     = document.getElementById('admWorkerUrl');
+  var secretEl  = document.getElementById('admWorkerSecret');
+  var saveBtn   = document.getElementById('admSaveWorkerBtn');
+  var testBtn   = document.getElementById('admTestWorkerBtn');
+  var okEl      = document.getElementById('admWorkerOk');
+  if (!urlEl) return;
+
+  var savedUrl    = localStorage.getItem('amp_worker_url');
+  var savedSecret = localStorage.getItem('amp_worker_secret');
+  if (savedUrl)    { urlEl.value = savedUrl; if (okEl) okEl.hidden = false; }
+  if (savedSecret) secretEl.value = savedSecret;
+
+  if (saveBtn) saveBtn.addEventListener('click', function() {
+    var url    = urlEl.value.trim().replace(/\/$/, '');
+    var secret = secretEl.value.trim();
+    if (!url) { showToast('Enter your Worker URL.'); return; }
+    localStorage.setItem('amp_worker_url',    url);
+    localStorage.setItem('amp_worker_secret', secret);
+    if (okEl) okEl.hidden = false;
+    showToast('Worker config saved.');
+  });
+
+  if (testBtn) testBtn.addEventListener('click', function() {
+    var url = urlEl.value.trim().replace(/\/$/, '');
+    if (!url) { showToast('Enter your Worker URL first.'); return; }
+    showToast('Testing connection…');
+    fetch(url + '/api/health')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          showToast('✅ Worker connected successfully!');
+          if (okEl) okEl.hidden = false;
+        } else {
+          showToast('⚠️ Worker responded but returned unexpected data.');
+        }
+      }).catch(function() {
+        showToast('❌ Could not reach Worker. Check your URL.');
+      });
+  });
+}
+
+/* ── Load real orders from Worker D1 ── */
+function loadOrdersFromWorker() {
+  var url    = localStorage.getItem('amp_worker_url');
+  var secret = localStorage.getItem('amp_worker_secret');
+  if (!url || !secret) return;
+
+  fetch(url + '/api/orders?limit=200', {
+    headers: { 'X-Admin-Secret': secret }
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.orders && data.orders.length > 0) {
+        // Merge D1 orders into local storage
+        var local = [];
+        try { local = JSON.parse(localStorage.getItem('amp_orders_v1') || '[]'); } catch(e) {}
+        data.orders.forEach(function(d1Order) {
+          var exists = local.some(function(o) { return o.d1Id === d1Order.id || o.id === d1Order.id; });
+          if (!exists) {
+            local.unshift({
+              id:     d1Order.id,
+              d1Id:   d1Order.id,
+              items:  typeof d1Order.items_json === 'string' ? JSON.parse(d1Order.items_json) : (d1Order.items || []),
+              total:  d1Order.total,
+              method: d1Order.pay_method,
+              ts:     d1Order.ts,
+              status: d1Order.status,
+            });
+          }
+        });
+        localStorage.setItem('amp_orders_v1', JSON.stringify(local));
+        showToast('Synced ' + data.orders.length + ' orders from D1.');
+        // Re-render if orders panel is visible
+        if (document.getElementById('admPanelOrders')?.classList.contains('is-active')) {
+          renderOrders();
+        }
+      }
+    }).catch(function(e) {
+      console.warn('[Admin] Worker order sync failed:', e);
+    });
+}
+
+/* ── Load real subscribers from Worker D1 ── */
+function loadSubscribersFromWorker() {
+  var url    = localStorage.getItem('amp_worker_url');
+  var secret = localStorage.getItem('amp_worker_secret');
+  if (!url || !secret) return;
+
+  fetch(url + '/api/subscribers', { headers: { 'X-Admin-Secret': secret } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.subscribers && data.subscribers.length > 0) {
+        var emails = data.subscribers.map(function(s) { return s.email; });
+        localStorage.setItem('amp_email_list_v1', JSON.stringify(emails));
+      }
+    }).catch(function(e) { console.warn('[Admin] Subscriber sync failed:', e); });
+}
+
 /* ── Supabase settings ── */
 function bindSupabaseSettings() {
   var urlEl  = document.getElementById('admSupabaseUrl');
@@ -3077,7 +3177,10 @@ document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
   bindArticlesPanel();
   bindGhSettings();
+  bindWorkerSettings();
   bindSupabaseSettings();
+  // Sync from Worker on load
+  setTimeout(function() { loadOrdersFromWorker(); loadSubscribersFromWorker(); }, 1000);
 
   // Refresh all notification badges on load
   setTimeout(() => {

@@ -415,6 +415,41 @@
           </div>
 
           <div class="adm-settings-card">
+            <h4><i class="fas fa-server"></i> Cloudflare Worker API</h4>
+            <p class="adm-muted">Connect your Cloudflare Worker to persist orders, subscribers, and ratings in D1 — real database, cross-device, no localStorage limits.</p>
+            <ol class="adm-setup-steps">
+              <li>Cloudflare Dashboard → <strong>Workers &amp; Pages</strong> → Create a Service</li>
+              <li>Paste the code from <code>worker.js</code> into the editor</li>
+              <li>Create a <strong>D1 database</strong> → run <code>schema.sql</code> in its console</li>
+              <li>In your Worker → Settings → Bindings → add D1 binding named <code>DB</code></li>
+              <li>Add an <strong>Environment Variable</strong>: <code>ADMIN_SECRET</code> = a long random string</li>
+              <li>Deploy the Worker → copy its URL below</li>
+            </ol>
+            <div class="adm-field">
+              <label class="adm-label">Worker URL</label>
+              <input type="url" id="admWorkerUrl" class="adm-input"
+                     placeholder="https://pikoverse-api.yourname.workers.dev" maxlength="256">
+            </div>
+            <div class="adm-field">
+              <label class="adm-label">Admin Secret</label>
+              <input type="password" id="admWorkerSecret" class="adm-input"
+                     placeholder="The ADMIN_SECRET you set in Worker env vars" maxlength="256">
+              <p class="adm-field-hint">Used by admin panel to fetch orders and customers from D1</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="adm-btn adm-btn--primary" id="admSaveWorkerBtn">
+                <i class="fas fa-floppy-disk"></i> Save
+              </button>
+              <button type="button" class="adm-btn adm-btn--outline" id="admTestWorkerBtn">
+                <i class="fas fa-plug"></i> Test Connection
+              </button>
+            </div>
+            <div class="adm-alert adm-alert--success" id="admWorkerOk" hidden>
+              <i class="fas fa-circle-check"></i> Worker connected — orders and subscribers now saved to D1!
+            </div>
+          </div>
+
+          <div class="adm-settings-card">
             <h4><i class="fas fa-database"></i> Community Board — Supabase</h4>
             <p class="adm-muted">Connect Supabase to make community ideas and comments visible across all devices in real-time. Free tier is more than enough.</p>
             <ol class="adm-setup-steps">
