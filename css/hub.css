@@ -4078,23 +4078,7 @@ header.site-header {
 /* ═══════════════════════════════════════════════════════════════
    BOTTOM MOBILE NAV — upgraded
 ═══════════════════════════════════════════════════════════════ */
-.piko-mobile-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 500;
-  display: none; /* shown only on mobile via media query */
-  align-items: stretch;
-  background: rgba(6, 8, 18, 0.97);
-  border-top: 1px solid rgba(240,201,106,.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  height: 60px;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-@media (max-width: 768px) {
-  .piko-mobile-nav { display: flex; }
-}
+/* mobile nav — see original .piko-mobile-nav block above */
 
 .pmn-item {
   flex: 1;
