@@ -2735,3 +2735,101 @@ img { max-width: 100%; display: block; }
   border-color: rgba(201,168,76,.3);
   color: #f0c96a;
 }
+
+/* ══════════════════════════════════════════════════════
+   SECTION OVERLAY — admin-controlled coming soon / hidden
+══════════════════════════════════════════════════════ */
+.mp-section-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(ellipse at 50% 40%, #0d0f1e 0%, #04060e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: mpOverlayIn .4s ease;
+}
+@keyframes mpOverlayIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+.mp-section-overlay-inner {
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+}
+.mp-section-overlay-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 24px rgba(201,168,76,.4));
+}
+.mp-section-overlay-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  font-weight: 900;
+  color: #f0c96a;
+  margin-bottom: 14px;
+  letter-spacing: .04em;
+}
+.mp-section-overlay-msg {
+  font-size: 1rem;
+  color: rgba(255,255,255,.6);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.mp-section-overlay-email {
+  display: flex;
+  gap: 10px;
+  max-width: 360px;
+  margin: 0 auto 24px;
+}
+.mp-section-overlay-input {
+  flex: 1;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .18s;
+}
+.mp-section-overlay-input:focus { border-color: #c9a84c; }
+.mp-section-overlay-input::placeholder { color: rgba(255,255,255,.3); }
+.mp-section-overlay-btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c9a84c, #f0c96a);
+  color: #080b14;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter .18s;
+}
+.mp-section-overlay-btn:hover { filter: brightness(1.1); }
+.mp-section-overlay-back {
+  margin-top: 24px;
+}
+.mp-section-overlay-back a {
+  color: rgba(255,255,255,.4);
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color .18s;
+}
+.mp-section-overlay-back a:hover { color: rgba(255,255,255,.7); }
+
+@media (max-width: 480px) {
+  .mp-section-overlay-email { flex-direction: column; }
+  .mp-section-overlay-btn   { width: 100%; }
+}

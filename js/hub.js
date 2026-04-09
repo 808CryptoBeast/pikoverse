@@ -1594,6 +1594,18 @@ function sbGetUpvotes(ideaId) {
   document.addEventListener('DOMContentLoaded', function () {
     initDock();
   renderCommunityBoard();
+
+  // ── Update profile nav link with user name ──
+  (function() {
+    try {
+      var p = JSON.parse(localStorage.getItem('piko_profile_v1') || 'null');
+      var el = document.getElementById('pikoProfileNavName');
+      if (el && p && p.display_name) {
+        el.textContent = p.display_name.split(' ')[0]; // first name only
+      }
+    } catch(e) {}
+  })();
+
   initGlobalSearch();
 
   // ── Community Hub tabs ──

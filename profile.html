@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your Pikoverse profile — projects, ideas, learning progress, and community connections.">
+  <title>Pikoverse — My Profile</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/hub.css">
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body class="piko-profile-page">
+
+  <!-- NAV (reuse hub nav style) -->
+  <nav class="piko-profile-nav">
+    <a href="index.html" class="piko-profile-nav-logo">
+      <img src="assets/goldenp.jpg" alt="Pikoverse" onerror="this.src='assets/AMP Tiki.jpg'">
+      <span>Pikoverse</span>
+    </a>
+    <div class="piko-profile-nav-right">
+      <a href="index.html" class="piko-profile-nav-link"><i class="fas fa-house"></i> Hub</a>
+      <button class="piko-profile-nav-link piko-signout-btn" id="pikoSignOut" type="button" hidden>
+        <i class="fas fa-sign-out-alt"></i> Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <!-- AUTH GATE — shown when not logged in -->
+  <section class="piko-auth-gate" id="pikoAuthGate">
+    <div class="piko-auth-gate-inner">
+      <div class="piko-auth-gate-icon">🌺</div>
+      <h1 class="piko-auth-gate-title">Join the Pikoverse</h1>
+      <p class="piko-auth-gate-sub">
+        Create your profile to connect your projects, ideas, learning progress,
+        and community activity — all in one place.
+      </p>
+
+      <!-- Sign up / Sign in tabs -->
+      <div class="piko-auth-tabs">
+        <button class="piko-auth-tab is-active" data-auth-tab="signup" type="button">Create Profile</button>
+        <button class="piko-auth-tab" data-auth-tab="signin" type="button">Sign In</button>
+      </div>
+
+      <!-- Sign up form -->
+      <div class="piko-auth-pane is-active" id="pikoAuthSignup">
+        <div class="piko-auth-field">
+          <label class="piko-auth-label" for="signupName">Display Name</label>
+          <input type="text" id="signupName" class="piko-auth-input"
+                 placeholder="What should the community call you?" maxlength="60">
+        </div>
+        <div class="piko-auth-field">
+          <label class="piko-auth-label" for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" class="piko-auth-input"
+                 placeholder="your@email.com" maxlength="120">
+        </div>
+        <button class="piko-auth-btn" id="pikoSignupBtn" type="button">
+          <i class="fas fa-paper-plane"></i> Create My Profile
+        </button>
+        <div class="piko-auth-status" id="pikoSignupStatus" hidden></div>
+      </div>
+
+      <!-- Sign in form -->
+      <div class="piko-auth-pane" id="pikoAuthSignin">
+        <p class="piko-auth-hint">Enter your email and we'll send you a sign-in link.</p>
+        <div class="piko-auth-field">
+          <label class="piko-auth-label" for="signinEmail">Email</label>
+          <input type="email" id="signinEmail" class="piko-auth-input"
+                 placeholder="your@email.com" maxlength="120">
+        </div>
+        <button class="piko-auth-btn" id="pikoSigninBtn" type="button">
+          <i class="fas fa-envelope"></i> Send Sign-In Link
+        </button>
+        <div class="piko-auth-status" id="pikoSigninStatus" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE — shown when logged in -->
+  <section class="piko-profile-section" id="pikoProfileSection" hidden>
+    <div class="piko-profile-container">
+
+      <!-- Profile header -->
+      <div class="piko-profile-header">
+        <div class="piko-profile-avatar-wrap">
+          <div class="piko-profile-avatar" id="pikoProfileAvatar">
+            <span id="pikoProfileAvatarInitial">?</span>
+            <img id="pikoProfileAvatarImg" src="" alt="" hidden>
+          </div>
+          <button class="piko-profile-avatar-edit" id="pikoAvatarEditBtn" type="button" title="Change avatar">
+            <i class="fas fa-camera"></i>
+          </button>
+          <input type="file" id="pikoAvatarFile" accept="image/*" hidden>
+        </div>
+
+        <div class="piko-profile-meta">
+          <div class="piko-profile-name-row">
+            <h1 class="piko-profile-name" id="pikoProfileName">Loading…</h1>
+            <button class="piko-profile-edit-btn" id="pikoEditProfileBtn" type="button">
+              <i class="fas fa-pen"></i> Edit
+            </button>
+          </div>
+          <p class="piko-profile-email" id="pikoProfileEmail"></p>
+          <p class="piko-profile-bio" id="pikoProfileBio"></p>
+          <div class="piko-profile-badges">
+            <span class="piko-profile-badge piko-profile-badge--member">
+              <i class="fas fa-star"></i> Pikoverse Member
+            </span>
+            <span class="piko-profile-badge piko-profile-badge--joined" id="pikoProfileJoined"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit profile form (hidden by default) -->
+      <div class="piko-profile-edit-form" id="pikoProfileEditForm" hidden>
+        <h3 class="piko-profile-edit-title">Edit Profile</h3>
+        <div class="piko-profile-edit-grid">
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Display Name</label>
+            <input type="text" id="editName" class="piko-auth-input" maxlength="60">
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Bio <span style="font-weight:400;opacity:.6">(optional)</span></label>
+            <textarea id="editBio" class="piko-auth-input" rows="3" maxlength="200"
+                      placeholder="A few words about you…" style="resize:vertical"></textarea>
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Avatar URL <span style="font-weight:400;opacity:.6">(or upload above)</span></label>
+            <input type="url" id="editAvatarUrl" class="piko-auth-input"
+                   placeholder="https://…" maxlength="300">
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Social / @handle <span style="font-weight:400;opacity:.6">(optional)</span></label>
+            <input type="text" id="editSocial" class="piko-auth-input"
+                   placeholder="@yourhandle or link" maxlength="120">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button">
+            <i class="fas fa-floppy-disk"></i> Save Changes
+          </button>
+          <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Profile tabs -->
+      <div class="piko-profile-tabs">
+        <button class="piko-profile-tab is-active" data-ptab="activity" type="button">
+          <i class="fas fa-bolt"></i> Activity
+        </button>
+        <button class="piko-profile-tab" data-ptab="projects" type="button">
+          <i class="fas fa-rocket"></i> Projects
+        </button>
+        <button class="piko-profile-tab" data-ptab="ideas" type="button">
+          <i class="fas fa-lightbulb"></i> Ideas
+        </button>
+        <button class="piko-profile-tab" data-ptab="orders" type="button">
+          <i class="fas fa-bag-shopping"></i> Orders
+        </button>
+        <button class="piko-profile-tab" data-ptab="learning" type="button">
+          <i class="fas fa-graduation-cap"></i> Learning
+        </button>
+      </div>
+
+      <!-- Tab panes -->
+      <!-- ACTIVITY -->
+      <div class="piko-profile-pane is-active" id="pikoProfilePaneActivity">
+        <h3 class="piko-profile-pane-title">Recent Activity</h3>
+        <div class="piko-profile-activity-list" id="pikoActivityList">
+          <p class="piko-profile-empty">Your activity will appear here as you engage with the community.</p>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="piko-profile-pane" id="pikoProfilePaneProjects">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h3 class="piko-profile-pane-title">My Projects</h3>
+          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitProjectBtn" type="button">
+            <i class="fas fa-plus"></i> Submit Project
+          </button>
+        </div>
+        <div class="piko-profile-projects-grid" id="pikoProfileProjectsGrid">
+          <p class="piko-profile-empty">No projects submitted yet. Share what you're building!</p>
+        </div>
+      </div>
+
+      <!-- IDEAS -->
+      <div class="piko-profile-pane" id="pikoProfilePaneIdeas">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h3 class="piko-profile-pane-title">My Ideas</h3>
+          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitIdeaBtn" type="button">
+            <i class="fas fa-plus"></i> Share Idea
+          </button>
+        </div>
+        <div class="piko-profile-ideas-list" id="pikoProfileIdeasList">
+          <p class="piko-profile-empty">No ideas shared yet. What are you thinking?</p>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="piko-profile-pane" id="pikoProfilePaneOrders">
+        <h3 class="piko-profile-pane-title">Order History</h3>
+        <div class="piko-profile-orders-list" id="pikoProfileOrdersList">
+          <p class="piko-profile-empty">No orders yet. <a href="marketplace/marketplace.html" style="color:#f0c96a">Visit the AMP Marketplace</a></p>
+        </div>
+      </div>
+
+      <!-- LEARNING -->
+      <div class="piko-profile-pane" id="pikoProfilePaneLearning">
+        <h3 class="piko-profile-pane-title">Learning Progress</h3>
+        <div class="piko-profile-learning-grid" id="pikoProfileLearningGrid">
+
+          <!-- Culturalverse -->
+          <div class="piko-learn-track">
+            <div class="piko-learn-track-header">
+              <span class="piko-learn-track-icon">🌿</span>
+              <div>
+                <strong>Culturalverse</strong>
+                <p>Indigenous cultures, ancestral knowledge, and global connections</p>
+              </div>
+              <a href="/ikeverse/culturalverse.html" class="piko-learn-track-link">
+                Continue <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+            <div class="piko-learn-progress-bar">
+              <div class="piko-learn-progress-fill" id="culturalverseProgress" style="width:0%"></div>
+            </div>
+            <div class="piko-learn-modules" id="culturalverseModules"></div>
+          </div>
+
+          <!-- DigitalVerse -->
+          <div class="piko-learn-track">
+            <div class="piko-learn-track-header">
+              <span class="piko-learn-track-icon">⚡</span>
+              <div>
+                <strong>DigitalVerse</strong>
+                <p>Blockchain, Web3, XRPL, Ethereum, and Bitcoin fundamentals</p>
+              </div>
+              <a href="digitalverse/index.html" class="piko-learn-track-link">
+                Continue <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+            <div class="piko-learn-progress-bar">
+              <div class="piko-learn-progress-fill" id="digitalverseProgress" style="width:0%"></div>
+            </div>
+            <div class="piko-learn-modules" id="digitalverseModules"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TOAST -->
+  <div class="piko-profile-toast" id="pikoProfileToast"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/pikoData.js"></script>
+  <script src="js/profile.js"></script>
+
+</body>
+</html>

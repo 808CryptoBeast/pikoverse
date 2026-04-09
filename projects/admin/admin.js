@@ -3029,6 +3029,193 @@ function exportCSV(filename, headers, rows) {
 ══════════════════════════════════════════ */
 
 
+/* ════════════════════════════════════════════════════════
+   SECTION MANAGER
+════════════════════════════════════════════════════════ */
+var SECTIONS_KEY = 'amp_sections_v1';
+
+var DEFAULT_SECTIONS = [
+  {
+    id: 'marketplace',
+    label: 'AMP Marketplace',
+    icon: 'fa-store',
+    url: '/marketplace/marketplace.html',
+    status: 'coming_soon',
+    title: 'Opening Soon',
+    message: 'The AMP Marketplace is almost ready. Drop your email to get notified when we launch.',
+    color: '#f0c96a',
+  },
+  {
+    id: 'chronicle',
+    label: 'Chronicle',
+    icon: 'fa-newspaper',
+    url: '/#chronicle',
+    status: 'live',
+    title: '',
+    message: '',
+    color: '#54d1ff',
+  },
+  {
+    id: 'showcase',
+    label: 'Community Showcase',
+    icon: 'fa-rocket',
+    url: '/#showcase',
+    status: 'live',
+    title: '',
+    message: '',
+    color: '#54d1ff',
+  },
+  {
+    id: 'ikeverse',
+    label: 'Ikeverse',
+    icon: 'fa-eye',
+    url: 'https://808cryptobeast.github.io/Ikeverse/',
+    status: 'live',
+    title: '',
+    message: '',
+    color: '#4caf7a',
+  },
+  {
+    id: 'digitalverse',
+    label: 'DigitalVerse',
+    icon: 'fa-cube',
+    url: '/digitalverse/index.html',
+    status: 'live',
+    title: '',
+    message: '',
+    color: '#54d1ff',
+  },
+  {
+    id: 'nalulf',
+    label: 'NaluLF',
+    icon: 'fa-shield-halved',
+    url: 'https://808cryptobeast.github.io/NaluLF/',
+    status: 'live',
+    title: '',
+    message: '',
+    color: '#4cca9f',
+  },
+  {
+    id: 'membership',
+    label: 'Pikoverse Membership',
+    icon: 'fa-user-astronaut',
+    url: '/profile.html',
+    status: 'coming_soon',
+    title: 'Membership Coming Soon',
+    message: 'Create your Pikoverse profile — connect your projects, ideas, and learning journey in one place.',
+    color: '#9d64ff',
+  },
+];
+
+function loadSections() {
+  try {
+    var raw = localStorage.getItem(SECTIONS_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      // Merge saved with defaults (add any new defaults not yet in saved)
+      return DEFAULT_SECTIONS.map(function(def) {
+        var found = saved.find(function(s) { return s.id === def.id; });
+        return found ? Object.assign({}, def, found) : def;
+      });
+    }
+  } catch(e) {}
+  return DEFAULT_SECTIONS.map(function(s) { return Object.assign({}, s); });
+}
+
+function saveSections(sections) {
+  localStorage.setItem(SECTIONS_KEY, JSON.stringify(sections));
+}
+
+function bindSectionsPanel() {
+  var grid      = document.getElementById('admSectionsGrid');
+  var saveBtn   = document.getElementById('admSaveSectionsBtn');
+  var publishBtn= document.getElementById('admPublishSectionsBtn');
+  var savedEl   = document.getElementById('admSectionsSaved');
+  if (!grid) return;
+
+  var sections = loadSections();
+
+  function renderSections() {
+    grid.innerHTML = sections.map(function(s, i) {
+      var statusOpts = ['live','coming_soon','hidden'].map(function(v) {
+        var labels = { live:'🟢 Live', coming_soon:'🚧 Coming Soon', hidden:'🔴 Hidden' };
+        return '<option value="' + v + '"' + (s.status === v ? ' selected' : '') + '>' + labels[v] + '</option>';
+      }).join('');
+
+      return '<div class="adm-section-card" data-idx="' + i + '">' +
+        '<div class="adm-section-card-header">' +
+          '<i class="fas ' + s.icon + '" style="color:' + s.color + ';font-size:18px;width:22px"></i>' +
+          '<strong>' + s.label + '</strong>' +
+          '<select class="adm-input adm-section-status" style="margin-left:auto;width:auto;padding:4px 8px;font-size:12px">' +
+            statusOpts +
+          '</select>' +
+        '</div>' +
+        '<div class="adm-section-card-body">' +
+          '<div class="adm-field" style="margin-bottom:10px">' +
+            '<label class="adm-label" style="font-size:11px">Overlay Title</label>' +
+            '<input type="text" class="adm-input adm-section-title" value="' + (s.title || '') + '" placeholder="e.g. Coming Soon" maxlength="60">' +
+          '</div>' +
+          '<div class="adm-field">' +
+            '<label class="adm-label" style="font-size:11px">Message / Description</label>' +
+            '<textarea class="adm-input adm-section-message" rows="2" placeholder="Short description shown to visitors…" maxlength="200" style="resize:vertical">' + (s.message || '') + '</textarea>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  renderSections();
+
+  function collectSections() {
+    var cards = grid.querySelectorAll('.adm-section-card');
+    cards.forEach(function(card) {
+      var i      = parseInt(card.dataset.idx);
+      var status = card.querySelector('.adm-section-status').value;
+      var title  = card.querySelector('.adm-section-title').value.trim();
+      var msg    = card.querySelector('.adm-section-message').value.trim();
+      sections[i].status  = status;
+      sections[i].title   = title;
+      sections[i].message = msg;
+    });
+    return sections;
+  }
+
+  if (saveBtn) saveBtn.addEventListener('click', function() {
+    saveSections(collectSections());
+    if (savedEl) { savedEl.hidden = false; setTimeout(function() { savedEl.hidden = true; }, 3000); }
+    showToast('Sections saved.');
+  });
+
+  if (publishBtn) publishBtn.addEventListener('click', function() {
+    saveSections(collectSections());
+    // Trigger GitHub publish (same as other publish flows)
+    var ghUrl    = localStorage.getItem('amp_gh_api_url');
+    var ghToken  = localStorage.getItem('amp_gh_token');
+    if (!ghUrl || !ghToken) {
+      showToast('Set up GitHub in Settings first.');
+      return;
+    }
+    publishBtn.disabled = true;
+    publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing…';
+    // Pack sections into pikoData and trigger publish
+    triggerGitHubPublish(function(ok) {
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = '<i class="fas fa-upload"></i> Save + Publish to GitHub';
+      if (ok) {
+        if (savedEl) { savedEl.hidden = false; setTimeout(function() { savedEl.hidden = true; }, 4000); }
+        showToast('✅ Published to GitHub!');
+      } else {
+        showToast('❌ Publish failed. Check GitHub settings.');
+      }
+    });
+  });
+}
+
+// Make sections available to pikoData publish
+function getSectionsForPublish() {
+  return loadSections();
+}
+
 /* ── Cloudflare Worker settings ── */
 function bindWorkerSettings() {
   var urlEl     = document.getElementById('admWorkerUrl');
@@ -3177,6 +3364,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bindExtendedPanels();
   bindArticlesPanel();
   bindGhSettings();
+  bindSectionsPanel();
   bindWorkerSettings();
   bindSupabaseSettings();
   // Sync from Worker on load

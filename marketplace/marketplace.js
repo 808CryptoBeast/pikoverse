@@ -1,3 +1,58 @@
+/* ── Section overlay (admin-controlled status) ── */
+function initSectionOverlay() {
+  var overlay  = document.getElementById('mpSectionOverlay');
+  var titleEl  = document.getElementById('mpOverlayTitle');
+  var msgEl    = document.getElementById('mpOverlayMsg');
+  var emailWrap= document.getElementById('mpOverlayEmailWrap');
+  var emailBtn = document.getElementById('mpOverlayEmailBtn');
+  var emailEl  = document.getElementById('mpOverlayEmail');
+  if (!overlay) return;
+
+  var SECTIONS_KEY = 'amp_sections_v1';
+  var sections = [];
+  try { sections = JSON.parse(localStorage.getItem(SECTIONS_KEY) || '[]'); } catch(e) {}
+
+  // Also check pikoData
+  if (window._pikoData && Array.isArray(window._pikoData.sections)) {
+    sections = window._pikoData.sections;
+  }
+
+  var s = sections.find(function(s) { return s.id === 'marketplace'; });
+  if (!s) return; // no config — show normally
+
+  if (s.status === 'live') return; // live — no overlay
+
+  // Show overlay
+  overlay.hidden = false;
+  if (titleEl) titleEl.textContent = s.title || (s.status === 'hidden' ? 'Unavailable' : 'Coming Soon');
+  if (msgEl)   msgEl.textContent   = s.message || 'Check back soon.';
+
+  // Hide email form if hidden status
+  if (s.status === 'hidden' && emailWrap) emailWrap.hidden = true;
+
+  // Wire email notify
+  if (emailBtn && emailEl) {
+    emailBtn.addEventListener('click', function() {
+      var email = emailEl.value.trim();
+      if (!email || !email.includes('@')) { emailEl.focus(); return; }
+      try {
+        var list = JSON.parse(localStorage.getItem('amp_email_list_v1') || '[]');
+        if (!list.includes(email)) { list.push(email); localStorage.setItem('amp_email_list_v1', JSON.stringify(list)); }
+      } catch(ex) {}
+      // Also send to Worker
+      var wUrl = localStorage.getItem('amp_worker_url');
+      if (wUrl) fetch(wUrl + '/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, source: 'marketplace_overlay' })
+      }).catch(function(){});
+      emailEl.value = '';
+      emailBtn.innerHTML = '<i class="fas fa-check"></i> You\'re on the list!';
+      emailBtn.disabled  = true;
+    });
+  }
+}
+
 /**
  * marketplace.js
  * Place in: js/marketplace.js
@@ -1653,6 +1708,7 @@ function workerFetch(path, method, body) {
   });
 
   function _initMarketplace() {
+    initSectionOverlay();
     initBanner();
     initPromo();
     initSuggestionPanel();

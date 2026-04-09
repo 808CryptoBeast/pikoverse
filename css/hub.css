@@ -4000,3 +4000,27 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
 @media (max-width: 768px) {
   .piko-global-search-wrap { display: none; }
 }
+
+
+/* ── Profile nav pill ── */
+.piko-profile-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  background: rgba(157,100,255,.1);
+  border: 1px solid rgba(157,100,255,.25);
+  color: #b380ff;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  text-decoration: none;
+  transition: background .18s, border-color .18s;
+  white-space: nowrap;
+}
+.piko-profile-nav-pill:hover {
+  background: rgba(157,100,255,.2);
+  border-color: rgba(157,100,255,.5);
+  color: #c8a0ff;
+}

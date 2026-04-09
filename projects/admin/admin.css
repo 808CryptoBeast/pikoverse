@@ -1206,3 +1206,51 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: var(-
   transition: background .15s;
 }
 .adm-art-img-clear:hover { background: rgba(224,82,82,.8); }
+
+/* ── Admin sync status indicator ── */
+.adm-sync-status {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  margin: 0 0 6px;
+  border-radius: 6px;
+  background: rgba(201,168,76,.08);
+  border: 1px solid rgba(201,168,76,.15);
+  text-align: center;
+  line-height: 1.4;
+  animation: admSyncFadeIn .3s ease;
+}
+@keyframes admSyncFadeIn { from { opacity:0; } to { opacity:1; } }
+
+
+/* ══════════════════════════════════════════════════════
+   SECTIONS PANEL
+══════════════════════════════════════════════════════ */
+.adm-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.adm-section-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.adm-section-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.02);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.adm-section-card-header strong {
+  font-size: 13px;
+  color: #fff;
+  flex: 1;
+}
+.adm-section-card-body {
+  padding: 14px 16px;
+}

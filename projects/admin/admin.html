@@ -119,6 +119,9 @@
           <i class="fas fa-receipt"></i> Orders
           <span class="adm-nav-badge" id="admOrdersBadge" hidden>0</span>
         </button>
+        <button class="adm-nav-btn" data-panel="sections" type="button">
+          <i class="fas fa-layer-group"></i> Sections
+        </button>
         <button class="adm-nav-btn" data-panel="customers" type="button">
           <i class="fas fa-users"></i> Customers
         </button>
@@ -344,6 +347,26 @@
         <div class="adm-empty" id="admCustomersEmpty" hidden>
           <i class="fas fa-users"></i>
           <p>No customer data yet. Email subscribers and notify-me requests will appear here.</p>
+        </div>
+      </section>
+
+      <!-- SECTIONS PANEL -->
+      <section class="adm-panel" id="admPanelSections">
+        <div class="adm-panel-header">
+          <h3><i class="fas fa-layer-group"></i> Section Manager</h3>
+          <p class="adm-muted" style="margin-top:6px">Control which sections are live, under construction, or hidden. Each section can have a custom message shown to visitors.</p>
+        </div>
+        <div class="adm-sections-grid" id="admSectionsGrid"></div>
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="adm-btn adm-btn--primary" id="admSaveSectionsBtn" type="button">
+            <i class="fas fa-floppy-disk"></i> Save All
+          </button>
+          <button class="adm-btn adm-btn--outline" id="admPublishSectionsBtn" type="button">
+            <i class="fas fa-upload"></i> Save + Publish to GitHub
+          </button>
+        </div>
+        <div class="adm-alert adm-alert--success" id="admSectionsSaved" hidden>
+          <i class="fas fa-circle-check"></i> Sections saved successfully.
         </div>
       </section>
 
