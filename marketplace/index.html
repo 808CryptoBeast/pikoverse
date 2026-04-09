@@ -6,36 +6,32 @@
   <meta name="description" content="AMP Marketplace — Creative expression within the Pikoverse ecosystem. Culturally inspired design rooted in Aloha.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#c9a84c">
-
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://pikoverse.xyz/marketplace/marketplace.html">
   <meta property="og:title"       content="AMP Marketplace — Culture Through Design">
-  <meta property="og:description" content="Culturally inspired apparel and goods rooted in Aloha. Every piece carries heritage forward — built within the Pikoverse ecosystem.">
-  <meta property="og:image"       content="https://pikoverse.xyz/assets/intro/pikoverse-share.jpg">
-
+  <meta property="og:description" content="Culturally inspired apparel and goods rooted in Aloha. Every piece carries heritage forward.">
   <title>AMP Marketplace — Aloha Mass Productions</title>
-
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="marketplace.css">
+  <link rel="stylesheet" href="css/marketplace.css">
 </head>
 <body>
 
   <!-- ── ANNOUNCEMENT BANNER ── -->
   <div class="mp-banner" id="mpBanner" hidden>
     <i class="fas fa-bullhorn mp-banner-icon"></i>
-    <span class="mp-banner-text" id="mpBannerText"></span>
+    <span id="mpBannerText"></span>
     <button class="mp-banner-close" id="mpBannerClose" type="button" aria-label="Close">×</button>
   </div>
 
-  <!-- ── EMAIL CAPTURE BANNER ── -->
-  <div class="mp-email-banner" id="mpEmailBanner" hidden>
-    <div class="mp-email-banner-inner">
-      <div class="mp-email-banner-text">
-        <strong>Get 10% off your first order</strong>
-        <span>Join the AMP community for exclusive drops and cultural stories.</span>
-      </div>
+  <!-- ── EMAIL CAPTURE ── -->
+  <div class="mp-email-capture" id="mpEmailCapture">
+    <div class="mp-email-capture-inner">
+      <button class="mp-email-close" id="mpEmailClose" type="button" aria-label="Dismiss">×</button>
+      <div class="mp-email-icon">✉️</div>
+      <div class="mp-email-title">Get 10% off your first order</div>
+      <p class="mp-email-sub">Join the AMP community for exclusive drops and cultural stories.</p>
       <form class="mp-email-form" id="mpEmailForm" novalidate>
         <input type="email" id="mpEmailInput" class="mp-email-input"
                placeholder="your@email.com" maxlength="120" required>
@@ -46,209 +42,391 @@
       <div class="mp-email-success" id="mpEmailSuccess" hidden>
         <i class="fas fa-circle-check"></i> Mahalo! Use code <strong>WELCOME10</strong> for 10% off.
       </div>
-      <button class="mp-email-banner-close" id="mpEmailBannerClose" type="button" aria-label="Dismiss">×</button>
+      <p class="mp-email-note">No spam. Unsubscribe anytime.</p>
     </div>
   </div>
 
   <!-- ── NAV ── -->
-  <nav class="mp-nav" id="mpNav" aria-label="Main navigation">
+  <nav class="mp-nav" id="mpNav">
+    <div class="mp-nav-scanline" aria-hidden="true"></div>
     <a href="../index.html" class="mp-nav-logo" aria-label="Pikoverse home">
-      <img src="../assets/AMP Tiki.jpg" alt="AMP" class="mp-nav-logo-img">
-      <span class="mp-nav-brand">AMP</span>
+      <img src="../assets/AMP Tiki.jpg" alt="AMP" class="mp-nav-logo-img" onerror="this.src='../assets/goldenp.jpg'">
     </a>
-
-    <div class="mp-nav-center">
-      <div class="mp-search-wrap">
-        <i class="fas fa-search mp-search-icon"></i>
-        <input type="search" id="mpSearchInput" class="mp-search-input"
-               placeholder="Search products…" maxlength="80" autocomplete="off">
-      </div>
+    <div class="mp-nav-links" id="mpNavLinks">
+      <a href="marketplace.html" class="mp-nav-link active">
+        <i class="fas fa-store"></i> Shop
+      </a>
+      <a href="../index.html#showcase" class="mp-nav-link">
+        <i class="fas fa-rocket"></i> Showcase
+      </a>
+      <a href="../index.html#chronicle" class="mp-nav-link">
+        <i class="fas fa-newspaper"></i> Chronicle
+      </a>
+      <a href="../index.html#contact" class="mp-nav-link">
+        <i class="fas fa-envelope"></i> Contact
+      </a>
+    </div>
+    <div class="mp-nav-right">
+      <button class="mp-nav-cart" id="mpCartBtn" type="button" aria-label="Shopping cart">
+        <i class="fas fa-bag-shopping"></i>
+        <span class="mp-nav-cart-count" id="mpCartCount"></span>
+      </button>
+      <a href="../projects/admin/admin.html" class="mp-nav-admin-btn" aria-label="Admin">
+        <i class="fas fa-lock"></i>
+      </a>
+      <button class="mp-nav-hamburger" id="mpNavHamburger" type="button"
+              aria-label="Toggle menu" aria-expanded="false" aria-controls="mpNavMobile">
+        <span></span><span></span><span></span>
+      </button>
     </div>
 
-    <div class="mp-nav-right">
-      <button class="mp-cart-btn" id="mpCartBtn" type="button" aria-label="Shopping cart">
-        <i class="fas fa-bag-shopping"></i>
-        <span class="mp-cart-count" id="mpCartCount" hidden>0</span>
-      </button>
-      <a href="../index.html" class="mp-nav-home-btn" aria-label="Back to Pikoverse">
-        <i class="fas fa-house"></i>
+    <!-- Mobile menu -->
+    <div class="mp-nav-mobile" id="mpNavMobile" aria-hidden="true">
+      <a href="marketplace.html" class="mp-nav-mobile-link">
+        <i class="fas fa-store"></i> Shop
+      </a>
+      <a href="../index.html#showcase" class="mp-nav-mobile-link">
+        <i class="fas fa-rocket"></i> Showcase
+      </a>
+      <a href="../index.html#chronicle" class="mp-nav-mobile-link">
+        <i class="fas fa-newspaper"></i> Chronicle
+      </a>
+      <a href="../index.html#contact" class="mp-nav-mobile-link">
+        <i class="fas fa-envelope"></i> Contact
       </a>
     </div>
   </nav>
 
   <!-- ── HERO ── -->
   <header class="mp-hero">
-    <div class="mp-hero-inner">
-      <p class="mp-hero-eyebrow">Aloha Mass Productions</p>
-      <h1 class="mp-hero-title">Culture Through Design</h1>
-      <p class="mp-hero-sub">
+    <div class="mp-hero-bg">
+      <div class="mp-hero-glow mp-hero-glow--left"></div>
+      <div class="mp-hero-glow mp-hero-glow--right"></div>
+      <div class="mp-hero-grid" aria-hidden="true"></div>
+    </div>
+    <div class="mp-hero-content">
+      <div class="mp-eyebrow">
+        <span class="mp-eyebrow-dot" aria-hidden="true"></span>
+        Aloha Mass Productions
+      </div>
+      <h1 class="mp-hero-title"><em>Culture</em> Through Design</h1>
+      <p class="mp-hero-subtitle">
         Every piece carries heritage forward — rooted in Aloha, built within Pikoverse.
       </p>
     </div>
   </header>
 
-  <!-- ── MAIN CONTENT ── -->
+  <!-- ── MAIN ── -->
   <main class="mp-main">
+    <div class="mp-container">
 
-    <!-- Filters + toolbar -->
-    <div class="mp-toolbar" id="mpToolbar">
-      <div class="mp-category-filters" id="mpCategoryFilters">
+      <!-- Top bar: search + cart -->
+      <div class="mp-topbar">
+        <div class="mp-search-wrap">
+          <i class="fas fa-search mp-search-icon" aria-hidden="true"></i>
+          <input type="search" id="mpSearch" class="mp-search"
+                 placeholder="Search products…" maxlength="80" autocomplete="off" aria-label="Search products">
+          <button class="mp-search-clear" id="mpSearchClear" type="button" aria-label="Clear search" hidden>
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+        <div class="mp-topbar-right">
+          <div class="mp-sort-wrap">
+            <span class="mp-sort-label">Sort:</span>
+            <select id="mpSort" class="mp-sort" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name A–Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category filters -->
+      <div class="mp-categories" role="group" aria-label="Filter by category">
         <button class="mp-cat-btn is-active" data-cat="all" type="button">All</button>
-        <button class="mp-cat-btn" data-cat="shirts" type="button">Shirts</button>
-        <button class="mp-cat-btn" data-cat="hats" type="button">Hats</button>
-        <button class="mp-cat-btn" data-cat="stickers" type="button">Stickers</button>
-        <button class="mp-cat-btn" data-cat="accessories" type="button">Accessories</button>
+        <button class="mp-cat-btn" data-cat="shirts" type="button">
+          <i class="fas fa-shirt"></i> Shirts
+        </button>
+        <button class="mp-cat-btn" data-cat="hats" type="button">
+          <i class="fas fa-hat-cowboy"></i> Hats
+        </button>
+        <button class="mp-cat-btn" data-cat="stickers" type="button">
+          <i class="fas fa-star"></i> Stickers
+        </button>
+        <button class="mp-cat-btn" data-cat="accessories" type="button">
+          <i class="fas fa-bag-shopping"></i> Accessories
+        </button>
       </div>
-      <div class="mp-toolbar-right">
-        <select id="mpSortSelect" class="mp-sort-select" aria-label="Sort products">
-          <option value="featured">Featured</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name A–Z</option>
-        </select>
-        <span class="mp-product-count" id="mpProductCount"></span>
+
+      <!-- Toolbar -->
+      <div class="mp-toolbar">
+        <span class="mp-results-count" id="mpResultsCount"></span>
       </div>
-    </div>
 
-    <!-- Product grid -->
-    <div class="mp-product-grid" id="mpProductGrid"></div>
+      <!-- Product grid -->
+      <div class="mp-grid" id="mpGrid" role="list"></div>
 
-    <!-- Empty state -->
-    <div class="mp-empty" id="mpEmpty" hidden>
-      <i class="fas fa-box-open"></i>
-      <h3>No products found</h3>
-      <p>Try a different category or search term.</p>
-    </div>
+      <!-- Empty state -->
+      <div id="mpEmpty" hidden>
+        <div class="mp-empty">
+          <i class="fas fa-box-open" aria-hidden="true"></i>
+          <p>No products found for "<span id="mpEmptyTerm"></span>"</p>
+          <button class="mp-empty-reset" id="mpEmptyReset" type="button">Show all products</button>
+        </div>
+      </div>
 
+    </div><!-- /mp-container -->
   </main>
+
+  <!-- ── QUICK-VIEW MODAL ── -->
+  <div class="mp-modal-backdrop" id="mpModalBackdrop" aria-hidden="true">
+    <div class="mp-modal" id="mpModal" role="dialog" aria-modal="true" aria-labelledby="mpModalTitle">
+      <button class="mp-modal-close" id="mpModalClose" type="button" aria-label="Close product view">
+        <i class="fas fa-xmark" aria-hidden="true"></i>
+      </button>
+      <div class="mp-modal-inner">
+        <!-- Gallery -->
+        <div class="mp-modal-gallery">
+          <img class="mp-modal-img" id="mpModalImg" src="" alt="">
+          <span class="mp-modal-badge" id="mpModalBadge"></span>
+        </div>
+        <!-- Info -->
+        <div class="mp-modal-info">
+          <div class="mp-modal-cat" id="mpModalCat"></div>
+          <h2 class="mp-modal-title" id="mpModalTitle"></h2>
+          <div class="mp-modal-rating" id="mpModalRating"></div>
+          <p class="mp-modal-desc" id="mpModalDesc"></p>
+          <div class="mp-modal-story" id="mpModalStory" hidden>
+            <a href="#" class="mp-story-link" id="mpStoryLink" target="_blank" rel="noopener">
+              <i class="fas fa-book-open"></i>
+              <span id="mpStoryText">Story Behind the Design</span>
+              <i class="fas fa-arrow-up-right-from-square"></i>
+            </a>
+            <p class="mp-story-excerpt" id="mpStoryExcerpt"></p>
+          </div>
+          <div class="mp-modal-price" id="mpModalPrice"></div>
+
+          <!-- Sizes -->
+          <div id="mpModalSizes" hidden>
+            <div class="mp-modal-sizes-label">Select Size</div>
+            <div class="mp-size-grid" id="mpSizeGrid"></div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="mp-modal-qty">
+            <div class="mp-modal-sizes-label">Quantity</div>
+            <div class="mp-qty-wrap">
+              <button class="mp-qty-btn" id="mpQtyDown" type="button" aria-label="Decrease quantity">−</button>
+              <span class="mp-qty-val" id="mpQtyVal">1</span>
+              <button class="mp-qty-btn" id="mpQtyUp" type="button" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="mp-modal-actions">
+            <button class="mp-add-to-cart-btn" id="mpAddToCart" type="button">
+              <i class="fas fa-bag-shopping" aria-hidden="true"></i> Add to Cart
+            </button>
+            <button class="mp-wishlist-btn" id="mpWishlist" type="button" aria-label="Save to wishlist">
+              <i class="far fa-heart" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Trust signals -->
+          <div class="mp-trust">
+            <div class="mp-trust-item">
+              <i class="fas fa-shield-halved" aria-hidden="true"></i>
+              Secure checkout — no card data stored
+            </div>
+            <div class="mp-trust-item">
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              Questions? alohamassproductions@gmail.com
+            </div>
+            <div class="mp-trust-item">
+              <i class="fas fa-leaf" aria-hidden="true"></i>
+              Rooted in Aloha — every purchase supports the mission
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ── CART DRAWER ── -->
   <div class="mp-cart-backdrop" id="mpCartBackdrop" aria-hidden="true"></div>
   <aside class="mp-cart-drawer" id="mpCartDrawer" aria-label="Shopping cart" aria-hidden="true">
     <div class="mp-cart-header">
-      <h2 class="mp-cart-title">Your Cart</h2>
+      <h2 class="mp-cart-title">
+        <i class="fas fa-bag-shopping" aria-hidden="true"></i> Your Cart
+      </h2>
       <button class="mp-cart-close" id="mpCartClose" type="button" aria-label="Close cart">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-xmark" aria-hidden="true"></i>
       </button>
     </div>
-    <div class="mp-cart-body" id="mpCartBody">
-      <!-- Injected by JS -->
-    </div>
-    <div class="mp-cart-footer" id="mpCartFooter" hidden>
-      <div class="mp-cart-promo-wrap">
-        <input type="text" id="mpPromoInput" class="mp-promo-input"
-               placeholder="Promo code" maxlength="30" autocomplete="off">
-        <button class="mp-promo-apply-btn" id="mpPromoApplyBtn" type="button">Apply</button>
-      </div>
-      <div class="mp-promo-result" id="mpPromoResult" hidden></div>
-      <div class="mp-cart-totals">
-        <div class="mp-cart-subtotal">
-          <span>Subtotal</span>
-          <span id="mpSubtotalVal">$0.00</span>
+    <div class="mp-cart-body" id="mpCartBody"></div>
+    <div class="mp-cart-footer" id="mpCartFooter" style="display:none">
+      <!-- Promo -->
+      <div class="mp-promo-wrap">
+        <div class="mp-promo-row">
+          <input type="text" id="mpPromoInput" class="mp-promo-input"
+                 placeholder="Promo code" maxlength="30" autocomplete="off">
+          <button class="mp-promo-apply" id="mpPromoApply" type="button">Apply</button>
         </div>
-        <div class="mp-cart-discount" id="mpDiscountRow" hidden>
-          <span id="mpDiscountLabel">Discount</span>
-          <span id="mpDiscountVal">-$0.00</span>
-        </div>
-        <div class="mp-cart-total">
-          <span>Total</span>
-          <span id="mpTotalVal">$0.00</span>
+        <span class="mp-promo-feedback" id="mpPromoFeedback" hidden></span>
+        <div class="mp-promo-savings" id="mpPromoSavings" hidden>
+          <span>Discount</span>
+          <span id="mpPromoSavingsAmt">-$0.00</span>
         </div>
       </div>
+      <div class="mp-cart-subtotal">
+        <span>Subtotal</span>
+        <span id="mpCartSubtotal">$0.00</span>
+      </div>
+      <p class="mp-cart-note">
+        <i class="fas fa-info-circle" aria-hidden="true"></i>
+        Payment handled via your chosen method at checkout.
+      </p>
       <button class="mp-checkout-btn" id="mpCheckoutBtn" type="button">
-        <i class="fas fa-lock"></i> Checkout
+        <i class="fas fa-lock" aria-hidden="true"></i> Checkout
       </button>
-    </div>
-    <div class="mp-cart-empty" id="mpCartEmpty">
-      <i class="fas fa-bag-shopping"></i>
-      <p>Your cart is empty</p>
-      <button class="mp-continue-btn" id="mpContinueBtn" type="button">Continue Shopping</button>
+      <button class="mp-cart-continue" id="mpCartContinue" type="button">Continue Shopping</button>
     </div>
   </aside>
 
   <!-- ── CHECKOUT MODAL ── -->
   <div class="mp-checkout-backdrop" id="mpCheckoutBackdrop" aria-hidden="true">
-    <div class="mp-checkout-modal" role="dialog" aria-modal="true" aria-labelledby="mpCheckoutTitle">
+    <div class="mp-checkout-modal" id="mpCheckoutModal" role="dialog" aria-modal="true">
       <div class="mp-checkout-modal-header">
-        <h2 id="mpCheckoutTitle">Complete Your Order</h2>
-        <button class="mp-checkout-modal-close" id="mpCheckoutClose" type="button" aria-label="Close">
-          <i class="fas fa-times"></i>
+        <h3><i class="fas fa-lock" aria-hidden="true"></i> Complete Your Order</h3>
+        <button class="mp-checkout-modal-close" id="mpCheckoutModalClose" type="button" aria-label="Close">
+          <i class="fas fa-xmark" aria-hidden="true"></i>
         </button>
       </div>
-      <div class="mp-checkout-modal-body" id="mpCheckoutModalBody">
+      <div class="mp-checkout-modal-body">
         <!-- Order summary -->
-        <div class="mp-checkout-summary" id="mpCheckoutSummary">
-          <!-- Injected by JS -->
+        <div class="mp-checkout-summary">
+          <div class="mp-checkout-summary-label">Order Summary</div>
+          <div id="mpCheckoutItems"></div>
+          <div class="mp-checkout-total-row">
+            <span>Total</span>
+            <span class="mp-checkout-total-val" id="mpCheckoutTotal">$0.00</span>
+          </div>
         </div>
+
+        <p class="mp-checkout-instructions">
+          Select your payment method below. You'll be redirected to complete payment,
+          then return here. Email your receipt to
+          <a href="mailto:alohamassproductions@gmail.com">alohamassproductions@gmail.com</a>
+          with your order number.
+        </p>
 
         <!-- Payment methods -->
-        <div class="mp-payment-section">
-          <h3 class="mp-payment-title">Choose Payment Method</h3>
-          <div class="mp-payment-methods" id="mpPaymentMethods">
-            <!-- Injected by JS based on configured payment handles -->
+        <div class="mp-payment-grid">
+          <a href="#" class="mp-payment-btn mp-payment-btn--paypal" id="mpPayPal" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+            PayPal
+          </a>
+          <a href="#" class="mp-payment-btn mp-payment-btn--venmo" id="mpVenmo" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.79 3.126C20.56 4.39 20.9 5.693 20.9 7.34c0 5.33-4.547 12.244-8.243 17.11H4.56L1.5 3.956l7.208-.679 1.698 13.728c1.585-2.679 3.55-6.87 3.55-9.737 0-1.585-.264-2.66-.737-3.576l6.57-2.566z"/></svg>
+            Venmo
+          </a>
+          <a href="#" class="mp-payment-btn mp-payment-btn--cashapp" id="mpCashApp" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><path d="M23.59 3.42A11.63 11.63 0 0 0 20.58.41C18.83-.35 16.9 0 14.59 0H9.41C7.1 0 5.17-.35 3.42.41A11.63 11.63 0 0 0 .41 3.42C-.35 5.17 0 7.1 0 9.41v5.18c0 2.31-.35 4.24.41 5.99a11.63 11.63 0 0 0 3.01 3.01C5.17 24.35 7.1 24 9.41 24h5.18c2.31 0 4.24.35 5.99-.41a11.63 11.63 0 0 0 3.01-3.01C24.35 18.83 24 16.9 24 14.59V9.41c0-2.31.35-4.24-.41-5.99zM14.93 7.5l-.87.87a4.25 4.25 0 0 0-2.44-.77c-.9 0-1.46.36-1.46.9 0 1.82 5.63.83 5.63 4.81 0 2.1-1.73 3.47-4.19 3.66v1.3h-1.8v-1.33a6.68 6.68 0 0 1-3.53-1.35l1-1a5.1 5.1 0 0 0 3.02 1.06c1.08 0 1.75-.44 1.75-1.1 0-1.94-5.56-.83-5.56-4.75 0-2 1.6-3.35 3.99-3.55V5h1.8v1.32A5.8 5.8 0 0 1 15.8 7.5z"/></svg>
+            Cash App
+          </a>
+          <a href="#" class="mp-payment-btn mp-payment-btn--stripe" id="mpStripeLink" target="_blank" rel="noopener" hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/></svg>
+            Pay via Stripe
+          </a>
+        </div>
+
+        <p id="mpNoPaymentMethods" class="mp-checkout-note" style="display:none;color:rgba(255,165,0,.8)">
+          <i class="fas fa-gear"></i> Payment methods not configured yet. Go to Admin → Settings to add your payment handles.
+        </p>
+        <p class="mp-checkout-note">
+          All payments go directly to AMP. After paying, you'll see a confirmation screen with your order number.
+        </p>
+
+        <!-- Order confirmation (shown after payment) -->
+        <div id="mpOrderConfirm" hidden>
+          <div class="mp-order-confirm">
+            <div class="mp-order-confirm-icon">🌺</div>
+            <h3 class="mp-order-confirm-title">Order Submitted!</h3>
+            <div class="mp-order-confirm-num">Order # <span id="mpOrderNum"></span></div>
+            <p class="mp-order-confirm-msg">
+              Your payment was sent. Please email your receipt to
+              <a href="mailto:alohamassproductions@gmail.com">alohamassproductions@gmail.com</a>
+              with your order number. Mahalo — AMP 🌺
+            </p>
+            <div class="mp-order-confirm-items" id="mpOrderConfirmItems"></div>
+            <button class="mp-order-confirm-done" id="mpOrderConfirmDone" type="button">
+              Done <i class="fas fa-check"></i>
+            </button>
           </div>
-          <p class="mp-payment-note">
-            Select a payment method above. You will be redirected to complete payment,
-            then return here to confirm your order.
-          </p>
         </div>
 
-        <!-- Order confirmation step -->
-        <div class="mp-confirm-section" id="mpConfirmSection" hidden>
-          <div class="mp-confirm-icon"><i class="fas fa-circle-check"></i></div>
-          <h3>Payment Sent?</h3>
-          <p>Once you have completed your payment, click the button below to confirm your order.</p>
-          <button class="mp-confirm-btn" id="mpConfirmPaymentBtn" type="button">
-            <i class="fas fa-check"></i> Yes, I've Sent Payment
-          </button>
-          <button class="mp-back-btn" id="mpBackToPayment" type="button">
-            ← Back to Payment Methods
-          </button>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── PRODUCT DETAIL MODAL ── -->
-  <div class="mp-detail-backdrop" id="mpDetailBackdrop" aria-hidden="true">
-    <div class="mp-detail-modal" role="dialog" aria-modal="true" aria-labelledby="mpDetailTitle">
-      <button class="mp-detail-close" id="mpDetailClose" type="button" aria-label="Close">
-        <i class="fas fa-times"></i>
+  <!-- ── SUGGESTION FAB + PANEL ── -->
+  <button class="mp-sugg-fab" id="mpSuggFab" type="button" aria-label="Suggest a product">
+    <i class="fas fa-lightbulb" aria-hidden="true"></i>
+  </button>
+
+  <div class="mp-sugg-backdrop" id="mpSuggBackdrop" aria-hidden="true"></div>
+  <aside class="mp-sugg-panel" id="mpSuggPanel" aria-label="Product suggestions">
+    <div class="mp-sugg-panel-header">
+      <span class="mp-sugg-panel-title">💡 Suggest a Product</span>
+      <button class="mp-sugg-panel-close" id="mpSuggClose" type="button" aria-label="Close">
+        <i class="fas fa-xmark"></i>
       </button>
-      <div class="mp-detail-content" id="mpDetailContent">
-        <!-- Injected by JS -->
-      </div>
     </div>
-  </div>
-
-  <!-- ── NOTIFY-ME MODAL ── -->
-  <div class="mp-notify-backdrop" id="mpNotifyBackdrop" aria-hidden="true">
-    <div class="mp-notify-modal" role="dialog" aria-modal="true">
-      <div class="mp-notify-header">
-        <h3>Notify Me When Back</h3>
-        <button class="mp-notify-close" id="mpNotifyClose" type="button" aria-label="Close">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="mp-notify-body">
-        <p>Enter your email and we'll let you know when <strong id="mpNotifyProductName"></strong> is back in stock.</p>
-        <input type="hidden" id="mpNotifyProductId">
-        <div class="mp-notify-form">
-          <input type="email" id="mpNotifyEmail" class="mp-notify-input"
-                 placeholder="your@email.com" maxlength="120">
-          <button class="mp-notify-submit" id="mpNotifySubmit" type="button">
-            <i class="fas fa-bell"></i> Notify Me
+    <div class="mp-sugg-panel-body">
+      <div id="mpSuggFormWrap">
+        <form class="mp-sugg-form" id="mpSuggForm" novalidate>
+          <div class="mp-sugg-field">
+            <label class="mp-sugg-label" for="mpSuggText">Your Idea *</label>
+            <textarea id="mpSuggText" class="mp-sugg-input mp-sugg-textarea"
+                      placeholder="What product would you love to see? (e.g. Hoodie with Hawaiian coral pattern)"
+                      rows="3" maxlength="300"></textarea>
+            <span class="mp-sugg-hint"><span id="mpSuggCount">0</span>/300</span>
+          </div>
+          <div class="mp-sugg-field">
+            <label class="mp-sugg-label" for="mpSuggName">Your Name <span style="font-weight:400;text-transform:none">(optional)</span></label>
+            <input type="text" id="mpSuggName" class="mp-sugg-input" placeholder="What should we call you?" maxlength="60">
+          </div>
+          <div class="mp-sugg-field">
+            <label class="mp-sugg-label" for="mpSuggEmail">Email <span style="font-weight:400;text-transform:none">(optional — for follow-up)</span></label>
+            <input type="email" id="mpSuggEmail" class="mp-sugg-input" placeholder="your@email.com" maxlength="120">
+          </div>
+          <div id="mpSuggErrWrap" hidden>
+            <p id="mpSuggErr" style="font-size:12px;color:#e05252;margin:0"></p>
+          </div>
+          <button class="mp-sugg-submit-btn" type="submit">
+            <i class="fas fa-paper-plane"></i> Send Suggestion
           </button>
-        </div>
-        <div class="mp-notify-success" id="mpNotifySuccess" hidden>
-          <i class="fas fa-circle-check"></i> You're on the list! We'll email you when it's back.
+        </form>
+      </div>
+      <div id="mpSuggSuccessWrap" hidden>
+        <div class="mp-sugg-success">
+          <i class="fas fa-circle-check"></i>
+          <h4>Mahalo! 🌺</h4>
+          <p>Your suggestion has been received. The AMP team will review it and may reach out if we move forward.</p>
+          <button class="mp-sugg-success-back" id="mpSuggBackBtn" type="button">Submit Another</button>
         </div>
       </div>
+
+      <div class="mp-sugg-divider">Community Suggestions</div>
+      <div class="mp-sugg-wall" id="mpSuggWall"></div>
     </div>
-  </div>
+  </aside>
 
   <!-- ── ECOSYSTEM DOCK ── -->
-  <div class="mp-eco-dock" id="mpEcoDock">
+  <div class="mp-ecosystem-dock" id="mpEcoDock">
+    <span class="mp-eco-label">Pikoverse</span>
     <div class="mp-eco-links" id="mpEcoLinks">
       <a href="../index.html" class="mp-eco-link" title="Pikoverse Hub">
         <i class="fas fa-house"></i>
@@ -267,24 +445,8 @@
         <span>Showcase</span>
       </a>
     </div>
-    <button class="mp-eco-toggle" id="mpEcoToggle" type="button" aria-label="Toggle ecosystem dock">
+    <button class="mp-eco-toggle" id="mpEcoToggle" type="button" aria-label="Toggle dock">
       <i class="fas fa-chevron-down"></i>
-    </button>
-  </div>
-
-  <!-- ── ORDER CONFIRMATION ── -->
-  <div class="mp-order-confirm" id="mpOrderConfirm" hidden>
-    <div class="mp-order-confirm-icon">🌺</div>
-    <h3 class="mp-order-confirm-title">Order Submitted!</h3>
-    <div class="mp-order-confirm-num">Order <span id="mpOrderNum"></span></div>
-    <p class="mp-order-confirm-msg">
-      Your payment was sent. Please email your receipt to
-      <a href="mailto:alohamassproductions@gmail.com">alohamassproductions@gmail.com</a>
-      with your order number. Mahalo — AMP 🌺
-    </p>
-    <div class="mp-order-confirm-items" id="mpOrderConfirmItems"></div>
-    <button class="mp-order-confirm-close" id="mpOrderConfirmDone" type="button">
-      Done <i class="fas fa-check"></i>
     </button>
   </div>
 
@@ -292,6 +454,7 @@
   <div class="mp-toast" id="mpToast" role="status" aria-live="polite" aria-hidden="true"></div>
 
   <!-- ── SCRIPTS ── -->
+  <script src="../js/pikoData.js"></script>
   <script src="marketplace.js"></script>
 
 </body>

@@ -16,6 +16,30 @@
 (function () {
   'use strict';
 
+/* ══════════════════════════════════════════════════════════════
+   PIKOVERSE WORKER API
+   Set your Worker URL in Admin → Settings → Backend API
+   or directly below. Format: https://pikoverse-api.YOUR_NAME.workers.dev
+══════════════════════════════════════════════════════════════ */
+var WORKER_URL = localStorage.getItem('amp_worker_url') || '';
+
+function workerReady() { return !!WORKER_URL; }
+
+function workerFetch(path, method, body) {
+  method = method || 'GET';
+  var opts = {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(WORKER_URL + path, opts)
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(e) { throw new Error(e.error || r.status); });
+      return r.json();
+    });
+}
+
+
   /* ════════════════════════════════════════════════════════
      PRODUCT DATA
      Products are managed via the Admin panel (admin.html).
@@ -84,9 +108,9 @@
   // Admin localStorage key — must match ADM_CONFIG.STORAGE_PREFIX + 'products' in admin.js
   var ADMIN_PRODUCTS_KEY = 'amp_admin_products';
 
-  // Load products: pikoData.js (all devices) > localStorage (same device) > seed
+  // Load products: pikoData.json (all devices) > localStorage (same device) > seed
   function loadProducts() {
-    // 1. pikoData.js from server — visible on all devices
+    // 1. pikoData.json from server — visible on all devices
     try {
       if (window._pikoData && Array.isArray(window._pikoData.products) && window._pikoData.products.length > 0) {
         try { localStorage.setItem(ADMIN_PRODUCTS_KEY, JSON.stringify(window._pikoData.products)); } catch(e) {}
@@ -773,6 +797,27 @@
     };
     orders.unshift(order);
     try { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); } catch(e) {}
+
+    // ── Also save to D1 via Cloudflare Worker (persistent, cross-device) ──
+    if (workerReady()) {
+      workerFetch('/api/orders', 'POST', {
+        items:     order.items,
+        total:     order.total,
+        method:    order.method,
+      }).then(function(r) {
+        if (r.ok && r.orderId) {
+          // Update local order with the D1 ID
+          try {
+            var stored = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+            var idx = stored.findIndex(function(o) { return o.id === order.id; });
+            if (idx > -1) { stored[idx].d1Id = r.orderId; localStorage.setItem(ORDERS_KEY, JSON.stringify(stored)); }
+          } catch(ex) {}
+        }
+      }).catch(function(e) {
+        console.warn('[Order] Worker save failed (saved locally):', e.message);
+      });
+    }
+
     return order;
   }
 
@@ -847,6 +892,11 @@
         var list = JSON.parse(localStorage.getItem(EMAIL_KEY) || '[]');
         if (!list.includes(email)) { list.push(email); localStorage.setItem(EMAIL_KEY, JSON.stringify(list)); }
       } catch(ex) {}
+      // Also save to D1
+      if (workerReady()) {
+        workerFetch('/api/subscribe', 'POST', { email: email, source: 'marketplace' })
+          .catch(function(e) { console.warn('[Subscribe] Worker failed:', e.message); });
+      }
       // Apply 10% promo automatically
       window._ampPromoSaving = 0;
       if (success) { success.hidden = false; if (form) form.hidden = true; }
@@ -973,7 +1023,7 @@
     var PAY_CONFIG_KEY = 'amp_pay_config';
     function getPayConfig() {
       try {
-        // pikoData.js (cross-device) > localStorage
+        // pikoData.json (cross-device) > localStorage
         if (window._pikoData && window._pikoData.payConfig) {
           var pd = window._pikoData.payConfig;
           if (pd.paypal || pd.venmo || pd.cashapp || pd.stripe) {
@@ -1314,7 +1364,7 @@
   /* ── Banner ── */
   function initBanner() {
     try {
-      // pikoData.js (cross-device) > localStorage
+      // pikoData.json (cross-device) > localStorage
       var b = (window._pikoData && window._pikoData.banner)
             ? window._pikoData.banner
             : JSON.parse(localStorage.getItem(BANNER_KEY) || 'null');
@@ -1342,7 +1392,7 @@
 
   function getPromos() {
     try {
-      // pikoData.js (cross-device) > localStorage
+      // pikoData.json (cross-device) > localStorage
       if (window._pikoData && Array.isArray(window._pikoData.promos) && window._pikoData.promos.length > 0) {
         try { localStorage.setItem(PROMO_KEY, JSON.stringify(window._pikoData.promos)); } catch(e) {}
         return window._pikoData.promos;
@@ -1582,7 +1632,7 @@
 
   /* ── Boot ── */
   document.addEventListener('DOMContentLoaded', function() {
-    // Fetch pikoData.js first so products/banner/promos/payConfig are cross-device
+    // Fetch pikoData.json first so products/banner/promos/payConfig are cross-device
     if (typeof fetch !== 'undefined') {
       fetch('../js/pikoData.json', { cache: 'no-store' })
         .then(function(r) { return r.ok ? r.text() : null; })
