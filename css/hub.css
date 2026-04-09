@@ -4026,142 +4026,92 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
 }
 
 
+
 /* ═══════════════════════════════════════════════════════════════
    SMART TOP NAV — hide on scroll down, reveal on scroll up
+   Desktop only — mobile uses bottom nav instead
 ═══════════════════════════════════════════════════════════════ */
-.site-header,
-header.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 400;
-  transition: transform .3s cubic-bezier(.25,.46,.45,.94),
-              background .3s ease,
-              box-shadow .3s ease;
-  will-change: transform;
-}
-
-/* Scrolled past hero — add backdrop */
-.site-header.nav-scrolled {
-  background: rgba(6, 8, 18, 0.96) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 2px 24px rgba(0,0,0,.5);
-}
-
-/* Hide — slide up off screen */
-.site-header.nav-hidden {
-  transform: translateY(-100%);
-}
-
-/* On mobile only: always hide top bar when scrolled
-   since bottom nav handles navigation */
-@media (max-width: 768px) {
-  .site-header.nav-hidden {
-    transform: translateY(-105%);
+@media (min-width: 769px) {
+  .site-header,
+  header.site-header {
+    transition: transform .3s cubic-bezier(.25,.46,.45,.94),
+                background .3s ease,
+                box-shadow .3s ease;
+    will-change: transform;
   }
-  /* When hidden on mobile, show a thin pull-handle at top
-     so users can drag it back if needed */
-  .site-header.nav-hidden::after {
-    content: '';
-    position: absolute;
-    bottom: -16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(240,201,106,.3);
-    pointer-events: none;
+  .site-header.nav-scrolled {
+    background: rgba(6, 8, 18, 0.96) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 2px 24px rgba(0,0,0,.5);
+  }
+  .site-header.nav-hidden {
+    transform: translateY(-100%);
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BOTTOM MOBILE NAV — upgraded
+   BOTTOM MOBILE NAV — hidden on desktop, visible on mobile only
 ═══════════════════════════════════════════════════════════════ */
-/* mobile nav — see original .piko-mobile-nav block above */
-
-.pmn-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 6px 4px;
-  color: rgba(255,255,255,.4);
-  text-decoration: none;
-  font-size: 9px;
-  font-weight: 700;
-  font-family: 'Montserrat', sans-serif;
-  letter-spacing: .03em;
-  text-transform: uppercase;
-  transition: color .18s;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.pmn-item i {
-  font-size: 18px;
-  transition: transform .18s, color .18s;
-}
-
-.pmn-item:hover,
-.pmn-item.is-active {
-  color: #f0c96a;
-}
-
-.pmn-item.is-active i {
-  transform: translateY(-2px);
-}
-
-/* Active indicator dot */
-.pmn-item.is-active::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: #f0c96a;
-  box-shadow: 0 0 6px rgba(240,201,106,.8);
-}
-
-/* Profile item — purple accent */
-.pmn-profile { color: rgba(157,100,255,.6); }
-.pmn-profile:hover,
-.pmn-profile.is-active { color: #9d64ff; }
-.pmn-profile.is-active::before { background: #9d64ff; box-shadow: 0 0 6px rgba(157,100,255,.8); }
-.pmn-profile.is-loggedin { color: rgba(76,175,122,.7); }
-.pmn-profile.is-loggedin:hover { color: #4caf7a; }
-
-/* Logo image in home button */
-.pmn-logo-img {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(240,201,106,.3);
-  transition: border-color .18s, transform .18s;
-}
-.pmn-item:hover .pmn-logo-img,
-.pmn-item.is-active .pmn-logo-img {
-  border-color: rgba(240,201,106,.8);
-  transform: scale(1.1) translateY(-2px);
-}
-
-/* Ensure content clears the bottom nav on mobile */
 @media (max-width: 768px) {
-  body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
-  
-  /* Hide the top hamburger on mobile — bottom nav replaces it */
+  /* Hide top nav elements — bottom nav handles navigation */
   .mobile-menu-toggle { display: none !important; }
-  
-  /* Hide the top mobile dropdown too */
   .mobile-nav-dropdown { display: none !important; }
-  
-  /* Hide top global search on mobile — use hub search instead */
   .piko-global-search-wrap { display: none; }
-  
-  /* Hide top profile pill on mobile — bottom nav has it */
   .piko-profile-nav-pill { display: none; }
+
+  /* Pad body so content clears bottom nav */
+  body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Bottom nav items */
+  .pmn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 4px;
+    color: rgba(255,255,255,.4);
+    text-decoration: none;
+    font-size: 9px;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    transition: color .18s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pmn-item i { font-size: 18px; transition: transform .18s, color .18s; }
+  .pmn-item:hover,
+  .pmn-item.is-active { color: #f0c96a; }
+  .pmn-item.is-active i { transform: translateY(-2px); }
+  .pmn-item.is-active::before {
+    content: '';
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #f0c96a;
+    box-shadow: 0 0 6px rgba(240,201,106,.8);
+  }
+  .pmn-profile { color: rgba(157,100,255,.6); }
+  .pmn-profile:hover,
+  .pmn-profile.is-active { color: #9d64ff; }
+  .pmn-profile.is-active::before { background: #9d64ff; box-shadow: 0 0 6px rgba(157,100,255,.8); }
+
+  .pmn-logo-img {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(240,201,106,.3);
+    transition: border-color .18s, transform .18s;
+  }
+  .pmn-item:hover .pmn-logo-img,
+  .pmn-item.is-active .pmn-logo-img {
+    border-color: rgba(240,201,106,.8);
+    transform: scale(1.1) translateY(-2px);
+  }
 }
