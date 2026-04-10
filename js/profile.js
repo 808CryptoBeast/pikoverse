@@ -573,7 +573,10 @@
   }
 
   async function showProfile() {
-    $('pikoAuthGate').hidden=true; $('pikoProfileSection').hidden=false;
+    var gate    = $('pikoAuthGate');
+    var section = $('pikoProfileSection');
+    if (gate)    { gate.hidden    = true;  gate.style.display    = 'none'; }
+    if (section) { section.hidden = false; section.style.display = 'block'; }
     var s=$('pikoSignOut'); if(s) s.hidden=false;
     var t=$('pikoCustomizeTrigger'); if(t) t.hidden=false;
     var nb=$('pikoNotifBtn'); if(nb) nb.hidden=false;
@@ -609,7 +612,7 @@
      SESSION CHECK
   ════════════════════════════════════════════ */
   async function checkExistingSession() {
-    if(OFFLINE){ var local=loadJSON(PROFILE_KEY,null); if(local&&local.email){ await showProfile(); } else { showAuthGate(); } return; }
+    if(OFFLINE){ var local=loadJSON(PROFILE_KEY,null); if(local&&local.email&&local.verified!==false){ STATE.profile=local; await showProfile(); } else { showAuthGate(); } return; }
     var r=await supa().auth.getSession();
     if(r.data&&r.data.session&&r.data.session.user){ SESSION_USER=r.data.session.user; await showProfile(); }
     else showAuthGate();
@@ -1589,11 +1592,8 @@
     initShareCard(); initNotifBell(); initCustomize(); initLinks();
     handlePasswordReset(); initNameStyleEditor(); initIdeaForm(); initProjectForm();
 
-    if(OFFLINE){
-      var local=loadJSON(PROFILE_KEY,null);
-      if(local&&local.email&&local.verified!==false){ STATE.profile=local; (async function(){ await showProfile(); })(); }
-      else showAuthGate();
-    }
+    /* Auth decisions handled by piko:supa:ready event
+       which fires for both online and offline modes */
   }
 
   window.addEventListener('piko:supa:ready',function(e){

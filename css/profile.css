@@ -1,3 +1,9 @@
+/* ── Hidden attribute — beats all display rules ── */
+[hidden],
+[hidden] { display: none !important; }
+.piko-auth-gate[hidden],
+.piko-profile-section[hidden] { display: none !important; }
+
 /* ═══════════════════════════════════════════════════════════
    profile.css — Pikoverse User Profile (Full Edition)
    css/profile.css
@@ -1037,7 +1043,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 24px;
   animation: pfIn .18s ease;
 }
-.piko-modal-overlay[hidden] { display: none !important; }
+.piko-modal-overlay
 .piko-modal {
   position: relative;
   width: min(560px, 100%);
@@ -1082,3 +1088,15 @@ button { font-family: inherit; cursor: pointer; }
 .piko-template-name { font-size: 12px; font-weight: 700; color: var(--pf-text); }
 .piko-template-desc { font-size: 11px; color: var(--pf-dim); margin-top: 3px; line-height: 1.4; }
 @media (max-width: 480px) { .piko-template-grid { grid-template-columns: 1fr; } }
+
+
+/* ════════════════════════════════════════════
+   VISIBILITY CONTROL — must be at end of file
+   so it wins cascade over display:flex etc.
+════════════════════════════════════════════ */
+.piko-auth-gate[hidden],
+.piko-profile-section[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
