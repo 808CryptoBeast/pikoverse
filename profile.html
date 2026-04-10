@@ -57,6 +57,8 @@
             <input type="password" id="signupPassword" class="piko-auth-input" placeholder="At least 8 characters" maxlength="128">
             <button class="piko-pw-toggle" data-target="signupPassword" type="button" tabindex="-1" aria-label="Show password"><i class="fas fa-eye"></i></button>
           </div>
+          <div class="piko-strength-track"><div id="signupStrengthBar" class="piko-strength-bar"></div></div>
+          <div id="signupStrengthLabel" class="piko-strength-label"></div>
         </div>
         <div class="piko-auth-field">
           <label class="piko-auth-label" for="signupPassword2">Confirm Password</label>
@@ -162,6 +164,60 @@
           <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button"><i class="fas fa-floppy-disk"></i> Save</button>
           <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">Cancel</button>
         </div>
+
+        <!-- ── Change Password ── -->
+        <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.07)">
+          <h4 style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--pf-gold);margin-bottom:16px;letter-spacing:.06em;text-transform:uppercase">Change Password</h4>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label" for="currentPassword">Current Password</label>
+            <div class="piko-password-wrap">
+              <input type="password" id="currentPassword" class="piko-auth-input" placeholder="Your current password" maxlength="128">
+              <button class="piko-pw-toggle" data-target="currentPassword" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label" for="newPassword">New Password</label>
+            <div class="piko-password-wrap">
+              <input type="password" id="newPassword" class="piko-auth-input" placeholder="At least 8 characters" maxlength="128">
+              <button class="piko-pw-toggle" data-target="newPassword" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="piko-strength-track"><div id="changePwStrengthBar" class="piko-strength-bar"></div></div>
+            <div id="changePwStrengthLabel" class="piko-strength-label"></div>
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label" for="newPassword2">Confirm New Password</label>
+            <div class="piko-password-wrap">
+              <input type="password" id="newPassword2" class="piko-auth-input" placeholder="Repeat new password" maxlength="128">
+              <button class="piko-pw-toggle" data-target="newPassword2" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="piko-auth-status" id="pikoChangePwStatus" hidden></div>
+          <button class="piko-auth-btn" id="pikoChangePwBtn" type="button" style="margin-top:10px">
+            <i class="fas fa-key"></i> Update Password
+          </button>
+        </div>
+
+        <!-- ── Change Email ── -->
+        <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.07)">
+          <h4 style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--pf-gold);margin-bottom:16px;letter-spacing:.06em;text-transform:uppercase">Change Email</h4>
+          <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:16px;line-height:1.6;">A confirmation link will be sent to your new address. Your email won't change until you click it.</p>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label" for="newEmail">New Email Address</label>
+            <input type="email" id="newEmail" class="piko-auth-input" placeholder="new@email.com" maxlength="120">
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label" for="emailChangePw">Current Password <span style="font-weight:400;opacity:.5">(to confirm)</span></label>
+            <div class="piko-password-wrap">
+              <input type="password" id="emailChangePw" class="piko-auth-input" placeholder="Your current password" maxlength="128">
+              <button class="piko-pw-toggle" data-target="emailChangePw" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="piko-auth-status" id="pikoChangeEmailStatus" hidden></div>
+          <button class="piko-auth-btn" id="pikoChangeEmailBtn" type="button" style="margin-top:10px">
+            <i class="fas fa-envelope"></i> Update Email
+          </button>
+        </div>
+
       </div>
 
       <!-- STATS BAR -->

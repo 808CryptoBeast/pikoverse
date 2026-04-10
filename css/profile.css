@@ -740,3 +740,25 @@ button { font-family: inherit; cursor: pointer; }
   text-underline-offset: 3px;
 }
 .piko-forgot-link:hover { color: var(--pf-gold); }
+
+/* ── Password strength bar ── */
+.piko-strength-track {
+  height: 4px;
+  background: rgba(255,255,255,.07);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.piko-strength-bar {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  transition: width .3s ease, background .3s ease;
+}
+.piko-strength-label {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+  height: 14px;
+  transition: color .3s;
+}
