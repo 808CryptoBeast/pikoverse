@@ -4115,3 +4115,144 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
     transform: scale(1.1) translateY(-2px);
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   POPUP + MODAL Z-INDEX FIX
+   Ensures ecosystem popups and submit modal appear above nav on mobile
+═══════════════════════════════════════════════════════════════ */
+
+/* Eco-popup backdrop and popup must beat the header (z-index 2000 on mobile) */
+.eco-popup-backdrop,
+#ecoPopupBackdrop {
+  z-index: 3000 !important;
+}
+
+.eco-popup {
+  z-index: 3001 !important;
+}
+
+.eco-popup__close {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  z-index: 3002 !important;
+  /* Make tap target bigger on mobile */
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+
+/* Submit modal also needs to beat the header */
+.piko-modal-backdrop {
+  z-index: 3000 !important;
+}
+
+.piko-modal {
+  z-index: 3001 !important;
+}
+
+.piko-modal-close {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Profile search dropdown */
+.piko-global-search-dropdown {
+  z-index: 3000 !important;
+}
+
+@media (max-width: 768px) {
+  /* On mobile, popup should be full-screen for easy reading */
+  .eco-popup {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 80px !important; /* clear bottom nav */
+  }
+
+  .eco-popup__close {
+    position: fixed !important;
+    top: env(safe-area-inset-top, 12px) !important;
+    right: 12px !important;
+    z-index: 3002 !important;
+    background: rgba(8,10,18,.95) !important;
+    border: 1px solid rgba(255,255,255,.15) !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Submit modal full-screen on mobile */
+  .piko-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 80px !important;
+  }
+
+  .piko-modal-backdrop {
+    padding: 0 !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV — polished v2
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Smooth scroll active indicator transition */
+  .pmn-item::before {
+    transition: opacity .2s ease, transform .2s ease;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  .pmn-item.is-active::before {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* Label slide-up on active */
+  .pmn-item span {
+    transition: color .2s, transform .15s;
+    display: block;
+  }
+  .pmn-item.is-active span {
+    transform: translateY(-1px);
+  }
+
+  /* Bottom nav safe area padding for notched phones */
+  .piko-mobile-nav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Tap feedback */
+  .pmn-item:active {
+    background: rgba(255,255,255,.05);
+    border-radius: 10px;
+  }
+
+  /* Make the share FAB not overlap the bottom nav */
+  .piko-share-fab {
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
