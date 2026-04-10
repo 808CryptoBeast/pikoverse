@@ -702,3 +702,41 @@ button { font-family: inherit; cursor: pointer; }
   .piko-id-card { flex-direction: column; text-align: center; }
   .piko-id-card-actions { justify-content: center; }
 }
+
+/* ── Password field wrapper ── */
+.piko-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.piko-password-wrap .piko-auth-input {
+  padding-right: 44px;
+}
+.piko-pw-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--pf-dim);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color .18s;
+  line-height: 1;
+}
+.piko-pw-toggle:hover { color: var(--pf-gold); }
+
+/* ── Forgot password link ── */
+.piko-forgot-link {
+  background: none;
+  border: none;
+  color: var(--pf-dim);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .18s;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.piko-forgot-link:hover { color: var(--pf-gold); }
