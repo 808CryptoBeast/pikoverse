@@ -4233,3 +4233,96 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
     padding-bottom: 80px !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ECO-POPUP SYSTEM — self-contained show/hide + positioning
+   The is-open class is toggled by ecosystem-popups.js
+═══════════════════════════════════════════════════════════════ */
+.eco-popup-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.eco-popup-backdrop.is-open {
+  display: flex;
+}
+
+/* Popup panel */
+.eco-popup {
+  position: relative;
+  background: #0e0c1a;
+  border: 1px solid rgba(201,168,76,.2);
+  border-radius: 16px;
+  width: min(640px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  z-index: 3001;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,.2) transparent;
+  animation: ecoPopupIn .22s ease;
+}
+@keyframes ecoPopupIn {
+  from { opacity:0; transform:scale(.96) translateY(10px); }
+  to   { opacity:1; transform:scale(1)   translateY(0); }
+}
+
+/* Close button */
+.eco-popup__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3002;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.6);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+  pointer-events: auto;
+  min-width: 36px;
+  min-height: 36px;
+}
+.eco-popup__close:hover {
+  background: rgba(255,80,80,.15);
+  border-color: rgba(255,80,80,.3);
+  color: #ff8080;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .eco-popup-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .eco-popup {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: 80px;
+  }
+  .eco-popup__close {
+    top: 14px;
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

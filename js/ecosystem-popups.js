@@ -1,60 +1,53 @@
-/* js/ecosystem-popups.js
-   Handles open/close for all ecosystem card Deeper Dive popups.
-   Uses data-popup="id" to open, data-close-popup to close.
-*/
+/* js/ecosystem-popups.js */
 (function() {
   'use strict';
 
-  var backdrop = document.getElementById('ecoPopupBackdrop');
-  var currentPopup = null;
+  var backdrop   = document.getElementById('ecoPopupBackdrop');
+  var current    = null;
 
   function openPopup(id) {
     var popup = document.getElementById('eco-popup-' + id);
     if (!popup) return;
+    if (current) closePopup();
 
-    // Close any open popup first
-    if (currentPopup) closePopup();
-
-    popup.hidden = false;
+    // Show popup — use both hidden removal AND is-open class for compatibility
+    popup.removeAttribute('hidden');
     popup.setAttribute('aria-hidden', 'false');
+
     if (backdrop) {
-      backdrop.hidden = false;
+      backdrop.classList.add('is-open');
       backdrop.setAttribute('aria-hidden', 'false');
     }
 
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    currentPopup = popup;
+    current = popup;
 
-    // Focus the close button for accessibility
-    var closeBtn = popup.querySelector('[data-close-popup]');
-    if (closeBtn) setTimeout(function() { closeBtn.focus(); }, 100);
+    // Focus close button
+    var btn = popup.querySelector('[data-close-popup]');
+    if (btn) setTimeout(function() { btn.focus(); }, 80);
   }
 
   function closePopup() {
-    if (!currentPopup) return;
-    currentPopup.hidden = true;
-    currentPopup.setAttribute('aria-hidden', 'true');
+    if (!current) return;
+    current.setAttribute('hidden', '');
+    current.setAttribute('aria-hidden', 'true');
     if (backdrop) {
-      backdrop.hidden = true;
+      backdrop.classList.remove('is-open');
       backdrop.setAttribute('aria-hidden', 'true');
     }
     document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
-    currentPopup = null;
+    current = null;
   }
 
-  // Open — delegate from any data-popup button
+  // Open on data-popup button click
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('[data-popup]');
-    if (!btn) return;
-    // Ignore if it's the card itself (article[data-popup]) — only buttons
-    if (btn.tagName === 'ARTICLE') return;
+    if (!btn || btn.tagName === 'ARTICLE') return;
     e.stopPropagation();
     openPopup(btn.getAttribute('data-popup'));
   });
 
-  // Close — delegate from data-close-popup buttons
+  // Close on data-close-popup
   document.addEventListener('click', function(e) {
     if (e.target.closest('[data-close-popup]')) {
       e.stopPropagation();
@@ -69,12 +62,10 @@
     });
   }
 
-  // Close on Escape key
+  // Close on Escape
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && currentPopup) closePopup();
+    if (e.key === 'Escape' && current) closePopup();
   });
 
-  // Expose globally for any other scripts
   window._pikoEcoPopup = { open: openPopup, close: closePopup };
-
 })();
