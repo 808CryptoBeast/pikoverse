@@ -49,13 +49,23 @@ button { font-family: inherit; cursor: pointer; }
    NAV
 ════════════════════════════════════════════ */
 .piko-profile-nav {
-  position: sticky; top: 0; z-index: 500;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
   height: 60px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px;
-  background: rgba(8,11,20,.94);
-  border-bottom: 1px solid rgba(240,201,106,.12);
+  background: rgba(8,11,20,.92);
+  border-bottom: 1px solid rgba(240,201,106,.1);
   backdrop-filter: blur(20px);
+  transform: translateY(0);
+  transition: transform .32s cubic-bezier(.4,0,.2,1), background .2s;
+}
+.piko-profile-nav.is-hidden {
+  transform: translateY(-100%);
+}
+.piko-profile-nav.is-transparent {
+  background: rgba(8,11,20,.0);
+  border-bottom-color: transparent;
+  backdrop-filter: none;
 }
 .piko-profile-nav-logo {
   display: flex; align-items: center; gap: 10px;
@@ -772,12 +782,26 @@ button { font-family: inherit; cursor: pointer; }
 /* ════════════════════════════════════════════
    BANNER — bigger
 ════════════════════════════════════════════ */
+.piko-profile-section { padding-top: 60px; } /* offset fixed nav */
+
 .piko-profile-banner {
   position: relative;
-  min-height: 280px;
+  min-height: 340px;
   background: var(--pf-custom-header-bg, linear-gradient(135deg,var(--pf-dark2),#1a1f30));
   background-color: var(--pf-custom-bg2);
+  background-size: cover;
+  background-position: center;
   overflow: hidden;
+}
+/* Rich bottom fade so avatar + name sit on it beautifully */
+.piko-profile-banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.1) 0%,
+    rgba(0,0,0,.0) 40%,
+    var(--pf-custom-bg) 100%
+  );
 }
 
 /* ════════════════════════════════════════════
@@ -1099,4 +1123,190 @@ button { font-family: inherit; cursor: pointer; }
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+/* ── Fix selects — dark theme ── */
+select.piko-auth-input,
+select {
+  background: rgba(255,255,255,.05) !important;
+  color: var(--pf-text) !important;
+  border: 1px solid var(--pf-border) !important;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 36px !important;
+}
+select.piko-auth-input option,
+select option {
+  background: #0d1220;
+  color: rgba(255,255,255,.88);
+}
+textarea.piko-auth-input {
+  background: rgba(255,255,255,.05);
+  color: var(--pf-text);
+  border: 1px solid var(--pf-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .18s;
+}
+textarea.piko-auth-input:focus { border-color: rgba(240,201,106,.4); }
+textarea.piko-auth-input::placeholder { color: rgba(255,255,255,.2); }
+
+/* ── Inline form — enhanced ── */
+.piko-inline-form {
+  background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border: 1px solid rgba(240,201,106,.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  animation: pfIn .2s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.piko-inline-form-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--pf-gold); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+/* char counter */
+#ideaCharCount { color: var(--pf-dim); }
+
+/* ── Template cards — enhanced ── */
+.piko-project-templates {
+  margin-bottom: 20px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 14px;
+  padding: 18px;
+}
+.piko-template-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.piko-template-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 18px 8px 14px;
+  cursor: pointer;
+  transition: border-color .18s, background .18s, transform .18s, box-shadow .18s;
+  text-align: center; font-family: inherit; color: var(--pf-text);
+}
+.piko-template-card:hover {
+  border-color: rgba(240,201,106,.4);
+  background: rgba(240,201,106,.07);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+.piko-template-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+.piko-template-name { font-size: 11px; font-weight: 700; color: var(--pf-dim); letter-spacing: .04em; }
+
+/* ── Enhanced profile pane ── */
+.piko-profile-pane-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--pf-text); margin-bottom: 18px;
+  letter-spacing: .06em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.piko-profile-pane-title::before {
+  content: '';
+  display: block; width: 3px; height: 16px;
+  background: var(--pf-custom-accent, var(--pf-gold));
+  border-radius: 2px;
+}
+
+/* ── Enhanced stats bar ── */
+.piko-profile-stats {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1px; background: var(--pf-border);
+  border: 1px solid var(--pf-border); border-radius: 16px;
+  overflow: hidden; margin: 20px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,.2);
+}
+.piko-profile-stat {
+  background: var(--pf-custom-card-bg);
+  padding: 18px; text-align: center;
+  transition: background .18s;
+}
+.piko-profile-stat:hover { background: rgba(255,255,255,.05); }
+.piko-profile-stat-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px; font-weight: 800;
+  color: var(--pf-custom-accent, var(--pf-gold));
+  display: block;
+  text-shadow: 0 0 20px var(--pf-custom-glow, rgba(240,201,106,.3));
+}
+.piko-profile-stat-label {
+  font-size: 10px; color: var(--pf-dim);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-top: 4px; display: block;
+}
+
+/* ── Glow on avatar ── */
+.piko-profile-avatar {
+  box-shadow:
+    0 0 0 4px var(--pf-custom-bg, #080b14),
+    0 0 0 6px var(--pf-custom-accent, var(--pf-gold)),
+    0 0 32px var(--pf-custom-glow, rgba(240,201,106,.25));
+}
+
+/* ── Enhanced tab bar ── */
+.piko-profile-tabs {
+  display: flex; border-bottom: none;
+  margin-bottom: 24px; overflow-x: auto; scrollbar-width: none;
+  background: rgba(255,255,255,.02);
+  border-radius: 12px; padding: 4px; gap: 2px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.piko-profile-tabs::-webkit-scrollbar { display: none; }
+.piko-profile-tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; background: none; border: none;
+  border-radius: 9px; margin-bottom: 0;
+  font-size: 12px; font-weight: 700;
+  color: var(--pf-dim); white-space: nowrap;
+  transition: color .18s, background .18s;
+  letter-spacing: .04em;
+}
+.piko-profile-tab:hover { color: rgba(255,255,255,.7); background: rgba(255,255,255,.04); }
+.piko-profile-tab.is-active {
+  color: var(--pf-custom-bg, #080b14);
+  background: var(--pf-custom-accent, var(--pf-gold));
+  border-bottom-color: transparent;
+  box-shadow: 0 2px 12px var(--pf-custom-glow, rgba(240,201,106,.3));
+}
+
+/* ── Enhanced ID card ── */
+.piko-id-card {
+  background: linear-gradient(135deg, #0d1220, #141830);
+  border: 1px solid rgba(240,201,106,.2);
+  border-radius: 20px; padding: 24px;
+  display: flex; gap: 20px; align-items: center;
+  position: relative; overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.piko-id-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pf-custom-accent, var(--pf-gold)), transparent);
+  opacity: .5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .piko-profile-banner { min-height: 220px; }
+  .piko-template-grid { grid-template-columns: repeat(3,1fr); }
+  .piko-profile-tab { padding: 8px 11px; font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .piko-template-grid { grid-template-columns: repeat(2,1fr); }
+  .piko-profile-stats { grid-template-columns: repeat(2,1fr); }
 }

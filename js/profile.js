@@ -972,12 +972,26 @@
   function updateNavAvatar() {
     var navImg = $('pikoNavAvatar');
     if (!navImg) return;
-    var p = STATE.profile || {};
-    if (p.avatar_url) {
-      navImg.src = p.avatar_url;
+    var p   = STATE.profile || {};
+    var src = p.avatar_url || '';
+    if (src) {
+      navImg.src = src;
       navImg.classList.add('has-profile');
-      navImg.onerror = function(){ navImg.src = 'assets/goldenp.jpg'; navImg.classList.remove('has-profile'); };
+      navImg.style.border = '2px solid var(--pf-custom-accent, var(--pf-gold))';
+      navImg.style.boxShadow = '0 0 0 2px var(--pf-custom-glow, rgba(240,201,106,.15))';
+      navImg.onerror = function(){
+        navImg.src = 'assets/goldenp.jpg';
+        navImg.classList.remove('has-profile');
+        navImg.style.border = '';
+        navImg.style.boxShadow = '';
+      };
+    } else {
+      navImg.src = 'assets/goldenp.jpg';
+      navImg.classList.remove('has-profile');
     }
+    /* Nav text: show display name when logged in */
+    var navSpan = document.querySelector('.piko-profile-nav-logo span');
+    if (navSpan && p.display_name) navSpan.textContent = p.display_name;
   }
 
   /* ════════════════════════════════════════════
@@ -1332,12 +1346,15 @@
      GLOBAL UI (pw toggle + enter key)
   ════════════════════════════════════════════ */
   function initGlobalUI() {
+    /* Password show/hide */
     document.addEventListener('click',function(e){
       var btn=e.target.closest('.piko-pw-toggle'); if(!btn) return;
       var input=document.getElementById(btn.dataset.target); if(!input) return;
       var show=input.type==='password'; input.type=show?'text':'password';
       btn.querySelector('i').className=show?'fas fa-eye-slash':'fas fa-eye';
     });
+
+    /* Enter key submits forms */
     document.addEventListener('keydown',function(e){
       if(e.key!=='Enter') return;
       var id=document.activeElement&&document.activeElement.id;
@@ -1345,6 +1362,42 @@
       if(['signupName','signupEmail','signupPassword','signupPassword2'].includes(id)){ var b=$('pikoSignupBtn'); if(b) b.click(); }
       if(['signinEmail','signinPassword'].includes(id)){ var b=$('pikoSigninBtn'); if(b) b.click(); }
     });
+
+    /* ── Nav retract on scroll down, reveal on scroll up ── */
+    var nav         = document.querySelector('.piko-profile-nav');
+    var lastScrollY = 0;
+    var scrollTimer = null;
+
+    window.addEventListener('scroll', function(){
+      var currentY = window.scrollY;
+      var delta    = currentY - lastScrollY;
+
+      if (!nav) return;
+
+      /* At top — always show nav, make transparent over banner */
+      if (currentY < 80) {
+        nav.classList.remove('is-hidden');
+        nav.classList.add('is-transparent');
+      } else {
+        nav.classList.remove('is-transparent');
+        /* Scrolling down > 6px — hide */
+        if (delta > 6) {
+          nav.classList.add('is-hidden');
+        }
+        /* Scrolling up — reveal */
+        else if (delta < -4) {
+          nav.classList.remove('is-hidden');
+        }
+      }
+
+      lastScrollY = currentY;
+
+      /* Auto-reveal after idle */
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){
+        if (nav) nav.classList.remove('is-hidden');
+      }, 2500);
+    }, { passive: true });
   }
 
   /* ── Name style preview ── */
