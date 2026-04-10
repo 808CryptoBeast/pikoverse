@@ -762,3 +762,323 @@ button { font-family: inherit; cursor: pointer; }
   height: 14px;
   transition: color .3s;
 }
+
+/* ════════════════════════════════════════════
+   BANNER — bigger
+════════════════════════════════════════════ */
+.piko-profile-banner {
+  position: relative;
+  min-height: 280px;
+  background: var(--pf-custom-header-bg, linear-gradient(135deg,var(--pf-dark2),#1a1f30));
+  background-color: var(--pf-custom-bg2);
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════════
+   ID CARD — banner background
+════════════════════════════════════════════ */
+.piko-id-card { position: relative; overflow: hidden; }
+.piko-id-card-banner {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: .18;
+  filter: blur(2px) saturate(1.4);
+  z-index: 0;
+  pointer-events: none;
+}
+.piko-id-card > *:not(.piko-id-card-banner) { position: relative; z-index: 1; }
+
+/* ════════════════════════════════════════════
+   NAV AVATAR
+════════════════════════════════════════════ */
+.piko-profile-nav-logo img {
+  width: 36px; height: 36px; border-radius: 50%;
+  object-fit: cover; border: 2px solid rgba(240,201,106,.4);
+  transition: border-color .2s;
+}
+#pikoNavAvatar.has-profile {
+  border-color: var(--pf-custom-accent, var(--pf-gold));
+  box-shadow: 0 0 0 2px rgba(240,201,106,.15);
+}
+
+/* ════════════════════════════════════════════
+   INLINE SUBMISSION FORMS
+════════════════════════════════════════════ */
+.piko-inline-form {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(240,201,106,.15);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 24px;
+  animation: pfIn .2s ease;
+}
+.piko-inline-form-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--pf-gold); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ── Project templates ── */
+.piko-project-templates {
+  margin-bottom: 20px;
+  animation: pfIn .2s ease;
+}
+.piko-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+.piko-template-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  padding: 16px 10px;
+  cursor: pointer;
+  transition: border-color .18s, background .18s, transform .18s;
+  text-align: center;
+  font-family: inherit;
+  color: var(--pf-text);
+}
+.piko-template-card:hover {
+  border-color: rgba(240,201,106,.3);
+  background: rgba(240,201,106,.06);
+  transform: translateY(-2px);
+}
+.piko-template-icon { font-size: 22px; margin-bottom: 6px; }
+.piko-template-name { font-size: 11px; font-weight: 600; color: var(--pf-dim); }
+
+/* ════════════════════════════════════════════
+   NAME STYLE PREVIEW
+════════════════════════════════════════════ */
+#editNamePreview {
+  transition: all .2s;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .piko-template-grid { grid-template-columns: repeat(3, 1fr); }
+  .piko-profile-banner { min-height: 200px; }
+}
+
+
+/* ════════════════════════════════════════════
+   NAV AVATAR (replaces logo when logged in)
+════════════════════════════════════════════ */
+.piko-nav-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(240,201,106,.35);
+  flex-shrink: 0;
+  transition: border-color .2s;
+}
+.piko-nav-avatar img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.piko-profile-nav-logo:hover .piko-nav-avatar { border-color: var(--pf-gold); }
+
+/* ════════════════════════════════════════════
+   BANNER (taller)
+════════════════════════════════════════════ */
+.piko-profile-banner {
+  position: relative;
+  height: 280px;
+  background: var(--pf-custom-header-bg, linear-gradient(135deg,#0d1220,#141830));
+  overflow: hidden;
+}
+@media (max-width: 640px) { .piko-profile-banner { height: 180px; } }
+
+/* ════════════════════════════════════════════
+   ID CARD — banner background
+════════════════════════════════════════════ */
+.piko-id-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(240,201,106,.25);
+  margin-bottom: 28px;
+  min-height: 110px;
+}
+.piko-id-card-banner-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,#0d1220,#141830);
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.45) saturate(1.2);
+}
+.piko-id-card-banner-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(8,11,20,.7) 0%, rgba(8,11,20,.3) 100%);
+}
+.piko-id-card-content {
+  position: relative; z-index: 2;
+  display: flex; gap: 20px; align-items: center;
+  padding: 24px;
+}
+@media (max-width: 480px) {
+  .piko-id-card-content { flex-direction: column; text-align: center; }
+  .piko-id-card-actions { justify-content: center; }
+}
+
+/* ════════════════════════════════════════════
+   NAME STYLE EDITOR
+════════════════════════════════════════════ */
+.piko-name-style-editor {
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--pf-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.piko-name-style-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--pf-dim); margin-bottom: 12px;
+}
+.piko-name-style-row {
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;
+  margin-bottom: 12px;
+}
+.piko-select-sm {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--pf-border);
+  border-radius: 7px;
+  color: var(--pf-text);
+  font-size: 12px; padding: 5px 8px;
+  cursor: pointer; outline: none;
+  max-width: 110px;
+}
+.piko-select-sm:focus { border-color: rgba(240,201,106,.4); }
+.piko-name-preview {
+  padding: 10px 14px;
+  background: rgba(0,0,0,.2);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  word-break: break-word;
+  transition: all .2s;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* ════════════════════════════════════════════
+   PRIVACY TOGGLE
+════════════════════════════════════════════ */
+.piko-privacy-row { padding: 4px 0; }
+.piko-toggle-label {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; user-select: none;
+}
+.piko-toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
+.piko-toggle-track {
+  position: relative;
+  width: 40px; height: 22px;
+  background: rgba(255,255,255,.12);
+  border-radius: 11px;
+  border: 1px solid rgba(255,255,255,.15);
+  flex-shrink: 0;
+  transition: background .2s, border-color .2s;
+}
+.piko-toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  transition: transform .2s, background .2s;
+}
+.piko-toggle-input:checked + .piko-toggle-track {
+  background: rgba(240,201,106,.3);
+  border-color: rgba(240,201,106,.5);
+}
+.piko-toggle-input:checked + .piko-toggle-track .piko-toggle-thumb {
+  transform: translateX(18px);
+  background: var(--pf-gold);
+}
+.piko-toggle-text { font-size: 13px; color: var(--pf-dim); }
+
+/* ════════════════════════════════════════════
+   BANNER UPLOAD ROW (inside edit form)
+════════════════════════════════════════════ */
+.piko-banner-upload-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+
+/* ════════════════════════════════════════════
+   SETTINGS SECTIONS (inside edit form)
+════════════════════════════════════════════ */
+.piko-settings-section {
+  margin-top: 28px; padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.piko-settings-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; font-weight: 700;
+  color: var(--pf-gold); margin-bottom: 16px;
+  letter-spacing: .06em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ════════════════════════════════════════════
+   MODAL OVERLAY (share idea / project)
+════════════════════════════════════════════ */
+.piko-modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(5,8,18,.85);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: pfIn .18s ease;
+}
+.piko-modal-overlay[hidden] { display: none !important; }
+.piko-modal {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #0d1220;
+  border: 1px solid rgba(240,201,106,.2);
+  border-radius: 18px;
+  padding: 32px;
+  scrollbar-width: thin;
+}
+.piko-modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: none;
+  color: var(--pf-dim); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: color .18s, background .18s;
+}
+.piko-modal-close:hover { color: #fff; background: rgba(255,255,255,.12); }
+.piko-modal-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--pf-gold); margin-bottom: 20px;
+}
+
+/* Template cards for project submission */
+.piko-template-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 20px;
+}
+.piko-template-card {
+  padding: 14px 16px; border-radius: 10px;
+  border: 2px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+  cursor: pointer; transition: border-color .18s, background .18s;
+  text-align: left;
+}
+.piko-template-card:hover { border-color: rgba(240,201,106,.35); background: rgba(240,201,106,.05); }
+.piko-template-card.is-selected { border-color: var(--pf-gold); background: rgba(240,201,106,.08); }
+.piko-template-icon { font-size: 22px; margin-bottom: 6px; }
+.piko-template-name { font-size: 12px; font-weight: 700; color: var(--pf-text); }
+.piko-template-desc { font-size: 11px; color: var(--pf-dim); margin-top: 3px; line-height: 1.4; }
+@media (max-width: 480px) { .piko-template-grid { grid-template-columns: 1fr; } }

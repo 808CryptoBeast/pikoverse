@@ -188,6 +188,8 @@
         display_name: profile.display_name,
         bio: profile.bio || null, avatar_url: profile.avatar_url || null,
         banner_url: profile.banner_url || null, social: profile.social || null,
+        hide_email: profile.hide_email || false,
+        name_style: profile.name_style || null,
         theme: loadJSON(THEME_KEY, {}), updated_at: new Date().toISOString(),
       };
       var r = await supa().from('profiles').upsert(payload, { onConflict:'id' });
@@ -342,6 +344,7 @@
     renderRank(); renderBadges(); renderPlatforms(); renderNotifications();
     renderSaved(); renderOrders(); renderIdeas(); renderProjects();
     renderLearningFromState(); updateNotifBadge();
+    updateNavAvatar(); updateIdCardBanner(); applyHideEmail();
   }
 
   function renderHeader() {
@@ -351,7 +354,16 @@
 
     var set = function(id,v){ var el=$(id); if(el) el.textContent=v||''; };
     set('pikoProfileName',  name);
-    set('pikoProfileEmail', getUserEmail()||'');
+    var emailEl = $('pikoProfileEmail');
+    if (emailEl) {
+      if (p.hide_email) {
+        emailEl.textContent = '';
+        emailEl.hidden = true;
+      } else {
+        emailEl.textContent = getUserEmail() || '';
+        emailEl.hidden = false;
+      }
+    }
     set('pikoProfileBio',   p.bio||'');
 
     var social = $('pikoProfileSocial');
@@ -370,8 +382,35 @@
     var earned   = getEarnedBadgeIds(STATE.ideas.length, approved, STATE.orders.length, STATE.learn, STATE.profile);
     var score    = calcScore(STATE.ideas.length, approved, STATE.orders.length, earned.length);
     var rank     = getRank(score);
+    /* Apply custom name style */
+    var nameEl = $('pikoProfileName');
+    if (nameEl && p.name_style) {
+      nameEl.style.color      = p.name_style.color      || '';
+      nameEl.style.fontSize   = p.name_style.size       || '';
+      nameEl.style.fontFamily = p.name_style.font       || '';
+      nameEl.style.fontWeight = p.name_style.weight     || '';
+    }
+
     var rb       = $('pikoRankBadge');
     if (rb) { rb.textContent=rank.icon+' '+rank.label; rb.style.cssText='--rank-color:'+rank.color+';--rank-bg:'+rank.bg+';--rank-border:'+rank.border; }
+    /* Apply saved name style */
+    var ns = p.nameStyle || {};
+    var nameElStyle = $('pikoProfileName');
+    if (nameElStyle && ns.color)  nameElStyle.style.color      = ns.color;
+    if (nameElStyle && ns.font)   nameElStyle.style.fontFamily = ns.font || '';
+    if (nameElStyle && ns.weight) nameElStyle.style.fontWeight = ns.weight || '800';
+    if (nameElStyle && ns.size)   nameElStyle.style.fontSize   = ns.size  || '';
+
+    /* Update nav avatar */
+    updateNavAvatar(p.avatar_url || null);
+
+    /* Update ID card banner */
+    var idBanner = $('pikoIdCardBanner');
+    if (idBanner && STATE.theme && STATE.theme.bannerBg) {
+      idBanner.style.background = STATE.theme.bannerBg;
+      idBanner.style.backgroundSize = 'cover';
+      idBanner.style.backgroundPosition = 'center';
+    }
 
     var badgesEl = $('pikoProfileBadges');
     if (!badgesEl) return;
@@ -514,11 +553,23 @@
   /* ════════════════════════════════════════════
      AUTH UI
   ════════════════════════════════════════════ */
+  function updateNavAvatar(avatarUrl) {
+    var img = $('pikoNavAvatarImg');
+    if (!img) return;
+    if (avatarUrl) {
+      img.src = avatarUrl;
+      img.onerror = function(){ img.src='assets/goldenp.jpg'; };
+    } else {
+      img.src = 'assets/goldenp.jpg';
+    }
+  }
+
   function showAuthGate() {
     $('pikoAuthGate').hidden=false; $('pikoProfileSection').hidden=true;
     var s=$('pikoSignOut'); if(s) s.hidden=true;
     var t=$('pikoCustomizeTrigger'); if(t) t.hidden=true;
     var nb=$('pikoNotifBtn'); if(nb) nb.hidden=true;
+    updateNavAvatar(null); /* reset to logo */
   }
 
   async function showProfile() {
@@ -830,6 +881,16 @@
       ($('editBio')      ||{}).value=p.bio         ||'';
       ($('editAvatarUrl')||{}).value=p.avatar_url  ||'';
       ($('editSocial')   ||{}).value=p.social      ||'';
+      /* Populate hide email */
+      var hET=$('hideEmailToggle'); if(hET) hET.checked=!!(p.hide_email);
+      /* Populate name style */
+      var ns=p.name_style||{};
+      var nc=$('nameStyleColor');  if(nc) nc.value =ns.color  ||'#ffffff';
+      var nz=$('nameStyleSize');   if(nz) nz.value =ns.size   ||'1.5rem';
+      var nf=$('nameStyleFont');   if(nf) nf.value =ns.font   ||'Orbitron';
+      var nw=$('nameStyleWeight'); if(nw) nw.value =ns.weight ||'800';
+      /* Update preview */
+      updateNamePreview();
       if(form) form.hidden=false;
     });
     if(cancelBtn) cancelBtn.addEventListener('click',function(){ if(form) form.hidden=true; });
@@ -841,6 +902,8 @@
       p.bio        =(($('editBio')      ||{}).value||'').trim();
       p.avatar_url =(($('editAvatarUrl')||{}).value||'').trim();
       p.social     =(($('editSocial')   ||{}).value||'').trim();
+      p.hideEmail  = ($('editHideEmail')||{}).checked || false;
+      p.nameStyle  = applyNameStyle();
       STATE.profile=p;
       await DB_LAYER.upsertProfile(p);
       renderAll(); if(form) form.hidden=true; toast('✅ Profile updated!');
@@ -899,6 +962,267 @@
     });
   }
 
+
+  /* ════════════════════════════════════════════
+     NAV AVATAR — syncs with profile image
+  ════════════════════════════════════════════ */
+  function updateNavAvatar() {
+    var navImg = $('pikoNavAvatar');
+    if (!navImg) return;
+    var p = STATE.profile || {};
+    if (p.avatar_url) {
+      navImg.src = p.avatar_url;
+      navImg.classList.add('has-profile');
+      navImg.onerror = function(){ navImg.src = 'assets/goldenp.jpg'; navImg.classList.remove('has-profile'); };
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     ID CARD BANNER BG
+  ════════════════════════════════════════════ */
+  function updateIdCardBanner() {
+    var bannerEl  = $('pikoBanner');
+    var cardBanner = $('pikoIdCardBanner');
+    if (!cardBanner) return;
+    /* Use the banner's computed background or STATE.theme.bannerBg */
+    var bg = (STATE.theme && STATE.theme.bannerBg) || '';
+    if (!bg && bannerEl) {
+      var style = bannerEl.style.background || bannerEl.style.backgroundImage || '';
+      bg = style;
+    }
+    if (bg) {
+      cardBanner.style.background = bg;
+      cardBanner.style.backgroundSize = 'cover';
+      cardBanner.style.backgroundPosition = 'center';
+    } else {
+      cardBanner.style.background = 'linear-gradient(135deg,#0d1220,#141830)';
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     NAME STYLE — live preview + save
+  ════════════════════════════════════════════ */
+  function initNameStyleEditor() {
+    var colorIn  = $('editNameColor');
+    var fontIn   = $('editNameFont');
+    var weightIn = $('editNameWeight');
+    var sizeIn   = $('editNameSize');
+    var sizeVal  = $('editNameSizeVal');
+    var preview  = $('editNamePreview');
+
+    function updatePreview() {
+      if (!preview) return;
+      preview.textContent = ($('editName')||{}).value || (STATE.profile && STATE.profile.display_name) || 'Your Name';
+      if (colorIn)  preview.style.color      = colorIn.value;
+      if (fontIn)   preview.style.fontFamily = fontIn.value || 'inherit';
+      if (weightIn) preview.style.fontWeight = weightIn.value;
+      if (sizeIn)   { preview.style.fontSize = sizeIn.value + 'px'; if (sizeVal) sizeVal.textContent = sizeIn.value + 'px'; }
+    }
+
+    [colorIn, fontIn, weightIn, sizeIn].forEach(function(el){ if(el) el.addEventListener('input', updatePreview); });
+    var nameIn = $('editName'); if (nameIn) nameIn.addEventListener('input', updatePreview);
+
+    /* Populate from saved theme on open */
+    var editBtn = $('pikoEditProfileBtn');
+    if (editBtn) {
+      var origClick = editBtn.onclick;
+      editBtn.addEventListener('click', function() {
+        var ns = STATE.profile && STATE.profile.nameStyle || {};
+        if (colorIn  && ns.color)  colorIn.value  = ns.color;
+        if (fontIn   && ns.font)   fontIn.value   = ns.font;
+        if (weightIn && ns.weight) weightIn.value = ns.weight;
+        if (sizeIn   && ns.size)   sizeIn.value   = parseInt(ns.size) || 28;
+        setTimeout(updatePreview, 50);
+      });
+    }
+  }
+
+  function applyNameStyle() {
+    var colorIn  = $('editNameColor');
+    var fontIn   = $('editNameFont');
+    var weightIn = $('editNameWeight');
+    var sizeIn   = $('editNameSize');
+    var ns = {
+      color:  colorIn  ? colorIn.value  : '',
+      font:   fontIn   ? fontIn.value   : '',
+      weight: weightIn ? weightIn.value : '700',
+      size:   sizeIn   ? sizeIn.value+'px' : '28px',
+    };
+    var nameEl = $('pikoProfileName');
+    if (nameEl) {
+      if (ns.color)  nameEl.style.color      = ns.color;
+      if (ns.font)   nameEl.style.fontFamily = ns.font || 'inherit';
+      if (ns.weight) nameEl.style.fontWeight = ns.weight;
+      if (ns.size)   nameEl.style.fontSize   = ns.size;
+    }
+    return ns;
+  }
+
+  /* ════════════════════════════════════════════
+     HIDE EMAIL TOGGLE
+  ════════════════════════════════════════════ */
+  function applyHideEmail() {
+    var emailEl = $('pikoProfileEmail');
+    if (!emailEl) return;
+    var hide = STATE.profile && STATE.profile.hideEmail;
+    emailEl.style.display = hide ? 'none' : '';
+  }
+
+  /* ════════════════════════════════════════════
+     INLINE IDEA SUBMISSION
+  ════════════════════════════════════════════ */
+  function initIdeaForm() {
+    var showBtn    = $('pikoSubmitIdeaBtn');
+    var form       = $('pikoIdeaForm');
+    var cancelBtn  = $('pikoIdeaCancelBtn');
+    var submitBtn  = $('pikoIdeaSubmitBtn');
+    var textEl     = $('ideaText');
+    var countEl    = $('ideaCharCount');
+
+    if (showBtn) showBtn.addEventListener('click', function(){
+      if (form) form.hidden = !form.hidden;
+      if (!form.hidden && textEl) textEl.focus();
+    });
+    if (cancelBtn) cancelBtn.addEventListener('click', function(){ if(form) form.hidden = true; });
+
+    if (textEl && countEl) {
+      textEl.addEventListener('input', function(){ countEl.textContent = textEl.value.length; });
+    }
+
+    if (submitBtn) submitBtn.addEventListener('click', async function(){
+      var text = (textEl || {}).value || '';
+      var cat  = ($('ideaCategory')||{}).value || 'other';
+      if (text.trim().length < 10) { showStatus('pikoIdeaStatus','Please write at least 10 characters.','err'); return; }
+
+      submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+      var ideaObj = {
+        id:       'idea-' + Date.now(),
+        text:     text.trim(),
+        name:     (STATE.profile && STATE.profile.display_name) || getUserEmail() || 'Anonymous',
+        contact:  getUserEmail() || '',
+        category: cat,
+        ts:       Date.now(),
+        dismissed: false,
+        reply:    '',
+        status:   'pending',
+      };
+
+      /* Write to Supabase community_ideas + localStorage */
+      var localIdeas = loadJSON('amp_admin_ideas', []);
+      localIdeas.unshift(ideaObj); saveJSON('amp_admin_ideas', localIdeas);
+
+      if (!OFFLINE && supa() && SESSION_USER) {
+        await supa().from('community_ideas').insert({
+          id: ideaObj.id, text: ideaObj.text, name: ideaObj.name,
+          contact: SESSION_USER.email, shareContact: false,
+          category: cat, ts: ideaObj.ts, dismissed: false, reply: '', status: 'pending',
+          user_id: SESSION_USER.id,
+        });
+      }
+
+      STATE.ideas = await DB_LAYER.getMyIdeas(getUserId(), getUserEmail());
+      renderIdeas(); renderTimeline(); renderStats(); renderRank(); renderBadges();
+
+      showStatus('pikoIdeaStatus','✅ Idea submitted! AMP will review it shortly.','ok');
+      if (textEl) textEl.value = ''; if (countEl) countEl.textContent = '0';
+      submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Idea';
+      await DB_LAYER.addNotif(getUserId(),'💡','Your idea was submitted and is pending review.');
+      STATE.notifs = await DB_LAYER.getNotifs(getUserId()); updateNotifBadge();
+      setTimeout(function(){ if(form) form.hidden = true; clearStatus('pikoIdeaStatus'); }, 3000);
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     INLINE PROJECT SUBMISSION + TEMPLATES
+  ════════════════════════════════════════════ */
+  var PROJECT_TEMPLATES = {
+    app:       { name:'My App / Tool', desc:'A digital tool or application that solves a problem for the community.', stage:'building' },
+    art:       { name:'My Creative Project', desc:'An artistic or creative work — visual, audio, or mixed media.', stage:'idea' },
+    education: { name:'Learning Resource', desc:'An educational resource, course, or guide for the Pikoverse community.', stage:'idea' },
+    community: { name:'Community Initiative', desc:'A project that brings people together or builds community connection.', stage:'idea' },
+    business:  { name:'My Business / Venture', desc:'A business idea or entrepreneurial project in the Pikoverse ecosystem.', stage:'idea' },
+    blank:     { name:'', desc:'', stage:'idea' },
+  };
+
+  function initProjectForm() {
+    var showBtn      = $('pikoSubmitProjectBtn');
+    var templates    = $('pikoProjectTemplates');
+    var form         = $('pikoProjectForm');
+    var cancelBtn    = $('pikoProjectCancelBtn');
+    var submitBtn    = $('pikoProjectSubmitBtn');
+
+    if (showBtn) showBtn.addEventListener('click', function(){
+      if (templates) { templates.hidden = false; }
+      if (form) form.hidden = true;
+    });
+
+    document.querySelectorAll('.piko-template-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        var tmpl = PROJECT_TEMPLATES[card.dataset.template] || PROJECT_TEMPLATES.blank;
+        var nameEl  = $('projectName');
+        var descEl  = $('projectDesc');
+        var stageEl = $('projectStage');
+        if (nameEl)  nameEl.value  = tmpl.name;
+        if (descEl)  descEl.value  = tmpl.desc;
+        if (stageEl) stageEl.value = tmpl.stage;
+        if (templates) templates.hidden = true;
+        if (form) { form.hidden = false; if (nameEl) nameEl.focus(); }
+      });
+    });
+
+    if (cancelBtn) cancelBtn.addEventListener('click', function(){
+      if (form) form.hidden = true;
+      if (templates) templates.hidden = true;
+    });
+
+    if (submitBtn) submitBtn.addEventListener('click', async function(){
+      var name  = (($('projectName') ||{}).value||'').trim();
+      var desc  = (($('projectDesc') ||{}).value||'').trim();
+      var stage = ($('projectStage')||{}).value || 'idea';
+      var url   = (($('projectUrl')  ||{}).value||'').trim();
+
+      if (!name) { showStatus('pikoProjectStatus','Please give your project a name.','err'); return; }
+      if (!desc) { showStatus('pikoProjectStatus','Please add a short description.','err'); return; }
+
+      submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+      var proj = {
+        id:      'proj-' + Date.now(),
+        name:    name,
+        desc:    desc,
+        stage:   stage,
+        url:     url || '',
+        contact: getUserEmail() || '',
+        status:  'pending',
+        ts:      Date.now(),
+      };
+
+      /* localStorage */
+      var localProjs = loadJSON('amp_admin_projects_hub', []);
+      localProjs.unshift(proj); saveJSON('amp_admin_projects_hub', localProjs);
+
+      /* Supabase */
+      if (!OFFLINE && supa() && SESSION_USER) {
+        await supa().from('projects').insert({
+          user_id: SESSION_USER.id, contact: SESSION_USER.email,
+          name: name, description: desc, stage: stage, url: url || null, status: 'pending',
+          created_at: new Date().toISOString(),
+        });
+      }
+
+      STATE.projects = await DB_LAYER.getMyProjects(getUserId(), getUserEmail());
+      renderProjects(); renderTimeline(); renderStats(); renderRank(); renderBadges();
+
+      showStatus('pikoProjectStatus','✅ Project submitted! AMP will review and add it to the showcase.','ok');
+      ['projectName','projectDesc','projectUrl'].forEach(function(id){ var el=$(id); if(el) el.value=''; });
+      submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Project';
+      await DB_LAYER.addNotif(getUserId(),'🚀','Your project "'+name+'" was submitted for review!');
+      STATE.notifs = await DB_LAYER.getNotifs(getUserId()); updateNotifBadge();
+      setTimeout(function(){ if(form) form.hidden = true; if(templates) templates.hidden = true; clearStatus('pikoProjectStatus'); }, 3000);
+    });
+  }
+
   /* ════════════════════════════════════════════
      SHARE / NOTIF BELL / CUSTOMIZE
   ════════════════════════════════════════════ */
@@ -945,6 +1269,8 @@
     if(t.bgImage) document.body.style.background=t.bgImage;
     if(t.bannerBg){ var bn=$('pikoBanner'); if(bn) bn.style.background=t.bannerBg; }
     var st=$('pikoCustomStyle'); if(st) st.textContent=t.css||'';
+    /* Keep ID card banner in sync */
+    if(t.bannerBg){ var idBanner=$('pikoIdCardBanner'); if(idBanner){ idBanner.style.background=t.bannerBg; idBanner.style.backgroundSize='cover'; idBanner.style.backgroundPosition='center'; } }
   }
 
   function initCustomize() {
@@ -1018,9 +1344,238 @@
     });
   }
 
+  /* ── Name style preview ── */
+  function updateNamePreview() {
+    var preview = $('pikoNamePreview');
+    var nameInput = $('editName');
+    if (!preview) return;
+    var ns = {
+      color:  ($('nameStyleColor') ||{}).value || '#ffffff',
+      size:   ($('nameStyleSize')  ||{}).value || '1.5rem',
+      font:   ($('nameStyleFont')  ||{}).value || 'Orbitron',
+      weight: ($('nameStyleWeight')||{}).value || '800',
+    };
+    preview.textContent    = (nameInput && nameInput.value) || (STATE.profile && STATE.profile.display_name) || 'Your Name';
+    preview.style.color      = ns.color;
+    preview.style.fontSize   = ns.size;
+    preview.style.fontFamily = ns.font;
+    preview.style.fontWeight = ns.weight;
+  }
+
+  function initNameStyleEditor() {
+    ['nameStyleColor','nameStyleSize','nameStyleFont','nameStyleWeight'].forEach(function(id){
+      var el=$(id); if(el) el.addEventListener('input', updateNamePreview);
+    });
+    var nameInput=$('editName'); if(nameInput) nameInput.addEventListener('input', updateNamePreview);
+  }
+
+  /* ── Modal system ── */
+  function openModal(content) {
+    var overlay = $('pikoModalOverlay');
+    var mc      = $('pikoModalContent');
+    if (!overlay || !mc) return;
+    mc.innerHTML = content;
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    var overlay = $('pikoModalOverlay');
+    if (overlay) overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  /* ── Share Idea modal ── */
+  function openIdeaModal() {
+    openModal([
+      '<h3 class="piko-modal-title"><i class="fas fa-lightbulb"></i> Share an Idea</h3>',
+      '<div class="piko-auth-field">',
+        '<label class="piko-auth-label">Your Idea</label>',
+        '<textarea id="modalIdeaText" class="piko-auth-input" rows="4" maxlength="500" placeholder="What\'s on your mind? Share a concept, suggestion, or vision for Pikoverse…" style="resize:vertical"></textarea>',
+      '</div>',
+      '<div class="piko-auth-field">',
+        '<label class="piko-auth-label">Category</label>',
+        '<select id="modalIdeaCategory" class="piko-auth-input piko-select-sm" style="max-width:100%">',
+          '<option value="general">General</option>',
+          '<option value="education">Education</option>',
+          '<option value="technology">Technology</option>',
+          '<option value="culture">Culture</option>',
+          '<option value="marketplace">Marketplace</option>',
+          '<option value="community">Community</option>',
+          '<option value="art">Art &amp; Creative</option>',
+          '<option value="other">Other</option>',
+        '</select>',
+      '</div>',
+      '<div class="piko-auth-status" id="modalIdeaStatus" hidden></div>',
+      '<button class="piko-auth-btn" id="modalIdeaSubmit" type="button"><i class="fas fa-paper-plane"></i> Share with Community</button>',
+    ].join(''));
+
+    var btn = $('modalIdeaSubmit');
+    if (!btn) return;
+    btn.addEventListener('click', async function() {
+      var text = ($('modalIdeaText') || {}).value || '';
+      var cat  = ($('modalIdeaCategory') || {}).value || 'general';
+      if (!text.trim()) { showStatus('modalIdeaStatus','Please write your idea first.','err'); return; }
+
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing…';
+
+      var email = getUserEmail();
+      var p = STATE.profile || {};
+      var idea = {
+        id:          'idea-' + Date.now(),
+        text:        text.trim(),
+        name:        p.display_name || email.split('@')[0],
+        contact:     email,
+        shareContact:false,
+        category:    cat,
+        ts:          Date.now(),
+        dismissed:   false,
+        reply:       '',
+        status:      'pending',
+      };
+
+      /* Write to localStorage and Supabase */
+      var ideas = loadJSON('amp_admin_ideas', []);
+      ideas.unshift(idea); saveJSON('amp_admin_ideas', ideas);
+
+      if (!OFFLINE && supa() && SESSION_USER) {
+        await supa().from('community_ideas').insert(Object.assign({}, idea, { user_id: SESSION_USER.id }));
+      }
+
+      STATE.ideas = await DB_LAYER.getMyIdeas(getUserId(), email);
+      renderIdeas(); renderTimeline(); renderStats();
+      toast('💡 Idea shared with the community!');
+      closeModal();
+    });
+  }
+
+  /* ── Share Project modal ── */
+  var PROJECT_TEMPLATES = [
+    { id:'app',      icon:'📱', name:'App / Tool',       desc:'Web or mobile application', defaults:{ stage:'building', category:'technology' } },
+    { id:'art',      icon:'🎨', name:'Creative Project', desc:'Art, music, design, or media', defaults:{ stage:'idea', category:'art' } },
+    { id:'edu',      icon:'📚', name:'Education',        desc:'Course, guide, or learning resource', defaults:{ stage:'idea', category:'education' } },
+    { id:'business', icon:'💼', name:'Business / Brand', desc:'Product, service, or venture', defaults:{ stage:'idea', category:'business' } },
+    { id:'community',icon:'🌺', name:'Community Event',  desc:'Workshop, gathering, or initiative', defaults:{ stage:'idea', category:'community' } },
+    { id:'research', icon:'🔬', name:'Research',         desc:'Study, analysis, or white paper', defaults:{ stage:'idea', category:'research' } },
+    { id:'nft',      icon:'🔗', name:'Web3 / NFT',       desc:'Blockchain, token, or DAO project', defaults:{ stage:'idea', category:'technology' } },
+    { id:'blank',    icon:'✨', name:'Custom',           desc:'Start from scratch', defaults:{ stage:'idea', category:'other' } },
+  ];
+
+  function openProjectModal() {
+    var selectedTemplate = null;
+
+    openModal([
+      '<h3 class="piko-modal-title"><i class="fas fa-rocket"></i> Submit a Project</h3>',
+      '<p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px">Pick a template to get started or create a custom entry.</p>',
+
+      '<div class="piko-template-grid">',
+        PROJECT_TEMPLATES.map(function(t){
+          return '<div class="piko-template-card" data-template="'+t.id+'"><div class="piko-template-icon">'+t.icon+'</div><div class="piko-template-name">'+t.name+'</div><div class="piko-template-desc">'+t.desc+'</div></div>';
+        }).join(''),
+      '</div>',
+
+      '<div id="projectFormFields" style="display:none">',
+        '<div class="piko-auth-field">',
+          '<label class="piko-auth-label">Project Name</label>',
+          '<input type="text" id="modalProjectName" class="piko-auth-input" placeholder="What\'s your project called?" maxlength="80">',
+        '</div>',
+        '<div class="piko-auth-field">',
+          '<label class="piko-auth-label">Description</label>',
+          '<textarea id="modalProjectDesc" class="piko-auth-input" rows="3" maxlength="400" placeholder="Tell the community what you\'re building…" style="resize:vertical"></textarea>',
+        '</div>',
+        '<div style="display:flex;gap:12px;flex-wrap:wrap">',
+          '<div class="piko-auth-field" style="flex:1;min-width:120px">',
+            '<label class="piko-auth-label">Stage</label>',
+            '<select id="modalProjectStage" class="piko-auth-input piko-select-sm" style="max-width:100%">',
+              '<option value="idea">💡 Idea</option>',
+              '<option value="building">🔧 Building</option>',
+              '<option value="live">🚀 Live</option>',
+            '</select>',
+          '</div>',
+          '<div class="piko-auth-field" style="flex:1;min-width:120px">',
+            '<label class="piko-auth-label">URL <span style="opacity:.5">(optional)</span></label>',
+            '<input type="url" id="modalProjectUrl" class="piko-auth-input" placeholder="https://…" maxlength="200">',
+          '</div>',
+        '</div>',
+        '<div class="piko-auth-status" id="modalProjectStatus" hidden></div>',
+        '<button class="piko-auth-btn" id="modalProjectSubmit" type="button"><i class="fas fa-rocket"></i> Submit Project</button>',
+      '</div>',
+    ].join(''));
+
+    /* Template selection */
+    document.querySelectorAll('.piko-template-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.piko-template-card').forEach(function(c){ c.classList.remove('is-selected'); });
+        card.classList.add('is-selected');
+        selectedTemplate = PROJECT_TEMPLATES.find(function(t){ return t.id === card.dataset.template; });
+        var fields = $('projectFormFields');
+        if (fields) fields.style.display = 'block';
+        /* Pre-fill stage */
+        var stageEl = $('modalProjectStage');
+        if (stageEl && selectedTemplate) stageEl.value = selectedTemplate.defaults.stage || 'idea';
+        var nameEl = $('modalProjectName');
+        if (nameEl) nameEl.focus();
+      });
+    });
+
+    /* Submit */
+    document.addEventListener('click', async function handler(e) {
+      if (e.target.id !== 'modalProjectSubmit') return;
+      document.removeEventListener('click', handler);
+
+      var name  = ($('modalProjectName')  || {}).value || '';
+      var desc  = ($('modalProjectDesc')  || {}).value || '';
+      var stage = ($('modalProjectStage') || {}).value || 'idea';
+      var url   = ($('modalProjectUrl')   || {}).value || '';
+
+      if (!name.trim()) { showStatus('modalProjectStatus','Please enter a project name.','err'); return; }
+      if (!desc.trim()) { showStatus('modalProjectStatus','Please add a short description.','err'); return; }
+
+      var btn = $('modalProjectSubmit');
+      if (btn) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting…'; }
+
+      var email = getUserEmail();
+      var p = STATE.profile || {};
+      var project = {
+        name:    name.trim(),
+        desc:    desc.trim(),
+        stage:   stage,
+        url:     url.trim(),
+        status:  'pending',
+        contact: email,
+        ts:      Date.now(),
+      };
+
+      /* localStorage */
+      var projects = loadJSON('amp_admin_projects_hub', []);
+      projects.unshift(project); saveJSON('amp_admin_projects_hub', projects);
+
+      /* Supabase */
+      if (!OFFLINE && supa() && SESSION_USER) {
+        await supa().from('projects').insert({
+          user_id: SESSION_USER.id, contact: email,
+          name: project.name, description: project.desc,
+          stage: project.stage, status: 'pending', url: project.url,
+          created_at: new Date().toISOString(),
+        });
+      }
+
+      STATE.projects = await DB_LAYER.getMyProjects(getUserId(), email);
+      renderProjects(); renderTimeline(); renderStats();
+      toast('🚀 Project submitted! AMP will review it shortly.');
+      closeModal();
+    });
+  }
+
   function initLinks() {
-    var ib=$('pikoSubmitIdeaBtn');    if(ib) ib.addEventListener('click',function(){ window.location.href='index.html#ideas'; });
-    var pb=$('pikoSubmitProjectBtn'); if(pb) pb.addEventListener('click',function(){ window.location.href='index.html#showcase'; });
+    var ib=$('pikoSubmitIdeaBtn');    if(ib) ib.addEventListener('click', openIdeaModal);
+    var pb=$('pikoSubmitProjectBtn'); if(pb) pb.addEventListener('click', openProjectModal);
+
+    /* Modal close */
+    var closeBtn=$('pikoModalClose');
+    if(closeBtn) closeBtn.addEventListener('click', closeModal);
+    var overlay=$('pikoModalOverlay');
+    if(overlay) overlay.addEventListener('click', function(e){ if(e.target===overlay) closeModal(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
   }
 
   /* ════════════════════════════════════════════
@@ -1030,9 +1585,9 @@
     applyTheme(loadJSON(THEME_KEY, {}));
     initGlobalUI(); initAuthTabs(); initProfileTabs();
     initSignup(); initSignin(); initSignOut();
-    initEditProfile(); initAccountSettings();
+    initEditProfile(); initAccountSettings(); initNameStyleEditor();
     initShareCard(); initNotifBell(); initCustomize(); initLinks();
-    handlePasswordReset();
+    handlePasswordReset(); initNameStyleEditor(); initIdeaForm(); initProjectForm();
 
     if(OFFLINE){
       var local=loadJSON(PROFILE_KEY,null);
