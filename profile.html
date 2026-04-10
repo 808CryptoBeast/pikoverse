@@ -7,19 +7,24 @@
   <title>Pikoverse — My Profile</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Montserrat:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=Syne:wght@400;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/hub.css">
   <link rel="stylesheet" href="css/profile.css">
+  <style id="pikoCustomStyle"></style>
 </head>
 <body class="piko-profile-page">
 
-  <!-- NAV (reuse hub nav style) -->
+  <!-- NAV -->
   <nav class="piko-profile-nav">
     <a href="index.html" class="piko-profile-nav-logo">
       <img src="assets/goldenp.jpg" alt="Pikoverse" onerror="this.src='assets/AMP Tiki.jpg'">
       <span>Pikoverse</span>
     </a>
     <div class="piko-profile-nav-right">
+      <button class="piko-notif-btn" id="pikoNotifBtn" type="button" title="Notifications" hidden>
+        <i class="fas fa-bell"></i>
+        <span class="piko-notif-badge" id="pikoNotifBadge" hidden>0</span>
+      </button>
       <a href="index.html" class="piko-profile-nav-link"><i class="fas fa-house"></i> Hub</a>
       <button class="piko-profile-nav-link piko-signout-btn" id="pikoSignOut" type="button" hidden>
         <i class="fas fa-sign-out-alt"></i> Sign Out
@@ -27,47 +32,35 @@
     </div>
   </nav>
 
-  <!-- AUTH GATE — shown when not logged in -->
+  <!-- AUTH GATE -->
   <section class="piko-auth-gate" id="pikoAuthGate">
     <div class="piko-auth-gate-inner">
       <div class="piko-auth-gate-icon">🌺</div>
       <h1 class="piko-auth-gate-title">Join the Pikoverse</h1>
-      <p class="piko-auth-gate-sub">
-        Create your profile to connect your projects, ideas, learning progress,
-        and community activity — all in one place.
-      </p>
-
-      <!-- Sign up / Sign in tabs -->
+      <p class="piko-auth-gate-sub">Create your profile to track projects, ideas, learning progress, and community connections.</p>
       <div class="piko-auth-tabs">
         <button class="piko-auth-tab is-active" data-auth-tab="signup" type="button">Create Profile</button>
         <button class="piko-auth-tab" data-auth-tab="signin" type="button">Sign In</button>
       </div>
-
-      <!-- Sign up form -->
       <div class="piko-auth-pane is-active" id="pikoAuthSignup">
         <div class="piko-auth-field">
           <label class="piko-auth-label" for="signupName">Display Name</label>
-          <input type="text" id="signupName" class="piko-auth-input"
-                 placeholder="What should the community call you?" maxlength="60">
+          <input type="text" id="signupName" class="piko-auth-input" placeholder="What should the community call you?" maxlength="60">
         </div>
         <div class="piko-auth-field">
           <label class="piko-auth-label" for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" class="piko-auth-input"
-                 placeholder="your@email.com" maxlength="120">
+          <input type="email" id="signupEmail" class="piko-auth-input" placeholder="your@email.com" maxlength="120">
         </div>
         <button class="piko-auth-btn" id="pikoSignupBtn" type="button">
           <i class="fas fa-paper-plane"></i> Create My Profile
         </button>
         <div class="piko-auth-status" id="pikoSignupStatus" hidden></div>
       </div>
-
-      <!-- Sign in form -->
       <div class="piko-auth-pane" id="pikoAuthSignin">
         <p class="piko-auth-hint">Enter your email and we'll send you a sign-in link.</p>
         <div class="piko-auth-field">
           <label class="piko-auth-label" for="signinEmail">Email</label>
-          <input type="email" id="signinEmail" class="piko-auth-input"
-                 placeholder="your@email.com" maxlength="120">
+          <input type="email" id="signinEmail" class="piko-auth-input" placeholder="your@email.com" maxlength="120">
         </div>
         <button class="piko-auth-btn" id="pikoSigninBtn" type="button">
           <i class="fas fa-envelope"></i> Send Sign-In Link
@@ -77,11 +70,21 @@
     </div>
   </section>
 
-  <!-- PROFILE — shown when logged in -->
+  <!-- PROFILE -->
   <section class="piko-profile-section" id="pikoProfileSection" hidden>
+
+    <!-- BANNER -->
+    <div class="piko-profile-banner" id="pikoBanner">
+      <div class="piko-profile-banner-overlay"></div>
+      <button class="piko-profile-banner-edit" id="pikoBannerEditBtn" type="button">
+        <i class="fas fa-image"></i> Change Banner
+      </button>
+      <input type="file" id="pikoBannerFile" accept="image/*" hidden>
+    </div>
+
     <div class="piko-profile-container">
 
-      <!-- Profile header -->
+      <!-- HEADER: avatar + meta -->
       <div class="piko-profile-header">
         <div class="piko-profile-avatar-wrap">
           <div class="piko-profile-avatar" id="pikoProfileAvatar">
@@ -93,28 +96,27 @@
           </button>
           <input type="file" id="pikoAvatarFile" accept="image/*" hidden>
         </div>
-
         <div class="piko-profile-meta">
           <div class="piko-profile-name-row">
             <h1 class="piko-profile-name" id="pikoProfileName">Loading…</h1>
+            <span class="piko-profile-rank-badge" id="pikoRankBadge">🌱 Seedling</span>
             <button class="piko-profile-edit-btn" id="pikoEditProfileBtn" type="button">
               <i class="fas fa-pen"></i> Edit
             </button>
           </div>
           <p class="piko-profile-email" id="pikoProfileEmail"></p>
           <p class="piko-profile-bio" id="pikoProfileBio"></p>
-          <div class="piko-profile-badges">
-            <span class="piko-profile-badge piko-profile-badge--member">
-              <i class="fas fa-star"></i> Pikoverse Member
-            </span>
+          <p class="piko-profile-social" id="pikoProfileSocial"></p>
+          <div class="piko-profile-badges" id="pikoProfileBadges">
+            <span class="piko-profile-badge piko-profile-badge--member"><i class="fas fa-star"></i> Pikoverse Member</span>
             <span class="piko-profile-badge piko-profile-badge--joined" id="pikoProfileJoined"></span>
           </div>
         </div>
       </div>
 
-      <!-- Edit profile form (hidden by default) -->
+      <!-- EDIT FORM -->
       <div class="piko-profile-edit-form" id="pikoProfileEditForm" hidden>
-        <h3 class="piko-profile-edit-title">Edit Profile</h3>
+        <h3 class="piko-profile-edit-title"><i class="fas fa-pen"></i> Edit Profile</h3>
         <div class="piko-profile-edit-grid">
           <div class="piko-auth-field">
             <label class="piko-auth-label">Display Name</label>
@@ -122,55 +124,125 @@
           </div>
           <div class="piko-auth-field">
             <label class="piko-auth-label">Bio <span style="font-weight:400;opacity:.6">(optional)</span></label>
-            <textarea id="editBio" class="piko-auth-input" rows="3" maxlength="200"
-                      placeholder="A few words about you…" style="resize:vertical"></textarea>
+            <textarea id="editBio" class="piko-auth-input" rows="3" maxlength="200" placeholder="A few words about you…" style="resize:vertical"></textarea>
           </div>
           <div class="piko-auth-field">
-            <label class="piko-auth-label">Avatar URL <span style="font-weight:400;opacity:.6">(or upload above)</span></label>
-            <input type="url" id="editAvatarUrl" class="piko-auth-input"
-                   placeholder="https://…" maxlength="300">
+            <label class="piko-auth-label">Avatar URL <span style="font-weight:400;opacity:.6">(or upload)</span></label>
+            <input type="url" id="editAvatarUrl" class="piko-auth-input" placeholder="https://…" maxlength="300">
           </div>
           <div class="piko-auth-field">
             <label class="piko-auth-label">Social / @handle <span style="font-weight:400;opacity:.6">(optional)</span></label>
-            <input type="text" id="editSocial" class="piko-auth-input"
-                   placeholder="@yourhandle or link" maxlength="120">
+            <input type="text" id="editSocial" class="piko-auth-input" placeholder="@yourhandle or link" maxlength="120">
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:16px">
-          <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button">
-            <i class="fas fa-floppy-disk"></i> Save Changes
-          </button>
-          <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">
-            Cancel
+          <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button"><i class="fas fa-floppy-disk"></i> Save</button>
+          <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">Cancel</button>
+        </div>
+      </div>
+
+      <!-- STATS BAR -->
+      <div class="piko-profile-stats">
+        <div class="piko-profile-stat">
+          <span class="piko-profile-stat-num" id="statIdeas">0</span>
+          <span class="piko-profile-stat-label">Ideas</span>
+        </div>
+        <div class="piko-profile-stat">
+          <span class="piko-profile-stat-num" id="statProjects">0</span>
+          <span class="piko-profile-stat-label">Projects</span>
+        </div>
+        <div class="piko-profile-stat">
+          <span class="piko-profile-stat-num" id="statScore">0</span>
+          <span class="piko-profile-stat-label">Score</span>
+        </div>
+        <div class="piko-profile-stat">
+          <span class="piko-profile-stat-num" id="statBadges">0</span>
+          <span class="piko-profile-stat-label">Badges</span>
+        </div>
+      </div>
+
+      <!-- ID CARD -->
+      <div class="piko-id-card" id="pikoIdCard">
+        <div class="piko-id-card-avatar" id="pikoIdCardAvatar">?</div>
+        <div class="piko-id-card-info">
+          <div class="piko-id-card-name" id="pikoIdCardName">—</div>
+          <div class="piko-id-card-meta" id="pikoIdCardMeta">Pikoverse Member</div>
+          <div class="piko-id-card-score" id="pikoIdCardScore">Score: 0</div>
+        </div>
+        <div class="piko-id-card-actions">
+          <button class="piko-id-card-btn piko-id-card-btn--gold" id="pikoShareCardBtn" type="button">
+            <i class="fas fa-share-nodes"></i> Share ID
           </button>
         </div>
       </div>
 
-      <!-- Profile tabs -->
+      <!-- TABS -->
       <div class="piko-profile-tabs">
-        <button class="piko-profile-tab is-active" data-ptab="activity" type="button">
-          <i class="fas fa-bolt"></i> Activity
+        <button class="piko-profile-tab is-active" data-ptab="activity" type="button"><i class="fas fa-bolt"></i> Timeline</button>
+        <button class="piko-profile-tab" data-ptab="rank" type="button"><i class="fas fa-trophy"></i> Rank</button>
+        <button class="piko-profile-tab" data-ptab="platforms" type="button"><i class="fas fa-globe"></i> Connected</button>
+        <button class="piko-profile-tab" data-ptab="saved" type="button"><i class="fas fa-bookmark"></i> Saved</button>
+        <button class="piko-profile-tab" data-ptab="notifications" type="button">
+          <i class="fas fa-bell"></i> Alerts <span id="tabNotifCount" style="display:none;background:#e05252;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px"></span>
         </button>
-        <button class="piko-profile-tab" data-ptab="projects" type="button">
-          <i class="fas fa-rocket"></i> Projects
-        </button>
-        <button class="piko-profile-tab" data-ptab="ideas" type="button">
-          <i class="fas fa-lightbulb"></i> Ideas
-        </button>
-        <button class="piko-profile-tab" data-ptab="orders" type="button">
-          <i class="fas fa-bag-shopping"></i> Orders
-        </button>
-        <button class="piko-profile-tab" data-ptab="learning" type="button">
-          <i class="fas fa-graduation-cap"></i> Learning
-        </button>
+        <button class="piko-profile-tab" data-ptab="projects" type="button"><i class="fas fa-rocket"></i> Projects</button>
+        <button class="piko-profile-tab" data-ptab="ideas" type="button"><i class="fas fa-lightbulb"></i> Ideas</button>
+        <button class="piko-profile-tab" data-ptab="orders" type="button"><i class="fas fa-bag-shopping"></i> Orders</button>
+        <button class="piko-profile-tab" data-ptab="learning" type="button"><i class="fas fa-graduation-cap"></i> Learning</button>
       </div>
 
-      <!-- Tab panes -->
-      <!-- ACTIVITY -->
+      <!-- ACTIVITY TIMELINE -->
       <div class="piko-profile-pane is-active" id="pikoProfilePaneActivity">
-        <h3 class="piko-profile-pane-title">Recent Activity</h3>
-        <div class="piko-profile-activity-list" id="pikoActivityList">
+        <h3 class="piko-profile-pane-title">Community Timeline</h3>
+        <div class="piko-timeline" id="pikoTimeline">
           <p class="piko-profile-empty">Your activity will appear here as you engage with the community.</p>
+        </div>
+      </div>
+
+      <!-- RANK & BADGES -->
+      <div class="piko-profile-pane" id="pikoProfilePaneRank">
+        <h3 class="piko-profile-pane-title">Rank & Achievements</h3>
+        <div class="piko-rank-progress-wrap">
+          <div class="piko-rank-row">
+            <div class="piko-rank-icon" id="rankIcon">🌱</div>
+            <div>
+              <div class="piko-rank-label" id="rankLabel">Seedling</div>
+              <div class="piko-rank-sub" id="rankSub">Keep contributing to level up</div>
+            </div>
+          </div>
+          <div class="piko-rank-bar-track">
+            <div class="piko-rank-bar-fill" id="rankBarFill" style="width:0%"></div>
+          </div>
+          <div class="piko-rank-next" id="rankNext">0 / 5 points to Grower</div>
+        </div>
+        <h4 style="font-size:13px;font-weight:700;color:var(--pf-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Badges</h4>
+        <div class="piko-badges-grid" id="pikoBadgesGrid"></div>
+      </div>
+
+      <!-- CONNECTED PLATFORMS -->
+      <div class="piko-profile-pane" id="pikoProfilePanePlatforms">
+        <h3 class="piko-profile-pane-title">Connected Platforms</h3>
+        <div class="piko-platforms-grid" id="pikoPlatformsGrid"></div>
+      </div>
+
+      <!-- SAVED -->
+      <div class="piko-profile-pane" id="pikoProfilePaneSaved">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3 class="piko-profile-pane-title" style="margin-bottom:0">Saved & Bookmarked</h3>
+        </div>
+        <div class="piko-saved-grid" id="pikoSavedGrid">
+          <p class="piko-profile-empty">Bookmark Chronicle articles, ecosystem cards, and marketplace items to find them here.</p>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="piko-profile-pane" id="pikoProfilePaneNotifications">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h3 class="piko-profile-pane-title" style="margin-bottom:0">Notifications</h3>
+          <button class="piko-notif-mark-all" id="pikoMarkAllRead" type="button">Mark all read</button>
+        </div>
+        <div class="piko-notif-list" id="pikoNotifList">
+          <p class="piko-profile-empty">No notifications yet. Stay active in the community!</p>
         </div>
       </div>
 
@@ -178,9 +250,7 @@
       <div class="piko-profile-pane" id="pikoProfilePaneProjects">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
           <h3 class="piko-profile-pane-title">My Projects</h3>
-          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitProjectBtn" type="button">
-            <i class="fas fa-plus"></i> Submit Project
-          </button>
+          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitProjectBtn" type="button"><i class="fas fa-plus"></i> Submit</button>
         </div>
         <div class="piko-profile-projects-grid" id="pikoProfileProjectsGrid">
           <p class="piko-profile-empty">No projects submitted yet. Share what you're building!</p>
@@ -191,9 +261,7 @@
       <div class="piko-profile-pane" id="pikoProfilePaneIdeas">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
           <h3 class="piko-profile-pane-title">My Ideas</h3>
-          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitIdeaBtn" type="button">
-            <i class="fas fa-plus"></i> Share Idea
-          </button>
+          <button class="piko-auth-btn piko-auth-btn--sm" id="pikoSubmitIdeaBtn" type="button"><i class="fas fa-plus"></i> Share Idea</button>
         </div>
         <div class="piko-profile-ideas-list" id="pikoProfileIdeasList">
           <p class="piko-profile-empty">No ideas shared yet. What are you thinking?</p>
@@ -204,7 +272,7 @@
       <div class="piko-profile-pane" id="pikoProfilePaneOrders">
         <h3 class="piko-profile-pane-title">Order History</h3>
         <div class="piko-profile-orders-list" id="pikoProfileOrdersList">
-          <p class="piko-profile-empty">No orders yet. <a href="marketplace/marketplace.html" style="color:#f0c96a">Visit the AMP Marketplace</a></p>
+          <p class="piko-profile-empty">No orders yet. <a href="marketplace/marketplace.html" style="color:#f0c96a">Visit the AMP Marketplace →</a></p>
         </div>
       </div>
 
@@ -212,55 +280,142 @@
       <div class="piko-profile-pane" id="pikoProfilePaneLearning">
         <h3 class="piko-profile-pane-title">Learning Progress</h3>
         <div class="piko-profile-learning-grid" id="pikoProfileLearningGrid">
-
-          <!-- Culturalverse -->
           <div class="piko-learn-track">
             <div class="piko-learn-track-header">
               <span class="piko-learn-track-icon">🌿</span>
-              <div>
-                <strong>Culturalverse</strong>
-                <p>Indigenous cultures, ancestral knowledge, and global connections</p>
-              </div>
-              <a href="/ikeverse/culturalverse.html" class="piko-learn-track-link">
-                Continue <i class="fas fa-arrow-right"></i>
-              </a>
+              <div><strong>Culturalverse</strong><p>Indigenous cultures, ancestral knowledge, and global connections</p></div>
+              <a href="/ikeverse/culturalverse.html" class="piko-learn-track-link">Continue <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="piko-learn-progress-bar">
-              <div class="piko-learn-progress-fill" id="culturalverseProgress" style="width:0%"></div>
-            </div>
+            <div class="piko-learn-progress-bar"><div class="piko-learn-progress-fill" id="culturalverseProgress" style="width:0%"></div></div>
             <div class="piko-learn-modules" id="culturalverseModules"></div>
           </div>
-
-          <!-- DigitalVerse -->
           <div class="piko-learn-track">
             <div class="piko-learn-track-header">
               <span class="piko-learn-track-icon">⚡</span>
-              <div>
-                <strong>DigitalVerse</strong>
-                <p>Blockchain, Web3, XRPL, Ethereum, and Bitcoin fundamentals</p>
-              </div>
-              <a href="digitalverse/index.html" class="piko-learn-track-link">
-                Continue <i class="fas fa-arrow-right"></i>
-              </a>
+              <div><strong>DigitalVerse</strong><p>Blockchain, Web3, XRPL, Ethereum, and Bitcoin fundamentals</p></div>
+              <a href="digitalverse/index.html" class="piko-learn-track-link">Continue <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="piko-learn-progress-bar">
-              <div class="piko-learn-progress-fill" id="digitalverseProgress" style="width:0%"></div>
-            </div>
+            <div class="piko-learn-progress-bar"><div class="piko-learn-progress-fill" id="digitalverseProgress" style="width:0%"></div></div>
             <div class="piko-learn-modules" id="digitalverseModules"></div>
           </div>
-
         </div>
       </div>
 
-    </div>
+    </div><!-- /container -->
   </section>
+
+  <!-- CUSTOMIZE TRIGGER -->
+  <button class="piko-customize-trigger" id="pikoCustomizeTrigger" title="Customize Profile" hidden>
+    <i class="fas fa-palette"></i>
+  </button>
+
+  <!-- CUSTOMIZE PANEL -->
+  <div class="piko-customize-panel" id="pikoCustomizePanel">
+    <div class="piko-customize-header">
+      <h3><i class="fas fa-palette"></i> Customize Profile</h3>
+      <button class="piko-customize-close" id="pikoCustomizeClose" type="button"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="piko-customize-body">
+
+      <!-- Theme Presets -->
+      <div class="piko-customize-section">
+        <div class="piko-customize-section-title">Quick Themes</div>
+        <div class="piko-theme-presets" id="pikoThemePresets">
+          <div class="piko-theme-preset is-active" data-theme="default">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#0a0e17,#1a1f30)">🌌</div>
+            <div><div class="piko-theme-name">Cosmic Default</div><div class="piko-theme-desc">Deep space gold</div></div>
+          </div>
+          <div class="piko-theme-preset" data-theme="ocean">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#001a2e,#003366)">🌊</div>
+            <div><div class="piko-theme-name">Pacific Deep</div><div class="piko-theme-desc">Ocean blue vibes</div></div>
+          </div>
+          <div class="piko-theme-preset" data-theme="jungle">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0d2e1a)">🌿</div>
+            <div><div class="piko-theme-name">Jungle Verse</div><div class="piko-theme-desc">Ancestral green</div></div>
+          </div>
+          <div class="piko-theme-preset" data-theme="sunset">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#1a0a0a,#2e1a0a)">🌅</div>
+            <div><div class="piko-theme-name">Aloha Sunset</div><div class="piko-theme-desc">Warm Hawaiian dusk</div></div>
+          </div>
+          <div class="piko-theme-preset" data-theme="neon">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#050010,#0d0020)">⚡</div>
+            <div><div class="piko-theme-name">Neon Verse</div><div class="piko-theme-desc">Cyberpunk purple</div></div>
+          </div>
+          <div class="piko-theme-preset" data-theme="light">
+            <div class="piko-theme-swatch" style="background:linear-gradient(135deg,#f0f4ff,#e0e8ff)">☀️</div>
+            <div><div class="piko-theme-name">Light Mode</div><div class="piko-theme-desc">Clean & bright</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accent Color -->
+      <div class="piko-customize-section">
+        <div class="piko-customize-section-title">Accent Color</div>
+        <div class="piko-color-presets">
+          <div class="piko-color-preset is-active" data-color="#f0c96a" style="background:#f0c96a" title="Gold"></div>
+          <div class="piko-color-preset" data-color="#54d1ff" style="background:#54d1ff" title="Cyan"></div>
+          <div class="piko-color-preset" data-color="#9d64ff" style="background:#9d64ff" title="Purple"></div>
+          <div class="piko-color-preset" data-color="#4caf7a" style="background:#4caf7a" title="Green"></div>
+          <div class="piko-color-preset" data-color="#ff6b6b" style="background:#ff6b6b" title="Coral"></div>
+          <div class="piko-color-preset" data-color="#ff9f43" style="background:#ff9f43" title="Orange"></div>
+          <div class="piko-color-preset" data-color="#ff6fd8" style="background:#ff6fd8" title="Pink"></div>
+          <div class="piko-color-preset" data-color="#ffffff" style="background:#fff;border:1px solid rgba(255,255,255,.2)" title="White"></div>
+        </div>
+        <div class="piko-color-row">
+          <label>Custom accent</label>
+          <input type="color" id="customAccentColor" value="#f0c96a">
+        </div>
+        <div class="piko-color-row">
+          <label>Background</label>
+          <input type="color" id="customBgColor" value="#080b14">
+        </div>
+        <div class="piko-color-row">
+          <label>Card background</label>
+          <input type="color" id="customCardBgColor" value="#0d1220">
+        </div>
+      </div>
+
+      <!-- Font -->
+      <div class="piko-customize-section">
+        <div class="piko-customize-section-title">Font Style</div>
+        <div class="piko-font-options">
+          <div class="piko-font-option is-active" data-font="Montserrat" style="font-family:Montserrat">Montserrat — Clean & Modern</div>
+          <div class="piko-font-option" data-font="Space Grotesk" style="font-family:'Space Grotesk'">Space Grotesk — Technical</div>
+          <div class="piko-font-option" data-font="Syne" style="font-family:Syne">Syne — Bold & Expressive</div>
+          <div class="piko-font-option" data-font="Orbitron" style="font-family:Orbitron">Orbitron — Cosmic</div>
+          <div class="piko-font-option" data-font="Press Start 2P" style="font-family:'Press Start 2P';font-size:11px">Press Start 2P — Retro</div>
+        </div>
+      </div>
+
+      <!-- Background / Banner -->
+      <div class="piko-customize-section">
+        <div class="piko-customize-section-title">Profile Background</div>
+        <div class="piko-bg-options">
+          <div class="piko-bg-option is-active" data-bg="default" style="background:linear-gradient(135deg,#080b14,#141830)">Default</div>
+          <div class="piko-bg-option" data-bg="stars" style="background:#000 url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><circle cx=\'20\' cy=\'20\' r=\'1\' fill=\'white\'/><circle cx=\'60\' cy=\'40\' r=\'1.5\' fill=\'white\'/><circle cx=\'80\' cy=\'80\' r=\'1\' fill=\'white\'/><circle cx=\'40\' cy=\'70\' r=\'1\' fill=\'white\'/></svg>') repeat">Stars</div>
+          <div class="piko-bg-option" data-bg="gradient1" style="background:linear-gradient(135deg,#0a0020,#200040,#000020)">Nebula</div>
+          <div class="piko-bg-option" data-bg="gradient2" style="background:linear-gradient(135deg,#001020,#002040,#003060)">Deep Sea</div>
+          <div class="piko-bg-option" data-bg="gradient3" style="background:linear-gradient(135deg,#0a1a05,#102a10,#1a3a1a)">Forest</div>
+          <div class="piko-bg-option" data-bg="gradient4" style="background:linear-gradient(135deg,#1a0a00,#2a1500,#1a0a00)">Ember</div>
+        </div>
+        <input type="url" class="piko-bg-url-input" id="customBgUrl" placeholder="Or paste an image URL for your banner…">
+      </div>
+
+      <!-- Custom CSS -->
+      <div class="piko-customize-section">
+        <div class="piko-customize-section-title">Custom CSS <span style="font-size:10px;opacity:.5">(Advanced)</span></div>
+        <textarea class="piko-bg-url-input" id="customCssInput" rows="5" placeholder=".piko-profile-name { font-size: 3rem; }&#10;.piko-profile-section { /* go wild */ }" style="resize:vertical;font-family:monospace;font-size:11px"></textarea>
+      </div>
+
+      <button class="piko-auth-btn" id="pikoApplyCustomize" type="button"><i class="fas fa-check"></i> Apply & Save</button>
+      <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoResetCustomize" type="button" style="margin-top:8px"><i class="fas fa-rotate-left"></i> Reset to Default</button>
+    </div>
+  </div>
 
   <!-- TOAST -->
   <div class="piko-profile-toast" id="pikoProfileToast"></div>
 
-  <!-- SCRIPTS -->
   <script src="js/pikoData.js"></script>
   <script src="js/profile.js"></script>
-
 </body>
 </html>
