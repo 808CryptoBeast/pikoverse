@@ -4117,101 +4117,7 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   POPUP + MODAL Z-INDEX FIX
-   Ensures ecosystem popups and submit modal appear above nav on mobile
-═══════════════════════════════════════════════════════════════ */
-
-/* Eco-popup backdrop and popup must beat the header (z-index 2000 on mobile) */
-.eco-popup-backdrop,
-#ecoPopupBackdrop {
-  z-index: 3000 !important;
-}
-
-.eco-popup {
-  z-index: 3001 !important;
-}
-
-.eco-popup__close {
-  position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
-  z-index: 3002 !important;
-  /* Make tap target bigger on mobile */
-  min-width: 44px !important;
-  min-height: 44px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-}
-
-/* Submit modal also needs to beat the header */
-.piko-modal-backdrop {
-  z-index: 3000 !important;
-}
-
-.piko-modal {
-  z-index: 3001 !important;
-}
-
-.piko-modal-close {
-  min-width: 44px !important;
-  min-height: 44px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* Profile search dropdown */
-.piko-global-search-dropdown {
-  z-index: 3000 !important;
-}
-
-@media (max-width: 768px) {
-  /* On mobile, popup should be full-screen for easy reading */
-  .eco-popup {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    max-height: 100dvh !important;
-    border-radius: 0 !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 80px !important; /* clear bottom nav */
-  }
-
-  .eco-popup__close {
-    position: fixed !important;
-    top: env(safe-area-inset-top, 12px) !important;
-    right: 12px !important;
-    z-index: 3002 !important;
-    background: rgba(8,10,18,.95) !important;
-    border: 1px solid rgba(255,255,255,.15) !important;
-    border-radius: 50% !important;
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    backdrop-filter: blur(8px);
-  }
-
-  /* Submit modal full-screen on mobile */
-  .piko-modal {
-    position: fixed !important;
-    inset: 0 !important;
-    max-height: 100dvh !important;
-    border-radius: 0 !important;
-    overflow-y: auto !important;
-    padding-bottom: 80px !important;
-  }
-
-  .piko-modal-backdrop {
-    padding: 0 !important;
-  }
-}
+/* popup z-index fix — see corrected version below */
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -4254,5 +4160,124 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
   /* Make the share FAB not overlap the bottom nav */
   .piko-share-fab {
     bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   POPUP + MODAL — Z-INDEX + MOBILE FIX (clean version)
+   Rule: only override what's broken. Don't override position on
+   desktop — let ecosystem-popups.css handle desktop layout.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Z-index: beat fixed header (2000) on ALL screens ── */
+.eco-popup-backdrop,
+#ecoPopupBackdrop {
+  z-index: 3000 !important;
+}
+
+.eco-popup {
+  z-index: 3001 !important;
+}
+
+/* Desktop close button — just ensure tap target and z-index */
+.eco-popup__close {
+  z-index: 3002 !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Submit modal backdrop */
+.piko-modal-backdrop {
+  z-index: 3000 !important;
+}
+.piko-modal {
+  z-index: 3001 !important;
+  position: relative;
+}
+.piko-modal-close {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* ── MOBILE ONLY: full-screen popup with sticky close button ── */
+@media (max-width: 768px) {
+
+  /* Backdrop: fill the whole screen */
+  .eco-popup-backdrop,
+  #ecoPopupBackdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: rgba(0,0,0,.75) !important;
+  }
+
+  /* Popup: full-screen sheet, scrollable */
+  .eco-popup {
+    position: relative !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 80px !important;
+    /* Don't reset top/left — let inset:0 from backdrop handle it */
+  }
+
+  /* Close button: sticky to top of popup (not fixed — so it scrolls
+     only if user scrolls past it, but sticky keeps it visible) */
+  .eco-popup__close {
+    position: sticky !important;
+    top: 12px !important;
+    left: auto !important;
+    right: 0 !important;
+    /* Pull it to the right side */
+    float: right !important;
+    margin: 8px 12px 0 0 !important;
+    z-index: 3002 !important;
+    background: rgba(8,10,18,.92) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    backdrop-filter: blur(8px);
+    /* Reset any conflicting absolute positioning */
+    top: 12px !important;
+  }
+
+  /* Submit modal: bottom sheet on mobile */
+  .piko-modal-backdrop {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .piko-modal {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    border-radius: 20px 20px 0 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 80px !important;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 !important;
+    /* Reset full-screen override */
+    inset: auto !important;
   }
 }
