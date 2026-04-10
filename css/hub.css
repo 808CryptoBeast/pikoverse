@@ -23,9 +23,9 @@
    1. PROJECT DOCK
    ══════════════════════════════════════════════ */
 .piko-dock {
-  position: sticky;
-  top: 0;
-  z-index: 150;
+  position: relative;
+  top: auto;
+  z-index: 50;
   width: 100%;
   background: var(--hub-bg);
   backdrop-filter: blur(20px);
@@ -2249,7 +2249,7 @@
   .piko-dock {
     position: relative !important;
     top: auto !important;
-    margin-top: 80px !important;
+    margin-top: 0 !important;
     z-index: 50 !important;
     pointer-events: auto;
   }
