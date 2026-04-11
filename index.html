@@ -1161,12 +1161,18 @@
           navLink.style.borderColor = 'rgba(240,201,106,.35)';
           if (avatar) {
             navLink.innerHTML =
-              '<img src="' + avatar + '" alt="' + name + '"'
+              '<img id="pikoNavAvatarInline" src="' + avatar + '" alt="' + name + '"'
               + ' style="width:24px;height:24px;border-radius:50%;object-fit:cover;'
-              + 'border:1.5px solid rgba(240,201,106,.5);margin-right:6px;vertical-align:middle"'
-              + ' onerror="this.style.display=\'none\'"> ' + name;
+              + 'border:1.5px solid rgba(240,201,106,.5);margin-right:6px;vertical-align:middle"> '
+              + '<span id="pikoProfileNavName">' + name + '</span>';
+            var navAvatar = document.getElementById('pikoNavAvatarInline');
+            if (navAvatar) {
+              navAvatar.onerror = function() {
+                this.style.display = 'none';
+              };
+            }
           } else {
-            navLink.innerHTML = '<i class="fas fa-user-astronaut"></i> ' + name;
+            navLink.innerHTML = '<i class="fas fa-user-astronaut"></i> <span id="pikoProfileNavName">' + name + '</span>';
           }
         }
         var mobileLabel = document.getElementById('pikoMobileProfileLabel');

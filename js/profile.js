@@ -179,30 +179,33 @@
       var cached = loadJSON(PROFILE_KEY, null);
       if (OFFLINE || !userId) return cached;
       var r = await supa().from('profiles').select('*').eq('id', userId).single();
-      if (r.error || !r.data) return cached;
+      if (r.error || !r.data) {
+        console.warn('[Profile] getProfile fetch failed:', r.error && r.error.message);
+        return cached;
+      }
 
-      /* SMART MERGE:
-         - Start with Supabase data as the base (authoritative for IDs, timestamps)
-         - For string/content fields: only overwrite local if Supabase value is non-empty
-           This prevents an empty DB row (from failed upserts) wiping out local data */
       var remote = r.data;
       var local  = cached || {};
-      var merged = Object.assign({}, remote); /* start with Supabase base */
 
-      /* For these fields: local wins if it has real data and Supabase is empty */
-      var preferLocal = ['display_name','bio','avatar_url','banner_url','social',
-                         'nameStyle','name_style','hideEmail','hide_email','joined_ts'];
-      preferLocal.forEach(function(k) {
+      /* Supabase is the source of truth when it has real data.
+         Only fall back to local if Supabase field is genuinely empty. */
+      var merged = Object.assign({}, remote);
+
+      var fallbackToLocal = ['display_name','bio','avatar_url','banner_url','social',
+                             'nameStyle','name_style','hideEmail','hide_email','joined_ts'];
+      fallbackToLocal.forEach(function(k) {
         var localVal  = local[k];
         var remoteVal = merged[k];
-        var localHasData  = localVal  !== undefined && localVal  !== null && localVal  !== '';
-        var remoteHasData = remoteVal !== undefined && remoteVal !== null && remoteVal !== '';
-        if (localHasData && !remoteHasData) {
-          merged[k] = localVal; /* keep local data — Supabase has nothing */
+        var remoteEmpty = remoteVal === undefined || remoteVal === null || remoteVal === '';
+        var localReal   = localVal  !== undefined && localVal  !== null && localVal  !== '';
+        if (remoteEmpty && localReal) {
+          merged[k] = localVal;
         }
+        /* If Supabase has data, it wins — even if local has something different */
       });
 
       saveJSON(PROFILE_KEY, merged);
+      console.log('[Profile] loaded from Supabase:', merged.display_name, '| avatar:', !!merged.avatar_url);
       return merged;
     },
 
@@ -239,10 +242,10 @@
 
       var r = await supa().from('profiles').upsert(payload, { onConflict:'id' });
       if (r.error) {
-        console.error('[Profile] upsert FAILED:', r.error.message, r.error);
-        /* If upsert fails, data is still in localStorage — not lost, just not in DB */
+        console.error('[Profile] upsert FAILED:', r.error.message, '| payload keys:', Object.keys(payload).join(','));
       } else {
-        console.log('[Profile] saved to Supabase ✓ display_name:', payload.display_name);
+        console.log('[Profile] ✅ saved to Supabase — name:', payload.display_name,
+                    '| avatar:', !!payload.avatar_url, '| banner:', !!payload.banner_url);
       }
       return profile;
     },
@@ -913,17 +916,27 @@
     btn.addEventListener('click', function(){
       /* Flag so SIGNED_OUT event knows this was user-initiated */
       _userSignedOut = true;
-      /* Clear local data immediately */
+      /* Clear all profile + session data from localStorage */
       localStorage.removeItem(PROFILE_KEY);
       localStorage.removeItem(NOTIF_KEY);
       localStorage.removeItem(LEARN_KEY);
-      SESSION_USER   = null;
-      STATE.profile  = null;
-      /* Sign out from Supabase in the background — don't wait for it */
-      if (!OFFLINE && supa()) {
-        supa().auth.signOut().catch(function(){});
+      /* Manually clear ALL Supabase session tokens so the hub
+         doesn't detect an active session after redirect */
+      var keysToRemove = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && (
+          k === 'piko_supabase_auth' ||
+          k.indexOf('sb-') === 0 ||
+          k.indexOf('supabase') > -1
+        )) keysToRemove.push(k);
       }
-      /* Redirect immediately — no delay, no async wait */
+      keysToRemove.forEach(function(k){ localStorage.removeItem(k); });
+      SESSION_USER  = null;
+      STATE.profile = null;
+      /* Fire Supabase signOut in background after clearing tokens */
+      if (!OFFLINE && supa()) supa().auth.signOut().catch(function(){});
+      /* Redirect immediately */
       window.location.replace('/index.html');
     });
   }
