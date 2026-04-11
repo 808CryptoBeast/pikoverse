@@ -1071,13 +1071,11 @@
       ($('editAvatarUrl') ||{}).value = p.avatar_url   || '';
       ($('editSocial')    ||{}).value = p.social       || '';
       var hE = $('hideEmailToggle'); if (hE) hE.checked = !!(p.hide_email || p.hideEmail);
-      /* populate name style */
       var ns = p.nameStyle || p.name_style || {};
       var nc = $('nameStyleColor');  if (nc) nc.value = ns.color  || '#ffffff';
       var nf = $('nameStyleFont');   if (nf) nf.value = ns.font   || '';
       var nw = $('nameStyleWeight'); if (nw) nw.value = ns.weight || '700';
       var nz = $('nameStyleSize');   if (nz) nz.value = parseInt(ns.size) || 28;
-      /* show first tab */
       document.querySelectorAll('.piko-edit-pane').forEach(function(p){ p.style.display='none'; });
       var first = $('pikoEditPaneProfile'); if (first) first.style.display = 'block';
       document.querySelectorAll('.piko-edit-tab').forEach(function(b){ b.classList.remove('is-active'); });
