@@ -875,15 +875,17 @@
   function initSignOut() {
     var btn=$('pikoSignOut'); if(!btn) return;
     btn.addEventListener('click', async function(){
-      if(!OFFLINE&&supa()) await supa().auth.signOut();
-      /* Clear session data but KEEP theme (banner/colors stay for next login) */
+      /* Wrap in try/catch — redirect must always happen even if signOut hangs */
+      try { if (!OFFLINE && supa()) await supa().auth.signOut(); } catch(e) {}
+      /* Clear session data — keep theme so banner/colors persist for next login */
       localStorage.removeItem(PROFILE_KEY);
       localStorage.removeItem(NOTIF_KEY);
       localStorage.removeItem(LEARN_KEY);
       SESSION_USER = null;
+      STATE.profile = null;
       toast('Signed out. See you soon! 🌺');
-      /* Redirect to hub after a brief moment so toast is visible */
-      setTimeout(function(){ window.location.href = '/index.html'; }, 900);
+      /* Short delay so toast is visible, then redirect to hub */
+      setTimeout(function(){ window.location.href = '/index.html'; }, 1000);
     });
   }
 
@@ -2038,31 +2040,6 @@
   /* ════════════════════════════════════════════
      GOOGLE OAUTH
   ════════════════════════════════════════════ */
-  function initGoogleAuth() {
-    var btns = [$('pikoGoogleSignupBtn'), $('pikoGoogleSigninBtn')];
-    btns.forEach(function(btn) {
-      if (!btn) return;
-      btn.addEventListener('click', async function() {
-        if (OFFLINE) { toast('⚠️ Supabase not configured — Google sign-in unavailable.'); return; }
-        btn.disabled = true;
-        btn.innerHTML = btn.innerHTML.replace('Continue with Google','<i class="fas fa-spinner fa-spin"></i> Redirecting…');
-        var r = await supa().auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: window.location.origin + '/profile.html',
-            queryParams: { access_type: 'offline', prompt: 'consent' },
-          },
-        });
-        if (r.error) {
-          toast('⚠️ Google sign-in failed: ' + r.error.message);
-          btn.disabled = false;
-          btn.innerHTML = btn.innerHTML.replace('<i class="fas fa-spinner fa-spin"></i> Redirecting…','Continue with Google');
-        }
-        /* On success Supabase redirects the browser — no further action needed */
-      });
-    });
-  }
-
   function boot() {
     /* Apply cached theme instantly — no wait for Supabase */
     var cachedTheme = loadJSON(THEME_KEY, {});
