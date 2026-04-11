@@ -667,7 +667,7 @@
     var section = $('pikoProfileSection');
     if (gate)    { gate.hidden    = true;  gate.style.display    = 'none'; }
     if (section) { section.hidden = false; section.style.display = 'block'; }
-    var s=$('pikoSignOut');          if(s)  { s.hidden=false;  s.style.display=''; }
+    var s=$('pikoSignOut');          if(s)  { s.hidden=false;  s.style.display=''; s.style.pointerEvents='auto'; }
     var t=$('pikoCustomizeTrigger'); if(t)  { t.hidden=false;  t.style.display=''; }
     var nb=$('pikoNotifBtn');        if(nb) { nb.hidden=false; nb.style.display=''; }
 
@@ -679,8 +679,17 @@
       await loadAllData();
     }
 
-    /* Merge banner from localStorage in case Supabase didn't have it */
+    /* Merge banner — check multiple sources in priority order */
     var localTheme = loadJSON(THEME_KEY, {});
+    /* Priority 1: Supabase Storage URL in theme (cross-device) */
+    if (STATE.theme.bannerUrl && !STATE.theme.bannerBg) {
+      STATE.theme.bannerBg = 'url(' + STATE.theme.bannerUrl + ') center/cover no-repeat';
+    }
+    /* Priority 2: profile.banner_url if theme has nothing */
+    if (!STATE.theme.bannerBg && STATE.profile && STATE.profile.banner_url) {
+      STATE.theme.bannerBg = 'url(' + STATE.profile.banner_url + ') center/cover no-repeat';
+    }
+    /* Priority 3: local base64 banner (same device only) */
     if (!STATE.theme.bannerBg && localTheme.bannerBg) {
       STATE.theme.bannerBg = localTheme.bannerBg;
     }
@@ -885,7 +894,7 @@
       STATE.profile = null;
       toast('Signed out. See you soon! 🌺');
       /* Short delay so toast is visible, then redirect to hub */
-      setTimeout(function(){ window.location.href = '/index.html'; }, 1000);
+      setTimeout(function(){ window.location.replace('/index.html'); }, 800);
     });
   }
 
@@ -1679,7 +1688,29 @@
       if (backdrop) backdrop.classList.remove('is-open');
     };
 
-    if (trigger)  trigger.addEventListener('click',  _openCustomize);
+    if (trigger) trigger.addEventListener('click', function(){
+      /* Default to Profile tab when opened from the nav palette button */
+      document.querySelectorAll('.piko-edit-tab').forEach(function(b){ b.classList.remove('is-active'); });
+      document.querySelectorAll('.piko-edit-pane').forEach(function(p){ p.style.display='none'; });
+      var profileTab  = document.querySelector('[data-etab="profile"]');
+      var profilePane = $('pikoEditPaneProfile');
+      if (profileTab)  profileTab.classList.add('is-active');
+      if (profilePane) profilePane.style.display = 'block';
+      /* Populate fields with current profile data */
+      var p = STATE.profile || {};
+      ($('editName')      ||{}).value = p.display_name || '';
+      ($('editBio')       ||{}).value = p.bio          || '';
+      ($('editAvatarUrl') ||{}).value = p.avatar_url   || '';
+      ($('editSocial')    ||{}).value = p.social       || '';
+      var hE = $('hideEmailToggle'); if (hE) hE.checked = !!(p.hide_email || p.hideEmail);
+      var ns = p.nameStyle || p.name_style || {};
+      var nc = $('nameStyleColor');  if (nc) nc.value = ns.color  || '#ffffff';
+      var nf = $('nameStyleFont');   if (nf) nf.value = ns.font   || '';
+      var nw = $('nameStyleWeight'); if (nw) nw.value = ns.weight || '700';
+      var nz = $('nameStyleSize');   if (nz) nz.value = parseInt(ns.size) || 28;
+      updateNamePreviewFromState();
+      _openCustomize();
+    });
     if (close)    close.addEventListener('click',    _closeCustomize);
     if (backdrop) backdrop.addEventListener('click', _closeCustomize);
 
