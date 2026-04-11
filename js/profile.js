@@ -340,7 +340,6 @@
     },
 
     loadTheme: async function(userId) {
-<<<<<<< HEAD
       var localTheme = loadJSON(THEME_KEY, {});
       if (OFFLINE || !userId) return localTheme;
       var r = await supa().from('profiles').select('theme,display_name,avatar_url,bio,social').eq('id', userId).single();
@@ -371,34 +370,6 @@
       var merged = Object.assign({}, localTheme, remoteTheme);
       saveJSON(THEME_KEY, merged);
       return merged;
-=======
-      var localTheme = loadJSON(THEME_KEY, {});
-      if (OFFLINE || !userId) return localTheme;
-      var r = await supa().from('profiles').select('theme,display_name,avatar_url,bio,social').eq('id', userId).single();
-      if (r.error || !r.data) return localTheme;
-      var remoteTheme = r.data.theme || {};
-      /* Restore nameStyle + hideEmail from theme JSONB back into profile */
-      if (remoteTheme._nameStyle) {
-        var lp = loadJSON(PROFILE_KEY, {});
-        lp.nameStyle   = remoteTheme._nameStyle;
-        lp.name_style  = remoteTheme._nameStyle;
-        saveJSON(PROFILE_KEY, lp);
-      }
-      if (remoteTheme._hideEmail !== undefined) {
-        var lp2 = loadJSON(PROFILE_KEY, {});
-        lp2.hideEmail  = remoteTheme._hideEmail;
-        lp2.hide_email = remoteTheme._hideEmail;
-        saveJSON(PROFILE_KEY, lp2);
-      }
-      /* Keep local bannerBg if Supabase doesn't have one (base64 not stored in DB) */
-      if (!remoteTheme.bannerBg && localTheme.bannerBg) {
-        remoteTheme.bannerBg = localTheme.bannerBg;
-      }
-      /* Merge: remote wins for all non-banner fields */
-      var merged = Object.assign({}, localTheme, remoteTheme);
-      saveJSON(THEME_KEY, merged);
-      return merged;
->>>>>>> a8d601257c3932446b05b2cc5dcb75610bd51710
     },
   };
 
@@ -531,10 +502,12 @@
     var a=$('pikoIdCardAvatar'),n=$('pikoIdCardName'),m=$('pikoIdCardMeta'),s=$('pikoIdCardScore');
     if(a){
       if(p.avatar_url) {
+        var initial = esc(name[0].toUpperCase());
         a.innerHTML = '<img src="' + esc(p.avatar_url) + '" crossorigin="anonymous"'
           + ' style="width:100%;height:100%;object-fit:cover;border-radius:50%"'
-          + ' onerror="this.parentNode.textContent='' + esc(name[0].toUpperCase()) + ''">';
+          + ' onerror="this.style.display=\'none\';this.parentNode.textContent=\''+initial+'\'">';
       } else {
+        a.innerHTML = '';
         a.textContent = name[0].toUpperCase();
       }
     }
