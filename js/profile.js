@@ -80,8 +80,9 @@
   var OFFLINE         = true;
   var SESSION_USER    = null;
   var _realtimeSub    = null;
-  var _showingProfile = false; /* lock: prevents double showProfile() from race */
+  var _showingProfile     = false; /* lock: prevents double showProfile() from race */
   var _profilePreRendered = false; /* tracks if we pre-rendered from localStorage */
+  var _userSignedOut      = false; /* set to true ONLY when user clicks Sign Out */
 
   function supa() { return DB; }
 
@@ -753,10 +754,33 @@
      SESSION CHECK
   ════════════════════════════════════════════ */
   async function checkExistingSession() {
-    if(OFFLINE){ var local=loadJSON(PROFILE_KEY,null); if(local&&local.email&&local.verified!==false){ STATE.profile=local; await showProfile(); } else { showAuthGate(); } return; }
-    var r=await supa().auth.getSession();
-    if(r.data&&r.data.session&&r.data.session.user){ SESSION_USER=r.data.session.user; await showProfile(); }
-    else showAuthGate();
+    if (OFFLINE) {
+      var local = loadJSON(PROFILE_KEY, null);
+      if (local && local.email && local.verified !== false) { STATE.profile = local; await showProfile(); }
+      else showAuthGate();
+      return;
+    }
+    var r = await supa().auth.getSession();
+    if (r.data && r.data.session && r.data.session.user) {
+      SESSION_USER = r.data.session.user;
+      await showProfile();
+    } else {
+      /* No session found — but if we pre-rendered from localStorage,
+         wait 1.5s for the token to refresh before hiding the profile.
+         This prevents the flash of blank → auth gate on slow connections. */
+      if (_profilePreRendered) {
+        await new Promise(function(res){ setTimeout(res, 1500); });
+        var r2 = await supa().auth.getSession();
+        if (r2.data && r2.data.session && r2.data.session.user) {
+          SESSION_USER = r2.data.session.user;
+          await showProfile();
+          return;
+        }
+      }
+      /* Truly no session — clear pre-render and show auth gate */
+      _profilePreRendered = false;
+      showAuthGate();
+    }
   }
 
   function initAuthListeners() {
@@ -778,7 +802,10 @@
         STATE.profile=null; STATE.ideas=[]; STATE.projects=[];
         STATE.orders=[]; STATE.notifs=[]; STATE.saved=[];
         STATE.learn={}; STATE.theme={};
-        showAuthGate();
+        /* Only hide the profile if the USER clicked sign out.
+           Token refresh / session expiry fires SIGNED_OUT too —
+           we do NOT want to flash the auth gate in those cases. */
+        if (_userSignedOut) { showAuthGate(); }
       } else if (event === 'TOKEN_REFRESHED' && session) {
         SESSION_USER = session.user;
       } else if (event === 'USER_UPDATED' && session) {
@@ -883,18 +910,21 @@
   ════════════════════════════════════════════ */
   function initSignOut() {
     var btn=$('pikoSignOut'); if(!btn) return;
-    btn.addEventListener('click', async function(){
-      /* Wrap in try/catch — redirect must always happen even if signOut hangs */
-      try { if (!OFFLINE && supa()) await supa().auth.signOut(); } catch(e) {}
-      /* Clear session data — keep theme so banner/colors persist for next login */
+    btn.addEventListener('click', function(){
+      /* Flag so SIGNED_OUT event knows this was user-initiated */
+      _userSignedOut = true;
+      /* Clear local data immediately */
       localStorage.removeItem(PROFILE_KEY);
       localStorage.removeItem(NOTIF_KEY);
       localStorage.removeItem(LEARN_KEY);
-      SESSION_USER = null;
-      STATE.profile = null;
-      toast('Signed out. See you soon! 🌺');
-      /* Short delay so toast is visible, then redirect to hub */
-      setTimeout(function(){ window.location.replace('/index.html'); }, 800);
+      SESSION_USER   = null;
+      STATE.profile  = null;
+      /* Sign out from Supabase in the background — don't wait for it */
+      if (!OFFLINE && supa()) {
+        supa().auth.signOut().catch(function(){});
+      }
+      /* Redirect immediately — no delay, no async wait */
+      window.location.replace('/index.html');
     });
   }
 
@@ -1141,70 +1171,102 @@
       avatarBtn.addEventListener('click', function(){ avatarFile.click(); });
       avatarFile.addEventListener('change', async function(){
         var file = avatarFile.files[0]; if (!file) return;
-        if (!OFFLINE && supa() && SESSION_USER) {
-          var path = 'avatars/'+SESSION_USER.id+'/'+Date.now()+'.'+file.name.split('.').pop();
-          var up = await supa().storage.from('pikoverse-public').upload(path, file, {upsert:true});
-          if (!up.error) {
-            var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
-            STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = url;
-            await DB_LAYER.upsertProfile(STATE.profile);
-            renderAll(); toast('✅ Avatar updated!'); return;
+        /* Show uploading state immediately */
+        var origIcon = avatarBtn.innerHTML;
+        avatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        avatarBtn.disabled  = true;
+        toast('⏳ Uploading avatar…');
+
+        try {
+          if (!OFFLINE && supa() && SESSION_USER) {
+            var ext  = file.name.split('.').pop() || 'jpg';
+            var path = 'avatars/' + SESSION_USER.id + '/avatar.' + ext;
+            var up   = await supa().storage.from('pikoverse-public').upload(path, file, { upsert: true });
+            if (!up.error) {
+              var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
+              /* Bust cache so new image shows immediately */
+              url = url + '?t=' + Date.now();
+              STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = url;
+              await DB_LAYER.upsertProfile(STATE.profile);
+              renderAll();
+              toast('✅ Avatar saved — visible on all your devices!');
+              avatarBtn.innerHTML = origIcon; avatarBtn.disabled = false;
+              return;
+            } else {
+              console.warn('[Avatar] Storage upload failed:', up.error.message);
+            }
           }
+          /* Fallback: base64 (same device only) */
+          var reader = new FileReader();
+          reader.onload = async function(e){
+            STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = e.target.result;
+            await DB_LAYER.upsertProfile(STATE.profile);
+            renderAll();
+            toast('✅ Avatar saved locally!');
+            avatarBtn.innerHTML = origIcon; avatarBtn.disabled = false;
+          };
+          reader.readAsDataURL(file);
+        } catch(err) {
+          console.error('[Avatar] upload error:', err);
+          toast('⚠️ Upload failed — please try again.');
+          avatarBtn.innerHTML = origIcon; avatarBtn.disabled = false;
         }
-        var reader = new FileReader();
-        reader.onload = async function(e){
-          STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = e.target.result;
-          await DB_LAYER.upsertProfile(STATE.profile);
-          renderAll(); toast('✅ Avatar updated!');
-        };
-        reader.readAsDataURL(file);
       });
     }
 
-    /* Banner upload — tries Supabase Storage first (cross-device URL),
-       falls back to base64 in localStorage (same-device only)           */
+    /* Banner upload — Supabase Storage first (cross-device), base64 fallback */
     if (bannerBtn && bannerFile) {
       bannerBtn.addEventListener('click', function(){ bannerFile.click(); });
       bannerFile.addEventListener('change', async function(){
         var file = bannerFile.files[0]; if (!file) return;
+        /* Show uploading state */
+        var origText = bannerBtn.innerHTML;
+        bannerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
+        bannerBtn.disabled  = true;
         toast('⏳ Uploading banner…');
 
-        /* Try Supabase Storage upload first */
-        if (!OFFLINE && supa() && SESSION_USER) {
-          var path = 'banners/' + SESSION_USER.id + '/banner.' + (file.name.split('.').pop() || 'jpg');
-          var up   = await supa().storage.from('pikoverse-public').upload(path, file, { upsert: true });
-          if (!up.error) {
-            var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
-            /* Store as a proper URL — works on any device */
+        try {
+          if (!OFFLINE && supa() && SESSION_USER) {
+            var ext  = file.name.split('.').pop() || 'jpg';
+            var path = 'banners/' + SESSION_USER.id + '/banner.' + ext;
+            var up   = await supa().storage.from('pikoverse-public').upload(path, file, { upsert: true });
+            if (!up.error) {
+              var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
+              url = url + '?t=' + Date.now(); /* cache-bust */
+              STATE.theme = STATE.theme || {};
+              STATE.theme.bannerUrl = url;
+              STATE.theme.bannerBg  = 'url(' + url + ') center/cover no-repeat';
+              saveJSON(THEME_KEY, STATE.theme);
+              var bnEl = $('pikoBanner');
+              if (bnEl) { bnEl.style.background = STATE.theme.bannerBg; bnEl.style.backgroundSize = 'cover'; bnEl.style.backgroundPosition = 'center'; }
+              await DB_LAYER.saveTheme(getUserId(), STATE.theme);
+              updateIdCardBanner();
+              bannerBtn.innerHTML = origText; bannerBtn.disabled = false;
+              toast('✅ Banner saved — visible on all your devices!');
+              return;
+            } else {
+              console.warn('[Banner] Storage upload failed:', up.error.message);
+            }
+          }
+          /* Fallback: base64 local only */
+          var reader = new FileReader();
+          reader.onload = async function(e){
             STATE.theme = STATE.theme || {};
-            STATE.theme.bannerUrl = url;
-            STATE.theme.bannerBg  = 'url(' + url + ') center/cover no-repeat';
+            STATE.theme.bannerBg = 'url(' + e.target.result + ') center/cover no-repeat';
             saveJSON(THEME_KEY, STATE.theme);
-            /* Apply immediately */
             var bnEl = $('pikoBanner');
             if (bnEl) { bnEl.style.background = STATE.theme.bannerBg; bnEl.style.backgroundSize = 'cover'; bnEl.style.backgroundPosition = 'center'; }
             await DB_LAYER.saveTheme(getUserId(), STATE.theme);
             updateIdCardBanner();
-            toast('✅ Banner updated!');
-            return;
-          }
+            bannerBtn.innerHTML = origText; bannerBtn.disabled = false;
+            toast('✅ Banner saved on this device!');
+          };
+          reader.readAsDataURL(file);
+        } catch(err) {
+          console.error('[Banner] upload error:', err);
+          toast('⚠️ Upload failed — please try again.');
+          bannerBtn.innerHTML = origText; bannerBtn.disabled = false;
         }
-
-        /* Fallback: base64 in localStorage only */
-        var reader = new FileReader();
-        reader.onload = async function(e){
-          STATE.theme = STATE.theme || {};
-          STATE.theme.bannerBg = 'url(' + e.target.result + ') center/cover no-repeat';
-          /* bannerUrl stays empty so cross-device knows no Storage URL exists */
-          saveJSON(THEME_KEY, STATE.theme);
-          var bnEl = $('pikoBanner');
-          if (bnEl) { bnEl.style.background = STATE.theme.bannerBg; bnEl.style.backgroundSize = 'cover'; bnEl.style.backgroundPosition = 'center'; }
-          /* Save theme to DB (base64 stripped server-side — only URL stored in DB) */
-          await DB_LAYER.saveTheme(getUserId(), STATE.theme);
-          updateIdCardBanner();
-          toast('✅ Banner saved locally!');
-        };
-        reader.readAsDataURL(file);
       });
     }
   }
