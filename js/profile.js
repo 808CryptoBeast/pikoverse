@@ -179,17 +179,28 @@
       if (OFFLINE || !userId) return cached;
       var r = await supa().from('profiles').select('*').eq('id', userId).single();
       if (r.error || !r.data) return cached;
-      /* MERGE: Supabase is authoritative for DB fields,
-         but preserve local-only fields (nameStyle, hideEmail, joined_ts, etc.) */
-      var merged = Object.assign({}, cached || {}, r.data);
-      /* Restore local-only fields that Supabase doesn't store */
-      if (cached) {
-        if (cached.nameStyle)  merged.nameStyle  = cached.nameStyle;
-        if (cached.name_style) merged.name_style = cached.name_style;
-        if (cached.hideEmail !== undefined) merged.hideEmail  = cached.hideEmail;
-        if (cached.hide_email !== undefined) merged.hide_email = cached.hide_email;
-        if (cached.joined_ts)  merged.joined_ts  = cached.joined_ts;
-      }
+
+      /* SMART MERGE:
+         - Start with Supabase data as the base (authoritative for IDs, timestamps)
+         - For string/content fields: only overwrite local if Supabase value is non-empty
+           This prevents an empty DB row (from failed upserts) wiping out local data */
+      var remote = r.data;
+      var local  = cached || {};
+      var merged = Object.assign({}, remote); /* start with Supabase base */
+
+      /* For these fields: local wins if it has real data and Supabase is empty */
+      var preferLocal = ['display_name','bio','avatar_url','banner_url','social',
+                         'nameStyle','name_style','hideEmail','hide_email','joined_ts'];
+      preferLocal.forEach(function(k) {
+        var localVal  = local[k];
+        var remoteVal = merged[k];
+        var localHasData  = localVal  !== undefined && localVal  !== null && localVal  !== '';
+        var remoteHasData = remoteVal !== undefined && remoteVal !== null && remoteVal !== '';
+        if (localHasData && !remoteHasData) {
+          merged[k] = localVal; /* keep local data — Supabase has nothing */
+        }
+      });
+
       saveJSON(PROFILE_KEY, merged);
       return merged;
     },
@@ -865,8 +876,14 @@
     var btn=$('pikoSignOut'); if(!btn) return;
     btn.addEventListener('click', async function(){
       if(!OFFLINE&&supa()) await supa().auth.signOut();
+      /* Clear session data but KEEP theme (banner/colors stay for next login) */
       localStorage.removeItem(PROFILE_KEY);
-      SESSION_USER=null; showAuthGate(); toast('Signed out successfully.');
+      localStorage.removeItem(NOTIF_KEY);
+      localStorage.removeItem(LEARN_KEY);
+      SESSION_USER = null;
+      toast('Signed out. See you soon! 🌺');
+      /* Redirect to hub after a brief moment so toast is visible */
+      setTimeout(function(){ window.location.href = '/index.html'; }, 900);
     });
   }
 
@@ -2059,19 +2076,10 @@
       var cached = loadJSON(PROFILE_KEY, null);
       if (!cached || !cached.email) return; /* no local profile, wait for auth */
 
-      /* Check if a Supabase session token is stored in localStorage */
-      var hasToken = false;
-      try {
-        for (var i = 0; i < localStorage.length; i++) {
-          var k = localStorage.key(i);
-          if (k && (k.indexOf('supabase') > -1 || k.indexOf('piko_supabase') > -1)) {
-            var val = localStorage.getItem(k);
-            if (val && val.indexOf('access_token') > -1) { hasToken = true; break; }
-          }
-        }
-      } catch(e) {}
-
-      if (!hasToken && cached.verified === false) return; /* definitely not logged in */
+      /* If we have a cached profile with an email, always pre-render it.
+         Supabase will correct the session state shortly after via piko:supa:ready.
+         We no longer try to detect the token here — that was too brittle. */
+      if (cached.verified === false) return; /* only skip if explicitly logged out offline */
 
       /* Pre-render with cached data */
       STATE.profile = cached;
