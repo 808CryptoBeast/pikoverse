@@ -24,9 +24,16 @@
       <span>Pikoverse</span>
     </a>
     <div class="piko-profile-nav-right">
+      <button class="piko-customize-nav-btn" id="pikoCustomizeTrigger" type="button" title="Customize" hidden><i class="fas fa-palette"></i></button>
       <button class="piko-notif-btn" id="pikoNotifBtn" type="button" title="Notifications" hidden>
         <i class="fas fa-bell"></i>
         <span class="piko-notif-badge" id="pikoNotifBadge" hidden>0</span>
+      </button>
+      <button class="piko-nav-icon-btn" id="pikoCustomizeTrigger" type="button" title="Customize Profile" hidden>
+        <i class="fas fa-palette"></i>
+      </button>
+      <button class="piko-customize-nav-btn" id="pikoCustomizeTrigger" type="button" title="Customize Profile" hidden>
+        <i class="fas fa-palette"></i>
       </button>
       <a href="index.html" class="piko-profile-nav-link"><i class="fas fa-house"></i> Hub</a>
       <button class="piko-profile-nav-link piko-signout-btn" id="pikoSignOut" type="button" hidden>
@@ -145,100 +152,104 @@
 
       <!-- EDIT FORM -->
       <div class="piko-profile-edit-form" id="pikoProfileEditForm" hidden>
-        <h3 class="piko-profile-edit-title"><i class="fas fa-pen"></i> Edit Profile</h3>
-        <div class="piko-profile-edit-grid">
+        <div class="piko-edit-tabs">
+          <button class="piko-edit-tab is-active" data-etab="profile" type="button">Profile</button>
+          <button class="piko-edit-tab" data-etab="style" type="button">Name Style</button>
+          <button class="piko-edit-tab" data-etab="security" type="button">Security</button>
+        </div>
 
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">Display Name</label>
-            <input type="text" id="editName" class="piko-auth-input" maxlength="60">
-          </div>
-
-          <!-- Name style editor -->
-          <div class="piko-name-style-editor">
-            <div class="piko-name-style-label">Name Style</div>
-            <div class="piko-name-style-row">
-              <div>
-                <label class="piko-auth-label" style="font-size:10px">Color</label>
-                <input type="color" id="nameStyleColor" value="#ffffff" title="Name color" style="width:36px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:none;cursor:pointer;padding:2px;">
-              </div>
-              <div>
-                <label class="piko-auth-label" style="font-size:10px">Size</label>
-                <select id="nameStyleSize" class="piko-select-sm">
-                  <option value="1.2rem">Small</option>
-                  <option value="1.5rem" selected>Medium</option>
-                  <option value="1.8rem">Large</option>
-                  <option value="2.2rem">XL</option>
-                  <option value="2.8rem">XXL</option>
-                </select>
-              </div>
-              <div>
-                <label class="piko-auth-label" style="font-size:10px">Font</label>
-                <select id="nameStyleFont" class="piko-select-sm">
-                  <option value="Orbitron">Orbitron</option>
-                  <option value="Montserrat">Montserrat</option>
-                  <option value="Space Grotesk">Space Grotesk</option>
-                  <option value="Syne">Syne</option>
-                  <option value="Press Start 2P">Pixel</option>
-                  <option value="Georgia">Georgia</option>
-                </select>
-              </div>
-              <div>
-                <label class="piko-auth-label" style="font-size:10px">Weight</label>
-                <select id="nameStyleWeight" class="piko-select-sm">
-                  <option value="400">Regular</option>
-                  <option value="600">Semi-Bold</option>
-                  <option value="700">Bold</option>
-                  <option value="800" selected>Black</option>
-                </select>
-              </div>
+        <!-- Profile tab -->
+        <div class="piko-edit-pane is-active" id="pikoEditPaneProfile">
+          <div class="piko-profile-edit-grid">
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Display Name</label>
+              <input type="text" id="editName" class="piko-auth-input" maxlength="60" placeholder="Your name">
             </div>
-            <div class="piko-name-preview" id="pikoNamePreview">Preview Name</div>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Bio <span style="opacity:.5">(optional)</span></label>
+              <textarea id="editBio" class="piko-auth-input" rows="3" maxlength="200" placeholder="A few words about you…"></textarea>
+            </div>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Avatar URL <span style="opacity:.5">(or upload below)</span></label>
+              <input type="url" id="editAvatarUrl" class="piko-auth-input" placeholder="https://…" maxlength="300">
+            </div>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Social / @handle <span style="opacity:.5">(optional)</span></label>
+              <input type="text" id="editSocial" class="piko-auth-input" placeholder="@handle or link" maxlength="120">
+            </div>
+            <div class="piko-auth-field" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;">
+              <label for="hideEmailToggle" style="flex:1;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;">
+                <i class="fas fa-eye-slash" style="margin-right:6px;color:rgba(255,255,255,.4)"></i>Hide email from profile
+              </label>
+              <input type="checkbox" id="hideEmailToggle" style="width:18px;height:18px;accent-color:var(--pf-gold);cursor:pointer;">
+            </div>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Profile Banner</label>
+              <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoBannerEditBtn" type="button">
+                <i class="fas fa-image"></i> Change Banner Image
+              </button>
+            </div>
           </div>
-
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">Bio <span style="font-weight:400;opacity:.6">(optional)</span></label>
-            <textarea id="editBio" class="piko-auth-input" rows="3" maxlength="200" placeholder="A few words about you…" style="resize:vertical"></textarea>
-          </div>
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">Social / @handle <span style="font-weight:400;opacity:.6">(optional)</span></label>
-            <input type="text" id="editSocial" class="piko-auth-input" placeholder="@yourhandle or link" maxlength="120">
-          </div>
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">Avatar URL <span style="font-weight:400;opacity:.6">(or upload below)</span></label>
-            <input type="url" id="editAvatarUrl" class="piko-auth-input" placeholder="https://…" maxlength="300">
-          </div>
-
-          <!-- Privacy toggles -->
-          <div class="piko-privacy-row">
-            <label class="piko-toggle-label">
-              <input type="checkbox" id="hideEmailToggle" class="piko-toggle-input">
-              <span class="piko-toggle-track"><span class="piko-toggle-thumb"></span></span>
-              <span class="piko-toggle-text">Hide email from profile</span>
-            </label>
-          </div>
-
-          <!-- Banner upload (inside edit form) -->
-          <div class="piko-banner-upload-row">
-            <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoBannerEditBtn" type="button" style="width:auto">
-              <i class="fas fa-image"></i> Change Banner
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button">
+              <i class="fas fa-floppy-disk"></i> Save Changes
             </button>
-            <span style="font-size:11px;color:rgba(255,255,255,.3)">Recommended: 1200×300px</span>
+            <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">Cancel</button>
           </div>
-
+          <div class="piko-auth-status" id="pikoSaveStatus" hidden></div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:16px">
-          <button class="piko-auth-btn" id="pikoSaveProfileBtn" type="button"><i class="fas fa-floppy-disk"></i> Save Changes</button>
-          <button class="piko-auth-btn piko-auth-btn--ghost" id="pikoCancelEditBtn" type="button">Cancel</button>
+        <!-- Name Style tab -->
+        <div class="piko-edit-pane" id="pikoEditPaneStyle">
+          <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:18px;">Customize how your name looks on your profile.</p>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Name Color</label>
+            <input type="color" id="nameStyleColor" value="#ffffff" style="width:60px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:none;cursor:pointer;padding:2px;">
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Font</label>
+            <select id="nameStyleFont" class="piko-auth-input">
+              <option value="">Default</option>
+              <option value="Orbitron">Orbitron — Cosmic</option>
+              <option value="Montserrat">Montserrat — Clean</option>
+              <option value="Space Grotesk">Space Grotesk — Technical</option>
+              <option value="Syne">Syne — Bold</option>
+              <option value="Georgia">Georgia — Elegant</option>
+              <option value="'Press Start 2P'">Press Start 2P — Retro</option>
+            </select>
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Weight</label>
+            <select id="nameStyleWeight" class="piko-auth-input">
+              <option value="400">Regular</option>
+              <option value="600">Semi Bold</option>
+              <option value="700" selected>Bold</option>
+              <option value="800">Extra Bold</option>
+              <option value="900">Black</option>
+            </select>
+          </div>
+          <div class="piko-auth-field">
+            <label class="piko-auth-label">Size — <span id="nameStyleSizeVal" style="color:var(--pf-gold)">28px</span></label>
+            <input type="range" id="nameStyleSize" min="16" max="52" value="28" style="width:100%;accent-color:var(--pf-gold)">
+          </div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px 20px;margin:16px 0">
+            <p style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em">Preview</p>
+            <p id="pikoNamePreview" style="font-size:28px;font-weight:700;color:#fff;transition:all .2s;margin:0">Your Name</p>
+          </div>
+          <button class="piko-auth-btn" id="pikoSaveStyleBtn" type="button">
+            <i class="fas fa-floppy-disk"></i> Save Style
+          </button>
+          <div class="piko-auth-status" id="pikoStyleStatus" hidden></div>
         </div>
 
-        <!-- Change Password -->
-        <div class="piko-settings-section">
-          <h4 class="piko-settings-title"><i class="fas fa-key"></i> Change Password</h4>
+        <!-- Security tab -->
+        <div class="piko-edit-pane" id="pikoEditPaneSecurity">
+          <!-- Change Password -->
+          <h4 style="font-size:12px;font-weight:700;color:var(--pf-gold);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em">Change Password</h4>
           <div class="piko-auth-field">
             <label class="piko-auth-label">Current Password</label>
             <div class="piko-password-wrap">
-              <input type="password" id="currentPassword" class="piko-auth-input" placeholder="Your current password" maxlength="128">
+              <input type="password" id="currentPassword" class="piko-auth-input" placeholder="Current password" maxlength="128">
               <button class="piko-pw-toggle" data-target="currentPassword" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
             </div>
           </div>
@@ -259,35 +270,30 @@
             </div>
           </div>
           <div class="piko-auth-status" id="pikoChangePwStatus" hidden></div>
-          <button class="piko-auth-btn" id="pikoChangePwBtn" type="button" style="margin-top:8px">
-            <i class="fas fa-key"></i> Update Password
-          </button>
-        </div>
+          <button class="piko-auth-btn" id="pikoChangePwBtn" type="button"><i class="fas fa-key"></i> Update Password</button>
 
-        <!-- Change Email -->
-        <div class="piko-settings-section">
-          <h4 class="piko-settings-title"><i class="fas fa-envelope"></i> Change Email</h4>
-          <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.6;">A confirmation link will be sent to your new address. Your email won't change until you click it.</p>
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">New Email Address</label>
-            <input type="email" id="newEmail" class="piko-auth-input" placeholder="new@email.com" maxlength="120">
-          </div>
-          <div class="piko-auth-field">
-            <label class="piko-auth-label">Current Password <span style="font-weight:400;opacity:.5">(to confirm)</span></label>
-            <div class="piko-password-wrap">
-              <input type="password" id="emailChangePw" class="piko-auth-input" placeholder="Your current password" maxlength="128">
-              <button class="piko-pw-toggle" data-target="emailChangePw" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+          <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.07)">
+            <h4 style="font-size:12px;font-weight:700;color:var(--pf-gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Change Email</h4>
+            <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.6">A confirmation link will be sent to your new address before the switch.</p>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">New Email</label>
+              <input type="email" id="newEmail" class="piko-auth-input" placeholder="new@email.com" maxlength="120">
             </div>
+            <div class="piko-auth-field">
+              <label class="piko-auth-label">Current Password <span style="opacity:.5">(to confirm)</span></label>
+              <div class="piko-password-wrap">
+                <input type="password" id="emailChangePw" class="piko-auth-input" placeholder="Your current password" maxlength="128">
+                <button class="piko-pw-toggle" data-target="emailChangePw" type="button" tabindex="-1"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+            <div class="piko-auth-status" id="pikoChangeEmailStatus" hidden></div>
+            <button class="piko-auth-btn" id="pikoChangeEmailBtn" type="button"><i class="fas fa-envelope"></i> Update Email</button>
           </div>
-          <div class="piko-auth-status" id="pikoChangeEmailStatus" hidden></div>
-          <button class="piko-auth-btn" id="pikoChangeEmailBtn" type="button" style="margin-top:8px">
-            <i class="fas fa-envelope"></i> Update Email
-          </button>
         </div>
 
       </div><!-- /edit form -->
 
-      <!-- STATS BAR -->
+            <!-- STATS BAR -->
       <div class="piko-profile-stats">
         <div class="piko-profile-stat">
           <span class="piko-profile-stat-num" id="statIdeas">0</span>
@@ -452,11 +458,7 @@
     </div><!-- /container -->
   </section>
 
-  <!-- CUSTOMIZE TRIGGER -->
-  <button class="piko-customize-trigger" id="pikoCustomizeTrigger" title="Customize Profile" hidden>
-    <i class="fas fa-palette"></i>
-  </button>
-
+  <div class="piko-customize-backdrop" id="pikoCustomizeBackdrop"></div>
   <!-- CUSTOMIZE PANEL -->
   <div class="piko-customize-panel" id="pikoCustomizePanel">
     <div class="piko-customize-header">

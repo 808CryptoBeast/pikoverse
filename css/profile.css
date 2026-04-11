@@ -1310,3 +1310,147 @@ textarea.piko-auth-input::placeholder { color: rgba(255,255,255,.2); }
   .piko-template-grid { grid-template-columns: repeat(2,1fr); }
   .piko-profile-stats { grid-template-columns: repeat(2,1fr); }
 }
+
+/* ── Nav icon buttons (palette, bell) ── */
+.piko-nav-icon-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.6);
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: color .18s, background .18s, border-color .18s;
+  flex-shrink: 0;
+}
+.piko-nav-icon-btn:hover {
+  color: var(--pf-gold);
+  background: rgba(240,201,106,.1);
+  border-color: rgba(240,201,106,.3);
+}
+
+/* ── Customize panel — slides from right, below fixed nav ── */
+.piko-customize-panel {
+  position: fixed;
+  right: 0;
+  top: 60px;          /* below fixed nav */
+  bottom: 0;
+  width: min(340px, 100vw);
+  z-index: 600;       /* above content, below modals */
+  background: rgba(6,9,18,.98);
+  border-left: 1px solid rgba(240,201,106,.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+  box-shadow: -8px 0 40px rgba(0,0,0,.5);
+}
+.piko-customize-panel.is-open {
+  transform: translateX(0);
+}
+.piko-customize-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.02);
+}
+.piko-customize-header h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--pf-gold); letter-spacing: .06em;
+}
+.piko-customize-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,.06); border: none;
+  color: rgba(255,255,255,.5); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: color .18s, background .18s;
+}
+.piko-customize-close:hover { color: #fff; background: rgba(255,255,255,.1); }
+.piko-customize-body {
+  flex: 1; overflow-y: auto; padding: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(240,201,106,.2) transparent;
+}
+.piko-customize-body::-webkit-scrollbar { width: 4px; }
+.piko-customize-body::-webkit-scrollbar-thumb { background: rgba(240,201,106,.2); border-radius: 2px; }
+.piko-customize-section { margin-bottom: 22px; }
+.piko-customize-section-title {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: rgba(255,255,255,.35); margin-bottom: 10px;
+}
+
+/* Apply / Reset buttons at bottom of customize panel */
+#pikoApplyCustomize, #pikoResetCustomize {
+  width: 100%; margin-top: 0;
+}
+#pikoResetCustomize { margin-top: 8px; }
+
+/* Backdrop when panel is open on mobile */
+.piko-customize-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 599;
+  backdrop-filter: blur(2px);
+}
+.piko-customize-backdrop.is-open { display: block; }
+
+@media (max-width: 480px) {
+  .piko-customize-panel { width: 100vw; top: 60px; }
+}
+
+/* ════════════════════════════════════════════
+   EDIT FORM — tabbed
+════════════════════════════════════════════ */
+.piko-profile-edit-form {
+  background: linear-gradient(135deg,rgba(13,18,32,.98),rgba(20,24,48,.98));
+  border: 1px solid rgba(240,201,106,.18);
+  border-radius: 16px; padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.piko-edit-tabs {
+  display: flex; gap: 4px; margin-bottom: 22px;
+  background: rgba(255,255,255,.04);
+  border-radius: 10px; padding: 4px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.piko-edit-tab {
+  flex: 1; padding: 9px 12px;
+  background: none; border: none; border-radius: 7px;
+  font-size: 12px; font-weight: 700;
+  color: rgba(255,255,255,.45);
+  cursor: pointer; transition: all .18s;
+  font-family: inherit; letter-spacing: .04em;
+}
+.piko-edit-tab:hover { color: rgba(255,255,255,.7); background: rgba(255,255,255,.04); }
+.piko-edit-tab.is-active {
+  background: var(--pf-custom-accent, var(--pf-gold));
+  color: #080b14; font-weight: 800;
+  box-shadow: 0 2px 10px rgba(240,201,106,.25);
+}
+.piko-edit-pane { display: none; }
+.piko-edit-pane.is-active { display: block; }
+
+/* ════════════════════════════════════════════
+   NAV CUSTOMIZE BUTTON
+════════════════════════════════════════════ */
+.piko-customize-nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(240,201,106,.1);
+  border: 1px solid rgba(240,201,106,.25);
+  color: var(--pf-gold);
+  font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .18s, transform .18s, box-shadow .18s;
+}
+.piko-customize-nav-btn:hover {
+  background: rgba(240,201,106,.2);
+  transform: rotate(15deg);
+  box-shadow: 0 0 12px rgba(240,201,106,.2);
+}

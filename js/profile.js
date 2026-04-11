@@ -394,12 +394,8 @@
     var rb       = $('pikoRankBadge');
     if (rb) { rb.textContent=rank.icon+' '+rank.label; rb.style.cssText='--rank-color:'+rank.color+';--rank-bg:'+rank.bg+';--rank-border:'+rank.border; }
     /* Apply saved name style */
-    var ns = p.nameStyle || {};
-    var nameElStyle = $('pikoProfileName');
-    if (nameElStyle && ns.color)  nameElStyle.style.color      = ns.color;
-    if (nameElStyle && ns.font)   nameElStyle.style.fontFamily = ns.font || '';
-    if (nameElStyle && ns.weight) nameElStyle.style.fontWeight = ns.weight || '800';
-    if (nameElStyle && ns.size)   nameElStyle.style.fontSize   = ns.size  || '';
+    var savedNs = p.nameStyle || p.name_style || {};
+    if (Object.keys(savedNs).length) applyNameStyleToPage(savedNs);
 
     /* Update nav avatar */
     updateNavAvatar(p.avatar_url || null);
@@ -577,12 +573,14 @@
     var section = $('pikoProfileSection');
     if (gate)    { gate.hidden    = true;  gate.style.display    = 'none'; }
     if (section) { section.hidden = false; section.style.display = 'block'; }
-    var s=$('pikoSignOut'); if(s) s.hidden=false;
-    var t=$('pikoCustomizeTrigger'); if(t) t.hidden=false;
-    var nb=$('pikoNotifBtn'); if(nb) nb.hidden=false;
+    var s=$('pikoSignOut');          if(s)  { s.hidden=false;  s.style.display=''; }
+    var t=$('pikoCustomizeTrigger'); if(t)  { t.hidden=false;  t.style.display=''; }
+    var nb=$('pikoNotifBtn');        if(nb) { nb.hidden=false; nb.style.display=''; }
     await loadAllData();
     applyTheme(STATE.theme);
     renderAll();
+    /* Re-apply theme after render (renderAll may reset some styles) */
+    setTimeout(function(){ applyTheme(STATE.theme); }, 50);
     subscribeRealtime();
   }
 
@@ -872,70 +870,189 @@
   /* ════════════════════════════════════════════
      EDIT PROFILE
   ════════════════════════════════════════════ */
+  /* ════════════════════════════════════════════
+     EDIT PROFILE — tabbed panel
+  ════════════════════════════════════════════ */
   function initEditProfile() {
-    var editBtn=$('pikoEditProfileBtn'), cancelBtn=$('pikoCancelEditBtn'),
-        saveBtn=$('pikoSaveProfileBtn'), form=$('pikoProfileEditForm'),
-        avatarBtn=$('pikoAvatarEditBtn'), avatarFile=$('pikoAvatarFile'),
-        bannerBtn=$('pikoBannerEditBtn'), bannerFile=$('pikoBannerFile');
+    var editBtn    = $('pikoEditProfileBtn');
+    var cancelBtn  = $('pikoCancelEditBtn');
+    var saveBtn    = $('pikoSaveProfileBtn');
+    var saveStyleBtn = $('pikoSaveStyleBtn');
+    var form       = $('pikoProfileEditForm');
+    var avatarBtn  = $('pikoAvatarEditBtn');
+    var avatarFile = $('pikoAvatarFile');
+    var bannerBtn  = $('pikoBannerEditBtn');
+    var bannerFile = $('pikoBannerFile');
 
-    if(editBtn) editBtn.addEventListener('click',function(){
-      var p=STATE.profile||{};
-      ($('editName')     ||{}).value=p.display_name||'';
-      ($('editBio')      ||{}).value=p.bio         ||'';
-      ($('editAvatarUrl')||{}).value=p.avatar_url  ||'';
-      ($('editSocial')   ||{}).value=p.social      ||'';
-      /* Populate hide email */
-      var hET=$('hideEmailToggle'); if(hET) hET.checked=!!(p.hide_email);
-      /* Populate name style */
-      var ns=p.name_style||{};
-      var nc=$('nameStyleColor');  if(nc) nc.value =ns.color  ||'#ffffff';
-      var nz=$('nameStyleSize');   if(nz) nz.value =ns.size   ||'1.5rem';
-      var nf=$('nameStyleFont');   if(nf) nf.value =ns.font   ||'Orbitron';
-      var nw=$('nameStyleWeight'); if(nw) nw.value =ns.weight ||'800';
-      /* Update preview */
-      updateNamePreview();
-      if(form) form.hidden=false;
+    /* ── Sub-tabs inside edit form ── */
+    document.querySelectorAll('.piko-edit-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.piko-edit-tab').forEach(function(b){ b.classList.remove('is-active'); });
+        document.querySelectorAll('.piko-edit-pane').forEach(function(p){ p.style.display='none'; });
+        btn.classList.add('is-active');
+        var pane = $('pikoEditPane'+btn.dataset.etab.charAt(0).toUpperCase()+btn.dataset.etab.slice(1));
+        if (pane) pane.style.display = 'block';
+      });
     });
-    if(cancelBtn) cancelBtn.addEventListener('click',function(){ if(form) form.hidden=true; });
 
-    if(saveBtn) saveBtn.addEventListener('click', async function(){
-      var p=Object.assign({},STATE.profile||{});
-      var name=(($('editName')||{}).value||'').trim();
-      p.display_name=name||p.display_name;
-      p.bio        =(($('editBio')      ||{}).value||'').trim();
-      p.avatar_url =(($('editAvatarUrl')||{}).value||'').trim();
-      p.social     =(($('editSocial')   ||{}).value||'').trim();
-      p.hideEmail  = ($('editHideEmail')||{}).checked || false;
-      p.nameStyle  = applyNameStyle();
-      STATE.profile=p;
+    /* Open edit form */
+    if (editBtn) editBtn.addEventListener('click', function(){
+      var p = STATE.profile || {};
+      ($('editName')      ||{}).value = p.display_name || '';
+      ($('editBio')       ||{}).value = p.bio          || '';
+      ($('editAvatarUrl') ||{}).value = p.avatar_url   || '';
+      ($('editSocial')    ||{}).value = p.social       || '';
+      var hE = $('hideEmailToggle'); if (hE) hE.checked = !!(p.hide_email || p.hideEmail);
+      /* populate name style */
+      var ns = p.nameStyle || p.name_style || {};
+      var nc = $('nameStyleColor');  if (nc) nc.value = ns.color  || '#ffffff';
+      var nf = $('nameStyleFont');   if (nf) nf.value = ns.font   || '';
+      var nw = $('nameStyleWeight'); if (nw) nw.value = ns.weight || '700';
+      var nz = $('nameStyleSize');   if (nz) nz.value = parseInt(ns.size) || 28;
+      /* show first tab */
+      document.querySelectorAll('.piko-edit-pane').forEach(function(p){ p.style.display='none'; });
+      var first = $('pikoEditPaneProfile'); if (first) first.style.display = 'block';
+      document.querySelectorAll('.piko-edit-tab').forEach(function(b){ b.classList.remove('is-active'); });
+      var firstTab = document.querySelector('.piko-edit-tab'); if (firstTab) firstTab.classList.add('is-active');
+      updateNamePreviewFromState();
+      if (form) { form.hidden = false; form.style.display = 'block'; }
+    });
+
+    /* Close */
+    if (cancelBtn) cancelBtn.addEventListener('click', function(){
+      if (form) { form.hidden = true; form.style.display = 'none'; }
+    });
+
+    /* Save Profile */
+    if (saveBtn) saveBtn.addEventListener('click', async function(){
+      var p = Object.assign({}, STATE.profile || {});
+      var name = (($('editName') || {}).value || '').trim();
+      if (name) p.display_name = name;
+      p.bio       = (($('editBio')       || {}).value || '').trim();
+      p.social    = (($('editSocial')    || {}).value || '').trim();
+      var av = (($('editAvatarUrl') || {}).value || '').trim();
+      if (av) p.avatar_url = av;
+      var hE = $('hideEmailToggle'); p.hide_email = hE ? hE.checked : false; p.hideEmail = p.hide_email;
+
+      saveBtn.disabled  = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+      STATE.profile = p;
       await DB_LAYER.upsertProfile(p);
-      renderAll(); if(form) form.hidden=true; toast('✅ Profile updated!');
+
+      saveBtn.disabled  = false;
+      saveBtn.innerHTML = '<i class="fas fa-floppy-disk"></i> Save Changes';
+      showStatus('pikoSaveStatus', '✅ Profile saved!', 'ok');
+      renderAll();
+      toast('✅ Profile updated!');
+      setTimeout(function(){ clearStatus('pikoSaveStatus'); }, 3000);
     });
 
-    if(avatarBtn&&avatarFile){
-      avatarBtn.addEventListener('click',function(){ avatarFile.click(); });
+    /* Save Name Style separately */
+    if (saveStyleBtn) saveStyleBtn.addEventListener('click', async function(){
+      var ns = readNameStyle();
+      var p  = Object.assign({}, STATE.profile || {});
+      p.nameStyle = ns; p.name_style = ns;
+      STATE.profile = p;
+      applyNameStyleToPage(ns);
+      await DB_LAYER.upsertProfile(p);
+      showStatus('pikoStyleStatus', '✅ Style saved!', 'ok');
+      toast('✅ Name style saved!');
+      setTimeout(function(){ clearStatus('pikoStyleStatus'); }, 3000);
+    });
+
+    /* Avatar upload */
+    if (avatarBtn && avatarFile) {
+      avatarBtn.addEventListener('click', function(){ avatarFile.click(); });
       avatarFile.addEventListener('change', async function(){
-        var file=avatarFile.files[0]; if(!file) return;
-        if(!OFFLINE&&supa()&&SESSION_USER){
-          var path='avatars/'+SESSION_USER.id+'/'+Date.now()+'.'+file.name.split('.').pop();
-          var up=await supa().storage.from('pikoverse-public').upload(path,file,{upsert:true});
-          if(!up.error){ var url=supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl; STATE.profile=STATE.profile||{}; STATE.profile.avatar_url=url; await DB_LAYER.upsertProfile(STATE.profile); renderAll(); toast('✅ Avatar updated!'); return; }
+        var file = avatarFile.files[0]; if (!file) return;
+        if (!OFFLINE && supa() && SESSION_USER) {
+          var path = 'avatars/'+SESSION_USER.id+'/'+Date.now()+'.'+file.name.split('.').pop();
+          var up = await supa().storage.from('pikoverse-public').upload(path, file, {upsert:true});
+          if (!up.error) {
+            var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
+            STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = url;
+            await DB_LAYER.upsertProfile(STATE.profile);
+            renderAll(); toast('✅ Avatar updated!'); return;
+          }
         }
-        var reader=new FileReader(); reader.onload=async function(e){ STATE.profile=STATE.profile||{}; STATE.profile.avatar_url=e.target.result; await DB_LAYER.upsertProfile(STATE.profile); renderAll(); toast('✅ Avatar updated!'); }; reader.readAsDataURL(file);
+        var reader = new FileReader();
+        reader.onload = async function(e){
+          STATE.profile = STATE.profile || {}; STATE.profile.avatar_url = e.target.result;
+          await DB_LAYER.upsertProfile(STATE.profile);
+          renderAll(); toast('✅ Avatar updated!');
+        };
+        reader.readAsDataURL(file);
       });
     }
 
-    if(bannerBtn&&bannerFile){
-      bannerBtn.addEventListener('click',function(){ bannerFile.click(); });
+    /* Banner upload */
+    if (bannerBtn && bannerFile) {
+      bannerBtn.addEventListener('click', function(){ bannerFile.click(); });
       bannerFile.addEventListener('change', async function(){
-        var file=bannerFile.files[0]; if(!file) return;
-        var reader=new FileReader(); reader.onload=async function(e){
-          var bn=$('pikoBanner'); if(bn) bn.style.background='url('+e.target.result+') center/cover no-repeat';
-          STATE.theme=STATE.theme||{}; STATE.theme.bannerBg='url('+e.target.result+') center/cover no-repeat';
-          await DB_LAYER.saveTheme(getUserId(),STATE.theme); toast('✅ Banner updated!');
-        }; reader.readAsDataURL(file);
+        var file = bannerFile.files[0]; if (!file) return;
+        var reader = new FileReader();
+        reader.onload = async function(e){
+          var bn = $('pikoBanner');
+          if (bn) bn.style.backgroundImage = 'url('+e.target.result+')';
+          STATE.theme = STATE.theme || {};
+          STATE.theme.bannerBg = 'url('+e.target.result+') center/cover no-repeat';
+          saveJSON(THEME_KEY, STATE.theme);
+          await DB_LAYER.saveTheme(getUserId(), STATE.theme);
+          updateIdCardBanner();
+          toast('✅ Banner updated!');
+        };
+        reader.readAsDataURL(file);
       });
     }
+  }
+
+  /* ── Name style helpers ── */
+  function readNameStyle() {
+    return {
+      color:  ($('nameStyleColor')  || {}).value || '#ffffff',
+      font:   ($('nameStyleFont')   || {}).value || '',
+      weight: ($('nameStyleWeight') || {}).value || '700',
+      size:   (($('nameStyleSize')  || {}).value || '28') + 'px',
+    };
+  }
+
+  function applyNameStyleToPage(ns) {
+    var el = $('pikoProfileName'); if (!el) return;
+    el.style.color      = ns.color  || '';
+    el.style.fontFamily = ns.font   || '';
+    el.style.fontWeight = ns.weight || '';
+    el.style.fontSize   = ns.size   || '';
+    updateNavAvatar(); /* also refresh nav name with style */
+  }
+
+  function updateNamePreviewFromState() {
+    var preview = $('pikoNamePreview'); if (!preview) return;
+    var p = STATE.profile || {};
+    preview.textContent = p.display_name || getUserEmail() || 'Your Name';
+    var ns = p.nameStyle || p.name_style || {};
+    if (ns.color)  preview.style.color      = ns.color;
+    if (ns.font)   preview.style.fontFamily = ns.font || 'inherit';
+    if (ns.weight) preview.style.fontWeight = ns.weight;
+    if (ns.size)   preview.style.fontSize   = ns.size;
+  }
+
+  function initNameStyleEditor() {
+    var inputs = ['nameStyleColor','nameStyleFont','nameStyleWeight','nameStyleSize'];
+    inputs.forEach(function(id){
+      var el = $(id); if (!el) return;
+      el.addEventListener('input', function(){
+        var ns  = readNameStyle();
+        var prev = $('pikoNamePreview'); if (!prev) return;
+        prev.textContent = ($('editName')||{}).value || (STATE.profile&&STATE.profile.display_name) || 'Your Name';
+        prev.style.color      = ns.color  || '';
+        prev.style.fontFamily = ns.font   || 'inherit';
+        prev.style.fontWeight = ns.weight || '700';
+        prev.style.fontSize   = ns.size   || '28px';
+        var lbl = $('nameStyleSizeVal');
+        if (lbl && id === 'nameStyleSize') lbl.textContent = el.value + 'px';
+      });
+    });
   }
 
   /* ════════════════════════════════════════════
@@ -970,7 +1087,7 @@
      NAV AVATAR — syncs with profile image
   ════════════════════════════════════════════ */
   function updateNavAvatar() {
-    var navImg = $('pikoNavAvatar');
+    var navImg = $('pikoNavAvatarImg') || $('pikoNavAvatar');
     if (!navImg) return;
     var p   = STATE.profile || {};
     var src = p.avatar_url || '';
@@ -1020,12 +1137,12 @@
      NAME STYLE — live preview + save
   ════════════════════════════════════════════ */
   function initNameStyleEditor() {
-    var colorIn  = $('editNameColor');
-    var fontIn   = $('editNameFont');
-    var weightIn = $('editNameWeight');
-    var sizeIn   = $('editNameSize');
-    var sizeVal  = $('editNameSizeVal');
-    var preview  = $('editNamePreview');
+    var colorIn  = $('nameStyleColor');
+    var fontIn   = $('nameStyleFont');
+    var weightIn = $('nameStyleWeight');
+    var sizeIn   = $('nameStyleSize');
+    var sizeVal  = $('nameStyleSizeVal');
+    var preview  = $('pikoNamePreview');
 
     function updatePreview() {
       if (!preview) return;
@@ -1055,16 +1172,7 @@
   }
 
   function applyNameStyle() {
-    var colorIn  = $('editNameColor');
-    var fontIn   = $('editNameFont');
-    var weightIn = $('editNameWeight');
-    var sizeIn   = $('editNameSize');
-    var ns = {
-      color:  colorIn  ? colorIn.value  : '',
-      font:   fontIn   ? fontIn.value   : '',
-      weight: weightIn ? weightIn.value : '700',
-      size:   sizeIn   ? sizeIn.value+'px' : '28px',
-    };
+    var ns = readNameStyle();
     var nameEl = $('pikoProfileName');
     if (nameEl) {
       if (ns.color)  nameEl.style.color      = ns.color;
@@ -1290,10 +1398,28 @@
     if(t.bannerBg){ var idBanner=$('pikoIdCardBanner'); if(idBanner){ idBanner.style.background=t.bannerBg; idBanner.style.backgroundSize='cover'; idBanner.style.backgroundPosition='center'; } }
   }
 
+  /* Customize panel controls — module-level so apply button can close panel */
+  var _openCustomize  = function(){};
+  var _closeCustomize = function(){};
+
   function initCustomize() {
-    var trigger=$('pikoCustomizeTrigger'), panel=$('pikoCustomizePanel'), close=$('pikoCustomizeClose');
-    if(trigger) trigger.addEventListener('click',function(){ if(panel) panel.classList.add('is-open'); });
-    if(close)   close.addEventListener('click',  function(){ if(panel) panel.classList.remove('is-open'); });
+    var trigger  = $('pikoCustomizeTrigger');
+    var panel    = $('pikoCustomizePanel');
+    var close    = $('pikoCustomizeClose');
+    var backdrop = $('pikoCustomizeBackdrop');
+
+    _openCustomize  = function() {
+      if (panel)    panel.classList.add('is-open');
+      if (backdrop) backdrop.classList.add('is-open');
+    };
+    _closeCustomize = function() {
+      if (panel)    panel.classList.remove('is-open');
+      if (backdrop) backdrop.classList.remove('is-open');
+    };
+
+    if (trigger)  trigger.addEventListener('click',  _openCustomize);
+    if (close)    close.addEventListener('click',    _closeCustomize);
+    if (backdrop) backdrop.addEventListener('click', _closeCustomize);
 
     document.querySelectorAll('.piko-theme-preset').forEach(function(el){
       el.addEventListener('click',function(){
@@ -1328,8 +1454,17 @@
       var css=($('customCssInput')||{}).value||'';
       var bgImage=bgUrl?'url('+bgUrl+') center/cover no-repeat fixed':(BG_MAP[bgOpt]||bg);
       var t={accent:accent,bg:bg,bg2:cardBg,text:base.text,glow:accent+'26',cardBg:'rgba(255,255,255,.03)',font:font,bgImage:bgImage,css:css,themeId:themeId};
-      STATE.theme=t; await DB_LAYER.saveTheme(getUserId(),t); applyTheme(t);
-      if(panel) panel.classList.remove('is-open'); toast('✅ Profile customized and saved!');
+      var applyBtn2=$('pikoApplyCustomize');
+      if(applyBtn2){ applyBtn2.disabled=true; applyBtn2.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…'; }
+      STATE.theme=t;
+      await DB_LAYER.saveTheme(getUserId(),t);
+      applyTheme(t);
+      if(applyBtn2){ applyBtn2.disabled=false; applyBtn2.innerHTML='<i class="fas fa-check"></i> Apply & Save'; }
+      _closeCustomize();
+      toast('✅ Profile customized!');
+      /* Re-apply banner so it persists */
+      if(t.bannerBg){ var bn=$('pikoBanner'); if(bn) bn.style.background=t.bannerBg; }
+      updateIdCardBanner();
     });
 
     var reset=$('pikoResetCustomize');
@@ -1338,7 +1473,7 @@
       document.documentElement.removeAttribute('style'); document.body.removeAttribute('style');
       var bn=$('pikoBanner'); if(bn) bn.removeAttribute('style');
       var st=$('pikoCustomStyle'); if(st) st.textContent='';
-      toast('Theme reset to default'); if(panel) panel.classList.remove('is-open');
+      toast('Theme reset to default'); _closeCustomize();
     });
   }
 
@@ -1643,7 +1778,7 @@
     initSignup(); initSignin(); initSignOut();
     initEditProfile(); initAccountSettings(); initNameStyleEditor();
     initShareCard(); initNotifBell(); initCustomize(); initLinks();
-    handlePasswordReset(); initNameStyleEditor(); initIdeaForm(); initProjectForm();
+    handlePasswordReset(); initIdeaForm(); initProjectForm();
 
     /* Auth decisions handled by piko:supa:ready event
        which fires for both online and offline modes */
