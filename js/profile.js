@@ -210,15 +210,17 @@
         delete themeForDB.bannerBg;
       }
 
-      /* Only use columns that are guaranteed to exist in the profiles table */
+      /* Only use columns that are guaranteed to exist in the profiles table.
+         Use empty string fallbacks for NOT NULL columns (bio, avatar_url, social)
+         Use display_name fallback to email prefix so it's never null/empty. */
       var payload = {
         id:           SESSION_USER.id,
         email:        SESSION_USER.email,
-        display_name: profile.display_name || null,
-        bio:          profile.bio          || null,
-        avatar_url:   profile.avatar_url   || null,
-        banner_url:   profile.banner_url   || null,
-        social:       profile.social       || null,
+        display_name: profile.display_name || SESSION_USER.email.split('@')[0],
+        bio:          profile.bio          || '',
+        avatar_url:   profile.avatar_url   || '',
+        banner_url:   profile.banner_url   || '',
+        social:       profile.social       || '',
         theme:        themeForDB,
         updated_at:   new Date().toISOString(),
       };
