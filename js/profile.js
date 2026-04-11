@@ -327,12 +327,51 @@
     },
 
     saveTheme: async function(userId, theme) {
-      saveJSON(THEME_KEY, theme);
+      saveJSON(THEME_KEY, theme); /* always save full theme (incl. base64 banner) to localStorage */
       if (OFFLINE || !userId) return;
-      await supa().from('profiles').update({ theme:theme, updated_at:new Date().toISOString() }).eq('id', userId);
+      /* Strip base64 banner before saving to Supabase — too large for JSONB.
+         If a Storage URL (bannerUrl) exists, that goes into the DB instead. */
+      var themeForDB = Object.assign({}, theme);
+      if (themeForDB.bannerBg && themeForDB.bannerBg.startsWith('url(data:')) {
+        delete themeForDB.bannerBg; /* keep only bannerUrl (Storage URL) if present */
+      }
+      var r = await supa().from('profiles').update({ theme: themeForDB, updated_at: new Date().toISOString() }).eq('id', userId);
+      if (r.error) console.warn('[Profile] saveTheme error:', r.error.message);
     },
 
     loadTheme: async function(userId) {
+<<<<<<< HEAD
+      var localTheme = loadJSON(THEME_KEY, {});
+      if (OFFLINE || !userId) return localTheme;
+      var r = await supa().from('profiles').select('theme,display_name,avatar_url,bio,social').eq('id', userId).single();
+      if (r.error || !r.data) return localTheme;
+      var remoteTheme = r.data.theme || {};
+      /* Restore nameStyle + hideEmail from theme JSONB back into profile */
+      if (remoteTheme._nameStyle) {
+        var lp = loadJSON(PROFILE_KEY, {});
+        lp.nameStyle   = remoteTheme._nameStyle;
+        lp.name_style  = remoteTheme._nameStyle;
+        saveJSON(PROFILE_KEY, lp);
+      }
+      if (remoteTheme._hideEmail !== undefined) {
+        var lp2 = loadJSON(PROFILE_KEY, {});
+        lp2.hideEmail  = remoteTheme._hideEmail;
+        lp2.hide_email = remoteTheme._hideEmail;
+        saveJSON(PROFILE_KEY, lp2);
+      }
+      /* Restore bannerBg from bannerUrl (Supabase Storage — cross-device) */
+      if (remoteTheme.bannerUrl) {
+        remoteTheme.bannerBg = 'url(' + remoteTheme.bannerUrl + ') center/cover no-repeat';
+      }
+      /* If DB has no bannerUrl/bannerBg, keep localStorage base64 banner */
+      if (!remoteTheme.bannerBg && localTheme.bannerBg) {
+        remoteTheme.bannerBg = localTheme.bannerBg;
+      }
+      /* Merge: remote wins for all fields */
+      var merged = Object.assign({}, localTheme, remoteTheme);
+      saveJSON(THEME_KEY, merged);
+      return merged;
+=======
       var localTheme = loadJSON(THEME_KEY, {});
       if (OFFLINE || !userId) return localTheme;
       var r = await supa().from('profiles').select('theme,display_name,avatar_url,bio,social').eq('id', userId).single();
@@ -359,6 +398,7 @@
       var merged = Object.assign({}, localTheme, remoteTheme);
       saveJSON(THEME_KEY, merged);
       return merged;
+>>>>>>> a8d601257c3932446b05b2cc5dcb75610bd51710
     },
   };
 
@@ -489,7 +529,15 @@
     var earned=getEarnedBadgeIds(STATE.ideas.length,approved,STATE.orders.length,STATE.learn,STATE.profile);
     var score=calcScore(STATE.ideas.length,approved,STATE.orders.length,earned.length), rank=getRank(score);
     var a=$('pikoIdCardAvatar'),n=$('pikoIdCardName'),m=$('pikoIdCardMeta'),s=$('pikoIdCardScore');
-    if(a){ if(p.avatar_url) a.innerHTML='<img src="'+esc(p.avatar_url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; else a.textContent=name[0].toUpperCase(); }
+    if(a){
+      if(p.avatar_url) {
+        a.innerHTML = '<img src="' + esc(p.avatar_url) + '" crossorigin="anonymous"'
+          + ' style="width:100%;height:100%;object-fit:cover;border-radius:50%"'
+          + ' onerror="this.parentNode.textContent='' + esc(name[0].toUpperCase()) + ''">';
+      } else {
+        a.textContent = name[0].toUpperCase();
+      }
+    }
     if(n) n.textContent=name;
     if(m) m.textContent=rank.icon+' '+rank.label+' · Pikoverse Member';
     if(s) s.textContent='Score: '+score+' pts';
@@ -1112,21 +1160,48 @@
       });
     }
 
-    /* Banner upload */
+    /* Banner upload — tries Supabase Storage first (cross-device URL),
+       falls back to base64 in localStorage (same-device only)           */
     if (bannerBtn && bannerFile) {
       bannerBtn.addEventListener('click', function(){ bannerFile.click(); });
       bannerFile.addEventListener('change', async function(){
         var file = bannerFile.files[0]; if (!file) return;
+        toast('⏳ Uploading banner…');
+
+        /* Try Supabase Storage upload first */
+        if (!OFFLINE && supa() && SESSION_USER) {
+          var path = 'banners/' + SESSION_USER.id + '/banner.' + (file.name.split('.').pop() || 'jpg');
+          var up   = await supa().storage.from('pikoverse-public').upload(path, file, { upsert: true });
+          if (!up.error) {
+            var url = supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl;
+            /* Store as a proper URL — works on any device */
+            STATE.theme = STATE.theme || {};
+            STATE.theme.bannerUrl = url;
+            STATE.theme.bannerBg  = 'url(' + url + ') center/cover no-repeat';
+            saveJSON(THEME_KEY, STATE.theme);
+            /* Apply immediately */
+            var bnEl = $('pikoBanner');
+            if (bnEl) { bnEl.style.background = STATE.theme.bannerBg; bnEl.style.backgroundSize = 'cover'; bnEl.style.backgroundPosition = 'center'; }
+            await DB_LAYER.saveTheme(getUserId(), STATE.theme);
+            updateIdCardBanner();
+            toast('✅ Banner updated!');
+            return;
+          }
+        }
+
+        /* Fallback: base64 in localStorage only */
         var reader = new FileReader();
         reader.onload = async function(e){
-          var bn = $('pikoBanner');
-          if (bn) bn.style.backgroundImage = 'url('+e.target.result+')';
           STATE.theme = STATE.theme || {};
-          STATE.theme.bannerBg = 'url('+e.target.result+') center/cover no-repeat';
+          STATE.theme.bannerBg = 'url(' + e.target.result + ') center/cover no-repeat';
+          /* bannerUrl stays empty so cross-device knows no Storage URL exists */
           saveJSON(THEME_KEY, STATE.theme);
+          var bnEl = $('pikoBanner');
+          if (bnEl) { bnEl.style.background = STATE.theme.bannerBg; bnEl.style.backgroundSize = 'cover'; bnEl.style.backgroundPosition = 'center'; }
+          /* Save theme to DB (base64 stripped server-side — only URL stored in DB) */
           await DB_LAYER.saveTheme(getUserId(), STATE.theme);
           updateIdCardBanner();
-          toast('✅ Banner updated!');
+          toast('✅ Banner saved locally!');
         };
         reader.readAsDataURL(file);
       });
@@ -1478,18 +1553,87 @@
      SHARE / NOTIF BELL / CUSTOMIZE
   ════════════════════════════════════════════ */
   function initShareCard() {
-    var btn=$('pikoShareCardBtn'); if(!btn) return;
-    btn.addEventListener('click',function(){
-      var p=STATE.profile||{}, name=p.display_name||getUserEmail()||'Member';
-      var approved=STATE.projects.filter(function(x){ return x.status==='approved'; }).length;
-      var earned=getEarnedBadgeIds(STATE.ideas.length,approved,STATE.orders.length,STATE.learn,STATE.profile);
-      var score=calcScore(STATE.ideas.length,approved,STATE.orders.length,earned.length), rank=getRank(score);
-      var text='🌺 I\'m a '+rank.label+' on Pikoverse! Score: '+score+' pts — pikoverse.xyz/profile.html';
-      if(navigator.share) navigator.share({title:'My Pikoverse ID',text:text,url:'https://pikoverse.xyz/profile.html'}).catch(function(){});
-      else{ navigator.clipboard&&navigator.clipboard.writeText(text); toast('✅ ID card copied to clipboard!'); }
+    var btn = $('pikoShareCardBtn'); if (!btn) return;
+
+    btn.addEventListener('click', async function() {
+      var p       = STATE.profile || {};
+      var name    = p.display_name || getUserEmail() || 'Member';
+      var approved= STATE.projects.filter(function(x){ return x.status==='approved'; }).length;
+      var earned  = getEarnedBadgeIds(STATE.ideas.length, approved, STATE.orders.length, STATE.learn, STATE.profile);
+      var score   = calcScore(STATE.ideas.length, approved, STATE.orders.length, earned.length);
+      var rank    = getRank(score);
+
+      /* ── Try to capture the ID card as an image using html2canvas ── */
+      var card = $('pikoIdCard') || $('pikoIdCardWrap') || document.querySelector('.piko-id-card');
+
+      if (card && typeof html2canvas !== 'undefined') {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Capturing…';
+        try {
+          /* Wait for all images in the card to finish loading */
+          var imgs = card.querySelectorAll('img');
+          await Promise.all(Array.from(imgs).map(function(img) {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(function(res) { img.onload = res; img.onerror = res; });
+          }));
+
+          var canvas = await html2canvas(card, {
+            backgroundColor: '#080b14',
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+          });
+
+          canvas.toBlob(async function(blob) {
+            var file     = new File([blob], 'pikoverse-id.png', { type: 'image/png' });
+            var shareText= '🌺 ' + name + ' is a ' + rank.label + ' on Pikoverse! Score: ' + score + ' pts';
+            var shareUrl = 'https://pikoverse.xyz/profile.html';
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({ title: 'My Pikoverse ID Card', text: shareText, url: shareUrl, files: [file] });
+              } catch(err) {
+                if (err.name !== 'AbortError') { _downloadCardCanvas(canvas); toast('✅ ID card downloaded!'); }
+              }
+            } else {
+              _downloadCardCanvas(canvas);
+              if (navigator.clipboard) navigator.clipboard.writeText(shareText + ' — ' + shareUrl).catch(function(){});
+              toast('✅ ID card downloaded! Link copied.');
+            }
+          }, 'image/png');
+
+        } catch(err) {
+          console.warn('[ShareCard] html2canvas error:', err);
+          _fallbackShareText(name, rank, score);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-share-nodes"></i> Share My Card';
+        }
+        return;
+      }
+
+      /* No card element or html2canvas not loaded — text share fallback */
+      _fallbackShareText(name, rank, score);
     });
   }
 
+  function _downloadCardCanvas(canvas) {
+    var a = document.createElement('a');
+    a.download = 'pikoverse-id.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }
+
+  function _fallbackShareText(name, rank, score) {
+    var text = '🌺 ' + name + ' is a ' + rank.label + ' on Pikoverse! Score: ' + score + ' pts — pikoverse.xyz/profile.html';
+    if (navigator.share) {
+      navigator.share({ title: 'My Pikoverse ID', text: text, url: 'https://pikoverse.xyz/profile.html' }).catch(function(){});
+    } else {
+      if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function(){});
+      toast('✅ Profile link copied to clipboard!');
+    }
+  }
   function initNotifBell() {
     var btn=$('pikoNotifBtn'); if(!btn) return;
     btn.addEventListener('click',function(){
