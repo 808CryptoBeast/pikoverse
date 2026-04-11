@@ -35,10 +35,11 @@
       /* supabase is exposed as window.supabase in UMD build */
       var client = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
         auth: {
-          autoRefreshToken: true,
-          persistSession:   true,
-          detectSessionInUrl: true,
-          flowType: 'pkce',
+          autoRefreshToken:    true,
+          persistSession:      true,
+          detectSessionInUrl:  true,
+          storageKey:          'piko_supabase_auth',   /* consistent key across all pages */
+          storage:             window.localStorage,
         },
       });
       window.piko_supa       = client;

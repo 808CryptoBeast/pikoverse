@@ -2,7 +2,8 @@ User-agent: *
 Allow: /
 
 # Block admin panel from indexing
-Disallow: /projects/admin/admin.html
-Disallow: /projects/admin/
+Disallow: /admin.html
+Disallow: /js/admin.js
 
+# Sitemap location
 Sitemap: https://pikoverse.xyz/sitemap.xml

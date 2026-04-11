@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#080b14"/>
+      <stop offset="50%"  stop-color="#0d1220"/>
+      <stop offset="100%" stop-color="#1a1030"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#c9a84c"/>
+      <stop offset="50%"  stop-color="#f0c96a"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="rgba(240,201,106,0.15)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Stars -->
+  <circle cx="120"  cy="80"  r="1.5" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="340"  cy="40"  r="1"   fill="rgba(255,255,255,0.4)"/>
+  <circle cx="560"  cy="120" r="2"   fill="rgba(255,255,255,0.5)"/>
+  <circle cx="780"  cy="60"  r="1"   fill="rgba(255,255,255,0.3)"/>
+  <circle cx="950"  cy="90"  r="1.5" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="1100" cy="50"  r="1"   fill="rgba(255,255,255,0.4)"/>
+  <circle cx="200"  cy="500" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="900"  cy="520" r="1"   fill="rgba(255,255,255,0.5)"/>
+  <circle cx="1050" cy="480" r="2"   fill="rgba(255,255,255,0.4)"/>
+  <circle cx="80"   cy="350" r="1"   fill="rgba(255,255,255,0.3)"/>
+  <circle cx="1150" cy="300" r="1.5" fill="rgba(255,255,255,0.5)"/>
+
+  <!-- Glow blob center -->
+  <ellipse cx="600" cy="315" rx="400" ry="250" fill="url(#glow)" filter="url(#blur)" opacity="0.8"/>
+
+  <!-- Gold accent line top -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#gold)" opacity="0.8"/>
+
+  <!-- Gold accent line bottom -->
+  <rect x="0" y="627" width="1200" height="3" fill="url(#gold)" opacity="0.8"/>
+
+  <!-- Icon circle background -->
+  <circle cx="600" cy="200" r="72" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.3)" stroke-width="1.5"/>
+  <circle cx="600" cy="200" r="56" fill="rgba(240,201,106,0.06)"/>
+
+  <!-- Icon placeholder (P glyph) -->
+  <text x="600" y="222" font-family="Georgia, serif" font-size="64" font-weight="900"
+        text-anchor="middle" fill="url(#gold)" opacity="0.9">P</text>
+
+  <!-- Main title -->
+  <text x="600" y="320" font-family="'Arial Black', Arial, sans-serif" font-size="72" font-weight="900"
+        letter-spacing="6" text-anchor="middle" fill="url(#gold)">PIKOVERSE</text>
+
+  <!-- Tagline -->
+  <text x="600" y="368" font-family="Arial, sans-serif" font-size="22" font-weight="400"
+        letter-spacing="4" text-anchor="middle" fill="rgba(255,255,255,0.55)">YOUR KNOWLEDGE ECOSYSTEM</text>
+
+  <!-- Divider -->
+  <line x1="440" y1="400" x2="760" y2="400" stroke="rgba(240,201,106,0.25)" stroke-width="1"/>
+
+  <!-- Feature pills -->
+  <rect x="160" y="425" width="140" height="36" rx="18" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.2)" stroke-width="1"/>
+  <text x="230" y="449" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1" text-anchor="middle" fill="rgba(255,255,255,0.6)">⚛ Ikeverse</text>
+
+  <rect x="316" y="425" width="160" height="36" rx="18" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.2)" stroke-width="1"/>
+  <text x="396" y="449" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1" text-anchor="middle" fill="rgba(255,255,255,0.6)">⚡ DigitalVerse</text>
+
+  <rect x="490" y="425" width="160" height="36" rx="18" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.2)" stroke-width="1"/>
+  <text x="570" y="449" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1" text-anchor="middle" fill="rgba(255,255,255,0.6)">🛍️ Marketplace</text>
+
+  <rect x="664" y="425" width="140" height="36" rx="18" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.2)" stroke-width="1"/>
+  <text x="734" y="449" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1" text-anchor="middle" fill="rgba(255,255,255,0.6)">📜 Chronicle</text>
+
+  <rect x="818" y="425" width="160" height="36" rx="18" fill="rgba(240,201,106,0.08)" stroke="rgba(240,201,106,0.2)" stroke-width="1"/>
+  <text x="898" y="449" font-family="Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="1" text-anchor="middle" fill="rgba(255,255,255,0.6)">🌺 Community</text>
+
+  <!-- Domain -->
+  <text x="600" y="570" font-family="Arial, sans-serif" font-size="18" font-weight="400"
+        letter-spacing="3" text-anchor="middle" fill="rgba(240,201,106,0.45)">pikoverse.xyz</text>
+
+  <!-- Built from Hawaiʻi -->
+  <text x="600" y="600" font-family="Arial, sans-serif" font-size="13"
+        letter-spacing="2" text-anchor="middle" fill="rgba(255,255,255,0.2)">BUILT FROM HAWAIʻI · ALOHA MASS PRODUCTIONS</text>
+</svg>

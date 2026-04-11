@@ -3,8 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Culturalverse — Indigenous Knowledge Platform | Ikeverse</title>
-  <meta name="description" content="Enter Culturalverse — a living platform for indigenous knowledge, ancient wisdom, and the deep connections between humanity's greatest cultural traditions." />
+  <title>Culturalverse — Indigenous Knowledge Platform | Ikeverse × Pikoverse</title>
+  <meta name="description" content="Culturalverse is a living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom, cultural connections, and ancestral navigation. Built from Hawaiʻi." />
+  <meta name="keywords" content="indigenous knowledge, Hawaiian culture, Kānaka Maoli, Kemet, ancient Egypt, Olmec, Kumulipo, cultural education, Ikeverse, Pikoverse, Hawaiʻi">
+  <meta name="author" content="Aloha Mass Productions">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ikeverse.pikoverse.xyz/culturalverse.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://ikeverse.pikoverse.xyz/culturalverse.html">
+  <meta property="og:title"       content="Culturalverse — Indigenous Knowledge Platform">
+  <meta property="og:description" content="A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom built from Hawaiʻi.">
+  <meta property="og:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
+  <meta property="og:site_name"   content="Pikoverse / Ikeverse">
+
+  <!-- Twitter -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Culturalverse — Indigenous Knowledge Platform">
+  <meta name="twitter:description" content="A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more.">
+  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
+
+  <!-- Favicon + theme -->
+  <link rel="icon" href="https://pikoverse.xyz/assets/platform-images/pikoverse-icon.png" type="image/png">
+  <meta name="theme-color" content="#4caf7a">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "Culturalverse — Indigenous Knowledge Platform",
+    "description": "A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom and cultural connections.",
+    "provider": { "@type": "Organization", "name": "Aloha Mass Productions", "url": "https://pikoverse.xyz" },
+    "url": "https://ikeverse.pikoverse.xyz/culturalverse.html",
+    "educationalLevel": "All levels",
+    "teaches": ["Hawaiian Culture", "Kemetic Wisdom", "Indigenous Knowledge", "Ancestral Navigation", "Cultural Connections"],
+    "inLanguage": "en",
+    "isPartOf": { "@type": "WebSite", "name": "Ikeverse", "url": "https://ikeverse.pikoverse.xyz" }
+  }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/culturalverse.css" />
@@ -100,10 +139,11 @@
           <i class="fas fa-network-wired"></i>
           <span>Matrix</span>
         </a>
-        <button class="cv-nav__profile-btn" id="cvProfileToggle" aria-label="Profile" title="Your Profile">
-          <i class="fas fa-circle-user"></i>
-          <span>Profile</span>
-        </button>
+        <a class="cv-nav__profile-btn" id="cvProfileToggle" href="https://pikoverse.xyz/profile.html" aria-label="Profile" title="Your Pikoverse Profile">
+          <img id="cvNavAvatar" src="" alt="" style="display:none;width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(240,201,106,.5)">
+          <i class="fas fa-circle-user" id="cvNavIcon"></i>
+          <span id="cvNavName">Profile</span>
+        </a>
         <button class="cv-nav__mobile-btn" id="cvMobileToggle" aria-label="Toggle menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
@@ -685,6 +725,32 @@
     </div>
   </footer>
 
+  <script src="https://pikoverse.xyz/js/supabase-client.js"></script>
+  <script>
+    /* Cross-device profile session — update nav avatar when logged in */
+    window.addEventListener('piko:supa:ready', function(e) {
+      if (e.detail.offline) return;
+      var sb = window.piko_supa;
+      if (!sb) return;
+      sb.auth.getSession().then(function(r) {
+        if (!r.data || !r.data.session || !r.data.session.user) return;
+        var u = r.data.session.user;
+        var localProfile = {};
+        try { localProfile = JSON.parse(localStorage.getItem('piko_profile_v1') || '{}'); } catch(e) {}
+        var avatar = u.user_metadata && u.user_metadata.avatar_url || localProfile.avatar_url || '';
+        var name   = u.user_metadata && u.user_metadata.display_name || localProfile.display_name || u.email.split('@')[0];
+        var avatarEl = document.getElementById('cvNavAvatar');
+        var iconEl   = document.getElementById('cvNavIcon');
+        var nameEl   = document.getElementById('cvNavName');
+        if (avatarEl && avatar) {
+          avatarEl.src = avatar;
+          avatarEl.style.display = 'inline-block';
+          if (iconEl) iconEl.style.display = 'none';
+        }
+        if (nameEl) nameEl.textContent = name;
+      });
+    });
+  </script>
   <script src="js/culturalverse.js"></script>
 </body>
 </html>

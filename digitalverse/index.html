@@ -3,8 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DigitalVerse — Blockchain Knowledge Universe | Ikeverse</title>
-  <meta name="description" content="Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles. Critical thinking, verification skills, and deep reading lessons." />
+  <title>DigitalVerse — Blockchain & Web3 Education | Ikeverse × Pikoverse</title>
+  <meta name="description" content="Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles. Critical thinking, verification skills, and deep reading lessons — built from Hawaiʻi." />
+  <meta name="keywords" content="blockchain education, Bitcoin, Ethereum, XRPL, Web3, DeFi, crypto scam prevention, Hawaiʻi, Pikoverse, DigitalVerse, Ikeverse">
+  <meta name="author" content="Aloha Mass Productions">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ikeverse.pikoverse.xyz/digitalverse/index.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://ikeverse.pikoverse.xyz/digitalverse/index.html">
+  <meta property="og:title"       content="DigitalVerse — Blockchain & Web3 Education">
+  <meta property="og:description" content="Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles. Built from Hawaiʻi by Aloha Mass Productions.">
+  <meta property="og:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
+  <meta property="og:site_name"   content="Pikoverse / Ikeverse">
+
+  <!-- Twitter -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="DigitalVerse — Blockchain & Web3 Education">
+  <meta name="twitter:description" content="Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles.">
+  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
+
+  <!-- Favicon + theme -->
+  <link rel="icon" href="https://pikoverse.xyz/assets/platform-images/pikoverse-icon.png" type="image/png">
+  <meta name="theme-color" content="#54d1ff">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "DigitalVerse — Blockchain Knowledge Universe",
+    "description": "Learn Bitcoin, Ethereum, XRPL, Flare, and Web3 from first principles with critical thinking and scam prevention.",
+    "provider": { "@type": "Organization", "name": "Aloha Mass Productions", "url": "https://pikoverse.xyz" },
+    "url": "https://ikeverse.pikoverse.xyz/digitalverse/index.html",
+    "educationalLevel": "Beginner to Advanced",
+    "teaches": ["Bitcoin", "Ethereum", "XRPL", "DeFi", "Web3 Security", "Blockchain Forensics"],
+    "inLanguage": "en",
+    "isPartOf": { "@type": "WebSite", "name": "Ikeverse", "url": "https://ikeverse.pikoverse.xyz" }
+  }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="digitalverse.css" />
 </head>
@@ -29,6 +68,10 @@
         <li><a href="#glossary">Glossary</a></li>
       </ul>
       <a class="nav__cta" href="#lessons">Start Learning</a>
+      <a class="nav__profile-link" href="https://pikoverse.xyz/profile.html" title="My Pikoverse Profile"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);margin-left:8px;transition:color .18s,border-color .18s;text-decoration:none;">
+        <i class="fas fa-circle-user"></i> Profile
+      </a>
     </div>
   </nav>
 
@@ -1091,6 +1134,34 @@ STAKE   34.2M ETH</div>
     </div>
   </footer>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://pikoverse.xyz/js/supabase-client.js"></script>
+  <script>
+    /* Cross-device profile session check for nav avatar */
+    window.addEventListener('piko:supa:ready', function(e) {
+      if (e.detail.offline) return;
+      var sb = window.piko_supa;
+      if (!sb) return;
+      sb.auth.getSession().then(function(r) {
+        if (r.data && r.data.session && r.data.session.user) {
+          var u = r.data.session.user;
+          var profileLink = document.querySelector('.nav__profile-link');
+          if (profileLink) {
+            var avatar = (u.user_metadata && u.user_metadata.avatar_url) ||
+                         (localStorage.getItem('piko_profile_v1') && JSON.parse(localStorage.getItem('piko_profile_v1') || '{}').avatar_url) || '';
+            var name = (u.user_metadata && u.user_metadata.display_name) ||
+                       (localStorage.getItem('piko_profile_v1') && JSON.parse(localStorage.getItem('piko_profile_v1') || '{}').display_name) || 'Profile';
+            if (avatar) {
+              profileLink.innerHTML = '<img src="'+avatar+'" style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid rgba(240,201,106,.4)"> ' + name;
+            } else {
+              profileLink.innerHTML = '<i class="fas fa-circle-user"></i> ' + name;
+              profileLink.style.color = '#f0c96a';
+            }
+          }
+        }
+      });
+    });
+  </script>
   <script src="digitalverse.js"></script>
 </body>
 </html>
