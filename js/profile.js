@@ -76,10 +76,12 @@
   /* ════════════════════════════════════════════
      SUPABASE + APP STATE
   ════════════════════════════════════════════ */
-  var DB           = null;
-  var OFFLINE      = true;
-  var SESSION_USER = null;
-  var _realtimeSub = null;
+  var DB              = null;
+  var OFFLINE         = true;
+  var SESSION_USER    = null;
+  var _realtimeSub    = null;
+  var _showingProfile = false; /* lock: prevents double showProfile() from race */
+  var _profilePreRendered = false; /* tracks if we pre-rendered from localStorage */
 
   function supa() { return DB; }
 
@@ -173,27 +175,61 @@
   var DB_LAYER = {
 
     getProfile: async function(userId) {
-      if (OFFLINE || !userId) return loadJSON(PROFILE_KEY, null);
+      var cached = loadJSON(PROFILE_KEY, null);
+      if (OFFLINE || !userId) return cached;
       var r = await supa().from('profiles').select('*').eq('id', userId).single();
-      if (r.error) return loadJSON(PROFILE_KEY, null);
-      saveJSON(PROFILE_KEY, r.data);
-      return r.data;
+      if (r.error || !r.data) return cached;
+      /* MERGE: Supabase is authoritative for DB fields,
+         but preserve local-only fields (nameStyle, hideEmail, joined_ts, etc.) */
+      var merged = Object.assign({}, cached || {}, r.data);
+      /* Restore local-only fields that Supabase doesn't store */
+      if (cached) {
+        if (cached.nameStyle)  merged.nameStyle  = cached.nameStyle;
+        if (cached.name_style) merged.name_style = cached.name_style;
+        if (cached.hideEmail !== undefined) merged.hideEmail  = cached.hideEmail;
+        if (cached.hide_email !== undefined) merged.hide_email = cached.hide_email;
+        if (cached.joined_ts)  merged.joined_ts  = cached.joined_ts;
+      }
+      saveJSON(PROFILE_KEY, merged);
+      return merged;
     },
 
     upsertProfile: async function(profile) {
-      saveJSON(PROFILE_KEY, profile);
+      saveJSON(PROFILE_KEY, profile); /* always write localStorage first */
       if (OFFLINE || !SESSION_USER) return profile;
+
+      /* Build the theme payload — encode name_style + hide_email into theme JSONB
+         so we don't need those as separate columns (avoids silent upsert failures) */
+      var themeForDB = Object.assign({}, loadJSON(THEME_KEY, {}));
+      /* Encode profile customisation into theme JSONB */
+      if (profile.nameStyle  || profile.name_style)  themeForDB._nameStyle  = profile.nameStyle || profile.name_style;
+      if (profile.hideEmail  !== undefined)           themeForDB._hideEmail  = profile.hideEmail;
+      if (profile.hide_email !== undefined)           themeForDB._hideEmail  = profile.hide_email;
+      /* Strip base64 banner — too large for JSONB, kept in localStorage only */
+      if (themeForDB.bannerBg && themeForDB.bannerBg.startsWith('url(data:')) {
+        delete themeForDB.bannerBg;
+      }
+
+      /* Only use columns that are guaranteed to exist in the profiles table */
       var payload = {
-        id: SESSION_USER.id, email: SESSION_USER.email,
-        display_name: profile.display_name,
-        bio: profile.bio || null, avatar_url: profile.avatar_url || null,
-        banner_url: profile.banner_url || null, social: profile.social || null,
-        hide_email: profile.hide_email || false,
-        name_style: profile.name_style || null,
-        theme: loadJSON(THEME_KEY, {}), updated_at: new Date().toISOString(),
+        id:           SESSION_USER.id,
+        email:        SESSION_USER.email,
+        display_name: profile.display_name || null,
+        bio:          profile.bio          || null,
+        avatar_url:   profile.avatar_url   || null,
+        banner_url:   profile.banner_url   || null,
+        social:       profile.social       || null,
+        theme:        themeForDB,
+        updated_at:   new Date().toISOString(),
       };
+
       var r = await supa().from('profiles').upsert(payload, { onConflict:'id' });
-      if (r.error) console.warn('[Profile] upsert error:', r.error);
+      if (r.error) {
+        console.error('[Profile] upsert FAILED:', r.error.message, r.error);
+        /* If upsert fails, data is still in localStorage — not lost, just not in DB */
+      } else {
+        console.log('[Profile] saved to Supabase ✓ display_name:', payload.display_name);
+      }
       return profile;
     },
 
@@ -297,12 +333,32 @@
     },
 
     loadTheme: async function(userId) {
-      if (OFFLINE || !userId) return loadJSON(THEME_KEY, {});
-      var r = await supa().from('profiles').select('theme').eq('id', userId).single();
-      if (r.error || !r.data) return loadJSON(THEME_KEY, {});
-      var t = r.data.theme || {};
-      saveJSON(THEME_KEY, t);
-      return t;
+      var localTheme = loadJSON(THEME_KEY, {});
+      if (OFFLINE || !userId) return localTheme;
+      var r = await supa().from('profiles').select('theme,display_name,avatar_url,bio,social').eq('id', userId).single();
+      if (r.error || !r.data) return localTheme;
+      var remoteTheme = r.data.theme || {};
+      /* Restore nameStyle + hideEmail from theme JSONB back into profile */
+      if (remoteTheme._nameStyle) {
+        var lp = loadJSON(PROFILE_KEY, {});
+        lp.nameStyle   = remoteTheme._nameStyle;
+        lp.name_style  = remoteTheme._nameStyle;
+        saveJSON(PROFILE_KEY, lp);
+      }
+      if (remoteTheme._hideEmail !== undefined) {
+        var lp2 = loadJSON(PROFILE_KEY, {});
+        lp2.hideEmail  = remoteTheme._hideEmail;
+        lp2.hide_email = remoteTheme._hideEmail;
+        saveJSON(PROFILE_KEY, lp2);
+      }
+      /* Keep local bannerBg if Supabase doesn't have one (base64 not stored in DB) */
+      if (!remoteTheme.bannerBg && localTheme.bannerBg) {
+        remoteTheme.bannerBg = localTheme.bannerBg;
+      }
+      /* Merge: remote wins for all non-banner fields */
+      var merged = Object.assign({}, localTheme, remoteTheme);
+      saveJSON(THEME_KEY, merged);
+      return merged;
     },
   };
 
@@ -569,6 +625,10 @@
   }
 
   async function showProfile() {
+    /* Lock: prevent duplicate calls from onAuthStateChange + checkExistingSession race */
+    if (_showingProfile) return;
+    _showingProfile = true;
+
     var gate    = $('pikoAuthGate');
     var section = $('pikoProfileSection');
     if (gate)    { gate.hidden    = true;  gate.style.display    = 'none'; }
@@ -576,12 +636,52 @@
     var s=$('pikoSignOut');          if(s)  { s.hidden=false;  s.style.display=''; }
     var t=$('pikoCustomizeTrigger'); if(t)  { t.hidden=false;  t.style.display=''; }
     var nb=$('pikoNotifBtn');        if(nb) { nb.hidden=false; nb.style.display=''; }
-    await loadAllData();
+
+    /* If we pre-rendered from localStorage, skip straight to data fetch */
+    if (_profilePreRendered) {
+      /* Already showing stale data — just refresh from Supabase */
+      await loadAllData();
+    } else {
+      await loadAllData();
+    }
+
+    /* Merge banner from localStorage in case Supabase didn't have it */
+    var localTheme = loadJSON(THEME_KEY, {});
+    if (!STATE.theme.bannerBg && localTheme.bannerBg) {
+      STATE.theme.bannerBg = localTheme.bannerBg;
+    }
+    /* Also restore _nameStyle and _hideEmail from theme JSONB into profile */
+    if (STATE.theme._nameStyle && STATE.profile) {
+      STATE.profile.nameStyle   = STATE.theme._nameStyle;
+      STATE.profile.name_style  = STATE.theme._nameStyle;
+    }
+    if (STATE.theme._hideEmail !== undefined && STATE.profile) {
+      STATE.profile.hideEmail   = STATE.theme._hideEmail;
+      STATE.profile.hide_email  = STATE.theme._hideEmail;
+    }
+
     applyTheme(STATE.theme);
     renderAll();
-    /* Re-apply theme after render (renderAll may reset some styles) */
-    setTimeout(function(){ applyTheme(STATE.theme); }, 50);
+
+    /* Re-apply banner explicitly after render — most reliable approach */
+    var bannerBg = STATE.theme.bannerBg || localTheme.bannerBg || '';
+    if (bannerBg) {
+      var bnEl = $('pikoBanner');
+      if (bnEl) {
+        bnEl.style.background           = bannerBg;
+        bnEl.style.backgroundSize       = 'cover';
+        bnEl.style.backgroundPosition   = 'center';
+      }
+      var idBnEl = $('pikoIdCardBanner');
+      if (idBnEl) {
+        idBnEl.style.background         = bannerBg;
+        idBnEl.style.backgroundSize     = 'cover';
+        idBnEl.style.backgroundPosition = 'center';
+      }
+    }
+
     subscribeRealtime();
+    _showingProfile = false; /* release lock for future sign-out/sign-in cycles */
   }
 
   async function loadAllData() {
@@ -619,9 +719,35 @@
   function initAuthListeners() {
     if(OFFLINE||!supa()) return;
     supa().auth.onAuthStateChange(async function(event,session){
-      if(event==='SIGNED_IN'&&session){ SESSION_USER=session.user; await showProfile(); }
-      else if(event==='SIGNED_OUT'){ SESSION_USER=null; STATE.profile=null; STATE.ideas=[]; STATE.projects=[]; STATE.orders=[]; STATE.notifs=[]; STATE.saved=[]; STATE.learn={}; STATE.theme={}; showAuthGate(); }
-      else if(event==='TOKEN_REFRESHED'&&session){ SESSION_USER=session.user; }
+      if (event === 'SIGNED_IN' && session) {
+        SESSION_USER = session.user;
+        await showProfile();
+      } else if (event === 'INITIAL_SESSION' && session && session.user) {
+        /* INITIAL_SESSION is handled by checkExistingSession — skip here
+           to prevent the double-load race condition */
+        SESSION_USER = session.user;
+        /* Only show profile if checkExistingSession hasn't already done it */
+        if (!_showingProfile && !_profilePreRendered) {
+          await showProfile();
+        }
+      } else if (event === 'SIGNED_OUT') {
+        SESSION_USER = null;
+        STATE.profile=null; STATE.ideas=[]; STATE.projects=[];
+        STATE.orders=[]; STATE.notifs=[]; STATE.saved=[];
+        STATE.learn={}; STATE.theme={};
+        showAuthGate();
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        SESSION_USER = session.user;
+      } else if (event === 'USER_UPDATED' && session) {
+        /* Email confirmed or password changed — refresh profile */
+        SESSION_USER = session.user;
+        var p = STATE.profile || {};
+        p.email = session.user.email;
+        STATE.profile = p;
+        saveJSON(PROFILE_KEY, p);
+        toast('✅ Account updated!');
+        renderHeader();
+      }
     });
   }
 
@@ -1772,8 +1898,103 @@
   /* ════════════════════════════════════════════
      BOOT
   ════════════════════════════════════════════ */
+
+  /* ════════════════════════════════════════════
+     GOOGLE OAUTH
+  ════════════════════════════════════════════ */
+  function initGoogleAuth() {
+    var btns = [$('pikoGoogleSignupBtn'), $('pikoGoogleSigninBtn')];
+    btns.forEach(function(btn) {
+      if (!btn) return;
+      btn.addEventListener('click', async function() {
+        if (OFFLINE) { toast('⚠️ Supabase not configured — Google sign-in unavailable.'); return; }
+        btn.disabled = true;
+        btn.innerHTML = btn.innerHTML.replace('Continue with Google','<i class="fas fa-spinner fa-spin"></i> Redirecting…');
+        var r = await supa().auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + '/profile.html',
+            queryParams: { access_type: 'offline', prompt: 'consent' },
+          },
+        });
+        if (r.error) {
+          toast('⚠️ Google sign-in failed: ' + r.error.message);
+          btn.disabled = false;
+          btn.innerHTML = btn.innerHTML.replace('<i class="fas fa-spinner fa-spin"></i> Redirecting…','Continue with Google');
+        }
+        /* On success Supabase redirects the browser — no further action needed */
+      });
+    });
+  }
+
   function boot() {
-    applyTheme(loadJSON(THEME_KEY, {}));
+    /* Apply cached theme instantly — no wait for Supabase */
+    var cachedTheme = loadJSON(THEME_KEY, {});
+    applyTheme(cachedTheme);
+
+    /* ── Instant pre-render from localStorage ──────────────────────────────
+       If localStorage has a profile AND the Supabase session token exists,
+       render the profile immediately so the user never sees a blank flash.
+       Supabase will confirm the session via piko:supa:ready and refresh data. */
+    (function preRender() {
+      var cached = loadJSON(PROFILE_KEY, null);
+      if (!cached || !cached.email) return; /* no local profile, wait for auth */
+
+      /* Check if a Supabase session token is stored in localStorage */
+      var hasToken = false;
+      try {
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && (k.indexOf('supabase') > -1 || k.indexOf('piko_supabase') > -1)) {
+            var val = localStorage.getItem(k);
+            if (val && val.indexOf('access_token') > -1) { hasToken = true; break; }
+          }
+        }
+      } catch(e) {}
+
+      if (!hasToken && cached.verified === false) return; /* definitely not logged in */
+
+      /* Pre-render with cached data */
+      STATE.profile = cached;
+      STATE.theme   = cachedTheme;
+
+      /* Restore name_style and hide_email from theme JSONB */
+      if (cachedTheme._nameStyle) {
+        STATE.profile.nameStyle  = cachedTheme._nameStyle;
+        STATE.profile.name_style = cachedTheme._nameStyle;
+      }
+      if (cachedTheme._hideEmail !== undefined) {
+        STATE.profile.hideEmail  = cachedTheme._hideEmail;
+        STATE.profile.hide_email = cachedTheme._hideEmail;
+      }
+
+      /* Show profile section immediately */
+      var gate    = $('pikoAuthGate');
+      var section = $('pikoProfileSection');
+      if (gate)    { gate.hidden = true;  gate.style.display = 'none'; }
+      if (section) { section.hidden = false; section.style.display = 'block'; }
+      var so = $('pikoSignOut');          if (so)  { so.hidden  = false; so.style.display  = ''; }
+      var ct = $('pikoCustomizeTrigger'); if (ct)  { ct.hidden  = false; ct.style.display  = ''; }
+      var nb = $('pikoNotifBtn');         if (nb)  { nb.hidden  = false; nb.style.display  = ''; }
+
+      /* Render name, avatar, bio from cache instantly */
+      renderHeader();
+
+      /* Apply banner from localStorage */
+      var bannerBg = cachedTheme.bannerBg || '';
+      if (bannerBg) {
+        var bnEl = $('pikoBanner');
+        if (bnEl) {
+          bnEl.style.background         = bannerBg;
+          bnEl.style.backgroundSize     = 'cover';
+          bnEl.style.backgroundPosition = 'center';
+        }
+      }
+
+      _profilePreRendered = true;
+      console.log('[Profile] pre-rendered from localStorage:', cached.display_name);
+    })();
+
     initGlobalUI(); initAuthTabs(); initProfileTabs();
     initSignup(); initSignin(); initSignOut();
     initEditProfile(); initAccountSettings(); initNameStyleEditor();
