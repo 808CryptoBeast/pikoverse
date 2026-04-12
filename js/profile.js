@@ -1,8 +1,12 @@
 /**
- * profile.js — Pikoverse Profile System
+ * profile.js — Pikoverse Profile System (Supabase-first rewrite)
  * Requires: js/supabase-client.js loaded first
- * Auth:     Supabase email + password
- * Fallback: localStorage when Supabase is unavailable
+ *
+ * Design principles:
+ *  - Supabase is the ONLY source of truth for profile data
+ *  - localStorage stores ONLY appearance/theme cache (for instant visual apply)
+ *  - No merge logic, no stale data, no race conditions
+ *  - Sign out is immediate and complete
  */
 (function () {
   'use strict';
@@ -10,130 +14,62 @@
   /* ════════════════════════════════════════════
      CONSTANTS
   ════════════════════════════════════════════ */
-  var PROFILE_KEY = 'piko_profile_v1';
-  var LEARN_KEY   = 'piko_learning_v1';
-  var NOTIF_KEY   = 'piko_notifs_v1';
-  var SAVED_KEY   = 'piko_saved_v1';
-  var THEME_KEY   = 'piko_theme_v1';
-
-  var DB = null;
-  var OFFLINE = true;
-  var SESSION_USER = null;
-  var AUTH_SUB = null;
-
-  var STATE = {
-    profile: null,
-    ideas: [],
-    projects: [],
-    orders: [],
-    notifs: [],
-    saved: [],
-    learn: {},
-    theme: {}
-  };
-
-  var CV = [
-    'Hawaiian History',
-    'Pacific Islanders',
-    'Indigenous Knowledge',
-    'Cultural Connections',
-    'Oral Traditions',
-    'Ancestral Navigation',
-    'Language & Identity',
-    'Modern Sovereignty'
-  ];
-
-  var DV = [
-    'Bitcoin Fundamentals',
-    'Ethereum & Smart Contracts',
-    'XRPL Deep Dive',
-    'Flare & Songbird',
-    'DeFi & AMMs',
-    'Web3 Security',
-    'Scam Field Guide',
-    'Protocol Comparison',
-    'Blockchain Forensics Intro',
-    'NaluLF Workflow'
-  ];
+  var THEME_CACHE_KEY = 'piko_theme_cache_v2'; /* localStorage — appearance only */
 
   var RANKS = [
-    { id: 'seedling', label: 'Seedling', icon: '🌱', min: 0,  color: '#4caf7a', bg: 'rgba(76,175,122,.15)',  border: 'rgba(76,175,122,.3)'  },
-    { id: 'grower',   label: 'Grower',   icon: '🌿', min: 5,  color: '#54d1ff', bg: 'rgba(84,209,255,.15)',  border: 'rgba(84,209,255,.3)'  },
-    { id: 'weaver',   label: 'Weaver',   icon: '🔮', min: 15, color: '#9d64ff', bg: 'rgba(157,100,255,.15)', border: 'rgba(157,100,255,.3)' },
-    { id: 'elder',    label: 'Elder',    icon: '⭐', min: 30, color: '#f0c96a', bg: 'rgba(240,201,106,.18)', border: 'rgba(240,201,106,.4)'  }
+    { id:'seedling', label:'Seedling', icon:'🌱', min:0,  color:'#4caf7a', bg:'rgba(76,175,122,.15)',  border:'rgba(76,175,122,.3)'  },
+    { id:'grower',   label:'Grower',   icon:'🌿', min:5,  color:'#54d1ff', bg:'rgba(84,209,255,.15)',  border:'rgba(84,209,255,.3)'  },
+    { id:'weaver',   label:'Weaver',   icon:'🔮', min:15, color:'#9d64ff', bg:'rgba(157,100,255,.15)', border:'rgba(157,100,255,.3)' },
+    { id:'elder',    label:'Elder',    icon:'⭐', min:30, color:'#f0c96a', bg:'rgba(240,201,106,.18)', border:'rgba(240,201,106,.4)'  }
   ];
 
   var BADGES = [
-    { id: 'first_idea',    icon: '💡', name: 'First Idea',       desc: 'Shared your first idea with the community' },
-    { id: 'project_live',  icon: '🚀', name: 'Project Live',     desc: 'Had a project approved to the showcase' },
-    { id: 'chronicle_sub', icon: '📜', name: 'Chronicle Reader', desc: 'Subscribed to the Pikoverse Chronicle' },
-    { id: 'early_member',  icon: '🌺', name: 'Early Member',     desc: 'Joined during the founding wave' },
-    { id: 'idea_x5',       icon: '🔥', name: 'Idea Machine',     desc: 'Submitted 5 or more ideas' },
-    { id: 'learner',       icon: '🎓', name: 'Knowledge Seeker', desc: 'Completed a learning module' },
-    { id: 'connector',     icon: '🔗', name: 'Connector',        desc: 'Active across multiple Pikoverse areas' },
-    { id: 'first_order',   icon: '🛍️', name: 'First Purchase',   desc: 'Placed your first marketplace order' }
+    { id:'first_idea',    icon:'💡', name:'First Idea',       desc:'Shared your first idea with the community' },
+    { id:'project_live',  icon:'🚀', name:'Project Live',     desc:'Had a project approved to the showcase' },
+    { id:'chronicle_sub', icon:'📜', name:'Chronicle Reader', desc:'Subscribed to the Pikoverse Chronicle' },
+    { id:'early_member',  icon:'🌺', name:'Early Member',     desc:'Joined during the founding wave' },
+    { id:'idea_x5',       icon:'🔥', name:'Idea Machine',     desc:'Submitted 5 or more ideas' },
+    { id:'learner',       icon:'🎓', name:'Knowledge Seeker', desc:'Completed a learning module' },
+    { id:'connector',     icon:'🔗', name:'Connector',        desc:'Active across multiple Pikoverse areas' },
+    { id:'first_order',   icon:'🛍️', name:'First Purchase',   desc:'Placed your first marketplace order' }
   ];
 
+  var CV_MODULES = ['Hawaiian History','Pacific Islanders','Indigenous Knowledge','Cultural Connections','Oral Traditions','Ancestral Navigation','Language & Identity','Modern Sovereignty'];
+  var DV_MODULES = ['Bitcoin Fundamentals','Ethereum & Smart Contracts','XRPL Deep Dive','Flare & Songbird','DeFi & AMMs','Web3 Security','Scam Field Guide','Protocol Comparison','Blockchain Forensics Intro','NaluLF Workflow'];
+
+  var DEFAULT_THEME = { accent:'#f0c96a', bg:'#080b14', bg2:'#0d1220', text:'rgba(255,255,255,.88)', font:'Montserrat', bgMode:'default', bgUrl:'', customCss:'' };
+  var BG_MAP = { default:'linear-gradient(135deg,#080b14,#141830)', stars:'#050510', gradient1:'linear-gradient(135deg,#0a0020,#200040,#000020)', gradient2:'linear-gradient(135deg,#001020,#002040,#003060)', gradient3:'linear-gradient(135deg,#0a1a05,#102a10,#1a3a1a)', gradient4:'linear-gradient(135deg,#1a0a00,#2a1500,#1a0a00)', light:'linear-gradient(135deg,#f0f4ff,#e0e8ff)' };
   var THEME_PRESETS = {
-    default: { themeId:'default', accent:'#f0c96a', bg:'#080b14', bg2:'#0d1220', text:'rgba(255,255,255,.88)', cardBg:'rgba(255,255,255,.03)', font:'Montserrat', customCss:'', bgMode:'default', bgUrl:'', bannerData:'', bannerUrl:'' },
-    ocean:   { themeId:'ocean',   accent:'#54d1ff', bg:'#001a2e', bg2:'#003366', text:'rgba(220,240,255,.9)',  cardBg:'rgba(0,50,100,.2)',   font:'Montserrat', customCss:'', bgMode:'gradient2', bgUrl:'', bannerData:'', bannerUrl:'' },
-    jungle:  { themeId:'jungle',  accent:'#4caf7a', bg:'#0a1a0a', bg2:'#0d2e1a', text:'rgba(220,255,230,.88)', cardBg:'rgba(0,60,20,.2)',    font:'Montserrat', customCss:'', bgMode:'gradient3', bgUrl:'', bannerData:'', bannerUrl:'' },
-    sunset:  { themeId:'sunset',  accent:'#ff9f43', bg:'#1a0a0a', bg2:'#2e1800', text:'rgba(255,240,220,.88)', cardBg:'rgba(60,20,0,.2)',    font:'Montserrat', customCss:'', bgMode:'gradient4', bgUrl:'', bannerData:'', bannerUrl:'' },
-    neon:    { themeId:'neon',    accent:'#ff6fd8', bg:'#050010', bg2:'#0d0020', text:'rgba(255,220,255,.88)', cardBg:'rgba(30,0,60,.2)',    font:'Montserrat', customCss:'', bgMode:'gradient1', bgUrl:'', bannerData:'', bannerUrl:'' },
-    light:   { themeId:'light',   accent:'#4060d0', bg:'#f0f4ff', bg2:'#e0e8ff', text:'rgba(20,30,60,.9)',     cardBg:'rgba(255,255,255,.7)', font:'Montserrat', customCss:'', bgMode:'light',     bgUrl:'', bannerData:'', bannerUrl:'' }
+    default:{ accent:'#f0c96a', bg:'#080b14', bg2:'#0d1220', text:'rgba(255,255,255,.88)', font:'Montserrat', bgMode:'default' },
+    ocean:  { accent:'#54d1ff', bg:'#001a2e', bg2:'#003366', text:'rgba(220,240,255,.9)',  font:'Montserrat', bgMode:'gradient2' },
+    jungle: { accent:'#4caf7a', bg:'#0a1a0a', bg2:'#0d2e1a', text:'rgba(220,255,230,.88)',font:'Montserrat', bgMode:'gradient3' },
+    sunset: { accent:'#ff9f43', bg:'#1a0a0a', bg2:'#2e1800', text:'rgba(255,240,220,.88)',font:'Montserrat', bgMode:'gradient4' },
+    neon:   { accent:'#ff6fd8', bg:'#050010', bg2:'#0d0020', text:'rgba(255,220,255,.88)',font:'Montserrat', bgMode:'gradient1' },
+    light:  { accent:'#4060d0', bg:'#f0f4ff', bg2:'#e0e8ff', text:'rgba(20,30,60,.9)',    font:'Montserrat', bgMode:'light'     }
   };
 
-  var BG_MAP = {
-    default:   'linear-gradient(135deg,#080b14,#141830)',
-    stars:     '#050510',
-    gradient1: 'linear-gradient(135deg,#0a0020,#200040,#000020)',
-    gradient2: 'linear-gradient(135deg,#001020,#002040,#003060)',
-    gradient3: 'linear-gradient(135deg,#0a1a05,#102a10,#1a3a1a)',
-    gradient4: 'linear-gradient(135deg,#1a0a00,#2a1500,#1a0a00)',
-    light:     'linear-gradient(135deg,#f0f4ff,#e0e8ff)'
+  /* ════════════════════════════════════════════
+     STATE — single source of truth in memory
+  ════════════════════════════════════════════ */
+  var STATE = {
+    user:     null,  /* Supabase auth user */
+    profile:  null,  /* profiles table row */
+    ideas:    [],
+    projects: [],
+    orders:   [],
+    notifs:   [],
+    learn:    { culturalverse:[], digitalverse:[] },
+    theme:    Object.assign({}, DEFAULT_THEME),
+    nameStyle:{ color:'#ffffff', font:'', weight:'700', size:28 }
   };
 
   /* ════════════════════════════════════════════
      HELPERS
   ════════════════════════════════════════════ */
   function $(id) { return document.getElementById(id); }
-
-  function esc(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  function readJSON(key, fallback) {
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (e) {
-      return fallback;
-    }
-  }
-
-  function saveJSON(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-  }
-
-  function removeJSON(key) {
-    try { localStorage.removeItem(key); } catch (e) {}
-  }
-
-  function scopedKey(base) {
-    var scope = SESSION_USER && SESSION_USER.id
-      ? SESSION_USER.id
-      : (STATE.profile && STATE.profile.email ? STATE.profile.email : 'guest');
-    return base + ':' + scope;
-  }
-
-  function validEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
-  }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+  function email() { return STATE.user && STATE.user.email ? STATE.user.email : ''; }
+  function supa() { return window.piko_supa || null; }
 
   function toast(msg, dur) {
     var el = $('pikoProfileToast');
@@ -141,1181 +77,229 @@
     el.textContent = msg;
     el.classList.add('is-visible');
     clearTimeout(el._t);
-    el._t = setTimeout(function () {
-      el.classList.remove('is-visible');
-    }, dur || 3200);
+    el._t = setTimeout(function(){ el.classList.remove('is-visible'); }, dur||3500);
   }
 
-  function showStatus(id, msg, type) {
-    var el = $(id);
-    if (!el) return;
+  function setStatus(id, msg, type) {
+    var el = $(id); if (!el) return;
     el.textContent = msg;
-    el.className = 'piko-auth-status piko-auth-status--' + (type || 'info');
+    el.className = 'piko-auth-status piko-auth-status--'+(type||'info');
     el.hidden = false;
   }
-
-  function clearStatus(id) {
-    var el = $(id);
-    if (!el) return;
-    el.hidden = true;
-    el.textContent = '';
-    el.className = 'piko-auth-status';
-  }
+  function clearStatus(id) { var el=$(id); if(el){ el.hidden=true; el.textContent=''; } }
 
   function timeAgo(ts) {
-    var t = Number(ts || 0);
-    if (!t) return '';
-    var s = Math.floor((Date.now() - t) / 1000);
+    var s = Math.floor((Date.now()-Number(ts||0))/1000);
     if (s < 60) return 'just now';
-    if (s < 3600) return Math.floor(s / 60) + 'm ago';
-    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
-    return Math.floor(s / 86400) + 'd ago';
+    if (s < 3600) return Math.floor(s/60)+'m ago';
+    if (s < 86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
   }
 
-  function fmtPrice(cents) {
-    return '$' + (Number(cents || 0) / 100).toFixed(2);
+  function fmtDate(ts) { return ts ? new Date(ts).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : 'recently'; }
+  function fmtPrice(cents) { return '$'+(Number(cents||0)/100).toFixed(2); }
+  function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e||'').trim()); }
+
+  function pwStrength(pw) {
+    var s=0; if(!pw) return {label:'',pct:0,color:'transparent'};
+    if(pw.length>=8)s++; if(pw.length>=12)s++; if(/[A-Z]/.test(pw))s++; if(/[0-9]/.test(pw))s++; if(/[^A-Za-z0-9]/.test(pw))s++;
+    return [{label:'',pct:0,color:'transparent'},{label:'Weak',pct:20,color:'#e05252'},{label:'Fair',pct:40,color:'#ff9f43'},{label:'Good',pct:60,color:'#f0c96a'},{label:'Strong',pct:80,color:'#4caf7a'},{label:'Very Strong',pct:100,color:'#54d1ff'}][Math.min(s,5)];
   }
 
-  function getUserId() {
-    return SESSION_USER && SESSION_USER.id ? SESSION_USER.id : null;
-  }
-
-  function getUserEmail() {
-    if (SESSION_USER && SESSION_USER.email) return SESSION_USER.email;
-    if (STATE.profile && STATE.profile.email) return STATE.profile.email;
-    return '';
-  }
-
-  function supa() {
-    return DB || window.piko_supa || null;
-  }
-
-  function ensureSupabaseReference() {
-    if (window.piko_supa) {
-      DB = window.piko_supa;
-      OFFLINE = false;
-    }
-  }
-
-  function defaultProfileForUser(user) {
-    return {
-      id: user.id || ('offline-' + Date.now()),
-      email: user.email || '',
-      display_name:
-        (user.user_metadata && user.user_metadata.display_name) ||
-        (user.email ? user.email.split('@')[0] : 'Pikoverse Member'),
-      bio: '',
-      avatar_url: '',
-      banner_url: '',
-      social: '',
-      hide_email: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-  }
-
-  /* ════════════════════════════════════════════
-     PASSWORD STRENGTH
-  ════════════════════════════════════════════ */
-  function getPasswordStrength(pw) {
-    if (!pw) return { label: '', pct: 0, color: 'transparent' };
-    var score = 0;
-    if (pw.length >= 8) score++;
-    if (pw.length >= 12) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
-
-    var levels = [
-      { label: '',            pct: 0,   color: 'transparent' },
-      { label: 'Weak',        pct: 20,  color: '#e05252' },
-      { label: 'Fair',        pct: 40,  color: '#ff9f43' },
-      { label: 'Good',        pct: 60,  color: '#f0c96a' },
-      { label: 'Strong',      pct: 80,  color: '#4caf7a' },
-      { label: 'Very Strong', pct: 100, color: '#54d1ff' }
-    ];
-
-    return levels[Math.min(score, 5)];
-  }
-
-  function bindStrength(inputId, barId, labelId) {
-    var input = $(inputId);
-    var bar = $(barId);
-    var label = $(labelId);
-    if (!input || !bar) return;
-
-    function update() {
-      var s = getPasswordStrength(input.value);
-      bar.style.width = s.pct + '%';
-      bar.style.background = s.color;
-      if (label) {
-        label.textContent = s.label;
-        label.style.color = s.color;
-      }
-    }
-
-    input.addEventListener('input', update);
-    update();
-  }
-
-  /* ════════════════════════════════════════════
-     LOCAL USER DATA
-  ════════════════════════════════════════════ */
-  function loadThemeLocal() {
-    var t = readJSON(scopedKey(THEME_KEY), null);
-    return t ? t : Object.assign({}, THEME_PRESETS.default);
-  }
-
-  function saveThemeLocal(theme) {
-    saveJSON(scopedKey(THEME_KEY), theme || THEME_PRESETS.default);
-  }
-
-  function loadLearnLocal() {
-    return readJSON(scopedKey(LEARN_KEY), {});
-  }
-
-  function saveLearnLocal(learn) {
-    saveJSON(scopedKey(LEARN_KEY), learn || {});
-  }
-
-  function loadNotifsLocal() {
-    return readJSON(scopedKey(NOTIF_KEY), []);
-  }
-
-  function saveNotifsLocal(list) {
-    saveJSON(scopedKey(NOTIF_KEY), list || []);
-  }
-
-  function loadSavedLocal() {
-    return readJSON(scopedKey(SAVED_KEY), []);
-  }
-
-  function saveSavedLocal(list) {
-    saveJSON(scopedKey(SAVED_KEY), list || []);
-  }
-
-  /* ════════════════════════════════════════════
-     THEME + STYLE
-  ════════════════════════════════════════════ */
-  function applyTheme(theme) {
-    var t = Object.assign({}, THEME_PRESETS.default, theme || {});
-    STATE.theme = t;
-
-    document.documentElement.style.setProperty('--pf-gold', t.accent || '#f0c96a');
-    document.documentElement.style.setProperty('--pf-dark', t.bg || '#080b14');
-    document.documentElement.style.setProperty('--pf-dark2', t.bg2 || '#0d1220');
-    document.documentElement.style.setProperty('--pf-text', t.text || 'rgba(255,255,255,.88)');
-
-    var body = document.body;
-    if (!body) return;
-
-    if (t.bgUrl) {
-      body.style.background = 'url("' + t.bgUrl + '") center/cover fixed no-repeat';
-    } else {
-      body.style.background = BG_MAP[t.bgMode] || t.bg || BG_MAP.default;
-    }
-
-    body.style.color = t.text || 'rgba(255,255,255,.88)';
-    body.style.fontFamily = t.font || 'Montserrat';
-
-    var customStyle = $('pikoCustomStyle');
-    if (customStyle) {
-      customStyle.textContent = (customStyle.textContent || '').split('/*__PIKO_CUSTOM__*/')[0] +
-        '\n/*__PIKO_CUSTOM__*/\n' + (t.customCss || '');
-    }
-  }
-
-  function currentNameStyle() {
-    return readJSON(scopedKey('piko_name_style_v1'), {
-      color: '#ffffff',
-      font: '',
-      weight: '700',
-      size: 28
-    });
-  }
-
-  function saveNameStyle(styleObj) {
-    saveJSON(scopedKey('piko_name_style_v1'), styleObj || {});
-  }
-
-  function applyNameStyle(styleObj) {
-    var nameEl = $('pikoProfileName');
-    var preview = $('pikoNamePreview');
-    var targets = [nameEl, preview].filter(Boolean);
-
-    targets.forEach(function (el) {
-      el.style.color = styleObj.color || '';
-      el.style.fontFamily = styleObj.font || '';
-      el.style.fontWeight = styleObj.weight || '';
-      el.style.fontSize = styleObj.size ? String(styleObj.size) + 'px' : '';
-      el.style.textShadow = styleObj.color ? ('0 0 18px ' + styleObj.color + '55') : '';
-    });
-  }
-
-  function setHideEmail(enabled) {
-    saveJSON(scopedKey('piko_hide_email_v1'), !!enabled);
-    if (STATE.profile) STATE.profile.hide_email = !!enabled;
-  }
-
-  function getHideEmail() {
-    return !!readJSON(scopedKey('piko_hide_email_v1'), false);
-  }
-
-  function bannerValue() {
-    var theme = STATE.theme || loadThemeLocal();
-    return theme.bannerData || theme.bannerUrl || '';
-  }
-
-  /* ════════════════════════════════════════════
-     PROFILE DATA
-  ════════════════════════════════════════════ */
-  async function ensureProfileRecord(user) {
-    var cached = readJSON(PROFILE_KEY, null);
-    if (OFFLINE || !user || !supa()) {
-      var offlineProfile = cached && cached.email === user.email ? cached : defaultProfileForUser(user);
-      saveJSON(PROFILE_KEY, offlineProfile);
-      return offlineProfile;
-    }
-
-    var r = await supa().from('profiles').select('*').eq('id', user.id).maybeSingle();
-
-    if (!r.error && r.data) {
-      var remote = r.data;
-      var local = cached || {};
-      var merged = Object.assign({}, remote);
-
-      var fallbackToLocal = [
-        'display_name', 'bio', 'avatar_url', 'banner_url', 'social',
-        'hide_email', 'created_at', 'updated_at'
-      ];
-
-      fallbackToLocal.forEach(function (k) {
-        var localVal = local[k];
-        var remoteVal = merged[k];
-        var remoteEmpty = remoteVal === undefined || remoteVal === null || remoteVal === '';
-        var localReal = localVal !== undefined && localVal !== null && localVal !== '';
-        if (remoteEmpty && localReal) merged[k] = localVal;
-      });
-
-      saveJSON(PROFILE_KEY, merged);
-      return merged;
-    }
-
-    var fallback = {
-      id: user.id,
-      email: user.email,
-      display_name:
-        (user.user_metadata && user.user_metadata.display_name) ||
-        (user.email ? user.email.split('@')[0] : 'Pikoverse Member'),
-      bio: '',
-      avatar_url: '',
-      banner_url: '',
-      social: '',
-      hide_email: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    var up = await supa().from('profiles').upsert({
-      id: fallback.id,
-      email: fallback.email,
-      display_name: fallback.display_name,
-      bio: fallback.bio,
-      avatar_url: fallback.avatar_url,
-      social: fallback.social
-    }, { onConflict: 'id' }).select().maybeSingle();
-
-    if (!up.error && up.data) {
-      saveJSON(PROFILE_KEY, up.data);
-      return up.data;
-    }
-
-    saveJSON(PROFILE_KEY, fallback);
-    return fallback;
-  }
-
-  async function saveProfile() {
-    if (!STATE.profile) return;
-    saveJSON(PROFILE_KEY, STATE.profile);
-
-    if (OFFLINE || !supa() || !SESSION_USER) return;
-
-    await supa().from('profiles').upsert({
-      id: SESSION_USER.id,
-      email: SESSION_USER.email,
-      display_name: STATE.profile.display_name || (SESSION_USER.email ? SESSION_USER.email.split('@')[0] : 'Pikoverse Member'),
-      bio: STATE.profile.bio || '',
-      avatar_url: STATE.profile.avatar_url || '',
-      social: STATE.profile.social || ''
-    }, { onConflict: 'id' });
-  }
-
-  async function fetchIdeas() {
-    var email = getUserEmail().toLowerCase();
-    var local = readJSON('amp_admin_ideas', []).filter(function (i) {
-      return i && i.contact && String(i.contact).toLowerCase() === email;
-    });
-
-    if (OFFLINE || !supa() || !email) return local;
-
-    try {
-      var r = await supa().from('community_ideas').select('*').eq('contact', email).order('ts', { ascending: false });
-      return r.error ? local : (r.data || local);
-    } catch (e) {
-      return local;
-    }
-  }
-
-  async function fetchProjects() {
-    var email = getUserEmail().toLowerCase();
-    var local = readJSON('amp_admin_projects_hub', []).filter(function (p) {
-      return p && p.contact && String(p.contact).toLowerCase() === email;
-    });
-
-    if (OFFLINE || !supa()) return local;
-
-    try {
-      var r = SESSION_USER
-        ? await supa().from('projects').select('*').eq('user_id', SESSION_USER.id).order('created_at', { ascending: false })
-        : { error: true };
-
-      if (!r.error && r.data && r.data.length) {
-        return r.data.map(function (row) {
-          return {
-            id: row.id || ('proj-' + row.created_at),
-            name: row.name || '',
-            desc: row.description || row.desc || '',
-            stage: row.stage || 'idea',
-            link: row.url || row.link || '',
-            status: row.status || 'pending',
-            contact: row.contact || getUserEmail(),
-            ts: row.created_at ? new Date(row.created_at).getTime() : Date.now()
-          };
-        });
-      }
-
-      var r2 = await supa().from('projects').select('*').eq('contact', getUserEmail()).order('created_at', { ascending: false });
-      if (!r2.error && r2.data && r2.data.length) {
-        return r2.data.map(function (row) {
-          return {
-            id: row.id || ('proj-' + row.created_at),
-            name: row.name || '',
-            desc: row.description || row.desc || '',
-            stage: row.stage || 'idea',
-            link: row.url || row.link || '',
-            status: row.status || 'pending',
-            contact: row.contact || getUserEmail(),
-            ts: row.created_at ? new Date(row.created_at).getTime() : Date.now()
-          };
-        });
-      }
-
-      return local;
-    } catch (e) {
-      return local;
-    }
-  }
-
-  async function fetchOrders() {
-    var email = getUserEmail().toLowerCase();
-    return readJSON('amp_orders_v1', []).filter(function (o) {
-      var orderEmail = String(o.email || o.customer_email || o.contact || '').toLowerCase();
-      return email && orderEmail === email;
-    });
-  }
-
-  function addNotif(icon, text) {
-    var list = loadNotifsLocal();
-    list.unshift({
-      id: 'n-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-      icon: icon,
-      text: text,
-      ts: Date.now(),
-      read: false
-    });
-    if (list.length > 40) list.length = 40;
-    saveNotifsLocal(list);
-    STATE.notifs = list;
-    renderNotifications();
-    updateNotifBadge();
-  }
-
-  /* ════════════════════════════════════════════
-     AUTH UI
-  ════════════════════════════════════════════ */
-  function showAuthGate() {
-    var gate = $('pikoAuthGate');
-    var section = $('pikoProfileSection');
-    var signOut = $('pikoSignOut');
-    var notif = $('pikoNotifBtn');
-    var customize = $('pikoCustomizeTrigger');
-
-    if (gate) gate.hidden = false;
-    if (section) section.hidden = true;
-    if (signOut) signOut.hidden = true;
-    if (notif) notif.hidden = true;
-    if (customize) customize.hidden = true;
-  }
-
-  function showProfileSection() {
-    var gate = $('pikoAuthGate');
-    var section = $('pikoProfileSection');
-    var signOut = $('pikoSignOut');
-    var notif = $('pikoNotifBtn');
-    var customize = $('pikoCustomizeTrigger');
-
-    if (gate) gate.hidden = true;
-    if (section) section.hidden = false;
-    if (signOut) signOut.hidden = false;
-    if (notif) notif.hidden = false;
-    if (customize) customize.hidden = false;
-  }
-
-  function initAuthTabs() {
-    document.querySelectorAll('.piko-auth-tab').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.piko-auth-tab').forEach(function (b) { b.classList.remove('is-active'); });
-        document.querySelectorAll('.piko-auth-pane').forEach(function (p) { p.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        var tab = btn.getAttribute('data-auth-tab');
-        var pane = $('pikoAuth' + tab.charAt(0).toUpperCase() + tab.slice(1));
-        if (pane) pane.classList.add('is-active');
-      });
-    });
-  }
-
-  function initProfileTabs() {
-    document.querySelectorAll('.piko-profile-tab').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var tab = btn.getAttribute('data-ptab');
-        document.querySelectorAll('.piko-profile-tab').forEach(function (b) { b.classList.remove('is-active'); });
-        document.querySelectorAll('.piko-profile-pane').forEach(function (p) { p.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        var pane = $('pikoProfilePane' + tab.charAt(0).toUpperCase() + tab.slice(1));
-        if (pane) pane.classList.add('is-active');
-      });
-    });
-  }
-
-  function initEditTabs() {
-    document.querySelectorAll('.piko-edit-tab').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var tab = btn.getAttribute('data-etab');
-        document.querySelectorAll('.piko-edit-tab').forEach(function (b) { b.classList.remove('is-active'); });
-        document.querySelectorAll('.piko-edit-pane').forEach(function (p) { p.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        var pane = $('pikoEditPane' + tab.charAt(0).toUpperCase() + tab.slice(1));
-        if (pane) pane.classList.add('is-active');
-      });
-    });
-  }
-
-  async function initSignup() {
-    var btn = $('pikoSignupBtn');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      clearStatus('pikoSignupStatus');
-
-      var name = (($('signupName') || {}).value || '').trim();
-      var email = (($('signupEmail') || {}).value || '').trim().toLowerCase();
-      var pass = (($('signupPassword') || {}).value || '').trim();
-      var pass2 = (($('signupPassword2') || {}).value || '').trim();
-
-      if (!name)                        { showStatus('pikoSignupStatus', 'Please enter a display name.', 'err'); return; }
-      if (!validEmail(email))           { showStatus('pikoSignupStatus', 'Please enter a valid email address.', 'err'); return; }
-      if (pass.length < 8)              { showStatus('pikoSignupStatus', 'Password must be at least 8 characters.', 'err'); return; }
-      if (pass !== pass2)               { showStatus('pikoSignupStatus', 'Passwords do not match.', 'err'); return; }
-
-      ensureSupabaseReference();
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating profile…';
-
-      if (OFFLINE || !supa()) {
-        var localProfile = {
-          id: 'offline-' + Date.now(),
-          email: email,
-          display_name: name || email.split('@')[0],
-          bio: '',
-          avatar_url: '',
-          banner_url: '',
-          social: '',
-          hide_email: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        STATE.profile = localProfile;
-        SESSION_USER = { id: localProfile.id, email: localProfile.email, user_metadata: { display_name: localProfile.display_name } };
-        saveJSON(PROFILE_KEY, localProfile);
-        addNotif('🌺', 'Welcome to Pikoverse, ' + localProfile.display_name + '!');
-        showStatus('pikoSignupStatus', '✅ Local profile created on this browser.', 'ok');
-        await refreshProfileView();
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Create My Profile';
-        return;
-      }
-
-      try {
-        var r = await supa().auth.signUp({
-          email: email,
-          password: pass,
-          options: { data: { display_name: name } }
-        });
-
-        if (r.error) throw r.error;
-
-        if (r.data && r.data.user) {
-          SESSION_USER = r.data.user;
-          STATE.profile = await ensureProfileRecord(r.data.user);
-          STATE.profile.display_name = name;
-          await saveProfile();
-          addNotif('🌺', 'Welcome to Pikoverse, ' + name + '!');
-
-          if (r.data.session) {
-            showStatus('pikoSignupStatus', '✅ Profile created! Signing you in…', 'ok');
-            setTimeout(async function () {
-              await refreshProfileView();
-            }, 500);
-          } else {
-            showStatus('pikoSignupStatus', '✅ Account created. Check your email if confirmation is enabled, then sign in.', 'ok');
-          }
-        }
-      } catch (err) {
-        showStatus('pikoSignupStatus', '⚠️ ' + ((err && err.message) ? err.message : 'Could not create profile.'), 'err');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Create My Profile';
-      }
-    });
-  }
-
-  async function initSignin() {
-    var btn = $('pikoSigninBtn');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      clearStatus('pikoSigninStatus');
-
-      var email = (($('signinEmail') || {}).value || '').trim();
-      var pass = (($('signinPassword') || {}).value || '').trim();
-
-      if (!validEmail(email)) { showStatus('pikoSigninStatus', 'Please enter your email.', 'err'); return; }
-      if (!pass)              { showStatus('pikoSigninStatus', 'Please enter your password.', 'err'); return; }
-
-      ensureSupabaseReference();
-
-      if (OFFLINE || !supa()) {
-        if (window.PIKO_SUPA_READY === false && !window.piko_supa) {
-          showStatus('pikoSigninStatus', 'Supabase is not ready or could not connect. Refresh and try again.', 'err');
-          return;
-        }
-
-        var local = readJSON(PROFILE_KEY, null);
-        if (local && local.email && local.email.toLowerCase() === email.toLowerCase()) {
-          SESSION_USER = { id: local.id || ('offline-' + Date.now()), email: local.email, user_metadata: { display_name: local.display_name || '' } };
-          STATE.profile = local;
-          await refreshProfileView();
-          return;
-        }
-
-        showStatus('pikoSigninStatus', 'Supabase is not available and no local profile exists on this browser.', 'err');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
-
-      try {
-        var r = await supa().auth.signInWithPassword({ email: email, password: pass });
-
-        if (r.error) throw r.error;
-
-        SESSION_USER = r.data.user;
-        showStatus('pikoSigninStatus', '✅ Welcome back!', 'ok');
-        setTimeout(async function () {
-          await refreshProfileView();
-        }, 300);
-      } catch (err) {
-        var msg = ((err && err.message) ? err.message : 'Could not sign in.');
-        if (msg.toLowerCase().indexOf('invalid') > -1) msg = 'Wrong email or password. Please try again.';
-        showStatus('pikoSigninStatus', msg, 'err');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-      }
-    });
-
-    var forgot = $('pikoForgotBtn');
-    if (!forgot) return;
-
-    forgot.addEventListener('click', async function () {
-      clearStatus('pikoSigninStatus');
-
-      var email = (($('signinEmail') || {}).value || '').trim();
-      if (!validEmail(email)) {
-        showStatus('pikoSigninStatus', 'Enter your email address above first.', 'err');
-        return;
-      }
-
-      ensureSupabaseReference();
-      if (OFFLINE || !supa()) {
-        showStatus('pikoSigninStatus', 'Password reset requires Supabase to be available.', 'err');
-        return;
-      }
-
-      forgot.disabled = true;
-      forgot.textContent = 'Sending…';
-
-      try {
-        var r = await supa().auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/profile.html?reset=1'
-        });
-
-        if (r.error) throw r.error;
-        showStatus('pikoSigninStatus', '✅ Password reset link sent to ' + email + '. Check your inbox.', 'ok');
-      } catch (err) {
-        showStatus('pikoSigninStatus', '⚠️ ' + ((err && err.message) ? err.message : 'Could not send password reset link.'), 'err');
-      } finally {
-        forgot.disabled = false;
-        forgot.textContent = 'Forgot password?';
-      }
-    });
-  }
-
-  function initSignOut() {
-    var btn = $('pikoSignOut');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      try {
-        if (!OFFLINE && supa()) await supa().auth.signOut();
-      } catch (e) {}
-
-      if (AUTH_SUB && typeof AUTH_SUB.unsubscribe === 'function') {
-        try { AUTH_SUB.unsubscribe(); } catch (e2) {}
-      }
-
-      removeJSON(PROFILE_KEY);
-      SESSION_USER = null;
-      STATE.profile = null;
-      showAuthGate();
-      toast('Signed out.');
-    });
-  }
-
-  function handlePasswordReset() {
-    if (window.location.search.indexOf('reset=1') === -1) return;
-
-    window.history.replaceState({}, '', window.location.pathname);
-
-    var panel = document.createElement('div');
-    panel.id = 'pikoResetPanel';
-    panel.style.cssText = 'position:fixed;inset:0;background:rgba(8,11,20,.96);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;';
-    panel.innerHTML = '' +
-      '<div style="width:min(460px,100%);background:#0d1220;border:1px solid rgba(240,201,106,.18);border-radius:16px;padding:28px;">' +
-        '<h2 style="margin:0 0 8px;font-family:Orbitron,sans-serif;color:#f0c96a;font-size:18px;">Set New Password</h2>' +
-        '<p style="margin:0 0 18px;font-size:13px;color:rgba(255,255,255,.62);">Choose a new password for your Pikoverse account.</p>' +
-        '<div style="margin-bottom:12px;"><input id="resetNewPass" type="password" placeholder="New password" maxlength="128" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;"></div>' +
-        '<div style="margin-bottom:18px;"><input id="resetNewPass2" type="password" placeholder="Confirm new password" maxlength="128" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;"></div>' +
-        '<div id="resetPanelStatus" style="font-size:13px;margin-bottom:14px;color:rgba(255,255,255,.7);"></div>' +
-        '<button id="resetPanelSave" type="button" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:800;">Save New Password</button>' +
-      '</div>';
-
-    document.body.appendChild(panel);
-
-    $('resetPanelSave').addEventListener('click', async function () {
-      var np = (($('resetNewPass') || {}).value || '').trim();
-      var np2 = (($('resetNewPass2') || {}).value || '').trim();
-      var status = $('resetPanelStatus');
-
-      if (np.length < 8) { if (status) status.textContent = 'Password must be at least 8 characters.'; return; }
-      if (np !== np2)    { if (status) status.textContent = 'Passwords do not match.'; return; }
-      if (OFFLINE || !supa()) { if (status) status.textContent = 'Supabase is not available.'; return; }
-
-      $('resetPanelSave').disabled = true;
-      $('resetPanelSave').textContent = 'Saving…';
-
-      try {
-        var r = await supa().auth.updateUser({ password: np });
-        if (r.error) throw r.error;
-        if (status) status.textContent = '✅ Password updated! You can sign in now.';
-        setTimeout(function () {
-          if (panel && panel.parentNode) panel.parentNode.removeChild(panel);
-          toast('Password updated.');
-        }, 1000);
-      } catch (err) {
-        if (status) status.textContent = '⚠️ ' + ((err && err.message) ? err.message : 'Could not update password.');
-      } finally {
-        if ($('resetPanelSave')) {
-          $('resetPanelSave').disabled = false;
-          $('resetPanelSave').textContent = 'Save New Password';
-        }
-      }
+  function bindPwStrength(inputId, barId, labelId) {
+    var inp=$(inputId), bar=$(barId), lbl=$(labelId);
+    if(!inp||!bar) return;
+    inp.addEventListener('input', function(){
+      var s=pwStrength(inp.value);
+      bar.style.width=s.pct+'%'; bar.style.background=s.color;
+      if(lbl){ lbl.textContent=s.label; lbl.style.color=s.color; }
     });
   }
 
   /* ════════════════════════════════════════════
      SCORE / RANK / BADGES
   ════════════════════════════════════════════ */
+  function earnedBadges() {
+    var e=[], ideas=STATE.ideas.length;
+    var approved=STATE.projects.filter(function(p){return p.status==='approved'||p.status==='live';}).length;
+    var orders=STATE.orders.length;
+    var learn=STATE.learn;
+    if(ideas>=1) e.push('first_idea');
+    if(approved>=1) e.push('project_live');
+    if(orders>=1) e.push('first_order');
+    if(ideas>=5) e.push('idea_x5');
+    if((learn.culturalverse||[]).length||(learn.digitalverse||[]).length) e.push('learner');
+    if(STATE.profile&&STATE.profile.created_at&&Date.now()-new Date(STATE.profile.created_at).getTime()<90*24*60*60*1000) e.push('early_member');
+    var used=0; if(ideas>0)used++; if(approved>0||STATE.projects.length>0)used++; if(orders>0)used++; if(((learn.culturalverse||[]).length+(learn.digitalverse||[]).length)>0)used++;
+    if(used>=3) e.push('connector');
+    return e;
+  }
+
   function calcScore() {
-    var ideas = STATE.ideas.length;
-    var approved = STATE.projects.filter(function (p) { return p.status === 'approved' || p.status === 'live'; }).length;
-    var orders = STATE.orders.length;
-    var badges = earnedBadgeIds().length;
-    return (ideas * 1) + (approved * 3) + (orders * 1) + (badges * 2);
+    var earned=earnedBadges();
+    var approved=STATE.projects.filter(function(p){return p.status==='approved'||p.status==='live';}).length;
+    return STATE.ideas.length + approved*3 + STATE.orders.length + earned.length*2;
   }
 
   function getRank(score) {
-    for (var i = RANKS.length - 1; i >= 0; i--) {
-      if (score >= RANKS[i].min) return RANKS[i];
-    }
+    for(var i=RANKS.length-1;i>=0;i--){ if(score>=RANKS[i].min) return RANKS[i]; }
     return RANKS[0];
   }
 
-  function earnedBadgeIds() {
-    var earned = [];
-    var ideas = STATE.ideas.length;
-    var approved = STATE.projects.filter(function (p) { return p.status === 'approved' || p.status === 'live'; }).length;
-    var orders = STATE.orders.length;
-    var learn = STATE.learn || {};
-    var profile = STATE.profile || {};
-    var subbed = readJSON('amp_email_list_v1', []).indexOf(getUserEmail()) > -1;
-
-    if (ideas >= 1) earned.push('first_idea');
-    if (approved >= 1) earned.push('project_live');
-    if (orders >= 1) earned.push('first_order');
-    if (ideas >= 5) earned.push('idea_x5');
-    if ((learn.culturalverse || []).length || (learn.digitalverse || []).length) earned.push('learner');
-    if (subbed) earned.push('chronicle_sub');
-
-    var created = profile.created_at;
-    if (created) {
-      if (Date.now() - new Date(created).getTime() < 90 * 24 * 60 * 60 * 1000) {
-        earned.push('early_member');
-      }
-    }
-
-    var platformsUsed = 0;
-    if (ideas > 0) platformsUsed++;
-    if (approved > 0 || STATE.projects.length > 0) platformsUsed++;
-    if (orders > 0) platformsUsed++;
-    if (((learn.culturalverse || []).length + (learn.digitalverse || []).length) > 0) platformsUsed++;
-    if (platformsUsed >= 3) earned.push('connector');
-
-    return earned;
+  /* ════════════════════════════════════════════
+     THEME — apply from STATE.theme
+  ════════════════════════════════════════════ */
+  function applyTheme(t) {
+    STATE.theme = Object.assign({}, DEFAULT_THEME, t||{});
+    var r=document.documentElement.style;
+    r.setProperty('--pf-gold', STATE.theme.accent||'#f0c96a');
+    r.setProperty('--pf-dark', STATE.theme.bg||'#080b14');
+    r.setProperty('--pf-dark2',STATE.theme.bg2||'#0d1220');
+    r.setProperty('--pf-text', STATE.theme.text||'rgba(255,255,255,.88)');
+    var body=document.body; if(!body) return;
+    body.style.background = STATE.theme.bgUrl ? 'url("'+STATE.theme.bgUrl+'") center/cover fixed' : (BG_MAP[STATE.theme.bgMode]||BG_MAP.default);
+    body.style.color = STATE.theme.text||'rgba(255,255,255,.88)';
+    body.style.fontFamily = STATE.theme.font||'Montserrat';
+    var cs=$('pikoCustomStyle');
+    if(cs) cs.textContent = STATE.theme.customCss||'';
+    /* Cache for instant apply on next load */
+    try { localStorage.setItem(THEME_CACHE_KEY, JSON.stringify(STATE.theme)); } catch(e){}
   }
 
-  function updateNotifBadge() {
-    var count = (STATE.notifs || []).filter(function (n) { return !n.read; }).length;
-    if ($('pikoNotifBadge')) {
-      $('pikoNotifBadge').textContent = String(count);
-      $('pikoNotifBadge').hidden = count < 1;
-    }
-    if ($('tabNotifCount')) {
-      $('tabNotifCount').textContent = String(count);
-      $('tabNotifCount').style.display = count < 1 ? 'none' : '';
-    }
+  function applyNameStyle(ns) {
+    STATE.nameStyle = ns||STATE.nameStyle;
+    var els=[$('pikoProfileName'),$('pikoNamePreview')].filter(Boolean);
+    els.forEach(function(el){
+      el.style.color      = STATE.nameStyle.color||'';
+      el.style.fontFamily = STATE.nameStyle.font||'';
+      el.style.fontWeight = STATE.nameStyle.weight||'';
+      el.style.fontSize   = STATE.nameStyle.size ? STATE.nameStyle.size+'px' : '';
+      el.style.textShadow = STATE.nameStyle.color ? '0 0 18px '+STATE.nameStyle.color+'55' : '';
+    });
+  }
+
+  function applyBanner() {
+    var bannerUrl = STATE.profile && STATE.profile.banner_url ? STATE.profile.banner_url : '';
+    /* Fallback to theme bannerUrl for cross-device */
+    var url = bannerUrl || (STATE.theme && STATE.theme.bannerUrl) || '';
+    var bnEl=$('pikoBanner'), idEl=$('pikoIdCardBanner');
+    if(bnEl){ bnEl.style.background = url ? 'url("'+url+'") center/cover no-repeat' : ''; }
+    if(idEl){ idEl.style.background = url ? 'url("'+url+'") center/cover no-repeat' : 'linear-gradient(135deg,#080b14,#141830)'; }
   }
 
   /* ════════════════════════════════════════════
-     RENDER
+     SUPABASE DATA LAYER
+     All reads/writes go to Supabase only
   ════════════════════════════════════════════ */
-  function renderHeader() {
-    var p = STATE.profile || {};
-    var name = p.display_name || getUserEmail() || 'Pikoverse Member';
-    var created = p.created_at;
-    var hideEmail = getHideEmail();
-
-    if ($('pikoProfileName')) $('pikoProfileName').textContent = name;
-    if ($('pikoProfileBio')) $('pikoProfileBio').textContent = p.bio || '';
-    if ($('pikoProfileSocial')) {
-      $('pikoProfileSocial').textContent = p.social || '';
-      $('pikoProfileSocial').hidden = !p.social;
-    }
-
-    if ($('pikoProfileEmail')) {
-      $('pikoProfileEmail').textContent = hideEmail ? '' : (getUserEmail() || '');
-      $('pikoProfileEmail').hidden = hideEmail;
-    }
-
-    if ($('pikoProfileJoined')) {
-      $('pikoProfileJoined').textContent = '🌺 Joined ' + (created ? new Date(created).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'recently');
-    }
-
-    if ($('pikoProfileAvatarInitial')) $('pikoProfileAvatarInitial').textContent = name.charAt(0).toUpperCase();
-    if ($('pikoIdCardAvatar')) $('pikoIdCardAvatar').textContent = name.charAt(0).toUpperCase();
-
-    var avatarImg = $('pikoProfileAvatarImg');
-    if (avatarImg) {
-      if (p.avatar_url) {
-        avatarImg.src = p.avatar_url;
-        avatarImg.hidden = false;
-        if ($('pikoProfileAvatarInitial')) $('pikoProfileAvatarInitial').style.display = 'none';
-        avatarImg.onerror = function () {
-          avatarImg.hidden = true;
-          if ($('pikoProfileAvatarInitial')) $('pikoProfileAvatarInitial').style.display = '';
-        };
-      } else {
-        avatarImg.hidden = true;
-        avatarImg.removeAttribute('src');
-        if ($('pikoProfileAvatarInitial')) $('pikoProfileAvatarInitial').style.display = '';
-      }
-    }
-
-    if ($('pikoNavAvatarImg')) {
-      $('pikoNavAvatarImg').src = p.avatar_url || 'assets/goldenp.jpg';
-      $('pikoNavAvatarImg').onerror = function () { this.src = 'assets/AMP Tiki.jpg'; };
-    }
-
-    var banner = bannerValue();
-    if ($('pikoBanner')) {
-      if (banner) {
-        $('pikoBanner').style.background = 'url("' + banner + '") center/cover no-repeat';
-      } else {
-        $('pikoBanner').style.background = '';
-      }
-    }
-
-    applyNameStyle(currentNameStyle());
-
-    var rank = getRank(calcScore());
-    if ($('pikoRankBadge')) {
-      $('pikoRankBadge').textContent = rank.icon + ' ' + rank.label;
-      $('pikoRankBadge').style.color = rank.color;
-      $('pikoRankBadge').style.background = rank.bg;
-      $('pikoRankBadge').style.borderColor = rank.border;
-    }
+  async function fetchProfile() {
+    if(!supa()||!STATE.user) return null;
+    var r=await supa().from('profiles').select('*').eq('id',STATE.user.id).single();
+    if(r.error||!r.data) return null;
+    return r.data;
   }
 
-  function renderStats() {
-    if ($('statIdeas')) $('statIdeas').textContent = String(STATE.ideas.length);
-    if ($('statProjects')) $('statProjects').textContent = String(STATE.projects.length);
-    if ($('statScore')) $('statScore').textContent = String(calcScore());
-    if ($('statBadges')) $('statBadges').textContent = String(earnedBadgeIds().length);
+  async function saveProfile(updates) {
+    if(!supa()||!STATE.user) return;
+    var payload = Object.assign({
+      id: STATE.user.id,
+      email: STATE.user.email,
+      display_name: STATE.profile.display_name || STATE.user.email.split('@')[0],
+      bio: STATE.profile.bio || '',
+      avatar_url: STATE.profile.avatar_url || '',
+      banner_url: STATE.profile.banner_url || '',
+      social: STATE.profile.social || '',
+      theme: buildThemePayload(),
+      updated_at: new Date().toISOString()
+    }, updates||{});
+
+    var r=await supa().from('profiles').upsert(payload,{onConflict:'id'});
+    if(r.error) {
+      console.error('[Profile] save failed:', r.error.message);
+      return false;
+    }
+    console.log('[Profile] saved to Supabase ✓');
+    return true;
   }
 
-  function renderIdCard() {
-    var p = STATE.profile || {};
-    var name = p.display_name || getUserEmail() || 'Member';
-    var rank = getRank(calcScore());
-
-    if ($('pikoIdCardName')) $('pikoIdCardName').textContent = name;
-    if ($('pikoIdCardMeta')) $('pikoIdCardMeta').textContent = rank.icon + ' ' + rank.label + ' · Pikoverse Member';
-    if ($('pikoIdCardScore')) $('pikoIdCardScore').textContent = 'Score: ' + calcScore();
-
-    if ($('pikoIdCardAvatar')) {
-      if (p.avatar_url) {
-        $('pikoIdCardAvatar').innerHTML = '<img src="' + esc(p.avatar_url) + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-      } else {
-        $('pikoIdCardAvatar').innerHTML = '';
-        $('pikoIdCardAvatar').textContent = name.charAt(0).toUpperCase();
-      }
-    }
-
-    if ($('pikoIdCardBanner')) {
-      var banner = bannerValue();
-      $('pikoIdCardBanner').style.background = banner
-        ? ('url("' + banner + '") center/cover no-repeat')
-        : 'linear-gradient(135deg,#080b14,#141830)';
-    }
+  function buildThemePayload() {
+    /* Strip base64 bannerBg — stored as bannerUrl (Storage URL) only in DB */
+    var t=Object.assign({},STATE.theme);
+    if(t.bannerBg && t.bannerBg.startsWith('url(data:')) delete t.bannerBg;
+    /* Encode nameStyle and learn progress into theme JSONB */
+    t._nameStyle = STATE.nameStyle;
+    t._learn     = STATE.learn;
+    t._hideEmail = STATE.profile && STATE.profile.hide_email;
+    return t;
   }
 
-  function renderTimeline() {
-    var el = $('pikoTimeline');
-    if (!el) return;
-
-    var items = [];
-
-    STATE.ideas.forEach(function (i) {
-      items.push({
-        type: 'idea',
-        text: '💡 Shared idea: "' + String(i.text || '').slice(0, 70) + (String(i.text || '').length > 70 ? '…' : '') + '"',
-        ts: i.ts || Date.now()
-      });
-    });
-
-    STATE.projects.forEach(function (p) {
-      items.push({
-        type: 'project',
-        text: '🚀 Submitted project: "' + String(p.name || 'Untitled Project') + '"',
-        ts: p.ts || Date.now()
-      });
-    });
-
-    STATE.orders.forEach(function (o) {
-      items.push({
-        type: 'order',
-        text: '🛍️ Placed order — ' + fmtPrice(o.total || 0),
-        ts: o.ts || Date.now()
-      });
-    });
-
-    earnedBadgeIds().forEach(function (id) {
-      var b = BADGES.find(function (x) { return x.id === id; });
-      if (b) items.push({
-        type: 'badge',
-        text: '🏅 Earned badge: ' + b.icon + ' ' + b.name,
-        ts: STATE.profile && STATE.profile.created_at ? new Date(STATE.profile.created_at).getTime() : Date.now()
-      });
-    });
-
-    items.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
-
-    if (!items.length) {
-      el.innerHTML = '<p class="piko-profile-empty">Your activity will appear here as you engage with the community.</p>';
-      return;
-    }
-
-    el.innerHTML = items.slice(0, 20).map(function (item) {
-      return '' +
-        '<div class="piko-activity-item">' +
-          '<div class="piko-activity-icon piko-activity-icon--comment"><i class="fas fa-bolt"></i></div>' +
-          '<div>' +
-            '<div class="piko-activity-text">' + esc(item.text) + '</div>' +
-            '<div class="piko-activity-meta">' + timeAgo(item.ts) + '</div>' +
-          '</div>' +
-        '</div>';
-    }).join('');
+  async function fetchIdeas() {
+    if(!supa()||!email()) return [];
+    try {
+      var r=await supa().from('community_ideas').select('*').eq('contact',email()).order('ts',{ascending:false});
+      return r.error?[]:(r.data||[]);
+    } catch(e){ return []; }
   }
 
-  function renderRank() {
-    var score = calcScore();
-    var rank = getRank(score);
-    var next = null;
-    for (var i = 0; i < RANKS.length; i++) {
-      if (RANKS[i].min > score) {
-        next = RANKS[i];
-        break;
-      }
-    }
-
-    var pct = next ? Math.min(100, Math.round(((score - rank.min) / Math.max(1, next.min - rank.min)) * 100)) : 100;
-
-    if ($('rankIcon')) $('rankIcon').textContent = rank.icon;
-    if ($('rankLabel')) $('rankLabel').textContent = rank.label;
-    if ($('rankSub')) $('rankSub').textContent = next ? ('Keep contributing to reach ' + next.label) : 'Top rank reached';
-    if ($('rankBarFill')) $('rankBarFill').style.width = pct + '%';
-    if ($('rankNext')) $('rankNext').textContent = next ? (score + ' / ' + next.min + ' points to ' + next.label) : 'You have reached the highest rank';
+  async function fetchProjects() {
+    if(!supa()||!STATE.user) return [];
+    try {
+      var r=await supa().from('projects').select('*').eq('user_id',STATE.user.id).order('created_at',{ascending:false});
+      if(!r.error&&r.data&&r.data.length) return r.data.map(mapProject);
+      /* fallback by email */
+      var r2=await supa().from('projects').select('*').eq('contact',email()).order('created_at',{ascending:false});
+      return r2.error?[]:(r2.data||[]).map(mapProject);
+    } catch(e){ return []; }
   }
 
-  function renderBadges() {
-    var grid = $('pikoBadgesGrid');
-    if (!grid) return;
-
-    var earned = earnedBadgeIds();
-    if (!earned.length) {
-      grid.innerHTML = '<p class="piko-profile-empty">Your badges will appear here as you participate.</p>';
-      return;
-    }
-
-    grid.innerHTML = earned.map(function (id) {
-      var b = BADGES.find(function (x) { return x.id === id; });
-      if (!b) return '';
-      return '' +
-        '<div class="piko-badge-card">' +
-          '<div class="piko-badge-icon">' + b.icon + '</div>' +
-          '<div class="piko-badge-name">' + esc(b.name) + '</div>' +
-          '<div class="piko-badge-desc">' + esc(b.desc) + '</div>' +
-        '</div>';
-    }).join('');
+  function mapProject(row) {
+    return { id:row.id, name:row.name||'', desc:row.description||row.desc||'', stage:row.stage||'idea', link:row.url||row.link||'', status:row.status||'pending', contact:row.contact||email(), ts:row.created_at?new Date(row.created_at).getTime():Date.now() };
   }
 
-  function renderPlatforms() {
-    var wrap = $('pikoPlatformsGrid');
-    if (!wrap) return;
-
-    var learn = STATE.learn || {};
-    var cvDone = (learn.culturalverse || []).length;
-    var dvDone = (learn.digitalverse || []).length;
-
-    wrap.innerHTML = '' +
-      '<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>' + esc((STATE.ideas.length + STATE.projects.length) + ' submissions') + '</span></a>' +
-      '<a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>' + esc(STATE.orders.length + ' orders') + '</span></a>' +
-      '<a class="piko-platform-card" href="culturalverse.html"><strong>Culturalverse</strong><span>' + esc(cvDone + ' modules complete') + '</span></a>' +
-      '<a class="piko-platform-card" href="digitalverse/index.html"><strong>DigitalVerse</strong><span>' + esc(dvDone + ' modules complete') + '</span></a>';
+  function fetchOrders() {
+    /* Orders stay in localStorage — sourced from Worker/D1 via admin */
+    try { return JSON.parse(localStorage.getItem('amp_orders_v1')||'[]').filter(function(o){ return String(o.email||o.customer_email||'').toLowerCase()===email().toLowerCase(); }); }
+    catch(e){ return []; }
   }
 
-  function renderNotifications() {
-    var wrap = $('pikoNotifList');
-    if (!wrap) return;
+  async function fetchNotifs() {
+    if(!supa()||!STATE.user) return [];
+    try {
+      var r=await supa().from('notifications').select('*').eq('user_id',STATE.user.id).order('created_at',{ascending:false}).limit(40);
+      return r.error?[]:(r.data||[]);
+    } catch(e){ return []; }
+  }
 
-    if (!STATE.notifs.length) {
-      wrap.innerHTML = '<p class="piko-profile-empty">No notifications yet.</p>';
-      updateNotifBadge();
-      return;
+  async function addNotif(icon, text) {
+    var n={ icon:icon, text:text, read:false, created_at:new Date().toISOString() };
+    if(supa()&&STATE.user) {
+      try { await supa().from('notifications').insert(Object.assign({user_id:STATE.user.id},n)); } catch(e){}
     }
-
-    wrap.innerHTML = STATE.notifs.map(function (n) {
-      return '' +
-        '<div class="piko-notif-item' + (n.read ? '' : ' is-unread') + '">' +
-          '<div class="piko-notif-icon">' + esc(n.icon || '🔔') + '</div>' +
-          '<div class="piko-notif-content">' +
-            '<div class="piko-notif-text">' + esc(n.text || '') + '</div>' +
-            '<div class="piko-notif-meta">' + timeAgo(n.ts || Date.now()) + '</div>' +
-          '</div>' +
-        '</div>';
-    }).join('');
-
+    STATE.notifs.unshift(Object.assign({id:'n-'+Date.now()},n));
+    if(STATE.notifs.length>40) STATE.notifs.length=40;
+    renderNotifications();
     updateNotifBadge();
   }
 
-  function renderSaved() {
-    var wrap = $('pikoSavedGrid');
-    if (!wrap) return;
-
-    if (!STATE.saved.length) {
-      wrap.innerHTML = '<p class="piko-profile-empty">Bookmark Chronicle articles, ecosystem cards, and marketplace items to find them here.</p>';
-      return;
-    }
-
-    wrap.innerHTML = STATE.saved.map(function (s, idx) {
-      return '' +
-        '<div class="piko-saved-card">' +
-          '<div class="piko-saved-head">' +
-            '<strong>' + esc(s.title || 'Saved item') + '</strong>' +
-            '<button class="piko-saved-remove" data-sidx="' + idx + '" type="button">×</button>' +
-          '</div>' +
-          '<p>' + esc(s.type || 'Bookmark') + '</p>' +
-          (s.href ? '<a href="' + esc(s.href) + '" target="_blank" rel="noopener">Open</a>' : '') +
-        '</div>';
-    }).join('');
-
-    wrap.querySelectorAll('.piko-saved-remove').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var idx = parseInt(btn.getAttribute('data-sidx'), 10);
-        STATE.saved.splice(idx, 1);
-        saveSavedLocal(STATE.saved);
-        renderSaved();
-      });
-    });
+  /* ════════════════════════════════════════════
+     SHOW / HIDE UI SECTIONS
+  ════════════════════════════════════════════ */
+  function showAuthGate() {
+    var g=$('pikoAuthGate'), s=$('pikoProfileSection');
+    if(g) g.hidden=false;
+    if(s) s.hidden=true;
+    [$('pikoSignOut'),$('pikoCustomizeTrigger'),$('pikoNotifBtn')].forEach(function(el){ if(el){ el.hidden=true; el.style.display=''; } });
   }
 
-  function renderOrders() {
-    var wrap = $('pikoProfileOrdersList');
-    if (!wrap) return;
-
-    if (!STATE.orders.length) {
-      wrap.innerHTML = '<p class="piko-profile-empty">No orders yet. <a href="marketplace/marketplace.html" style="color:#f0c96a">Visit the AMP Marketplace →</a></p>';
-      return;
-    }
-
-    wrap.innerHTML = STATE.orders.map(function (o) {
-      var status = String(o.status || 'pending').replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-      var statusCls = (o.status === 'confirmed') ? 'confirmed' : 'pending';
-      var itemsText = (o.items || []).map(function (i) {
-        return (i.name || 'Item') + (i.size ? ' (' + i.size + ')' : '') + ' ×' + (i.qty || 1);
-      }).join(', ');
-
-      return '' +
-        '<div class="piko-order-card">' +
-          '<div class="piko-order-card-header">' +
-            '<span class="piko-order-id">' + esc(o.id || '') + '</span>' +
-            '<span class="piko-order-status piko-order-status--' + statusCls + '">' + esc(status) + '</span>' +
-          '</div>' +
-          '<div class="piko-order-items">' + esc(itemsText) + '</div>' +
-          '<div class="piko-order-total">' + fmtPrice(o.total || 0) + ' · ' + (o.ts ? new Date(o.ts).toLocaleDateString() : '') + '</div>' +
-        '</div>';
-    }).join('');
+  function showProfileSection() {
+    var g=$('pikoAuthGate'), s=$('pikoProfileSection');
+    if(g) g.hidden=true;
+    if(s) s.hidden=false;
+    [$('pikoSignOut'),$('pikoCustomizeTrigger'),$('pikoNotifBtn')].forEach(function(el){ if(el){ el.hidden=false; el.style.display=''; el.style.pointerEvents='auto'; } });
   }
 
-  function renderIdeas() {
-    var wrap = $('pikoProfileIdeasList');
-    if (!wrap) return;
-
-    if (!STATE.ideas.length) {
-      wrap.innerHTML = '<p class="piko-profile-empty">No ideas shared yet. What are you thinking?</p>';
-      return;
-    }
-
-    wrap.innerHTML = STATE.ideas.map(function (i) {
-      return '' +
-        '<div class="piko-profile-idea-card">' +
-          esc(i.text || '') +
-          '<div class="piko-profile-idea-meta">' +
-            '<span>' + esc(i.category || 'Idea') + '</span>' +
-            '<span>' + timeAgo(i.ts || Date.now()) + '</span>' +
-            (i.reply ? '<span style="color:#f0c96a"><i class="fas fa-star"></i> AMP replied</span>' : '') +
-          '</div>' +
-        '</div>';
-    }).join('');
-  }
-
-  function renderProjects() {
-    var wrap = $('pikoProfileProjectsGrid');
-    if (!wrap) return;
-
-    if (!STATE.projects.length) {
-      wrap.innerHTML = '<p class="piko-profile-empty">No projects submitted yet. Share what you\'re building!</p>';
-      return;
-    }
-
-    var stageColors = { idea: '#f0c96a', building: '#54d1ff', live: '#4caf7a', approved: '#4caf7a' };
-
-    wrap.innerHTML = STATE.projects.map(function (p) {
-      var col = stageColors[p.stage] || '#f0c96a';
-      return '' +
-        '<div class="ecosystem-project-card">' +
-          '<div class="epc-header">' +
-            '<span class="epc-name">' + esc(p.name || 'Untitled Project') + '</span>' +
-            '<span class="epc-stage" style="background:' + col + '22;color:' + col + '">' + esc(p.stage || 'idea') + '</span>' +
-          '</div>' +
-          '<p class="epc-desc">' + esc(p.desc || '') + '</p>' +
-          '<div class="piko-profile-idea-meta">' +
-            '<span style="color:' + ((p.status === 'approved' || p.status === 'live') ? '#4caf7a' : '#ffb347') + '">' +
-              ((p.status === 'approved' || p.status === 'live') ? '✓ On Showcase' : '⏳ Pending Review') +
-            '</span>' +
-          '</div>' +
-        '</div>';
-    }).join('');
-  }
-
-  function renderLearning() {
-    var learn = STATE.learn || {};
-    renderTrack('culturalverse', CV, learn.culturalverse || []);
-    renderTrack('digitalverse', DV, learn.digitalverse || []);
-  }
-
-  function renderTrack(trackId, modules, completed) {
-    var progressEl = $(trackId + 'Progress');
-    var wrap = $(trackId + 'Modules');
-    if (!wrap) return;
-
-    var pct = modules.length ? Math.round((completed.length / modules.length) * 100) : 0;
-    if (progressEl) progressEl.style.width = pct + '%';
-
-    wrap.innerHTML = modules.map(function (mod) {
-      var done = completed.indexOf(mod) > -1;
-      return '' +
-        '<button class="piko-learn-module piko-learn-module--' + (done ? 'done' : 'todo') + '" data-track="' + esc(trackId) + '" data-module="' + esc(mod) + '" type="button">' +
-          '<i class="fas fa-' + (done ? 'circle-check' : 'circle') + '"></i> ' + esc(mod) +
-        '</button>';
-    }).join('');
-
-    wrap.querySelectorAll('.piko-learn-module').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var track = btn.getAttribute('data-track');
-        var moduleName = btn.getAttribute('data-module');
-        var learn = loadLearnLocal();
-        var list = learn[track] || [];
-        var idx = list.indexOf(moduleName);
-
-        if (idx > -1) list.splice(idx, 1);
-        else list.push(moduleName);
-
-        learn[track] = list;
-        STATE.learn = learn;
-        saveLearnLocal(learn);
-
-        renderLearning();
-        renderStats();
-        renderRank();
-        renderBadges();
-        addNotif('🎓', (idx > -1 ? 'Marked incomplete: ' : 'Completed: ') + moduleName);
-      });
-    });
-  }
-
+  /* ════════════════════════════════════════════
+     RENDER ENGINE
+  ════════════════════════════════════════════ */
   function renderAll() {
     renderHeader();
     renderStats();
@@ -1331,693 +315,791 @@
     renderProjects();
     renderLearning();
     updateNotifBadge();
+    applyBanner();
+    applyNameStyle(STATE.nameStyle);
+  }
+
+  function renderHeader() {
+    var p=STATE.profile||{};
+    var name=p.display_name||email()||'Pikoverse Member';
+    var hideEmail=p.hide_email||false;
+
+    setText('pikoProfileName', name);
+    setText('pikoProfileBio',  p.bio||'');
+    var socialEl=$('pikoProfileSocial');
+    if(socialEl){ socialEl.textContent=p.social||''; socialEl.hidden=!p.social; }
+    var emailEl=$('pikoProfileEmail');
+    if(emailEl){ emailEl.textContent=hideEmail?'':email(); emailEl.hidden=hideEmail; }
+    var joinedEl=$('pikoProfileJoined');
+    if(joinedEl) joinedEl.textContent='🌺 Joined '+fmtDate(p.created_at);
+
+    /* Avatar */
+    setText('pikoProfileAvatarInitial', name.charAt(0).toUpperCase());
+    var img=$('pikoProfileAvatarImg');
+    if(img){
+      if(p.avatar_url){ img.src=p.avatar_url; img.hidden=false; var init=$('pikoProfileAvatarInitial'); if(init) init.style.display='none'; img.onerror=function(){ img.hidden=true; if(init) init.style.display=''; }; }
+      else { img.hidden=true; if(img.src) img.removeAttribute('src'); var init2=$('pikoProfileAvatarInitial'); if(init2) init2.style.display=''; }
+    }
+    /* Nav avatar */
+    var navImg=$('pikoNavAvatarImg');
+    if(navImg){ navImg.src=p.avatar_url||'assets/goldenp.jpg'; navImg.onerror=function(){ this.src='assets/AMP Tiki.jpg'; }; }
+
+    /* Rank badge */
+    var score=calcScore(), rank=getRank(score);
+    var rb=$('pikoRankBadge');
+    if(rb){ rb.textContent=rank.icon+' '+rank.label; rb.style.color=rank.color; rb.style.background=rank.bg; rb.style.borderColor=rank.border; }
+
+    /* Badges row */
+    var badgesEl=$('pikoProfileBadges');
+    if(badgesEl){
+      var chips=['<span class="piko-profile-badge piko-profile-badge--member"><i class="fas fa-star"></i> Pikoverse Member</span>','<span class="piko-profile-badge piko-profile-badge--joined">🌺 Joined '+fmtDate(p.created_at)+'</span>'];
+      earnedBadges().forEach(function(id){ var b=BADGES.find(function(x){return x.id===id;}); if(b) chips.push('<span class="piko-profile-badge piko-profile-badge--earned">'+b.icon+' '+b.name+'</span>'); });
+      badgesEl.innerHTML=chips.join('');
+    }
+    applyNameStyle(STATE.nameStyle);
+  }
+
+  function renderStats() {
+    var approved=STATE.projects.filter(function(p){return p.status==='approved'||p.status==='live';}).length;
+    setText('statIdeas',    String(STATE.ideas.length));
+    setText('statProjects', String(STATE.projects.length));
+    setText('statScore',    String(calcScore()));
+    setText('statBadges',   String(earnedBadges().length));
+  }
+
+  function renderIdCard() {
+    var p=STATE.profile||{}, name=p.display_name||email()||'Member';
+    var rank=getRank(calcScore());
+    setText('pikoIdCardName',  name);
+    setText('pikoIdCardMeta',  rank.icon+' '+rank.label+' · Pikoverse Member');
+    setText('pikoIdCardScore', 'Score: '+calcScore());
+    var av=$('pikoIdCardAvatar');
+    if(av){ av.innerHTML=p.avatar_url?'<img src="'+esc(p.avatar_url)+'" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentNode.textContent=\''+esc(name.charAt(0).toUpperCase())+'\'">':''; if(!p.avatar_url) av.textContent=name.charAt(0).toUpperCase(); }
+  }
+
+  function renderTimeline() {
+    var el=$('pikoTimeline'); if(!el) return;
+    var items=[];
+    STATE.ideas.forEach(function(i){ items.push({text:'💡 Shared idea: "'+String(i.text||'').slice(0,60)+(String(i.text||'').length>60?'…':'')+'"',ts:i.ts||Date.now()}); });
+    STATE.projects.forEach(function(p){ items.push({text:'🚀 Submitted: "'+String(p.name||'Project')+'"',ts:p.ts||Date.now()}); });
+    STATE.orders.forEach(function(o){ items.push({text:'🛍️ Placed order — '+fmtPrice(o.total||0),ts:o.ts||Date.now()}); });
+    earnedBadges().forEach(function(id){ var b=BADGES.find(function(x){return x.id===id;}); if(b) items.push({text:'🏅 Earned: '+b.icon+' '+b.name,ts:STATE.profile&&STATE.profile.created_at?new Date(STATE.profile.created_at).getTime():Date.now()}); });
+    items.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    if(!items.length){ el.innerHTML='<p class="piko-profile-empty">Your activity will appear here as you engage with the community.</p>'; return; }
+    el.innerHTML=items.slice(0,20).map(function(item){ return '<div class="piko-activity-item"><div class="piko-activity-icon"><i class="fas fa-bolt"></i></div><div><div class="piko-activity-text">'+esc(item.text)+'</div><div class="piko-activity-meta">'+timeAgo(item.ts)+'</div></div></div>'; }).join('');
+  }
+
+  function renderRank() {
+    var score=calcScore(), rank=getRank(score);
+    var next=null; for(var i=0;i<RANKS.length;i++){ if(RANKS[i].min>score){next=RANKS[i];break;} }
+    var pct=next?Math.min(100,Math.round(((score-rank.min)/Math.max(1,next.min-rank.min))*100)):100;
+    setText('rankIcon',  rank.icon);
+    setText('rankLabel', rank.label);
+    setText('rankSub',   next?'Keep contributing to reach '+next.label:'Top rank reached 🌟');
+    setText('rankNext',  next?score+' / '+next.min+' points to '+next.label:'You have reached the highest rank');
+    var bar=$('rankBarFill'); if(bar) bar.style.width=pct+'%';
+  }
+
+  function renderBadges() {
+    var grid=$('pikoBadgesGrid'); if(!grid) return;
+    var earned=earnedBadges();
+    if(!earned.length){ grid.innerHTML='<p class="piko-profile-empty">Your badges will appear here as you participate.</p>'; return; }
+    grid.innerHTML=earned.map(function(id){ var b=BADGES.find(function(x){return x.id===id;}); return b?'<div class="piko-badge-card"><div class="piko-badge-icon">'+b.icon+'</div><div class="piko-badge-name">'+esc(b.name)+'</div><div class="piko-badge-desc">'+esc(b.desc)+'</div></div>':''; }).join('');
+  }
+
+  function renderPlatforms() {
+    var wrap=$('pikoPlatformsGrid'); if(!wrap) return;
+    var cv=(STATE.learn.culturalverse||[]).length, dv=(STATE.learn.digitalverse||[]).length;
+    wrap.innerHTML='<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>'+(STATE.ideas.length+STATE.projects.length)+' submissions</span></a><a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>'+STATE.orders.length+' orders</span></a><a class="piko-platform-card" href="ikeverse/culturalverse.html"><strong>Culturalverse</strong><span>'+cv+' modules complete</span></a><a class="piko-platform-card" href="ikeverse/digitalverse/index.html"><strong>DigitalVerse</strong><span>'+dv+' modules complete</span></a>';
+  }
+
+  function renderNotifications() {
+    var wrap=$('pikoNotifList'); if(!wrap) return;
+    if(!STATE.notifs.length){ wrap.innerHTML='<p class="piko-profile-empty">No notifications yet.</p>'; updateNotifBadge(); return; }
+    wrap.innerHTML=STATE.notifs.map(function(n){ return '<div class="piko-notif-item'+(n.read?'':' is-unread')+'"><div class="piko-notif-icon">'+esc(n.icon||'🔔')+'</div><div class="piko-notif-content"><div class="piko-notif-text">'+esc(n.text||'')+'</div><div class="piko-notif-meta">'+timeAgo(n.created_at||n.ts||Date.now())+'</div></div></div>'; }).join('');
+    updateNotifBadge();
+  }
+
+  function updateNotifBadge() {
+    var count=(STATE.notifs||[]).filter(function(n){return !n.read;}).length;
+    var b=$('pikoNotifBadge'); if(b){ b.textContent=String(count); b.hidden=count<1; }
+    var t=$('tabNotifCount'); if(t){ t.textContent=String(count); t.style.display=count<1?'none':''; }
+  }
+
+  function renderSaved() {
+    var wrap=$('pikoSavedGrid'); if(!wrap) return;
+    /* Saved items still from localStorage — not critical enough for Supabase */
+    var saved=[]; try{ saved=JSON.parse(localStorage.getItem('piko_saved_v1')||'[]'); }catch(e){}
+    if(!saved.length){ wrap.innerHTML='<p class="piko-profile-empty">Bookmark Chronicle articles and items to find them here.</p>'; return; }
+    wrap.innerHTML=saved.map(function(s,i){ return '<div class="piko-saved-card"><div class="piko-saved-head"><strong>'+esc(s.title||'Saved')+'</strong><button class="piko-saved-remove" data-i="'+i+'" type="button">×</button></div><p>'+esc(s.type||'Bookmark')+'</p>'+(s.href?'<a href="'+esc(s.href)+'" target="_blank">Open</a>':'')+'</div>'; }).join('');
+    wrap.querySelectorAll('.piko-saved-remove').forEach(function(btn){
+      btn.addEventListener('click',function(){ saved.splice(parseInt(btn.dataset.i),1); try{localStorage.setItem('piko_saved_v1',JSON.stringify(saved));}catch(e){} renderSaved(); });
+    });
+  }
+
+  function renderOrders() {
+    var wrap=$('pikoProfileOrdersList'); if(!wrap) return;
+    if(!STATE.orders.length){ wrap.innerHTML='<p class="piko-profile-empty">No orders yet. <a href="marketplace/index.html" style="color:#f0c96a">Visit the AMP Marketplace →</a></p>'; return; }
+    wrap.innerHTML=STATE.orders.map(function(o){
+      var status=String(o.status||'pending').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      var items=(o.items||[]).map(function(i){return(i.name||'Item')+(i.size?' ('+i.size+')':'')+' ×'+(i.qty||1);}).join(', ');
+      return '<div class="piko-order-card"><div class="piko-order-card-header"><span class="piko-order-id">'+esc(o.id||'')+'</span><span class="piko-order-status piko-order-status--'+(o.status==='confirmed'?'confirmed':'pending')+'">'+esc(status)+'</span></div><div class="piko-order-items">'+esc(items)+'</div><div class="piko-order-total">'+fmtPrice(o.total||0)+' · '+(o.ts?new Date(o.ts).toLocaleDateString():'')+'</div></div>';
+    }).join('');
+  }
+
+  function renderIdeas() {
+    var wrap=$('pikoProfileIdeasList'); if(!wrap) return;
+    if(!STATE.ideas.length){ wrap.innerHTML='<p class="piko-profile-empty">No ideas shared yet.</p>'; return; }
+    wrap.innerHTML=STATE.ideas.map(function(i){ return '<div class="piko-profile-idea-card">'+esc(i.text||'')+'<div class="piko-profile-idea-meta"><span>'+esc(i.category||'Idea')+'</span><span>'+timeAgo(i.ts||Date.now())+'</span>'+(i.reply?'<span style="color:#f0c96a"><i class="fas fa-star"></i> AMP replied</span>':'')+'</div></div>'; }).join('');
+  }
+
+  function renderProjects() {
+    var wrap=$('pikoProfileProjectsGrid'); if(!wrap) return;
+    if(!STATE.projects.length){ wrap.innerHTML='<p class="piko-profile-empty">No projects submitted yet.</p>'; return; }
+    var cols={idea:'#f0c96a',building:'#54d1ff',live:'#4caf7a',approved:'#4caf7a'};
+    wrap.innerHTML=STATE.projects.map(function(p){ var c=cols[p.stage]||'#f0c96a'; return '<div class="ecosystem-project-card"><div class="epc-header"><span class="epc-name">'+esc(p.name||'Project')+'</span><span class="epc-stage" style="background:'+c+'22;color:'+c+'">'+esc(p.stage||'idea')+'</span></div><p class="epc-desc">'+esc(p.desc||'')+'</p><div class="piko-profile-idea-meta"><span style="color:'+((p.status==='approved'||p.status==='live')?'#4caf7a':'#ffb347')+'">'+((p.status==='approved'||p.status==='live')?'✓ On Showcase':'⏳ Pending Review')+'</span></div></div>'; }).join('');
+  }
+
+  function renderLearning() {
+    renderTrack('culturalverse', CV_MODULES, STATE.learn.culturalverse||[]);
+    renderTrack('digitalverse',  DV_MODULES, STATE.learn.digitalverse||[]);
+  }
+
+  function renderTrack(trackId, modules, completed) {
+    var pEl=$(trackId+'Progress'), wEl=$(trackId+'Modules'); if(!wEl) return;
+    var pct=modules.length?Math.round((completed.length/modules.length)*100):0;
+    if(pEl) pEl.style.width=pct+'%';
+    wEl.innerHTML=modules.map(function(mod){ var done=completed.indexOf(mod)>-1; return '<button class="piko-learn-module piko-learn-module--'+(done?'done':'todo')+'" data-track="'+esc(trackId)+'" data-mod="'+esc(mod)+'" type="button"><i class="fas fa-'+(done?'circle-check':'circle')+'"></i> '+esc(mod)+'</button>'; }).join('');
+    wEl.querySelectorAll('.piko-learn-module').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var track=btn.dataset.track, mod=btn.dataset.mod;
+        var list=STATE.learn[track]||[];
+        var idx=list.indexOf(mod); if(idx>-1) list.splice(idx,1); else list.push(mod);
+        STATE.learn[track]=list;
+        await saveProfile(); /* persist learn progress via theme JSONB */
+        renderLearning(); renderStats(); renderRank(); renderBadges();
+        addNotif('🎓',(idx>-1?'Marked incomplete: ':'Completed: ')+mod);
+      });
+    });
+  }
+
+  function setText(id, val) { var el=$(id); if(el) el.textContent=val||''; }
+
+  /* ════════════════════════════════════════════
+     AUTH FLOW
+  ════════════════════════════════════════════ */
+  async function signIn(email, pass) {
+    var r=await supa().auth.signInWithPassword({email:email,password:pass});
+    if(r.error) throw r.error;
+    STATE.user=r.data.user;
+    await loadProfileAndShow();
+  }
+
+  async function signUp(name, emailAddr, pass) {
+    var r=await supa().auth.signUp({ email:emailAddr, password:pass, options:{ data:{ display_name:name } } });
+    if(r.error) throw r.error;
+    STATE.user=r.data.user;
+    if(r.data.session) {
+      await loadProfileAndShow();
+    } else {
+      /* Email confirmation required */
+      return 'confirm';
+    }
+  }
+
+  async function loadProfileAndShow() {
+    if(!STATE.user) return;
+    /* Fetch or create profile row */
+    var p=await fetchProfile();
+    if(!p) {
+      /* Create row for new signup */
+      var meta=STATE.user.user_metadata||{};
+      await supa().from('profiles').upsert({
+        id:STATE.user.id, email:STATE.user.email,
+        display_name: meta.display_name||STATE.user.email.split('@')[0],
+        bio:'', avatar_url:'', banner_url:'', social:'',
+        theme: buildThemePayload()
+      },{onConflict:'id'});
+      p=await fetchProfile();
+    }
+    STATE.profile=p||{};
+
+    /* Restore theme, nameStyle, learn from profiles.theme JSONB */
+    var dbTheme=(p&&p.theme)||{};
+    var themeBase=Object.assign({},DEFAULT_THEME,dbTheme);
+    if(dbTheme._nameStyle) STATE.nameStyle=dbTheme._nameStyle;
+    if(dbTheme._learn)     STATE.learn=dbTheme._learn;
+    if(STATE.profile)      STATE.profile.hide_email=!!(dbTheme._hideEmail);
+    applyTheme(themeBase);
+
+    /* Fetch all data in parallel */
+    var results=await Promise.all([fetchIdeas(), fetchProjects(), fetchNotifs()]);
+    STATE.ideas    = results[0];
+    STATE.projects = results[1];
+    STATE.orders   = fetchOrders();
+    STATE.notifs   = results[2];
+
+    showProfileSection();
+    renderAll();
+    addNotif('🌺','Welcome back, '+(STATE.profile.display_name||STATE.user.email.split('@')[0])+'!');
+  }
+
+  function signOut() {
+    /* Clear ALL Supabase tokens from localStorage synchronously */
+    var toRemove=[];
+    for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&(k.indexOf('supabase')>-1||k.indexOf('sb-')===0||k==='piko_supabase_auth')) toRemove.push(k); }
+    toRemove.forEach(function(k){ localStorage.removeItem(k); });
+    /* Fire Supabase signOut in background — don't wait */
+    if(supa()) supa().auth.signOut().catch(function(){});
+    /* Immediate redirect — no delay */
+    window.location.replace('/index.html');
   }
 
   /* ════════════════════════════════════════════
-     CUSTOMIZE / PANEL
+     AUTH UI — sign up / sign in forms
   ════════════════════════════════════════════ */
-  function openPanel(tabName) {
-    var backdrop = $('pikoCustomizeBackdrop');
-    var panel = $('pikoCustomizePanel');
-    if (backdrop) backdrop.classList.add('is-open');
-    if (panel) panel.classList.add('is-open');
+  function initSignup() {
+    var btn=$('pikoSignupBtn'); if(!btn) return;
+    btn.addEventListener('click', async function(){
+      clearStatus('pikoSignupStatus');
+      var name=(($('signupName')||{}).value||'').trim();
+      var emailVal=(($('signupEmail')||{}).value||'').trim().toLowerCase();
+      var pass=(($('signupPassword')||{}).value||'').trim();
+      var pass2=(($('signupPassword2')||{}).value||'').trim();
+      if(!name)                 { setStatus('pikoSignupStatus','Please enter a display name.','err'); return; }
+      if(!validEmail(emailVal)) { setStatus('pikoSignupStatus','Please enter a valid email.','err'); return; }
+      if(pass.length<8)         { setStatus('pikoSignupStatus','Password must be at least 8 characters.','err'); return; }
+      if(pass!==pass2)          { setStatus('pikoSignupStatus','Passwords do not match.','err'); return; }
+      btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Creating profile…';
+      try {
+        var result=await signUp(name,emailVal,pass);
+        if(result==='confirm') {
+          setStatus('pikoSignupStatus','✅ Account created! Check your email to confirm, then sign in.','ok');
+        }
+      } catch(err) {
+        setStatus('pikoSignupStatus','⚠️ '+((err&&err.message)?err.message:'Could not create profile.'),'err');
+      } finally {
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Create My Profile';
+      }
+    });
+  }
 
-    if (tabName) {
-      document.querySelectorAll('.piko-edit-tab').forEach(function (b) {
-        b.classList.toggle('is-active', b.getAttribute('data-etab') === tabName);
-      });
-      document.querySelectorAll('.piko-edit-pane').forEach(function (p) {
-        p.classList.toggle('is-active', p.id === 'pikoEditPane' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-      });
-    }
+  function initSignin() {
+    var btn=$('pikoSigninBtn'); if(!btn) return;
+    btn.addEventListener('click', async function(){
+      clearStatus('pikoSigninStatus');
+      var emailVal=(($('signinEmail')||{}).value||'').trim();
+      var pass=(($('signinPassword')||{}).value||'').trim();
+      if(!validEmail(emailVal)) { setStatus('pikoSigninStatus','Please enter your email.','err'); return; }
+      if(!pass)                 { setStatus('pikoSigninStatus','Please enter your password.','err'); return; }
+      btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Signing in…';
+      try {
+        await signIn(emailVal,pass);
+        setStatus('pikoSigninStatus','✅ Welcome back!','ok');
+      } catch(err) {
+        var msg=(err&&err.message)?err.message:'Could not sign in.';
+        if(msg.toLowerCase().indexOf('invalid')>-1) msg='Wrong email or password. Please try again.';
+        setStatus('pikoSigninStatus',msg,'err');
+      } finally {
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    });
 
+    /* Forgot password */
+    var forgot=$('pikoForgotBtn'); if(!forgot) return;
+    forgot.addEventListener('click', async function(){
+      clearStatus('pikoSigninStatus');
+      var emailVal=(($('signinEmail')||{}).value||'').trim();
+      if(!validEmail(emailVal)){ setStatus('pikoSigninStatus','Enter your email above first.','err'); return; }
+      forgot.disabled=true; forgot.textContent='Sending…';
+      try {
+        var r=await supa().auth.resetPasswordForEmail(emailVal,{redirectTo:window.location.origin+'/profile.html?reset=1'});
+        if(r.error) throw r.error;
+        setStatus('pikoSigninStatus','✅ Password reset link sent to '+emailVal+'. Check your inbox.','ok');
+      } catch(err) {
+        setStatus('pikoSigninStatus','⚠️ '+((err&&err.message)?err.message:'Could not send reset link.'),'err');
+      } finally {
+        forgot.disabled=false; forgot.textContent='Forgot password?';
+      }
+    });
+  }
+
+  function initSignOut() {
+    var btn=$('pikoSignOut'); if(!btn) return;
+    btn.addEventListener('click', function(){ signOut(); });
+  }
+
+  function handlePasswordReset() {
+    if(window.location.search.indexOf('reset=1')===-1) return;
+    window.history.replaceState({},'',window.location.pathname);
+    var panel=document.createElement('div');
+    panel.style.cssText='position:fixed;inset:0;background:rgba(8,11,20,.97);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;';
+    panel.innerHTML='<div style="width:min(460px,100%);background:#0d1220;border:1px solid rgba(240,201,106,.18);border-radius:16px;padding:28px;"><h2 style="margin:0 0 8px;font-family:Orbitron,sans-serif;color:#f0c96a;font-size:18px;">Set New Password</h2><p style="margin:0 0 18px;font-size:13px;color:rgba(255,255,255,.6);">Choose a new password for your Pikoverse account.</p><div style="margin-bottom:12px"><input id="resetPw1" type="password" placeholder="New password" maxlength="128" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:14px;box-sizing:border-box"></div><div style="margin-bottom:18px"><input id="resetPw2" type="password" placeholder="Confirm password" maxlength="128" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:14px;box-sizing:border-box"></div><div id="resetStatus" style="font-size:13px;margin-bottom:14px;color:rgba(255,255,255,.7);min-height:18px;"></div><button id="resetSaveBtn" type="button" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#c9a84c,#f0c96a);color:#080b14;font-weight:800;font-size:15px;cursor:pointer;">Save New Password</button></div>';
+    document.body.appendChild(panel);
+    $('resetSaveBtn').addEventListener('click', async function(){
+      var np=($('resetPw1').value||'').trim(), np2=($('resetPw2').value||'').trim(), st=$('resetStatus'), btn=$('resetSaveBtn');
+      if(np.length<8){ st.textContent='Password must be at least 8 characters.'; return; }
+      if(np!==np2){ st.textContent='Passwords do not match.'; return; }
+      btn.disabled=true; btn.textContent='Saving…';
+      try {
+        var r=await supa().auth.updateUser({password:np}); if(r.error) throw r.error;
+        st.textContent='✅ Password updated! Redirecting…';
+        setTimeout(function(){ panel.remove(); toast('Password updated! Welcome back.'); },1200);
+      } catch(err){ st.textContent='⚠️ '+((err&&err.message)?err.message:'Could not update password.'); btn.disabled=false; btn.textContent='Save New Password'; }
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     PANEL — Profile Settings (Edit + Customize)
+  ════════════════════════════════════════════ */
+  function openPanel(tab) {
+    var bd=$('pikoCustomizeBackdrop'), pn=$('pikoCustomizePanel');
+    if(bd) bd.classList.add('is-open');
+    if(pn) pn.classList.add('is-open');
+    if(tab) switchPanelTab(tab);
     hydratePanelFields();
   }
 
   function closePanel() {
-    var backdrop = $('pikoCustomizeBackdrop');
-    var panel = $('pikoCustomizePanel');
-    if (backdrop) backdrop.classList.remove('is-open');
-    if (panel) panel.classList.remove('is-open');
+    var bd=$('pikoCustomizeBackdrop'), pn=$('pikoCustomizePanel');
+    if(bd) bd.classList.remove('is-open');
+    if(pn) pn.classList.remove('is-open');
+  }
+
+  function switchPanelTab(tab) {
+    document.querySelectorAll('.piko-edit-tab').forEach(function(b){ b.classList.toggle('is-active',b.getAttribute('data-etab')===tab); });
+    document.querySelectorAll('.piko-edit-pane').forEach(function(p){ p.classList.toggle('is-active',p.id==='pikoEditPane'+tab.charAt(0).toUpperCase()+tab.slice(1)); });
   }
 
   function hydratePanelFields() {
-    var p = STATE.profile || {};
-    var theme = STATE.theme || loadThemeLocal();
-    var nameStyle = currentNameStyle();
-
-    if ($('editName')) $('editName').value = p.display_name || '';
-    if ($('editBio')) $('editBio').value = p.bio || '';
-    if ($('editAvatarUrl')) $('editAvatarUrl').value = p.avatar_url || '';
-    if ($('editSocial')) $('editSocial').value = p.social || '';
-    if ($('hideEmailToggle')) $('hideEmailToggle').checked = getHideEmail();
-
-    if ($('nameStyleColor')) $('nameStyleColor').value = nameStyle.color || '#ffffff';
-    if ($('nameStyleFont')) $('nameStyleFont').value = nameStyle.font || '';
-    if ($('nameStyleWeight')) $('nameStyleWeight').value = nameStyle.weight || '700';
-    if ($('nameStyleSize')) $('nameStyleSize').value = String(nameStyle.size || 28);
-    if ($('nameStyleSizeVal')) $('nameStyleSizeVal').textContent = String(nameStyle.size || 28) + 'px';
-    if ($('pikoNamePreview')) $('pikoNamePreview').textContent = p.display_name || 'Your Name';
-    applyNameStyle(nameStyle);
-
-    if ($('customAccentColor')) $('customAccentColor').value = theme.accent || '#f0c96a';
-    if ($('customBgColor')) $('customBgColor').value = theme.bg || '#080b14';
-    if ($('customCardBgColor')) $('customCardBgColor').value = theme.bg2 || '#0d1220';
-    if ($('customBgUrl')) $('customBgUrl').value = theme.bgUrl || '';
-    if ($('customCssInput')) $('customCssInput').value = theme.customCss || '';
-
-    document.querySelectorAll('.piko-theme-preset').forEach(function (el) {
-      el.classList.toggle('is-active', el.getAttribute('data-theme') === (theme.themeId || 'default'));
-    });
-    document.querySelectorAll('.piko-color-preset').forEach(function (el) {
-      el.classList.toggle('is-active', el.getAttribute('data-color') === (theme.accent || '#f0c96a'));
-    });
-    document.querySelectorAll('.piko-font-option').forEach(function (el) {
-      el.classList.toggle('is-active', el.getAttribute('data-font') === (theme.font || 'Montserrat'));
-    });
-    document.querySelectorAll('.piko-bg-option').forEach(function (el) {
-      el.classList.toggle('is-active', el.getAttribute('data-bg') === (theme.bgMode || 'default'));
-    });
+    var p=STATE.profile||{}, t=STATE.theme, ns=STATE.nameStyle;
+    if($('editName'))     $('editName').value     = p.display_name||'';
+    if($('editBio'))      $('editBio').value      = p.bio||'';
+    if($('editAvatarUrl'))$('editAvatarUrl').value= p.avatar_url||'';
+    if($('editSocial'))   $('editSocial').value   = p.social||'';
+    if($('hideEmailToggle')) $('hideEmailToggle').checked=!!(p.hide_email);
+    if($('nameStyleColor'))  $('nameStyleColor').value  = ns.color||'#ffffff';
+    if($('nameStyleFont'))   $('nameStyleFont').value   = ns.font||'';
+    if($('nameStyleWeight')) $('nameStyleWeight').value = ns.weight||'700';
+    if($('nameStyleSize'))   $('nameStyleSize').value   = String(ns.size||28);
+    if($('nameStyleSizeVal'))$('nameStyleSizeVal').textContent = (ns.size||28)+'px';
+    if($('pikoNamePreview')) $('pikoNamePreview').textContent = p.display_name||'Your Name';
+    if($('customAccentColor')) $('customAccentColor').value = t.accent||'#f0c96a';
+    if($('customBgColor'))     $('customBgColor').value     = t.bg||'#080b14';
+    if($('customCardBgColor')) $('customCardBgColor').value = t.bg2||'#0d1220';
+    if($('customBgUrl'))       $('customBgUrl').value       = t.bgUrl||'';
+    if($('customCssInput'))    $('customCssInput').value    = t.customCss||'';
+    document.querySelectorAll('.piko-theme-preset').forEach(function(el){ el.classList.toggle('is-active',el.getAttribute('data-theme')===(t.themeId||'default')); });
+    document.querySelectorAll('.piko-color-preset').forEach(function(el){ el.classList.toggle('is-active',el.getAttribute('data-color')===(t.accent||'#f0c96a')); });
+    document.querySelectorAll('.piko-font-option').forEach(function(el){ el.classList.toggle('is-active',el.getAttribute('data-font')===(t.font||'Montserrat')); });
+    document.querySelectorAll('.piko-bg-option').forEach(function(el){ el.classList.toggle('is-active',el.getAttribute('data-bg')===(t.bgMode||'default')); });
+    applyNameStyle(ns);
   }
 
   function initPanelActions() {
-    var trigger = $('pikoCustomizeTrigger');
-    if (trigger) trigger.addEventListener('click', function () { openPanel('profile'); });
+    /* Open/close */
+    var trigger=$('pikoCustomizeTrigger');
+    if(trigger) trigger.addEventListener('click', function(){ openPanel('profile'); });
+    if($('pikoCustomizeClose')) $('pikoCustomizeClose').addEventListener('click', closePanel);
+    if($('pikoCustomizeBackdrop')) $('pikoCustomizeBackdrop').addEventListener('click',function(e){ if(e.target===$('pikoCustomizeBackdrop')) closePanel(); });
 
-    if ($('pikoCustomizeClose')) $('pikoCustomizeClose').addEventListener('click', closePanel);
-    if ($('pikoCustomizeBackdrop')) {
-      $('pikoCustomizeBackdrop').addEventListener('click', function (e) {
-        if (e.target === $('pikoCustomizeBackdrop')) closePanel();
+    /* Tab switching */
+    document.querySelectorAll('.piko-edit-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){ switchPanelTab(btn.getAttribute('data-etab')); });
+    });
+
+    /* Theme presets */
+    document.querySelectorAll('.piko-theme-preset').forEach(function(el){
+      el.addEventListener('click', function(){
+        document.querySelectorAll('.piko-theme-preset').forEach(function(x){x.classList.remove('is-active');});
+        el.classList.add('is-active');
+        var preset=THEME_PRESETS[el.getAttribute('data-theme')]||THEME_PRESETS.default;
+        applyTheme(Object.assign({},STATE.theme,preset,{themeId:el.getAttribute('data-theme')}));
+      });
+    });
+
+    /* Color / font / bg presets */
+    document.querySelectorAll('.piko-color-preset').forEach(function(el){
+      el.addEventListener('click', function(){
+        document.querySelectorAll('.piko-color-preset').forEach(function(x){x.classList.remove('is-active');});
+        el.classList.add('is-active');
+        var cc=$('customAccentColor'); if(cc) cc.value=el.getAttribute('data-color')||'#f0c96a';
+      });
+    });
+    document.querySelectorAll('.piko-font-option').forEach(function(el){
+      el.addEventListener('click', function(){ document.querySelectorAll('.piko-font-option').forEach(function(x){x.classList.remove('is-active');}); el.classList.add('is-active'); });
+    });
+    document.querySelectorAll('.piko-bg-option').forEach(function(el){
+      el.addEventListener('click', function(){ document.querySelectorAll('.piko-bg-option').forEach(function(x){x.classList.remove('is-active');}); el.classList.add('is-active'); });
+    });
+
+    /* Save profile */
+    if($('pikoSaveProfileBtn')) {
+      $('pikoSaveProfileBtn').addEventListener('click', async function(){
+        clearStatus('pikoSaveStatus');
+        var name=(($('editName')||{}).value||'').trim();
+        if(!name){ setStatus('pikoSaveStatus','Display name is required.','err'); return; }
+        var btn=$('pikoSaveProfileBtn');
+        btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
+        STATE.profile.display_name = name;
+        STATE.profile.bio          = (($('editBio')||{}).value||'').trim();
+        STATE.profile.avatar_url   = (($('editAvatarUrl')||{}).value||'').trim();
+        STATE.profile.social       = (($('editSocial')||{}).value||'').trim();
+        STATE.profile.hide_email   = !!(($('hideEmailToggle')||{}).checked);
+        var ok=await saveProfile();
+        if(ok){ setStatus('pikoSaveStatus','✅ Profile saved!','ok'); toast('✅ Profile saved!'); renderAll(); addNotif('✨','Profile updated'); }
+        else   setStatus('pikoSaveStatus','⚠️ Save failed — check console.','err');
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-floppy-disk"></i> Save Changes';
       });
     }
 
-    document.querySelectorAll('.piko-theme-preset').forEach(function (el) {
-      el.addEventListener('click', function () {
-        document.querySelectorAll('.piko-theme-preset').forEach(function (x) { x.classList.remove('is-active'); });
-        el.classList.add('is-active');
-        var id = el.getAttribute('data-theme');
-        var preset = THEME_PRESETS[id] ? Object.assign({}, THEME_PRESETS[id]) : Object.assign({}, THEME_PRESETS.default);
-        STATE.theme = Object.assign({}, STATE.theme || {}, preset);
-        applyTheme(STATE.theme);
-      });
-    });
+    /* Cancel */
+    if($('pikoCancelEditBtn')) $('pikoCancelEditBtn').addEventListener('click', function(){ hydratePanelFields(); clearStatus('pikoSaveStatus'); closePanel(); });
 
-    document.querySelectorAll('.piko-color-preset').forEach(function (el) {
-      el.addEventListener('click', function () {
-        document.querySelectorAll('.piko-color-preset').forEach(function (x) { x.classList.remove('is-active'); });
-        el.classList.add('is-active');
-        if ($('customAccentColor')) $('customAccentColor').value = el.getAttribute('data-color') || '#f0c96a';
-      });
-    });
-
-    document.querySelectorAll('.piko-font-option').forEach(function (el) {
-      el.addEventListener('click', function () {
-        document.querySelectorAll('.piko-font-option').forEach(function (x) { x.classList.remove('is-active'); });
-        el.classList.add('is-active');
-      });
-    });
-
-    document.querySelectorAll('.piko-bg-option').forEach(function (el) {
-      el.addEventListener('click', function () {
-        document.querySelectorAll('.piko-bg-option').forEach(function (x) { x.classList.remove('is-active'); });
-        el.classList.add('is-active');
-      });
-    });
-
-    if ($('pikoApplyCustomize')) {
-      $('pikoApplyCustomize').addEventListener('click', function () {
-        var activeTheme = document.querySelector('.piko-theme-preset.is-active');
-        var activeFont = document.querySelector('.piko-font-option.is-active');
-        var activeBg = document.querySelector('.piko-bg-option.is-active');
-
-        var base = activeTheme
-          ? Object.assign({}, THEME_PRESETS[activeTheme.getAttribute('data-theme')] || THEME_PRESETS.default)
-          : Object.assign({}, THEME_PRESETS.default);
-
-        var next = Object.assign({}, base, {
-          accent: (($('customAccentColor') || {}).value || base.accent),
-          bg: (($('customBgColor') || {}).value || base.bg),
-          bg2: (($('customCardBgColor') || {}).value || base.bg2),
-          font: activeFont ? activeFont.getAttribute('data-font') : (base.font || 'Montserrat'),
-          bgMode: activeBg ? activeBg.getAttribute('data-bg') : (base.bgMode || 'default'),
-          bgUrl: (($('customBgUrl') || {}).value || '').trim(),
-          customCss: (($('customCssInput') || {}).value || '')
+    /* Apply appearance */
+    if($('pikoApplyCustomize')) {
+      $('pikoApplyCustomize').addEventListener('click', async function(){
+        var activeFont=document.querySelector('.piko-font-option.is-active');
+        var activeBg=document.querySelector('.piko-bg-option.is-active');
+        var activeTheme=document.querySelector('.piko-theme-preset.is-active');
+        var base=activeTheme?Object.assign({},THEME_PRESETS[activeTheme.getAttribute('data-theme')]||THEME_PRESETS.default):Object.assign({},STATE.theme);
+        var next=Object.assign({},base,{
+          themeId: activeTheme?activeTheme.getAttribute('data-theme'):'default',
+          accent:  (($('customAccentColor')||{}).value||base.accent),
+          bg:      (($('customBgColor')||{}).value||base.bg),
+          bg2:     (($('customCardBgColor')||{}).value||base.bg2),
+          font:    activeFont?activeFont.getAttribute('data-font'):(base.font||'Montserrat'),
+          bgMode:  activeBg?activeBg.getAttribute('data-bg'):(base.bgMode||'default'),
+          bgUrl:   (($('customBgUrl')||{}).value||'').trim(),
+          customCss:(($('customCssInput')||{}).value||''),
+          bannerUrl:STATE.theme.bannerUrl||''
         });
-
-        if (STATE.theme && STATE.theme.bannerData) next.bannerData = STATE.theme.bannerData;
-        if (STATE.theme && STATE.theme.bannerUrl) next.bannerUrl = STATE.theme.bannerUrl;
-
-        STATE.theme = next;
-        saveThemeLocal(next);
         applyTheme(next);
-        addNotif('🎨', 'Appearance updated');
-        toast('Appearance saved.');
+        await saveProfile();
+        toast('✅ Appearance saved!');
+        addNotif('🎨','Appearance updated');
         closePanel();
       });
     }
 
-    if ($('pikoResetCustomize')) {
-      $('pikoResetCustomize').addEventListener('click', function () {
-        STATE.theme = Object.assign({}, THEME_PRESETS.default);
-        saveThemeLocal(STATE.theme);
-        applyTheme(STATE.theme);
-        hydratePanelFields();
-        toast('Appearance reset.');
-      });
-    }
-  }
-
-  function initNameStyleEditor() {
-    var color = $('nameStyleColor');
-    var font = $('nameStyleFont');
-    var weight = $('nameStyleWeight');
-    var size = $('nameStyleSize');
-    var sizeVal = $('nameStyleSizeVal');
-
-    function currentStyle() {
-      return {
-        color: color ? color.value : '#ffffff',
-        font: font ? font.value : '',
-        weight: weight ? weight.value : '700',
-        size: size ? (parseInt(size.value, 10) || 28) : 28
-      };
-    }
-
-    function preview() {
-      var styleObj = currentStyle();
-      if (sizeVal) sizeVal.textContent = String(styleObj.size) + 'px';
-      if ($('pikoNamePreview')) $('pikoNamePreview').textContent = (STATE.profile && STATE.profile.display_name) || 'Your Name';
-      applyNameStyle(styleObj);
-    }
-
-    [color, font, weight, size].forEach(function (el) {
-      if (!el) return;
-      el.addEventListener('input', preview);
-      el.addEventListener('change', preview);
-    });
-
-    if ($('pikoSaveStyleBtn')) {
-      $('pikoSaveStyleBtn').addEventListener('click', function () {
-        var styleObj = currentStyle();
-        saveNameStyle(styleObj);
-        applyNameStyle(styleObj);
-        showStatus('pikoStyleStatus', '✅ Name style saved.', 'ok');
-        addNotif('🎨', 'Name style updated');
-      });
-    }
-  }
-
-  function initProfileEdit() {
-    if ($('pikoSaveProfileBtn')) {
-      $('pikoSaveProfileBtn').addEventListener('click', async function () {
-        clearStatus('pikoSaveStatus');
-
-        if (!STATE.profile) {
-          showStatus('pikoSaveStatus', 'No active profile loaded.', 'err');
-          return;
-        }
-
-        var name = (($('editName') || {}).value || '').trim();
-        if (!name) {
-          showStatus('pikoSaveStatus', 'Display name is required.', 'err');
-          return;
-        }
-
-        STATE.profile.display_name = name;
-        STATE.profile.bio = (($('editBio') || {}).value || '').trim();
-        STATE.profile.avatar_url = (($('editAvatarUrl') || {}).value || '').trim();
-        STATE.profile.social = (($('editSocial') || {}).value || '').trim();
-        setHideEmail(!!(($('hideEmailToggle') || {}).checked));
-
+    /* Reset appearance */
+    if($('pikoResetCustomize')) {
+      $('pikoResetCustomize').addEventListener('click', async function(){
+        applyTheme(Object.assign({},DEFAULT_THEME));
         await saveProfile();
-        renderHeader();
-        renderIdCard();
-        renderTimeline();
-        showStatus('pikoSaveStatus', '✅ Profile saved.', 'ok');
-        addNotif('✨', 'Profile updated');
-      });
-    }
-
-    if ($('pikoCancelEditBtn')) {
-      $('pikoCancelEditBtn').addEventListener('click', function () {
         hydratePanelFields();
-        clearStatus('pikoSaveStatus');
-      });
-    }
-
-    if ($('pikoAvatarEditBtn') && $('pikoAvatarFile')) {
-      $('pikoAvatarEditBtn').addEventListener('click', function () {
-        $('pikoAvatarFile').click();
-      });
-
-      $('pikoAvatarFile').addEventListener('change', function () {
-        var file = $('pikoAvatarFile').files && $('pikoAvatarFile').files[0];
-        if (!file || !STATE.profile) return;
-
-        var reader = new FileReader();
-        reader.onload = async function () {
-          STATE.profile.avatar_url = reader.result;
-          await saveProfile();
-          renderHeader();
-          renderIdCard();
-          addNotif('🖼️', 'Avatar updated');
-          toast('Avatar updated.');
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    if ($('pikoBannerEditBtn') && $('pikoBannerFile')) {
-      $('pikoBannerEditBtn').addEventListener('click', function () {
-        $('pikoBannerFile').click();
-      });
-
-      $('pikoBannerFile').addEventListener('change', function () {
-        var file = $('pikoBannerFile').files && $('pikoBannerFile').files[0];
-        if (!file) return;
-
-        var reader = new FileReader();
-        reader.onload = function () {
-          var theme = loadThemeLocal();
-          theme.bannerData = reader.result;
-          STATE.theme = theme;
-          saveThemeLocal(theme);
-          renderHeader();
-          renderIdCard();
-          addNotif('🌄', 'Banner updated');
-          toast('Banner updated.');
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  }
-
-  function initAccountSettings() {
-    bindStrength('newPassword', 'changePwStrengthBar', 'changePwStrengthLabel');
-
-    if ($('pikoChangePwBtn')) {
-      $('pikoChangePwBtn').addEventListener('click', async function () {
-        clearStatus('pikoChangePwStatus');
-
-        var cur = (($('currentPassword') || {}).value || '').trim();
-        var np = (($('newPassword') || {}).value || '').trim();
-        var np2 = (($('newPassword2') || {}).value || '').trim();
-
-        if (!cur)              { showStatus('pikoChangePwStatus', 'Enter your current password.', 'err'); return; }
-        if (np.length < 8)     { showStatus('pikoChangePwStatus', 'New password must be at least 8 characters.', 'err'); return; }
-        if (np !== np2)        { showStatus('pikoChangePwStatus', 'New passwords do not match.', 'err'); return; }
-        if (np === cur)        { showStatus('pikoChangePwStatus', 'New password must be different from your current one.', 'err'); return; }
-        if (OFFLINE || !supa() || !SESSION_USER) { showStatus('pikoChangePwStatus', 'Password change requires Supabase.', 'err'); return; }
-
-        var btn = $('pikoChangePwBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
-
-        try {
-          var reauth = await supa().auth.signInWithPassword({ email: getUserEmail(), password: cur });
-          if (reauth.error) throw new Error('Current password is incorrect.');
-
-          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
-          var r = await supa().auth.updateUser({ password: np });
-          if (r.error) throw r.error;
-
-          showStatus('pikoChangePwStatus', '✅ Password updated successfully!', 'ok');
-          ['currentPassword', 'newPassword', 'newPassword2'].forEach(function (id) {
-            if ($(id)) $(id).value = '';
-          });
-          addNotif('🔐', 'Password changed successfully');
-        } catch (err) {
-          showStatus('pikoChangePwStatus', ((err && err.message) ? err.message : 'Could not change password.'), 'err');
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
-        }
-      });
-    }
-
-    if ($('pikoChangeEmailBtn')) {
-      $('pikoChangeEmailBtn').addEventListener('click', async function () {
-        clearStatus('pikoChangeEmailStatus');
-
-        var newEmail = (($('newEmail') || {}).value || '').trim().toLowerCase();
-        var pw = (($('emailChangePw') || {}).value || '').trim();
-
-        if (!validEmail(newEmail)) { showStatus('pikoChangeEmailStatus', 'Enter a valid new email address.', 'err'); return; }
-        if (!pw)                   { showStatus('pikoChangeEmailStatus', 'Enter your current password to confirm.', 'err'); return; }
-        if (OFFLINE || !supa() || !SESSION_USER) { showStatus('pikoChangeEmailStatus', 'Email change requires Supabase.', 'err'); return; }
-
-        var btn = $('pikoChangeEmailBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
-
-        try {
-          var reauth = await supa().auth.signInWithPassword({ email: getUserEmail(), password: pw });
-          if (reauth.error) throw new Error('Current password is incorrect.');
-
-          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
-          var r = await supa().auth.updateUser({ email: newEmail });
-          if (r.error) throw r.error;
-
-          showStatus('pikoChangeEmailStatus', '✅ Email change requested. Check your inbox to confirm.', 'ok');
-          addNotif('📧', 'Email change requested to ' + newEmail);
-        } catch (err) {
-          showStatus('pikoChangeEmailStatus', ((err && err.message) ? err.message : 'Could not update email.'), 'err');
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-envelope"></i> Update Email';
-        }
+        toast('Appearance reset to default.');
       });
     }
   }
 
   /* ════════════════════════════════════════════
-     NOTIFICATIONS + SHARE
+     NAME STYLE EDITOR
   ════════════════════════════════════════════ */
-  function initNotifBell() {
-    if ($('pikoNotifBtn')) {
-      $('pikoNotifBtn').addEventListener('click', function () {
-        document.querySelectorAll('.piko-profile-tab').forEach(function (b) { b.classList.remove('is-active'); });
-        document.querySelectorAll('.piko-profile-pane').forEach(function (p) { p.classList.remove('is-active'); });
-        if ($('pikoProfilePaneNotifications')) $('pikoProfilePaneNotifications').classList.add('is-active');
+  function initNameStyleEditor() {
+    var color=$('nameStyleColor'), font=$('nameStyleFont'), weight=$('nameStyleWeight'), size=$('nameStyleSize'), sizeVal=$('nameStyleSizeVal');
+    function preview(){
+      var ns={ color:color?color.value:'#ffffff', font:font?font.value:'', weight:weight?weight.value:'700', size:size?parseInt(size.value)||28:28 };
+      if(sizeVal) sizeVal.textContent=(ns.size)+'px';
+      if($('pikoNamePreview')) $('pikoNamePreview').textContent=(STATE.profile&&STATE.profile.display_name)||'Your Name';
+      applyNameStyle(ns);
+    }
+    [color,font,weight,size].forEach(function(el){ if(!el) return; el.addEventListener('input',preview); el.addEventListener('change',preview); });
+    if($('pikoSaveStyleBtn')) {
+      $('pikoSaveStyleBtn').addEventListener('click', async function(){
+        STATE.nameStyle={ color:color?color.value:'#ffffff', font:font?font.value:'', weight:weight?weight.value:'700', size:size?parseInt(size.value)||28:28 };
+        applyNameStyle(STATE.nameStyle);
+        await saveProfile();
+        setStatus('pikoStyleStatus','✅ Name style saved!','ok');
+        toast('✅ Name style saved!');
+        addNotif('🎨','Name style updated');
+      });
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     AVATAR & BANNER UPLOAD
+  ════════════════════════════════════════════ */
+  function initUploads() {
+    var avatarBtn=$('pikoAvatarEditBtn'), avatarFile=$('pikoAvatarFile');
+    if(avatarBtn&&avatarFile) {
+      avatarBtn.addEventListener('click', function(){ avatarFile.click(); });
+      avatarFile.addEventListener('change', async function(){
+        var file=avatarFile.files&&avatarFile.files[0]; if(!file||!STATE.profile) return;
+        var orig=avatarBtn.innerHTML; avatarBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'; avatarBtn.disabled=true;
+        toast('⏳ Uploading avatar…');
+        try {
+          if(supa()&&STATE.user) {
+            var ext=file.name.split('.').pop()||'jpg';
+            var path='avatars/'+STATE.user.id+'/avatar.'+ext;
+            var up=await supa().storage.from('pikoverse-public').upload(path,file,{upsert:true});
+            if(!up.error) {
+              var url=supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl+'?t='+Date.now();
+              STATE.profile.avatar_url=url;
+              await saveProfile();
+              renderAll();
+              toast('✅ Avatar saved — visible on all devices!');
+              avatarBtn.innerHTML=orig; avatarBtn.disabled=false; return;
+            }
+            console.warn('[Avatar] Storage upload failed:',up.error.message);
+          }
+          /* Fallback: base64 */
+          var reader=new FileReader();
+          reader.onload=async function(){ STATE.profile.avatar_url=reader.result; await saveProfile(); renderAll(); toast('✅ Avatar updated!'); avatarBtn.innerHTML=orig; avatarBtn.disabled=false; };
+          reader.readAsDataURL(file);
+        } catch(err){ console.error('[Avatar]',err); toast('⚠️ Upload failed — please try again.'); avatarBtn.innerHTML=orig; avatarBtn.disabled=false; }
       });
     }
 
-    if ($('pikoMarkAllRead')) {
-      $('pikoMarkAllRead').addEventListener('click', function () {
-        STATE.notifs = (STATE.notifs || []).map(function (n) {
-          n.read = true;
-          return n;
-        });
-        saveNotifsLocal(STATE.notifs);
+    var bannerBtn=$('pikoBannerEditBtn'), bannerFile=$('pikoBannerFile');
+    if(bannerBtn&&bannerFile) {
+      bannerBtn.addEventListener('click', function(){ bannerFile.click(); });
+      bannerFile.addEventListener('change', async function(){
+        var file=bannerFile.files&&bannerFile.files[0]; if(!file) return;
+        var orig=bannerBtn.innerHTML; bannerBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading…'; bannerBtn.disabled=true;
+        toast('⏳ Uploading banner…');
+        try {
+          if(supa()&&STATE.user) {
+            var ext=file.name.split('.').pop()||'jpg';
+            var path='banners/'+STATE.user.id+'/banner.'+ext;
+            var up=await supa().storage.from('pikoverse-public').upload(path,file,{upsert:true});
+            if(!up.error) {
+              var url=supa().storage.from('pikoverse-public').getPublicUrl(path).data.publicUrl+'?t='+Date.now();
+              STATE.profile.banner_url=url;
+              STATE.theme.bannerUrl=url;
+              await saveProfile();
+              applyBanner();
+              toast('✅ Banner saved — visible on all devices!');
+              bannerBtn.innerHTML=orig; bannerBtn.disabled=false; return;
+            }
+            console.warn('[Banner] Storage upload failed:',up.error.message);
+          }
+          /* Fallback: base64 local */
+          var reader2=new FileReader();
+          reader2.onload=async function(){
+            STATE.theme.bannerUrl=''; STATE.theme.bannerBg='url('+reader2.result+') center/cover';
+            /* Store base64 only in localStorage cache — not in DB */
+            try { var cache=JSON.parse(localStorage.getItem(THEME_CACHE_KEY)||'{}'); cache.bannerBg=STATE.theme.bannerBg; localStorage.setItem(THEME_CACHE_KEY,JSON.stringify(cache)); }catch(e){}
+            applyBanner();
+            toast('✅ Banner saved on this device!');
+            bannerBtn.innerHTML=orig; bannerBtn.disabled=false;
+          };
+          reader2.readAsDataURL(file);
+        } catch(err){ console.error('[Banner]',err); toast('⚠️ Upload failed — please try again.'); bannerBtn.innerHTML=orig; bannerBtn.disabled=false; }
+      });
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     SECURITY SETTINGS
+  ════════════════════════════════════════════ */
+  function initAccountSettings() {
+    bindPwStrength('newPassword','changePwStrengthBar','changePwStrengthLabel');
+
+    if($('pikoChangePwBtn')) {
+      $('pikoChangePwBtn').addEventListener('click', async function(){
+        clearStatus('pikoChangePwStatus');
+        var cur=(($('currentPassword')||{}).value||'').trim();
+        var np=(($('newPassword')||{}).value||'').trim();
+        var np2=(($('newPassword2')||{}).value||'').trim();
+        if(!cur)           { setStatus('pikoChangePwStatus','Enter your current password.','err'); return; }
+        if(np.length<8)    { setStatus('pikoChangePwStatus','New password must be at least 8 characters.','err'); return; }
+        if(np!==np2)       { setStatus('pikoChangePwStatus','New passwords do not match.','err'); return; }
+        if(np===cur)       { setStatus('pikoChangePwStatus','New password must be different.','err'); return; }
+        var btn=$('pikoChangePwBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Verifying…';
+        try {
+          var reauth=await supa().auth.signInWithPassword({email:email(),password:cur});
+          if(reauth.error) throw new Error('Current password is incorrect.');
+          btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
+          var r=await supa().auth.updateUser({password:np}); if(r.error) throw r.error;
+          setStatus('pikoChangePwStatus','✅ Password updated successfully!','ok');
+          toast('✅ Password changed!');
+          ['currentPassword','newPassword','newPassword2'].forEach(function(id){ if($(id)) $(id).value=''; });
+          addNotif('🔐','Password changed successfully');
+        } catch(err){ setStatus('pikoChangePwStatus',(err&&err.message)?err.message:'Could not change password.','err'); }
+        finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-key"></i> Update Password'; }
+      });
+    }
+
+    if($('pikoChangeEmailBtn')) {
+      $('pikoChangeEmailBtn').addEventListener('click', async function(){
+        clearStatus('pikoChangeEmailStatus');
+        var newMail=(($('newEmail')||{}).value||'').trim().toLowerCase();
+        var pw=(($('emailChangePw')||{}).value||'').trim();
+        if(!validEmail(newMail)) { setStatus('pikoChangeEmailStatus','Enter a valid new email address.','err'); return; }
+        if(!pw)                  { setStatus('pikoChangeEmailStatus','Enter your current password to confirm.','err'); return; }
+        var btn=$('pikoChangeEmailBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Verifying…';
+        try {
+          var reauth=await supa().auth.signInWithPassword({email:email(),password:pw});
+          if(reauth.error) throw new Error('Current password is incorrect.');
+          btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Updating…';
+          var r=await supa().auth.updateUser({email:newMail}); if(r.error) throw r.error;
+          setStatus('pikoChangeEmailStatus','✅ Confirmation sent to '+newMail+'. Check your inbox.','ok');
+          addNotif('📧','Email change requested to '+newMail);
+        } catch(err){ setStatus('pikoChangeEmailStatus',(err&&err.message)?err.message:'Could not update email.','err'); }
+        finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-envelope"></i> Update Email'; }
+      });
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     NOTIFICATIONS BELL
+  ════════════════════════════════════════════ */
+  function initNotifBell() {
+    if($('pikoNotifBtn')) {
+      $('pikoNotifBtn').addEventListener('click', function(){
+        document.querySelectorAll('.piko-profile-tab').forEach(function(b){b.classList.remove('is-active');});
+        document.querySelectorAll('.piko-profile-pane').forEach(function(p){p.classList.remove('is-active');});
+        if($('pikoProfilePaneNotifications')) $('pikoProfilePaneNotifications').classList.add('is-active');
+        /* Mark all read in Supabase */
+        if(supa()&&STATE.user){
+          supa().from('notifications').update({read:true}).eq('user_id',STATE.user.id).then(function(){
+            STATE.notifs.forEach(function(n){n.read=true;});
+            updateNotifBadge();
+          });
+        }
+      });
+    }
+    if($('pikoMarkAllRead')) {
+      $('pikoMarkAllRead').addEventListener('click', async function(){
+        STATE.notifs.forEach(function(n){n.read=true;});
+        if(supa()&&STATE.user) await supa().from('notifications').update({read:true}).eq('user_id',STATE.user.id);
         renderNotifications();
       });
     }
   }
 
+  /* ════════════════════════════════════════════
+     SHARE CARD
+  ════════════════════════════════════════════ */
   function initShareCard() {
-    var btn = $('pikoShareCardBtn');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      var text = ((STATE.profile && STATE.profile.display_name) || 'Pikoverse Member') +
-        ' • ' + getRank(calcScore()).label +
-        ' • Score ' + calcScore();
-
-      if (navigator.share) {
+    var btn=$('pikoShareCardBtn'); if(!btn) return;
+    btn.addEventListener('click', async function(){
+      var p=STATE.profile||{}, name=p.display_name||email()||'Member';
+      var rank=getRank(calcScore()), score=calcScore();
+      var card=$('pikoIdCard')||document.querySelector('.piko-id-card');
+      if(card&&typeof html2canvas!=='undefined'){
+        btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Capturing…';
         try {
-          await navigator.share({
-            title: 'My Pikoverse Card',
-            text: text,
-            url: window.location.href
-          });
-          return;
-        } catch (e) {}
-      }
-
-      if (navigator.clipboard) {
-        try {
-          await navigator.clipboard.writeText(text + ' — ' + window.location.href);
-          toast('Profile card copied to clipboard.');
-        } catch (e2) {
-          toast('Could not copy profile card.');
-        }
+          var imgs=card.querySelectorAll('img');
+          await Promise.all(Array.from(imgs).map(function(img){ return img.complete&&img.naturalWidth>0?Promise.resolve():new Promise(function(res){img.onload=res;img.onerror=res;}); }));
+          var canvas=await html2canvas(card,{backgroundColor:'#080b14',scale:2,useCORS:true,allowTaint:false,logging:false});
+          canvas.toBlob(async function(blob){
+            var file=new File([blob],'pikoverse-id.png',{type:'image/png'});
+            var text='🌺 '+name+' is a '+rank.label+' on Pikoverse! Score: '+score+' pts';
+            if(navigator.canShare&&navigator.canShare({files:[file]})){
+              try { await navigator.share({title:'My Pikoverse ID',text:text,url:'https://pikoverse.xyz/profile.html',files:[file]}); }
+              catch(e){ if(e.name!=='AbortError'){ var a=document.createElement('a'); a.download='pikoverse-id.png'; a.href=canvas.toDataURL(); a.click(); toast('✅ ID card downloaded!'); } }
+            } else { var a2=document.createElement('a'); a2.download='pikoverse-id.png'; a2.href=canvas.toDataURL(); a2.click(); if(navigator.clipboard) navigator.clipboard.writeText(text+' — https://pikoverse.xyz/profile.html').catch(function(){}); toast('✅ ID card downloaded! Link copied.'); }
+          },'image/png');
+        } catch(e){ console.warn('[ShareCard]',e); var t2='🌺 '+name+' is a '+rank.label+' on Pikoverse! — pikoverse.xyz/profile.html'; if(navigator.share) navigator.share({title:'My Pikoverse ID',text:t2,url:'https://pikoverse.xyz/profile.html'}).catch(function(){}); else if(navigator.clipboard) navigator.clipboard.writeText(t2).catch(function(){}); }
+        finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-share-nodes"></i> Share My Card'; }
+      } else {
+        var t3='🌺 '+name+' is a '+rank.label+' on Pikoverse! Score: '+score+' pts — pikoverse.xyz/profile.html';
+        if(navigator.share) navigator.share({title:'My Pikoverse ID',text:t3,url:'https://pikoverse.xyz/profile.html'}).catch(function(){});
+        else if(navigator.clipboard){ navigator.clipboard.writeText(t3).catch(function(){}); toast('Profile link copied!'); }
       }
     });
   }
 
   /* ════════════════════════════════════════════
-     MODAL
+     MODAL — Ideas & Projects
   ════════════════════════════════════════════ */
   function openModal(html) {
-    var overlay = $('pikoModalOverlay');
-    var content = $('pikoModalContent');
-    if (!overlay || !content) return;
-    content.innerHTML = html;
-    overlay.hidden = false;
+    var ov=$('pikoModalOverlay'), ct=$('pikoModalContent'); if(!ov||!ct) return;
+    ct.innerHTML=html; ov.hidden=false;
   }
-
   function closeModal() {
-    var overlay = $('pikoModalOverlay');
-    var content = $('pikoModalContent');
-    if (!overlay || !content) return;
-    overlay.hidden = true;
-    content.innerHTML = '';
+    var ov=$('pikoModalOverlay'); if(ov) ov.hidden=true;
+    var ct=$('pikoModalContent'); if(ct) ct.innerHTML='';
   }
 
   function openIdeaModal() {
-    openModal(
-      '<h3 class="piko-modal-title"><i class="fas fa-lightbulb"></i> Share an Idea</h3>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">Category</label><select id="modalIdeaCategory" class="piko-auth-input"><option value="platform">Platform</option><option value="feature">Feature</option><option value="content">Content</option><option value="other">Other</option></select></div>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">Your Idea</label><textarea id="modalIdeaText" class="piko-auth-input" rows="4" maxlength="500" placeholder="Share your idea…"></textarea></div>' +
-      '<div class="piko-auth-status" id="modalIdeaStatus" hidden></div>' +
-      '<button class="piko-auth-btn" id="modalIdeaSubmit" type="button"><i class="fas fa-paper-plane"></i> Share with Community</button>'
-    );
-
-    var btn = $('modalIdeaSubmit');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      var text = (($('modalIdeaText') || {}).value || '').trim();
-      var cat = (($('modalIdeaCategory') || {}).value || 'other');
-      if (!text) { showStatus('modalIdeaStatus', 'Please write your idea first.', 'err'); return; }
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing…';
-
-      var idea = {
-        id: 'idea-' + Date.now(),
-        text: text,
-        name: (STATE.profile && STATE.profile.display_name) || (getUserEmail().split('@')[0] || 'Member'),
-        contact: getUserEmail(),
-        shareContact: false,
-        category: cat,
-        ts: Date.now(),
-        dismissed: false,
-        reply: '',
-        status: 'pending'
-      };
-
-      var ideas = readJSON('amp_admin_ideas', []);
-      ideas.unshift(idea);
-      saveJSON('amp_admin_ideas', ideas);
-
-      if (!OFFLINE && supa() && SESSION_USER) {
-        try {
-          await supa().from('community_ideas').insert({
-            id: idea.id,
-            user_id: SESSION_USER.id,
-            text: idea.text,
-            name: idea.name,
-            contact: idea.contact,
-            share_contact: false,
-            category: idea.category,
-            ts: idea.ts,
-            status: 'pending'
-          });
-        } catch (e) {}
-      }
-
-      STATE.ideas = await fetchIdeas();
-      renderIdeas();
-      renderTimeline();
-      renderStats();
-      renderRank();
-      renderBadges();
-      addNotif('💡', 'Idea shared with the community');
+    openModal('<h3 class="piko-modal-title"><i class="fas fa-lightbulb"></i> Share an Idea</h3><div class="piko-auth-field"><label class="piko-auth-label">Category</label><select id="mIdeaCat" class="piko-auth-input"><option value="platform">Platform</option><option value="feature">Feature</option><option value="content">Content</option><option value="other">Other</option></select></div><div class="piko-auth-field"><label class="piko-auth-label">Your Idea</label><textarea id="mIdeaText" class="piko-auth-input" rows="4" maxlength="500" placeholder="Share your idea…"></textarea></div><div class="piko-auth-status" id="mIdeaStatus" hidden></div><button class="piko-auth-btn" id="mIdeaSubmit" type="button"><i class="fas fa-paper-plane"></i> Share with Community</button>');
+    var btn=$('mIdeaSubmit'); if(!btn) return;
+    btn.addEventListener('click', async function(){
+      var text=(($('mIdeaText')||{}).value||'').trim(), cat=(($('mIdeaCat')||{}).value||'other');
+      if(!text){ setStatus('mIdeaStatus','Please write your idea first.','err'); return; }
+      btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sharing…';
+      var idea={ id:'idea-'+Date.now(), text:text, name:STATE.profile&&STATE.profile.display_name?STATE.profile.display_name:email().split('@')[0], contact:email(), category:cat, ts:Date.now(), status:'pending' };
+      if(supa()&&STATE.user){ try{ await supa().from('community_ideas').insert({id:idea.id,user_id:STATE.user.id,text:idea.text,name:idea.name,contact:idea.contact,category:idea.category,ts:idea.ts,status:'pending'}); }catch(e){} }
+      STATE.ideas=await fetchIdeas();
+      renderIdeas(); renderTimeline(); renderStats(); renderRank(); renderBadges();
+      addNotif('💡','Idea shared with the community!');
+      toast('✅ Idea shared! Mahalo 🌺');
       closeModal();
     });
   }
 
   function openProjectModal() {
-    openModal(
-      '<h3 class="piko-modal-title"><i class="fas fa-rocket"></i> Submit a Project</h3>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">Project Name</label><input id="modalProjectName" class="piko-auth-input" type="text" maxlength="80" placeholder="Your project name"></div>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">Description</label><textarea id="modalProjectDesc" class="piko-auth-input" rows="4" maxlength="400" placeholder="Tell the community what you are building…"></textarea></div>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">Stage</label><select id="modalProjectStage" class="piko-auth-input"><option value="idea">💡 Idea</option><option value="building">🔧 Building</option><option value="live">🚀 Live</option></select></div>' +
-      '<div class="piko-auth-field"><label class="piko-auth-label">URL <span style="opacity:.5">(optional)</span></label><input id="modalProjectUrl" class="piko-auth-input" type="url" maxlength="200" placeholder="https://…"></div>' +
-      '<div class="piko-auth-status" id="modalProjectStatus" hidden></div>' +
-      '<button class="piko-auth-btn" id="modalProjectSubmit" type="button"><i class="fas fa-rocket"></i> Submit Project</button>'
-    );
-
-    var btn = $('modalProjectSubmit');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function () {
-      var name = (($('modalProjectName') || {}).value || '').trim();
-      var desc = (($('modalProjectDesc') || {}).value || '').trim();
-      var stage = (($('modalProjectStage') || {}).value || 'idea');
-      var url = (($('modalProjectUrl') || {}).value || '').trim();
-
-      if (!name) { showStatus('modalProjectStatus', 'Please enter a project name.', 'err'); return; }
-      if (!desc) { showStatus('modalProjectStatus', 'Please add a short description.', 'err'); return; }
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
-
-      var project = {
-        id: 'proj-' + Date.now(),
-        name: name,
-        desc: desc,
-        stage: stage,
-        link: url,
-        status: 'pending',
-        contact: getUserEmail(),
-        ts: Date.now()
-      };
-
-      var projects = readJSON('amp_admin_projects_hub', []);
-      projects.unshift(project);
-      saveJSON('amp_admin_projects_hub', projects);
-
-      if (!OFFLINE && supa() && SESSION_USER) {
-        try {
-          await supa().from('projects').insert({
-            user_id: SESSION_USER.id,
-            contact: getUserEmail(),
-            name: project.name,
-            description: project.desc,
-            stage: project.stage,
-            status: 'pending',
-            url: project.link,
-            created_at: new Date().toISOString()
-          });
-        } catch (e) {}
-      }
-
-      STATE.projects = await fetchProjects();
-      renderProjects();
-      renderTimeline();
-      renderStats();
-      renderRank();
-      renderBadges();
-      addNotif('🚀', 'Project submitted for review');
+    openModal('<h3 class="piko-modal-title"><i class="fas fa-rocket"></i> Submit a Project</h3><div class="piko-auth-field"><label class="piko-auth-label">Project Name</label><input id="mProjName" class="piko-auth-input" type="text" maxlength="80" placeholder="Your project name"></div><div class="piko-auth-field"><label class="piko-auth-label">Description</label><textarea id="mProjDesc" class="piko-auth-input" rows="4" maxlength="400" placeholder="What are you building?"></textarea></div><div class="piko-auth-field"><label class="piko-auth-label">Stage</label><select id="mProjStage" class="piko-auth-input"><option value="idea">💡 Idea</option><option value="building">🔧 Building</option><option value="live">🚀 Live</option></select></div><div class="piko-auth-field"><label class="piko-auth-label">URL (optional)</label><input id="mProjUrl" class="piko-auth-input" type="url" maxlength="200" placeholder="https://…"></div><div class="piko-auth-status" id="mProjStatus" hidden></div><button class="piko-auth-btn" id="mProjSubmit" type="button"><i class="fas fa-rocket"></i> Submit Project</button>');
+    var btn=$('mProjSubmit'); if(!btn) return;
+    btn.addEventListener('click', async function(){
+      var name=(($('mProjName')||{}).value||'').trim(), desc=(($('mProjDesc')||{}).value||'').trim();
+      if(!name){ setStatus('mProjStatus','Please enter a project name.','err'); return; }
+      if(!desc){ setStatus('mProjStatus','Please add a description.','err'); return; }
+      btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting…';
+      if(supa()&&STATE.user){ try{ await supa().from('projects').insert({user_id:STATE.user.id,contact:email(),name:name,description:desc,stage:($('mProjStage')||{}).value||'idea',status:'pending',url:($('mProjUrl')||{}).value||'',created_at:new Date().toISOString()}); }catch(e){} }
+      STATE.projects=await fetchProjects();
+      renderProjects(); renderTimeline(); renderStats(); renderRank(); renderBadges();
+      addNotif('🚀','Project submitted for review!');
+      toast('✅ Project submitted! Mahalo 🌺');
       closeModal();
     });
   }
 
   function initModalLinks() {
-    var ideaBtn = $('pikoSubmitIdeaBtn');
-    var projectBtn = $('pikoSubmitProjectBtn');
-
-    if (ideaBtn) ideaBtn.addEventListener('click', openIdeaModal);
-    if (projectBtn) projectBtn.addEventListener('click', openProjectModal);
-
-    if ($('pikoModalClose')) $('pikoModalClose').addEventListener('click', closeModal);
-    if ($('pikoModalOverlay')) {
-      $('pikoModalOverlay').addEventListener('click', function (e) {
-        if (e.target === $('pikoModalOverlay')) closeModal();
-      });
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        closeModal();
-        closePanel();
-      }
-    });
+    if($('pikoSubmitIdeaBtn')) $('pikoSubmitIdeaBtn').addEventListener('click', openIdeaModal);
+    if($('pikoSubmitProjectBtn')) $('pikoSubmitProjectBtn').addEventListener('click', openProjectModal);
+    if($('pikoModalClose')) $('pikoModalClose').addEventListener('click', closeModal);
+    if($('pikoModalOverlay')) $('pikoModalOverlay').addEventListener('click', function(e){ if(e.target===$('pikoModalOverlay')) closeModal(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeModal(); closePanel(); } });
   }
 
   /* ════════════════════════════════════════════
-     AUTH SESSION
-  ════════════════════════════════════════════ */
-  async function checkExistingSession() {
-    ensureSupabaseReference();
-
-    if (OFFLINE || !supa()) {
-      var cached = readJSON(PROFILE_KEY, null);
-      if (cached && cached.email) {
-        STATE.profile = cached;
-        SESSION_USER = { id: cached.id || ('offline-' + Date.now()), email: cached.email, user_metadata: { display_name: cached.display_name || '' } };
-        await refreshProfileView();
-      } else {
-        showAuthGate();
-      }
-      return;
-    }
-
-    try {
-      var res = await supa().auth.getUser();
-      if (res.error || !res.data || !res.data.user) {
-        showAuthGate();
-        return;
-      }
-      SESSION_USER = res.data.user;
-      await refreshProfileView();
-    } catch (e) {
-      showAuthGate();
-    }
-  }
-
-  function initAuthListener() {
-    if (!supa() || AUTH_SUB) return;
-
-    var sub = supa().auth.onAuthStateChange(function (event, session) {
-      if (event === 'SIGNED_OUT') {
-        SESSION_USER = null;
-        STATE.profile = null;
-        removeJSON(PROFILE_KEY);
-        showAuthGate();
-        return;
-      }
-
-      if (session && session.user) {
-        SESSION_USER = session.user;
-        refreshProfileView();
-      }
-    });
-
-    AUTH_SUB = sub && sub.data ? sub.data.subscription : null;
-  }
-
-  /* ════════════════════════════════════════════
-     REFRESH
-  ════════════════════════════════════════════ */
-  async function refreshProfileView() {
-    if (!SESSION_USER) {
-      showAuthGate();
-      return;
-    }
-
-    STATE.profile = await ensureProfileRecord(SESSION_USER);
-    STATE.learn = loadLearnLocal();
-    STATE.theme = loadThemeLocal();
-    STATE.notifs = loadNotifsLocal();
-    STATE.saved = loadSavedLocal();
-    STATE.ideas = await fetchIdeas();
-    STATE.projects = await fetchProjects();
-    STATE.orders = await fetchOrders();
-
-    applyTheme(STATE.theme);
-    showProfileSection();
-    renderAll();
-  }
-
-  /* ════════════════════════════════════════════
-     GLOBAL UI
+     GLOBAL UI — tabs, password toggles, Enter key
   ════════════════════════════════════════════ */
   function initGlobalUI() {
-    bindStrength('signupPassword', 'signupStrengthBar', 'signupStrengthLabel');
+    bindPwStrength('signupPassword','signupStrengthBar','signupStrengthLabel');
 
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('.piko-pw-toggle');
-      if (!btn) return;
-      var target = document.getElementById(btn.getAttribute('data-target'));
-      if (!target) return;
-      var show = target.type === 'password';
-      target.type = show ? 'text' : 'password';
-      var icon = btn.querySelector('i');
-      if (icon) icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    /* Auth tabs */
+    document.querySelectorAll('.piko-auth-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.piko-auth-tab').forEach(function(b){b.classList.remove('is-active');});
+        document.querySelectorAll('.piko-auth-pane').forEach(function(p){p.classList.remove('is-active');});
+        btn.classList.add('is-active');
+        var tab=btn.getAttribute('data-auth-tab');
+        var pane=$('pikoAuth'+tab.charAt(0).toUpperCase()+tab.slice(1));
+        if(pane) pane.classList.add('is-active');
+      });
     });
 
-    document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter') return;
-      var id = document.activeElement && document.activeElement.id ? document.activeElement.id : '';
-      if (['signupName', 'signupEmail', 'signupPassword', 'signupPassword2'].indexOf(id) > -1 && $('pikoSignupBtn')) {
-        $('pikoSignupBtn').click();
-      }
-      if (['signinEmail', 'signinPassword'].indexOf(id) > -1 && $('pikoSigninBtn')) {
-        $('pikoSigninBtn').click();
-      }
+    /* Profile tabs */
+    document.querySelectorAll('.piko-profile-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var tab=btn.getAttribute('data-ptab');
+        document.querySelectorAll('.piko-profile-tab').forEach(function(b){b.classList.remove('is-active');});
+        document.querySelectorAll('.piko-profile-pane').forEach(function(p){p.classList.remove('is-active');});
+        btn.classList.add('is-active');
+        var pane=$('pikoProfilePane'+tab.charAt(0).toUpperCase()+tab.slice(1));
+        if(pane) pane.classList.add('is-active');
+      });
+    });
+
+    /* Password visibility toggles */
+    document.addEventListener('click', function(e){
+      var btn=e.target.closest('.piko-pw-toggle'); if(!btn) return;
+      var inp=document.getElementById(btn.getAttribute('data-target')); if(!inp) return;
+      var show=inp.type==='password'; inp.type=show?'text':'password';
+      var icon=btn.querySelector('i'); if(icon) icon.className=show?'fas fa-eye-slash':'fas fa-eye';
+    });
+
+    /* Enter key shortcuts */
+    document.addEventListener('keydown', function(e){
+      if(e.key!=='Enter') return;
+      var id=document.activeElement&&document.activeElement.id?document.activeElement.id:'';
+      if(['signupName','signupEmail','signupPassword','signupPassword2'].indexOf(id)>-1&&$('pikoSignupBtn')) $('pikoSignupBtn').click();
+      if(['signinEmail','signinPassword'].indexOf(id)>-1&&$('pikoSigninBtn')) $('pikoSigninBtn').click();
     });
   }
 
@@ -2025,43 +1107,66 @@
      BOOT
   ════════════════════════════════════════════ */
   function boot() {
-    applyTheme(loadThemeLocal());
+    /* Apply cached theme immediately — no flash of unstyled content */
+    try {
+      var cached=JSON.parse(localStorage.getItem(THEME_CACHE_KEY)||'null');
+      if(cached) applyTheme(cached);
+      /* Also restore cached banner if no Storage URL yet */
+      if(cached&&cached.bannerBg&&!cached.bannerUrl){
+        var bnEl=$('pikoBanner'); if(bnEl){ bnEl.style.background=cached.bannerBg; bnEl.style.backgroundSize='cover'; bnEl.style.backgroundPosition='center'; }
+      }
+    } catch(e){}
+
     initGlobalUI();
-    initAuthTabs();
-    initProfileTabs();
-    initEditTabs();
     initSignup();
     initSignin();
     initSignOut();
     initPanelActions();
     initNameStyleEditor();
-    initProfileEdit();
     initAccountSettings();
+    initUploads();
     initNotifBell();
     initShareCard();
     initModalLinks();
     handlePasswordReset();
   }
 
-  window.addEventListener('piko:supa:ready', function (e) {
-    OFFLINE = !!(e.detail && e.detail.offline);
-    DB = window.piko_supa || DB;
-    initAuthListener();
-    checkExistingSession();
-  });
-
-  document.addEventListener('DOMContentLoaded', function () {
-    boot();
-
-    setTimeout(function () {
-      ensureSupabaseReference();
-      if (window.PIKO_SUPA_READY) {
-        initAuthListener();
-        checkExistingSession();
-      } else if (!window.piko_supa) {
+  /* ════════════════════════════════════════════
+     ENTRY POINT — wait for Supabase
+  ════════════════════════════════════════════ */
+  window.addEventListener('piko:supa:ready', async function(e) {
+    if(e.detail&&e.detail.offline) {
+      /* Supabase unavailable — show auth gate with message */
+      showAuthGate();
+      setStatus('pikoSigninStatus','Supabase is not available. Profile features require a connection.','err');
+      return;
+    }
+    try {
+      var res=await supa().auth.getUser();
+      if(res.data&&res.data.user) {
+        STATE.user=res.data.user;
+        await loadProfileAndShow();
+      } else {
         showAuthGate();
       }
-    }, 300);
+    } catch(e2) {
+      showAuthGate();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    boot();
+    /* Auth state changes — e.g. sign in from another tab */
+    window.addEventListener('piko:supa:ready', function(){
+      if(supa()) {
+        supa().auth.onAuthStateChange(function(event){
+          if(event==='SIGNED_OUT'&&STATE.user){
+            /* Only react if our state thinks we're signed in — avoids spurious events */
+            STATE.user=null; STATE.profile=null;
+          }
+        });
+      }
+    });
   });
 
 })();
