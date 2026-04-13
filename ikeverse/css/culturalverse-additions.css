@@ -245,3 +245,141 @@
     max-width: 100%;
   }
 }
+
+
+/* ─────────────────────────────────────────────────────────
+   PROFILE PANEL — Sync banner, achievements, sign-in
+───────────────────────────────────────────────────────── */
+
+/* Sync status banner (top of profile panel) */
+.cv-sync-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  border-bottom: 1px solid var(--border);
+  letter-spacing: .02em;
+}
+.cv-sync-banner.is-synced {
+  color: rgba(60,179,113,.8);
+  background: rgba(60,179,113,.04);
+}
+
+/* Pulse dot — syncing indicator */
+.cv-sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  flex-shrink: 0;
+  animation: syncDotPulse 2s ease-in-out infinite;
+}
+.cv-sync-banner.is-synced .cv-sync-dot {
+  background: var(--emerald);
+  box-shadow: 0 0 6px rgba(60,179,113,.5);
+}
+.cv-sync-dot--sm { width: 6px; height: 6px; }
+@keyframes syncDotPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .4; transform: scale(.8); }
+}
+
+/* Achievements list inside profile panel */
+.cv-achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cv-ach-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  opacity: .35;
+  transition: opacity .2s, background .2s;
+}
+.cv-ach-item.is-earned {
+  opacity: 1;
+  background: rgba(255,255,255,.03);
+}
+.cv-ach-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+.cv-ach-item strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Cormorant Garamond', serif;
+  line-height: 1.2;
+}
+.cv-ach-item small {
+  display: block;
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.cv-ach-check {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--emerald);
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* Achievement toast notification */
+.cv-achievement-toast {
+  position: fixed;
+  bottom: 32px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(8, 14, 24, .97);
+  border: 1px solid rgba(60,179,113,.35);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 0 20px rgba(60,179,113,.1);
+  backdrop-filter: blur(16px);
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+  max-width: 280px;
+}
+.cv-achievement-toast.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+.cv-ach-toast-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.cv-achievement-toast strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--emerald);
+  margin-bottom: 3px;
+}
+.cv-achievement-toast span {
+  display: block;
+  font-size: 13px;
+  color: #fff;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+}
+
+/* Profile nav button — signed-in state */
+.cv-nav__profile-btn.is-signed-in {
+  color: var(--emerald);
+  border-color: rgba(60,179,113,.3);
+}
