@@ -383,3 +383,96 @@
   color: var(--emerald);
   border-color: rgba(60,179,113,.3);
 }
+
+
+/* ─────────────────────────────────────────────────────────
+   SIGN-IN FORM (inside profile panel, signed-out state)
+───────────────────────────────────────────────────────── */
+.cv-signin-hint {
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1.55;
+  padding: 0 10px 10px;
+  margin: 0;
+}
+.cv-signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 10px 4px;
+}
+.cv-signin-input {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #fff;
+  font-size: 13px;
+  font-family: var(--font-m, 'Space Mono', monospace);
+  outline: none;
+  transition: border-color .18s;
+  width: 100%;
+}
+.cv-signin-input:focus {
+  border-color: rgba(60,179,113,.5);
+  background: rgba(255,255,255,.09);
+}
+.cv-signin-input::placeholder { color: rgba(255,255,255,.25); }
+
+.cv-signin-error {
+  font-size: 11px;
+  color: #ff6b6b;
+  background: rgba(255,107,107,.08);
+  border: 1px solid rgba(255,107,107,.2);
+  border-radius: 6px;
+  padding: 7px 10px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cv-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--emerald, #3cb371), #5adf91);
+  color: #020706;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-m, 'Space Mono', monospace);
+  border: none;
+  cursor: pointer;
+  transition: filter .18s, transform .15s;
+  letter-spacing: .04em;
+}
+.cv-signin-btn:hover  { filter: brightness(1.1); transform: translateY(-1px); }
+.cv-signin-btn:disabled { opacity: .6; cursor: default; transform: none; }
+
+.cv-signin-create {
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: .02em;
+  transition: color .18s;
+  padding-top: 2px;
+}
+.cv-signin-create:hover { color: var(--emerald, #3cb371); }
+
+/* Sign-out button (inside profile panel, signed-in state) */
+.cv-signout-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+.cv-signout-btn:hover {
+  background: rgba(255,71,87,.07);
+  color: #ff6b6b;
+}
