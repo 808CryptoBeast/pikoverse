@@ -1,0 +1,247 @@
+/* ═══════════════════════════════════════════════════════════
+   culturalverse-additions.css
+   Place in: ikeverse/css/
+   Link in culturalverse.html after culturalverse.css:
+   <link rel="stylesheet" href="css/culturalverse-additions.css" />
+═══════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────
+   KNOWLEDGE GRID — Icon Images
+   Replaces emoji spans with image thumbnails.
+   Falls back to emoji if image fails to load.
+───────────────────────────────────────────────────────── */
+.cv-k-icon {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .1);
+  margin-top: 2px;
+}
+
+.cv-k-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 11px;
+}
+
+.cv-k-icon-fb {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Per-culture border tint */
+.cv-culture-card--hawaii .cv-k-icon { border-color: rgba(132, 255, 176, .2); }
+.cv-culture-card--kemet  .cv-k-icon { border-color: rgba(255, 210,  80, .2); }
+
+
+/* ─────────────────────────────────────────────────────────
+   BRIDGE TEASER — Context Description Text
+───────────────────────────────────────────────────────── */
+.cv-bridge-context {
+  font-size: 12px;
+  color: rgba(255, 255, 255, .55);
+  line-height: 1.55;
+  margin: 8px 0 12px;
+  font-style: italic;
+  max-width: 240px;
+}
+
+.cv-bridge-side--hawaii .cv-bridge-context { color: rgba(132, 255, 176, .6); }
+.cv-bridge-side--kemet  .cv-bridge-context { color: rgba(255, 200,  80, .6); }
+
+
+/* ─────────────────────────────────────────────────────────
+   FIGURE SECTIONS — Queen Liliʻuokalani & Imhotep
+   Supports <img> inside .cv-figure with emoji fallback.
+───────────────────────────────────────────────────────── */
+.cv-figure__media {
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.cv-figure__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border-radius: 14px;
+}
+
+.cv-figure--hawaii .cv-figure__media { border-color: rgba(132, 255, 176, .25); }
+.cv-figure--kemet  .cv-figure__media { border-color: rgba(255, 210,  80, .25); }
+
+
+/* ─────────────────────────────────────────────────────────
+   ALOHA & MAʻAT BRIDGE SECTION
+   The side-by-side pairing of each Aloha value with its
+   Kemetic / Maʻat counterpart.
+───────────────────────────────────────────────────────── */
+.cv-aloha-maat-bridge {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+/* Header */
+.cv-amb-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.cv-amb-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(132, 255, 176, .7);
+  margin-bottom: 10px;
+}
+
+.cv-amb-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3.5vw, 32px);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.cv-amb-title em {
+  color: #84ffb0;
+  font-style: italic;
+}
+
+.cv-amb-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, .6);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* Pairing grid */
+.cv-amb-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cv-amb-pair {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Each side */
+.cv-amb-side {
+  padding: 18px 20px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cv-amb-side--hawaii {
+  background: rgba(132, 255, 176, .04);
+  border: 1px solid rgba(132, 255, 176, .15);
+}
+
+.cv-amb-side--kemet {
+  background: rgba(255, 210, 80, .04);
+  border: 1px solid rgba(255, 210, 80, .15);
+}
+
+.cv-amb-glyph {
+  font-size: 20px;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.cv-amb-side strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.cv-amb-side--hawaii strong { color: #84ffb0; }
+.cv-amb-side--kemet  strong { color: #ffd27a; }
+
+.cv-amb-side em {
+  font-size: 11px;
+  color: rgba(255, 255, 255, .5);
+  font-style: italic;
+}
+
+.cv-amb-side p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, .65);
+  line-height: 1.6;
+  margin: 4px 0 0;
+}
+
+/* Center connector */
+.cv-amb-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cv-amb-connector span {
+  font-size: 22px;
+  color: rgba(255, 255, 255, .2);
+}
+
+/* Footer CTA */
+.cv-amb-footer {
+  text-align: center;
+  margin-top: 28px;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Aloha-Maat pairs stack vertically */
+  .cv-amb-pair {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .cv-amb-connector {
+    transform: rotate(90deg);
+  }
+
+  /* Smaller figure images on mobile */
+  .cv-figure__media {
+    width: 70px;
+    height: 70px;
+  }
+
+  /* Bridge context takes full width */
+  .cv-bridge-context {
+    max-width: 100%;
+  }
+}

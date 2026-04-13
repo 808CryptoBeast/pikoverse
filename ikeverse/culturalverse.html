@@ -3,50 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Culturalverse — Indigenous Knowledge Platform | Ikeverse × Pikoverse</title>
-  <meta name="description" content="Culturalverse is a living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom, cultural connections, and ancestral navigation. Built from Hawaiʻi." />
-  <meta name="keywords" content="indigenous knowledge, Hawaiian culture, Kānaka Maoli, Kemet, ancient Egypt, Olmec, Kumulipo, cultural education, Ikeverse, Pikoverse, Hawaiʻi">
-  <meta name="author" content="Aloha Mass Productions">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://ikeverse.pikoverse.xyz/culturalverse.html">
-
-  <!-- Open Graph -->
-  <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://ikeverse.pikoverse.xyz/culturalverse.html">
-  <meta property="og:title"       content="Culturalverse — Indigenous Knowledge Platform">
-  <meta property="og:description" content="A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom built from Hawaiʻi.">
-  <meta property="og:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
-  <meta property="og:site_name"   content="Pikoverse / Ikeverse">
-
-  <!-- Twitter -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="Culturalverse — Indigenous Knowledge Platform">
-  <meta name="twitter:description" content="A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more.">
-  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
-
-  <!-- Favicon + theme -->
-  <link rel="icon" href="https://pikoverse.xyz/assets/platform-images/pikoverse-icon.png" type="image/png">
-  <meta name="theme-color" content="#4caf7a">
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    "name": "Culturalverse — Indigenous Knowledge Platform",
-    "description": "A living platform for indigenous knowledge — Hawaiian, Kemetic, Olmec, and more. Explore ancient wisdom and cultural connections.",
-    "provider": { "@type": "Organization", "name": "Aloha Mass Productions", "url": "https://pikoverse.xyz" },
-    "url": "https://ikeverse.pikoverse.xyz/culturalverse.html",
-    "educationalLevel": "All levels",
-    "teaches": ["Hawaiian Culture", "Kemetic Wisdom", "Indigenous Knowledge", "Ancestral Navigation", "Cultural Connections"],
-    "inLanguage": "en",
-    "isPartOf": { "@type": "WebSite", "name": "Ikeverse", "url": "https://ikeverse.pikoverse.xyz" }
-  }
-  </script>
-
+  <title>Culturalverse — Indigenous Knowledge Platform | Ikeverse</title>
+  <meta name="description" content="Enter Culturalverse — a living platform for indigenous knowledge, ancient wisdom, and the deep connections between humanity's greatest cultural traditions." />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/culturalverse.css" />
+  <link rel="stylesheet" href="css/culturalverse-additions.css" />
 </head>
 <body>
 
@@ -77,11 +39,11 @@
           <div class="cv-dropdown">
             <div class="cv-dropdown__col">
               <span class="cv-dropdown__heading">Available Now</span>
-              <a href="#kanaka" class="cv-dd-link">
+              <a href="/ikeverse/images/kanaka.png" class="cv-dd-link">
                 <span>🌺</span>
                 <div><strong>Kānaka Maoli</strong><small>Hawaiian Indigenous Knowledge</small></div>
               </a>
-              <a href="#kemet" class="cv-dd-link">
+              <a href="/ikeverse/images/kemet.png" class="cv-dd-link">
                 <span>☥</span>
                 <div><strong>Kemet</strong><small>Ancient Egyptian Wisdom</small></div>
               </a>
@@ -139,11 +101,10 @@
           <i class="fas fa-network-wired"></i>
           <span>Matrix</span>
         </a>
-        <a class="cv-nav__profile-btn" id="cvProfileToggle" href="https://pikoverse.xyz/profile.html" aria-label="Profile" title="Your Pikoverse Profile">
-          <img id="cvNavAvatar" src="" alt="" style="display:none;width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(240,201,106,.5)">
-          <i class="fas fa-circle-user" id="cvNavIcon"></i>
-          <span id="cvNavName">Profile</span>
-        </a>
+        <button class="cv-nav__profile-btn" id="cvProfileToggle" aria-label="Profile" title="Your Profile">
+          <i class="fas fa-circle-user"></i>
+          <span>Profile</span>
+        </button>
         <button class="cv-nav__mobile-btn" id="cvMobileToggle" aria-label="Toggle menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
@@ -334,56 +295,56 @@
 
           <div class="cv-knowledge-grid">
             <div class="cv-k-item">
-              <span class="cv-k-icon">🌊</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/kumulipo.jpg" alt="The Kumulipo" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🌊</span></span>
               <div>
                 <strong>The Kumulipo</strong>
                 <p>2,102-line sacred creation chant. 16 wā. Pō (darkness) to Ao (light). The genealogy of the cosmos — from coral polyp to human chief. Translated by Queen Liliʻuokalani (1897). One of humanity's most profound creation narratives.</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">⭐</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/wayfinding.jpg" alt="Wayfinding" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">⭐</span></span>
               <div>
                 <strong>Wayfinding — Star Navigation</strong>
                 <p>32-house star compass. Hokūleʻa (Arcturus) as Hawaiʻi's zenith star. Reading ocean swells, bird behavior, cloud formations over unseen islands. 2,500 miles open ocean without instruments. Revived by Nainoa Thompson — first traditional voyage to Tahiti in 600 years (1976).</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">🌿</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/ahupuaa.jpg" alt="Ahupuaʻa System" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🌿</span></span>
               <div>
                 <strong>Ahupuaʻa System</strong>
                 <p>Complete ecological land divisions from mountain (mauka) to sea (makai). Five ecological zones from wao akua (realm of gods) to kai (ocean). Managed by konohiki resource managers. Sustained 300,000–1,000,000 people for 1,000+ years. Zero waste. Completely circular.</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">🌱</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/kalo.jpg" alt="Loʻi Kalo Sacred Taro" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🌱</span></span>
               <div>
                 <strong>Loʻi Kalo — Sacred Taro</strong>
                 <p>Kalo as the literal elder sibling of humanity — Hāloa, born before the first human. 300+ named varieties. Sophisticated ʻauwai irrigation systems. The most sacred agricultural relationship in Hawaiian culture. To tend kalo is to tend your ancestor.</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">🐠</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/fishpond.jpg" alt="Loko Iʻa Fishponds" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🐠</span></span>
               <div>
                 <strong>Loko Iʻa — Fishponds</strong>
                 <p>400+ fishponds at European contact — the most extensive indigenous aquaculture in the Pacific. The mākāhā sluice gate: juvenile fish swim in, grow too large to exit. Self-sustaining ecosystems. Some covering 400+ acres. Several still being actively restored today.</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">🏛️</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/heiau.jpg" alt="Heiau Sacred Temples" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🏛️</span></span>
               <div>
                 <strong>Heiau — Sacred Temples</strong>
                 <p>Stone temple platforms built for specific divine purposes — warfare (luakini), healing (māhiki), agriculture, navigation. Oriented astronomically. Some among the largest stone structures in the Pacific. Whalers and missionaries both feared and dismantled them.</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">💃</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/hula.jpg" alt="Hula and Oli Chant" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">💃</span></span>
               <div>
                 <strong>Hula & Oli (Chant)</strong>
                 <p>Living historical record. Every movement encodes genealogy, geography, spiritual practice, and natural phenomenon. The body as sacred text. Hula was banned by missionaries (1820s) — its survival is an act of resistance. Currently experiencing a profound renaissance (Hawaiian Renaissance, 1970s–present).</p>
               </div>
             </div>
             <div class="cv-k-item">
-              <span class="cv-k-icon">🗣️</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/HI/olelo.jpg" alt="ʻŌlelo Hawaiʻi Language" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🗣️</span></span>
               <div>
                 <strong>ʻŌlelo Hawaiʻi — Language</strong>
                 <p>One of the most musical languages in the world. 5 vowels, 8 consonants. Every word carries layers of meaning. Declared a state language of Hawaiʻi (1978). By 1981, fewer than 50 children spoke it as a first language. Today: Hawaiian language immersion schools (Pūnana Leo) have revived it for thousands of children.</p>
@@ -392,16 +353,25 @@
           </div>
 
           <div class="cv-concepts">
-            <span class="cv-concept cv-concept--hawaii">Aloha</span>
-            <span class="cv-concept cv-concept--hawaii">Pono</span>
-            <span class="cv-concept cv-concept--hawaii">Mālama ʻĀina</span>
-            <span class="cv-concept cv-concept--hawaii">ʻOhana</span>
-            <span class="cv-concept cv-concept--hawaii">Mana</span>
-            <span class="cv-concept cv-concept--hawaii">Kapu</span>
-            <span class="cv-concept cv-concept--hawaii">Aloha ʻĀina</span>
-            <span class="cv-concept cv-concept--hawaii">Kuleana</span>
-            <span class="cv-concept cv-concept--hawaii">Haumāna</span>
-            <span class="cv-concept cv-concept--hawaii">Naʻauao</span>
+            <span class="cv-concept cv-concept--hawaii">Aloha — Way of Being</span>
+            <span class="cv-concept cv-concept--hawaii">Akahai — Kindness</span>
+            <span class="cv-concept cv-concept--hawaii">Lōkahi — Unity</span>
+            <span class="cv-concept cv-concept--hawaii">ʻOluʻolu — Agreeableness</span>
+            <span class="cv-concept cv-concept--hawaii">Haʻahaʻa — Humility</span>
+            <span class="cv-concept cv-concept--hawaii">Ahonui — Patience</span>
+            <span class="cv-concept cv-concept--hawaii">Pono — Righteousness</span>
+            <span class="cv-concept cv-concept--hawaii">Naʻauao — Soul Wisdom</span>
+            <span class="cv-concept cv-concept--hawaii">Mālama — Stewardship</span>
+            <span class="cv-concept cv-concept--hawaii">Hoʻomanawanui — Steadfastness</span>
+            <span class="cv-concept cv-concept--hawaii">Hoʻohānau — Creativity</span>
+            <span class="cv-concept cv-concept--hawaii">ʻIke Pō — Deep Insight</span>
+            <span class="cv-concept cv-concept--hawaii">ʻOiaʻiʻo — Truth &amp; Honesty</span>
+            <span class="cv-concept cv-concept--hawaii">Mālama ʻĀina — Care for Land</span>
+            <span class="cv-concept cv-concept--hawaii">ʻOhana — Family</span>
+            <span class="cv-concept cv-concept--hawaii">Mana — Spiritual Power</span>
+            <span class="cv-concept cv-concept--hawaii">Kapu — Sacred Order</span>
+            <span class="cv-concept cv-concept--hawaii">Aloha ʻĀina — Love of Land</span>
+            <span class="cv-concept cv-concept--hawaii">Kuleana — Responsibility</span>
           </div>
 
           <div class="cv-quick-facts">
@@ -412,12 +382,142 @@
           </div>
 
           <div class="cv-figure cv-figure--hawaii">
-            <div class="cv-figure__icon">👑</div>
+            <div class="cv-figure__media">
+              <img
+                src="ikeverse/images/HI/queen-liliuokalani.jpg"
+                alt="Queen Liliʻuokalani — Last Sovereign Monarch of the Kingdom of Hawaiʻi"
+                class="cv-figure__img"
+                loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cv-figure__icon" style="display:none">👑</div>
+            </div>
             <div>
               <strong>Queen Liliʻuokalani (1838–1917)</strong>
               <p>Last sovereign monarch of the Kingdom of Hawaiʻi. Composer of Aloha ʻOe. Translated the Kumulipo into English (1897). Illegally overthrown by American businessmen backed by U.S. Marines in 1893. She refused to sign a document surrendering sovereignty to avoid bloodshed among her people. Her steadfast dignity in defeat is one of history's most profound examples of leadership through Aloha — placing the wellbeing of her people above her own power.</p>
             </div>
           </div>
+          <!-- ── ALOHA & MAʻAT BRIDGE ── -->
+          <div class="cv-aloha-maat-bridge">
+            <div class="cv-amb-header">
+              <span class="cv-amb-eyebrow">✦ The Living Connection ✦</span>
+              <h3 class="cv-amb-title">Aloha &amp; Maʻat — <em>Two Languages for One Truth</em></h3>
+              <p class="cv-amb-desc">Aloha is far more than a greeting — it is a complete ethical, relational, and spiritual system. Maʻat is the cosmic order, truth, and balance that governed every dimension of Kemetic life. Across thousands of miles of ocean and thousands of years of time, these two traditions arrived at the same sacred understanding of how a human being is meant to walk in the world.</p>
+            </div>
+            <div class="cv-amb-grid">
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Akahai</strong>
+                  <em>Kindness — Tenderness in action</em>
+                  <p>Strength expressed through gentleness. The understanding that true power never needs to be cruel.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Maʻat — Compassion</strong>
+                  <em>Care for the suffering as divine duty</em>
+                  <p>Feeding the hungry, clothing the naked — among the 42 Declarations of Innocence. Kindness as cosmic law.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Lōkahi</strong>
+                  <em>Unity — Harmony through connectedness</em>
+                  <p>Working together in alignment with ʻohana and ʻāina. No one stands apart from the web of life.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Maʻat — Cosmic Harmony</strong>
+                  <em>The order that holds all things together</em>
+                  <p>The Pharaoh's primary duty: uphold Maʻat. When the ruler fails, the cosmos tilts into Isfet — chaos and disorder.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>ʻOiaʻiʻo</strong>
+                  <em>Truth &amp; Honesty — To speak and live in truth</em>
+                  <p>Unwavering integrity rooted in the foundation of your spirit. Truth is not situational — it is the ground you stand on.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Maʻat — The Feather of Truth</strong>
+                  <em>The measure of every human life</em>
+                  <p>The heart is weighed against the Feather of Maʻat. A heart heavy with falsehood cannot pass. Truth is the weight of the soul.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Haʻahaʻa</strong>
+                  <em>Humility — True strength lies in modesty</em>
+                  <p>Knowing your place with reverence for others. The tallest tree that refuses to bow is the first one broken by the storm.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Declaration of Innocence</strong>
+                  <em>"I have not made myself more than I am"</em>
+                  <p>Among the 42 Declarations: not elevating oneself falsely before the divine. Humility before the Neteru is the foundation of right living.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Naʻauao &amp; ʻIke Pō</strong>
+                  <em>Soul-Wisdom &amp; Wisdom from the Unseen</em>
+                  <p>Knowledge that comes from the soul. Ancestral understanding from the darkness of creation — truth felt before it is spoken.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Sia — Divine Perception</strong>
+                  <em>Knowing before knowing — the god beside Ra</em>
+                  <p>Sia personified perception and understanding. He traveled with Ra through the night sky — the wisdom that navigates darkness. Knowledge from beyond the visible world.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Hoʻohānau</strong>
+                  <em>Creativity — Bringing spirit into form</em>
+                  <p>Expressing truth, beauty, and innovation rooted in ʻike. Creation as sacred act — not entertainment, but the work of the soul in the world.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Ptah — Creation through Thought &amp; Speech</strong>
+                  <em>The Memphite Theology of sacred creativity</em>
+                  <p>Ptah conceived the world in his heart and spoke it into existence — 2,700 years before the Gospel of John. Every act of true creation mirrors the divine.</p>
+                </div>
+              </div>
+              <div class="cv-amb-pair">
+                <div class="cv-amb-side cv-amb-side--hawaii">
+                  <span class="cv-amb-glyph">🌺</span>
+                  <strong>Mālama</strong>
+                  <em>Care — To protect and preserve</em>
+                  <p>Taking responsibility for people, places, and purpose. Mālama ʻĀina — care for the land — is not an environmental position. It is a spiritual obligation.</p>
+                </div>
+                <div class="cv-amb-connector"><span>↔</span></div>
+                <div class="cv-amb-side cv-amb-side--kemet">
+                  <span class="cv-amb-glyph">☥</span>
+                  <strong>Maʻat — Stewardship of the Earth</strong>
+                  <em>The Nile as sacred trust</em>
+                  <p>"I have not stopped the flow of water." Among the Declarations of Innocence — interfering with natural systems is a moral violation. The earth is held in sacred trust, not owned.</p>
+                </div>
+              </div>
+            </div>
+            <div class="cv-amb-footer">
+              <a href="culturalverse-bridge.html" class="cv-btn cv-btn--bridge">
+                <i class="fas fa-arrows-left-right"></i> Explore The Full Bridge
+              </a>
+            </div>
+          </div>
+
         </div>
 
         <div class="cv-card-footer">
@@ -438,8 +538,8 @@
           <h2 class="cv-card-title cv-card-title--gold">Kemet</h2>
           <p class="cv-card-tagline">The Black Land · Three Thousand Years of Recorded Wisdom</p>
           <blockquote class="cv-card-quote cv-card-quote--gold">
-            "If you are excellent, establish your household, love your wife with ardor, fill her belly, clothe her back. The medicine for her limbs is to anoint her. Gladden her heart as long as you live."
-            <cite>— The Maxims of Ptahhotep, ~2400 BCE</cite>
+            "Seek wisdom as the physician seeks the nature of the wound — with patience, with truth, and with full attention. Knowledge withheld is a healer who turns away."
+            <cite>— In the tradition of Imhotep, Per Ankh (House of Life) · Saqqara</cite>
           </blockquote>
         </div>
 
@@ -456,56 +556,56 @@
 
           <div class="cv-knowledge-grid cv-knowledge-grid--kemet">
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">☀</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/creation.jpg" alt="Kemetic Creation Cosmogonies" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">☀</span></span>
               <div>
                 <strong>Creation Cosmogonies</strong>
                 <p>Three major traditions: Heliopolitan Ennead (Nun → Atum → 9 divine principles), Memphite Theology (Ptah creates through thought and speech — 2,700 years before the Gospel of John), Hermopolitan Ogdoad (8 primordial paired forces of water, darkness, infinity, and the hidden). All begin in darkness and water.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">⚖️</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/maat.jpg" alt="Maʻat Cosmic Order" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">⚖️</span></span>
               <div>
                 <strong>Maʻat — Cosmic Order</strong>
                 <p>The foundational principle of Kemetic civilization: truth, justice, balance, cosmic harmony. The Feather of Maʻat. The Hall of Two Truths. The Weighing of the Heart — Anubis, Thoth, and Ammit. The 42 Declarations of Innocence. The pharaoh's primary duty was to uphold Maʻat. Its opposite: Isfet — chaos, injustice, disorder.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">𓂀</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/hieroglyphs.jpg" alt="Medu Netjer Hieroglyphics" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">𓂀</span></span>
               <div>
                 <strong>Medu Netjer — Hieroglyphics</strong>
                 <p>"Words of the Gods" — one of the oldest writing systems on Earth (~3200 BCE). 700+ standard signs. Three types: logograms (word-signs), phonetic signs, determinatives. The Rosetta Stone (196 BCE) — key to decipherment by Champollion (1822). Sacred script where every symbol carries spiritual weight.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">🔺</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/pyramid.jpg" alt="Sacred Architecture and Geometry" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🔺</span></span>
               <div>
                 <strong>Sacred Architecture & Geometry</strong>
                 <p>The Great Pyramid of Giza (built ~2560 BCE): 2.3 million stone blocks, precision within 5 cm across 230m base. Aligned to true north within 0.05°. The three Giza pyramids mirror Orion's Belt. Temple axes track solstice and star rises. The benben — the primordial mound — encoded in every pyramid's form.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">🌊</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/nile.jpg" alt="The Sacred Nile River" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🌊</span></span>
               <div>
                 <strong>The Nile — Sacred River System</strong>
                 <p>The annual inundation as the renewal of creation — Nun returning. Nilometers measuring flood levels for agricultural planning (3,000+ years of data). Three seasons: Akhet (flood), Peret (growing), Shemu (harvest). Every aspect of Egyptian life, calendar, and cosmology organized around the Nile's rhythm.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">📜</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/texts.jpg" alt="Sacred Texts and Literature" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">📜</span></span>
               <div>
                 <strong>Sacred Texts & Literature</strong>
                 <p>Pyramid Texts (~2400 BCE) — the oldest religious writings in the world. Coffin Texts. Book of the Dead (Book of Coming Forth by Day). The Maxims of Ptahhotep (~2400 BCE) — first recorded wisdom literature. The Shabaka Stone — Memphite Theology of creation through speech. The Book of Thoth.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">⚕️</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/medicine.jpg" alt="Kemetic Medicine and Science" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">⚕️</span></span>
               <div>
                 <strong>Medicine & Science</strong>
                 <p>Edwin Smith Papyrus (~1600 BCE, based on older text): first recorded surgical manual. 48 documented cases with diagnosis, prognosis, treatment. Ebers Papyrus: 700+ remedies. They understood the cardiovascular system. Performed brain surgery. First dentistry records. Their medical knowledge was sought across the ancient world.</p>
               </div>
             </div>
             <div class="cv-k-item cv-k-item--kemet">
-              <span class="cv-k-icon">🌟</span>
+              <span class="cv-k-icon"><img src="/ikeverse/images/K/duat.jpg" alt="The Duat Afterlife Cosmology" class="cv-k-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="cv-k-icon-fb" style="display:none">🌟</span></span>
               <div>
                 <strong>The Duat — Afterlife Cosmology</strong>
                 <p>A complete cosmological system for the soul's journey after death. 12 gates of the night — one for each hour. Ra's nightly passage through the underworld and dawn resurrection. The Field of Reeds (Aaru): the eternal paradise. The Weighing of the Heart. Soul components: Ka (life force), Ba (personality), Akh (immortal spirit).</p>
@@ -534,10 +634,19 @@
           </div>
 
           <div class="cv-figure cv-figure--kemet">
-            <div class="cv-figure__icon">⚕️</div>
+            <div class="cv-figure__media">
+              <img
+                src="ikeverse/images/K/imhotep.jpg"
+                alt="Imhotep — First Recorded Genius of the Ancient World"
+                class="cv-figure__img"
+                loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="cv-figure__icon" style="display:none">⚕️</div>
+            </div>
             <div>
               <strong>Imhotep (~2650 BCE) — The First Recorded Genius</strong>
-              <p>Chancellor of the Pharaoh Djoser. High priest of Ra. Physician. Architect. Astronomer. Poet. Imhotep designed the Step Pyramid at Saqqara — the world's first large-scale cut stone structure, built ~4,600 years ago. His medical writings were used for 2,000 years. He was later deified as the god of medicine and wisdom — one of the few non-royal Kemetic humans to achieve godhood. He was not a myth. He was a man who changed the world.</p>
+              <p>Chancellor of the Pharaoh Djoser. High Priest of Ra at Heliopolis. Physician. Architect. Astronomer. Sage. Imhotep designed the Step Pyramid at Saqqara — the world's first large-scale cut stone structure, built ~4,600 years ago. His medical writings formed the foundation of Egyptian medicine for 2,000 years. He was later deified as the god of medicine, wisdom, and healing — one of the only non-royal Kemetic humans to achieve godhood. He embodied Maʻat in flesh: a man who served the people, honored knowledge, and gave what he was given. He was not a myth. He was a man who changed the world.</p>
             </div>
           </div>
         </div>
@@ -574,17 +683,25 @@
         <div class="cv-bridge-side cv-bridge-side--hawaii">
           <span class="cv-bridge-glyph">🌺</span>
           <strong>Kānaka Maoli</strong>
-          <span class="cv-bridge-pill">Pono — Cosmic Balance</span>
+          <p class="cv-bridge-context">Aloha is not a greeting — it is a complete way of being. A living ethical, spiritual, and relational system that governs how one walks in the world.</p>
+          <span class="cv-bridge-pill">Aloha — The Way of Being</span>
+          <span class="cv-bridge-pill">Akahai — Kindness · Tenderness</span>
+          <span class="cv-bridge-pill">Lōkahi — Unity · Harmony</span>
+          <span class="cv-bridge-pill">Haʻahaʻa — Humility</span>
+          <span class="cv-bridge-pill">Pono — Righteousness within Aloha</span>
+          <span class="cv-bridge-pill">ʻOiaʻiʻo — Truth &amp; Honesty</span>
+          <span class="cv-bridge-pill">Naʻauao — Intuitive Soul-Wisdom</span>
+          <span class="cv-bridge-pill">Mālama — Stewardship &amp; Care</span>
+          <span class="cv-bridge-pill">ʻIke Pō — Wisdom from the Unseen</span>
           <span class="cv-bridge-pill">Kumulipo — Pō to Ao</span>
-          <span class="cv-bridge-pill">Creation from dark waters</span>
-          <span class="cv-bridge-pill">Paired beings throughout</span>
+          <span class="cv-bridge-pill">Creation from primordial darkness</span>
         </div>
         <div class="cv-bridge-center">
           <div class="cv-bridge-center__line"></div>
           <div class="cv-bridge-center__icon">🌐</div>
           <div class="cv-bridge-center__line"></div>
           <h3>The Bridge</h3>
-          <p>Two civilizations. Two sides of the Earth. Five profound cosmological connections.</p>
+          <p>Aloha and Maʻat. Two complete ethical and cosmological systems. Two sides of the Earth. One profound truth about how human beings were meant to move through the world.</p>
           <a href="culturalverse-bridge.html" class="cv-btn cv-btn--bridge">
             <i class="fas fa-arrows-left-right"></i> Explore the Connections
           </a>
@@ -592,10 +709,17 @@
         <div class="cv-bridge-side cv-bridge-side--kemet">
           <span class="cv-bridge-glyph">☥</span>
           <strong>Kemet</strong>
-          <span class="cv-bridge-pill">Maʻat — Cosmic Order</span>
+          <p class="cv-bridge-context">Maʻat is not a rule — it is the cosmic order itself. Truth, justice, balance, harmony. The Feather that weighs every heart. The foundation beneath every act.</p>
+          <span class="cv-bridge-pill">Maʻat — Cosmic Truth &amp; Order</span>
+          <span class="cv-bridge-pill">Heka — Sacred Speech &amp; Creation</span>
+          <span class="cv-bridge-pill">Sia — Perception &amp; Deep Knowing</span>
+          <span class="cv-bridge-pill">Hu — Authoritative Expression</span>
+          <span class="cv-bridge-pill">Isfet — the opposite of Maʻat</span>
+          <span class="cv-bridge-pill">42 Declarations of Innocence</span>
+          <span class="cv-bridge-pill">Weighing of the Heart</span>
           <span class="cv-bridge-pill">Nun — Primordial Darkness</span>
           <span class="cv-bridge-pill">Creation from dark waters</span>
-          <span class="cv-bridge-pill">Ogdoad — four paired forces</span>
+          <span class="cv-bridge-pill">Ogdoad — four paired cosmic forces</span>
         </div>
       </div>
     </div>
@@ -725,32 +849,6 @@
     </div>
   </footer>
 
-  <script src="https://pikoverse.xyz/js/supabase-client.js"></script>
-  <script>
-    /* Cross-device profile session — update nav avatar when logged in */
-    window.addEventListener('piko:supa:ready', function(e) {
-      if (e.detail.offline) return;
-      var sb = window.piko_supa;
-      if (!sb) return;
-      sb.auth.getSession().then(function(r) {
-        if (!r.data || !r.data.session || !r.data.session.user) return;
-        var u = r.data.session.user;
-        var localProfile = {};
-        try { localProfile = JSON.parse(localStorage.getItem('piko_profile_v1') || '{}'); } catch(e) {}
-        var avatar = u.user_metadata && u.user_metadata.avatar_url || localProfile.avatar_url || '';
-        var name   = u.user_metadata && u.user_metadata.display_name || localProfile.display_name || u.email.split('@')[0];
-        var avatarEl = document.getElementById('cvNavAvatar');
-        var iconEl   = document.getElementById('cvNavIcon');
-        var nameEl   = document.getElementById('cvNavName');
-        if (avatarEl && avatar) {
-          avatarEl.src = avatar;
-          avatarEl.style.display = 'inline-block';
-          if (iconEl) iconEl.style.display = 'none';
-        }
-        if (nameEl) nameEl.textContent = name;
-      });
-    });
-  </script>
   <script src="js/culturalverse.js"></script>
 </body>
 </html>
