@@ -52,7 +52,7 @@
           <button class="cv-nav__btn" type="button">Learn <span class="cv-caret">▾</span></button>
           <div class="cv-dropdown cv-dropdown--narrow">
             <span class="cv-dropdown__heading">Learning Tools</span>
-            <a href="#" class="cv-dd-link" id="cvMatrixPopupOpenNav"><span>🕸️</span><div><strong>Living Knowledge Matrix</strong><small>Interconnected knowledge map</small></div></a>
+            <button type="button" class="cv-btn cv-btn--ghost" id="cvMatrixPopupOpenHero"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</button>
             <a href="culturalverse-lessons.html" class="cv-dd-link"><span>📖</span><div><strong>Deep Lessons</strong><small>Full reading modules</small></div></a>
             <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🔮</span><div><strong>Reflections</strong><small>Guided practice — soon</small></div></a>
             <a href="#" class="cv-dd-link cv-dd-link--soon"><span>⚡</span><div><strong>Mana Meter</strong><small>Track your journey — soon</small></div></a>
@@ -79,9 +79,9 @@
         </li>
       </ul>
       <div class="cv-nav__actions">
-        <a href="https://808cryptobeast.github.io/Ikeverse/" class="cv-nav__matrix-btn" title="Living Knowledge Matrix">
+        <button type="button" class="cv-nav__matrix-btn" id="cvMatrixPopupOpenTop" title="Living Knowledge Matrix">
           <i class="fas fa-network-wired"></i><span>Matrix</span>
-        </a>
+        </button>
         <button class="cv-nav__profile-btn" id="cvProfileToggle" aria-label="Profile" title="Your Profile">
           <img id="cvNavAvatarSmall" src="" alt="" style="display:none;width:20px;height:20px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(60,179,113,.5);">
           <i class="fas fa-circle-user" id="cvNavProfileIcon"></i>
@@ -128,9 +128,9 @@
           <i class="fas fa-book-open"></i>Lessons Completed
           <span class="cv-profile__badge" id="completedCount">0</span>
         </a>
-        <a href="index.html" class="cv-profile__link">
+        <button type="button" class="cv-profile__link" id="cvMatrixPopupOpenProfile">
           <i class="fas fa-network-wired"></i>Living Knowledge Matrix
-        </a>
+        </button>
       </div>
       <div class="cv-profile__group">
         <span class="cv-profile__group-label">Achievements</span>
@@ -417,7 +417,7 @@
         </div>
         <div class="cv-card-footer">
           <a href="culturalverse-lessons.html" class="cv-btn cv-btn--hawaii"><i class="fas fa-leaf"></i>Enter Kānaka Maoli Lessons</a>
-          <a href="index.html" class="cv-btn cv-btn--ghost-hawaii"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</a>
+          <button type="button" class="cv-btn cv-btn--ghost-hawaii" id="cvMatrixPopupOpenKanaka"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</button>
         </div>
       </div>
 
@@ -581,7 +581,7 @@
           <h2 class="cv-section-title">Knowledge as a <em>Web</em></h2>
           <p>The Living Knowledge Matrix is Ikeverse's dynamic visualization system — an interactive, interconnected map showing how Hawaiian navigation connects to Kemetic astronomy, how the Kumulipo echoes Dreamtime creation, how Maʻat resonates with Pono, how ancient minds on opposite ends of the Earth perceived the same cosmic realities.</p>
           <p>Not a list. Not a database. A living web — and every thread leads somewhere profound.</p>
-          <a href="index.html" class="cv-btn cv-btn--primary"><i class="fas fa-network-wired"></i>Enter the Matrix</a>
+          <button type="button" class="cv-btn cv-btn--primary" id="cvMatrixPopupOpenSection"><i class="fas fa-network-wired"></i>Enter the Matrix</button>
         </div>
         <div class="cv-matrix-visual" aria-hidden="true">
           <svg viewBox="0 0 280 280" class="cv-matrix-svg">
@@ -668,7 +668,7 @@
         <div class="cv-footer__col">
           <h4>Learn</h4>
           <ul>
-            <li><a href="https://808cryptobeast.github.io/Ikeverse/">🕸️ Living Knowledge Matrix</a></li>
+            <li><a href="#" id="cvMatrixPopupOpenFooter">🕸️ Living Knowledge Matrix</a></li>
             <li><a href="culturalverse-lessons.html">📖 Deep Lessons</a></li>
             <li><a href="culturalverse-bridge.html">🌐 The Bridge</a></li>
           </ul>
