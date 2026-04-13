@@ -52,7 +52,7 @@
           <button class="cv-nav__btn" type="button">Learn <span class="cv-caret">▾</span></button>
           <div class="cv-dropdown cv-dropdown--narrow">
             <span class="cv-dropdown__heading">Learning Tools</span>
-            <a href="https://808cryptobeast.github.io/Ikeverse/" class="cv-dd-link"><span>🕸️</span><div><strong>Living Knowledge Matrix</strong><small>Interconnected knowledge map</small></div></a>
+            <a href="#" class="cv-dd-link" id="cvMatrixPopupOpenNav"><span>🕸️</span><div><strong>Living Knowledge Matrix</strong><small>Interconnected knowledge map</small></div></a>
             <a href="culturalverse-lessons.html" class="cv-dd-link"><span>📖</span><div><strong>Deep Lessons</strong><small>Full reading modules</small></div></a>
             <a href="#" class="cv-dd-link cv-dd-link--soon"><span>🔮</span><div><strong>Reflections</strong><small>Guided practice — soon</small></div></a>
             <a href="#" class="cv-dd-link cv-dd-link--soon"><span>⚡</span><div><strong>Mana Meter</strong><small>Track your journey — soon</small></div></a>
@@ -216,7 +216,7 @@
         </div>
         <div class="cv-hero__actions">
           <a href="#cultures" class="cv-btn cv-btn--primary"><i class="fas fa-globe"></i>Explore the Cultures</a>
-          <a href="https://808cryptobeast.github.io/Ikeverse/" class="cv-btn cv-btn--ghost"><i class="fas fa-network-wired"></i>Living Knowledge Matrix</a>
+          <a href="#" class="cv-dd-link" id="cvMatrixPopupOpenNav"><span>🕸️</span><div><strong>Living Knowledge Matrix</strong><small>Interconnected knowledge map</small></div></a>
         </div>
       </div>
       <div class="cv-hero__orbit" aria-hidden="true">
@@ -679,7 +679,90 @@
       </div>
     </div>
   </footer>
+<div class="cv-matrix-popup-bg" id="cvMatrixPopupBg"></div>
 
+<aside class="cv-matrix-popup" id="cvMatrixPopup" aria-hidden="true">
+  <div class="cv-matrix-popup__header">
+    <div class="cv-matrix-popup__eyebrow">𓃭⚛𓃗</div>
+    <h3 class="cv-matrix-popup__title">The Living Knowledge Matrix</h3>
+    <button class="cv-matrix-popup__close" id="cvMatrixPopupClose" aria-label="Close popup">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="cv-matrix-popup__body">
+    <div class="cv-matrix-popup__hero">
+      <span class="cv-matrix-popup__kicker">WEAVING THE QUANTUM-ANCESTRAL KNOWLEDGE MATRIX</span>
+      <p class="cv-matrix-popup__lead">
+        Decoding the sacred algorithms of our ancestors through quantum visualization.
+      </p>
+    </div>
+
+    <div class="cv-matrix-popup__section">
+      <h4>ENTER THE KNOWLEDGE FIELD</h4>
+      <p>
+        The Living Knowledge Matrix is an interactive 3D knowledge field within Ikeverse — a living web
+        of relationships showing how ancient wisdom systems, modern scientific ideas, and cross-cultural
+        knowledge streams mirror, inform, and illuminate one another.
+      </p>
+    </div>
+
+    <div class="cv-matrix-popup__section">
+      <h4>WHAT IT REVEALS</h4>
+      <p>
+        This is not a list, and not a static database. It is a dynamic visualization system showing how
+        Hawaiian navigation connects to Kemetic astronomy, how the Kumulipo resonates with other creation
+        traditions, how Maʻat and Pono reflect shared principles of order and balance, and how different
+        civilizations encountered the same cosmic truths through different languages, symbols, and sacred forms.
+      </p>
+    </div>
+
+    <div class="cv-matrix-popup__grid">
+      <div class="cv-matrix-popup__card">
+        <span>🌺</span>
+        <strong>Ancient + Modern</strong>
+        <p>Modern concepts placed beside ancestral systems, not above them.</p>
+      </div>
+
+      <div class="cv-matrix-popup__card">
+        <span>🌐</span>
+        <strong>Cross-Cultural Threads</strong>
+        <p>See how traditions connect through creation, stars, water, ethics, memory, and consciousness.</p>
+      </div>
+
+      <div class="cv-matrix-popup__card">
+        <span>⚛️</span>
+        <strong>Quantum-Ancestral Lens</strong>
+        <p>Explore symbolic, philosophical, and cosmological parallels between ancient knowledge and modern inquiry.</p>
+      </div>
+
+      <div class="cv-matrix-popup__card">
+        <span>✨</span>
+        <strong>Collective Consciousness</strong>
+        <p>Trace the shared human search for the origins of life, order, spirit, and reality itself.</p>
+      </div>
+    </div>
+
+    <div class="cv-matrix-popup__section">
+      <h4>WHY IT MATTERS</h4>
+      <p>
+        The Matrix exists to show that indigenous and ancient knowledge systems are not fragments of a dead past.
+        They are living intelligences. When woven together with care, respect, and depth, they reveal a greater
+        field of meaning — one where cosmology, science, ethics, land, spirit, memory, and the creation of life
+        are all part of the same larger pattern.
+      </p>
+    </div>
+
+    <div class="cv-matrix-popup__actions">
+      <a href="https://808cryptobeast.github.io/Ikeverse/" target="_blank" rel="noopener" class="cv-btn cv-btn--primary">
+        <i class="fas fa-network-wired"></i> Enter the Living Knowledge Matrix
+      </a>
+      <button type="button" class="cv-btn cv-btn--ghost" id="cvMatrixPopupCloseBtn">
+        <i class="fas fa-arrow-left"></i> Back to Culturalverse
+      </button>
+    </div>
+  </div>
+</aside> 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://pikoverse.xyz/js/supabase-client.js"></script>
   <script src="js/culturalverse.js"></script>

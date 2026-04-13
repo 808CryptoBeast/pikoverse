@@ -216,3 +216,48 @@
   });
 
 })();
+
+/* ═══════════════════════════════════════════════════════
+   LIVING KNOWLEDGE MATRIX POPUP
+═══════════════════════════════════════════════════════ */
+(function initMatrixPopup() {
+  const openBtn = document.getElementById('cvMatrixPopupOpen');
+  const openNav = document.getElementById('cvMatrixPopupOpenNav');
+  const popup   = document.getElementById('cvMatrixPopup');
+  const bg      = document.getElementById('cvMatrixPopupBg');
+  const closeA  = document.getElementById('cvMatrixPopupClose');
+  const closeB  = document.getElementById('cvMatrixPopupCloseBtn');
+
+  if (!popup || !bg) return;
+
+  function openMatrixPopup() {
+    popup.classList.add('is-open');
+    bg.classList.add('is-open');
+    popup.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMatrixPopup() {
+    popup.classList.remove('is-open');
+    bg.classList.remove('is-open');
+    popup.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openMatrixPopup);
+
+  if (openNav) {
+    openNav.addEventListener('click', function (e) {
+      e.preventDefault();
+      openMatrixPopup();
+    });
+  }
+
+  if (closeA) closeA.addEventListener('click', closeMatrixPopup);
+  if (closeB) closeB.addEventListener('click', closeMatrixPopup);
+  bg.addEventListener('click', closeMatrixPopup);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMatrixPopup();
+  });
+})();
