@@ -221,16 +221,15 @@
    LIVING KNOWLEDGE MATRIX POPUP
 ═══════════════════════════════════════════════════════ */
 (function initMatrixPopup() {
-  const openBtn = document.getElementById('cvMatrixPopupOpen');
-  const openNav = document.getElementById('cvMatrixPopupOpenNav');
-  const popup   = document.getElementById('cvMatrixPopup');
-  const bg      = document.getElementById('cvMatrixPopupBg');
-  const closeA  = document.getElementById('cvMatrixPopupClose');
-  const closeB  = document.getElementById('cvMatrixPopupCloseBtn');
+  const popup  = document.getElementById('cvMatrixPopup');
+  const bg     = document.getElementById('cvMatrixPopupBg');
+  const closeA = document.getElementById('cvMatrixPopupClose');
+  const closeB = document.getElementById('cvMatrixPopupCloseBtn');
 
   if (!popup || !bg) return;
 
-  function openMatrixPopup() {
+  function openMatrixPopup(e) {
+    if (e) e.preventDefault();
     popup.classList.add('is-open');
     bg.classList.add('is-open');
     popup.setAttribute('aria-hidden', 'false');
@@ -244,14 +243,19 @@
     document.body.style.overflow = '';
   }
 
-  if (openBtn) openBtn.addEventListener('click', openMatrixPopup);
-
-  if (openNav) {
-    openNav.addEventListener('click', function (e) {
-      e.preventDefault();
-      openMatrixPopup();
-    });
-  }
+  [
+    'cvMatrixPopupOpen',
+    'cvMatrixPopupOpenNav',
+    'cvMatrixPopupOpenHero',
+    'cvMatrixPopupOpenTop',
+    'cvMatrixPopupOpenProfile',
+    'cvMatrixPopupOpenKanaka',
+    'cvMatrixPopupOpenSection',
+    'cvMatrixPopupOpenFooter'
+  ].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', openMatrixPopup);
+  });
 
   if (closeA) closeA.addEventListener('click', closeMatrixPopup);
   if (closeB) closeB.addEventListener('click', closeMatrixPopup);
