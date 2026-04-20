@@ -700,6 +700,8 @@
     }
     .cv-toast.show { transform: translateY(0); opacity: 1; }
     .cv-toast.err { border-color: rgba(255,71,87,0.4); color: var(--red); }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   </style>
 </head>
 <body>
@@ -722,7 +724,19 @@
     </div>
     <div class="auth-field">
       <label class="auth-label" for="authPassword">Password</label>
-      <input class="auth-input" type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" />
+      <div style="position:relative;">
+        <input class="auth-input" type="password" id="authPassword" placeholder="••••••••"
+               autocomplete="current-password" style="padding-right:40px;" />
+        <button type="button" id="authPwToggle"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+                       background:none;border:none;color:var(--text-3);cursor:pointer;
+                       font-size:13px;padding:4px;transition:color 0.15s;"
+                onmouseenter="this.style.color='var(--emerald)'"
+                onmouseleave="this.style.color='var(--text-3)'"
+                aria-label="Toggle password visibility">
+          <i class="fas fa-eye" id="authPwIcon"></i>
+        </button>
+      </div>
     </div>
 
     <button class="auth-btn" id="authSignInBtn" type="button">
@@ -749,6 +763,10 @@
       Culturalverse <span class="cv-admin-badge">Admin</span>
     </div>
     <div class="cv-admin-user">
+      <span id="unsavedIndicator" style="display:none;font-size:0.68rem;color:var(--amber);
+            font-family:var(--font-mono);letter-spacing:1px;animation:pulse 2s infinite;">
+        ● Unsaved changes
+      </span>
       <span id="adminUserEmail"></span>
       <button class="cv-admin-signout" id="adminSignOut" type="button">Sign Out</button>
     </div>
@@ -804,6 +822,9 @@
       <div class="cv-admin-sidebar-label">Setup</div>
       <div class="cv-admin-nav-item" onclick="showPage('db-setup')">
         <span class="cv-admin-nav-icon">🗄️</span> DB Setup Guide
+      </div>
+      <div class="cv-admin-nav-item" onclick="showPage('settings')">
+        <span class="cv-admin-nav-icon">⚙️</span> Settings
       </div>
     </div>
   </nav>
@@ -967,6 +988,12 @@
         </div>
         <div class="cv-admin-hdr-actions">
           <button class="btn btn-ghost" onclick="showPage('all-lessons')">Cancel</button>
+          <button class="btn btn-ghost" onclick="previewLesson()" title="Preview lesson in new tab">
+            <i class="fas fa-eye"></i> Preview
+          </button>
+          <button class="btn btn-ghost" onclick="copyToDataFile()" title="Copy formatted for culturalverse-data.js">
+            <i class="fas fa-copy"></i> Copy to File
+          </button>
           <button class="btn btn-gold" onclick="saveLesson('draft')">Save Draft</button>
           <button class="btn btn-emerald" onclick="saveLesson('live')">Publish Live</button>
         </div>
@@ -1020,6 +1047,7 @@
           <label class="cv-form-label">Main Content</label>
           <textarea class="cv-form-textarea code" id="fLessonContent" placeholder="<h4>Section Title</h4>&#10;<p>Paragraph content…</p>&#10;<callout>Highlighted note…</callout>&#10;<facts>val::key | val::key</facts>"></textarea>
           <div class="cv-form-hint">Supports: &lt;h4&gt; &lt;p&gt; &lt;ul&gt;&lt;li&gt; &lt;callout&gt; &lt;callout type=&quot;gold&quot;&gt; &lt;facts&gt;val::key|val::key&lt;/facts&gt; &lt;twocol left=&quot;&quot; right=&quot;&quot;&gt;…||…&lt;/twocol&gt; &lt;concepts&gt; &lt;quote cite=&quot;&quot;&gt;</div>
+          <div id="wordCountDisplay" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-3);margin-top:6px;text-align:right;">0 words · 0 chars</div>
         </div>
 
         <div class="cv-form-group" style="margin-bottom:14px;">
@@ -1228,6 +1256,89 @@ async function loadLessonsFromDB() {
   });
   return true;
 }</div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="cv-admin-page" id="page-settings">
+      <div class="cv-admin-page-header">
+        <div>
+          <div class="cv-admin-page-title">Settings</div>
+          <div class="cv-admin-page-sub">Admin account &amp; password management</div>
+        </div>
+      </div>
+
+      <!-- Auth mode indicator -->
+      <div class="cv-setup-card" style="margin-bottom:20px;">
+        <div class="cv-setup-card-title">Current Auth Mode</div>
+        <div id="settingsAuthMode" class="cv-setup-note"></div>
+      </div>
+
+      <!-- Change local password -->
+      <div class="cv-setup-card">
+        <div class="cv-setup-card-title">⚙️ Change Local Password</div>
+        <div class="cv-setup-note" style="margin-bottom:16px;">
+          Changes the <code style="color:var(--emerald);font-family:var(--font-mono)">admin</code> username password stored in this browser.
+          Minimum 12 characters. This only affects the local fallback — your Pikoverse password is managed via pikoverse.xyz.
+        </div>
+        <div style="max-width:420px;display:flex;flex-direction:column;gap:12px;">
+          <div class="cv-form-group">
+            <label class="cv-form-label">Current Password</label>
+            <div style="position:relative;">
+              <input class="cv-form-input" type="password" id="settingsCurrentPw" placeholder="••••••••" style="padding-right:40px;" />
+              <button type="button" onclick="togglePwField('settingsCurrentPw','settingsCurrentPwIcon')"
+                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+                             background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;">
+                <i class="fas fa-eye" id="settingsCurrentPwIcon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="cv-form-group">
+            <label class="cv-form-label">New Password</label>
+            <div style="position:relative;">
+              <input class="cv-form-input" type="password" id="settingsNewPw" placeholder="Min. 12 characters" style="padding-right:40px;" />
+              <button type="button" onclick="togglePwField('settingsNewPw','settingsNewPwIcon')"
+                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+                             background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;">
+                <i class="fas fa-eye" id="settingsNewPwIcon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="cv-form-group">
+            <label class="cv-form-label">Confirm New Password</label>
+            <input class="cv-form-input" type="password" id="settingsConfirmPw" placeholder="Repeat new password" />
+          </div>
+          <div id="settingsPwFeedback" class="cv-feedback"></div>
+          <button class="btn btn-emerald" onclick="changeLocalPassword()" style="align-self:flex-start;">
+            Update Password
+          </button>
+        </div>
+      </div>
+
+      <!-- Supabase admin guide -->
+      <div class="cv-setup-card" style="margin-top:20px;">
+        <div class="cv-setup-card-title">🔗 Switch to Supabase Auth</div>
+        <div class="cv-setup-note">
+          To sign in with your Pikoverse email instead of the local username/password,
+          run this SQL in <strong>Supabase → SQL Editor</strong> with your actual email:
+        </div>
+        <div class="cv-code">update profiles
+set theme = jsonb_set(
+  coalesce(theme, '{}'),
+  '{_isAdmin}',
+  'true'::jsonb
+)
+where id = (
+  select id from auth.users where email = 'your@email.com'
+);
+
+-- Confirm:
+select id, display_name, theme->>'_isAdmin' as is_admin
+from profiles
+where theme->>'_isAdmin' = 'true';</div>
+        <div class="cv-setup-note" style="margin-top:8px;">
+          Once set, sign out and sign back in using your Pikoverse email. Saves will go directly to Supabase.
+        </div>
       </div>
     </div>
 
@@ -1484,6 +1595,7 @@ function showPage(id, moduleFilter) {
     clearLessonForm();
     updateSupabaseStatus();
   }
+  if (id === 'settings') initSettingsPage();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1636,6 +1748,7 @@ async function saveLesson(status) {
       fbEl.textContent = `✓ "${title}" saved as ${status.toUpperCase()} in Supabase.`;
       fbEl.className = 'cv-feedback success';
       toast(`"${title}" ${status === 'live' ? 'published' : 'saved as draft'}`);
+      markUnsaved(false);
       const idx = _lessons.findIndex(l => l.id === id);
       const entry = { id, module, num, title, read_time: readTime, status, source: 'db' };
       if (idx > -1) _lessons[idx] = entry; else _lessons.push(entry);
@@ -1659,61 +1772,92 @@ async function saveLesson(status) {
   fbEl.textContent = `✓ "${title}" saved locally. Once Supabase is connected and _isAdmin is set, saves will go directly to the database.`;
   fbEl.className = 'cv-feedback success';
   toast(`"${title}" saved`);
+  markUnsaved(false);
   renderLessonsTable(_lessons);
   updateStats(); updateCounts();
 }
 
-/* ── Edit Lesson ── */
+/* ── Edit Lesson — pulls FULL content from CULTURALVERSE_DATA ── */
 async function editLesson(id) {
   showPage('new-lesson');
-  document.getElementById('lessonFormTitle').textContent = 'Edit Lesson';
+  document.getElementById('lessonFormTitle').textContent = 'Edit Lesson — ' + id;
 
-  // Try Supabase
+  // Try Supabase first (has full content if seeded)
   if (_supa && _authMode === 'supabase') {
     try {
       const { data } = await _supa.from('cv_lessons').select('*').eq('id', id).single();
-      if (data) {
-        document.getElementById('fLessonId').value       = data.id || '';
-        document.getElementById('fLessonModule').value   = data.module || 'kanaka';
-        document.getElementById('fLessonTitle').value    = data.title || '';
-        document.getElementById('fLessonNum').value      = data.lesson_num || '';
-        document.getElementById('fLessonReadTime').value = data.read_time || '';
-        document.getElementById('fLessonLead').value     = data.lead_text || '';
-        document.getElementById('fLessonContent').value  = data.content || '';
-        document.getElementById('fLessonSources').value  = data.sources || '';
-        document.getElementById('fLessonMana').value     = data.mana || 100;
-        document.getElementById('fLessonSort').value     = data.sort_order || 0;
+      if (data && data.content) {
+        populateLessonForm(data.id, data.module, data.lesson_num, data.title,
+          data.read_time, data.lead_text, data.content, data.sources, data.mana, data.sort_order);
         return;
       }
     } catch (e) {}
   }
 
-  // localStorage fallback
+  // Check localStorage
   const saved = Store.get('cv_admin_lessons') || {};
-  if (saved[id]) {
+  if (saved[id] && saved[id].content) {
     const d = saved[id];
-    document.getElementById('fLessonId').value       = d.id || '';
-    document.getElementById('fLessonModule').value   = d.module || 'kanaka';
-    document.getElementById('fLessonTitle').value    = d.title || '';
-    document.getElementById('fLessonNum').value      = d.num || '';
-    document.getElementById('fLessonReadTime').value = d.readTime || '';
-    document.getElementById('fLessonLead').value     = d.lead || '';
-    document.getElementById('fLessonContent').value  = d.content || '';
-    document.getElementById('fLessonSources').value  = d.sources || '';
-    document.getElementById('fLessonMana').value     = d.mana || 100;
-    document.getElementById('fLessonSort').value     = d.sort || 0;
+    populateLessonForm(d.id, d.module, d.num, d.title,
+      d.readTime, d.lead, d.content, d.sources, d.mana, d.sort);
     return;
   }
 
-  // Static data fallback (title/meta only)
+  // Pull FULL content from CULTURALVERSE_DATA (static file)
+  if (typeof CULTURALVERSE_DATA !== 'undefined') {
+    for (const culture of CULTURALVERSE_DATA.cultures) {
+      for (const mod of culture.modules || []) {
+        const lesson = (mod.lessons || []).find(l => l.id === id);
+        if (lesson) {
+          // Extract lead paragraph from content (first <p class="lead"> or first <p>)
+          let lead = '';
+          let body = lesson.content || '';
+          const leadMatch = body.match(/<p class="lead">([\s\S]*?)<\/p>/);
+          if (leadMatch) {
+            lead = leadMatch[1].trim();
+            body = body.replace(leadMatch[0], '').trim();
+          }
+          populateLessonForm(
+            lesson.id,
+            culture.id,
+            lesson.num || '',
+            lesson.title,
+            lesson.readTime || '',
+            lead,
+            body,
+            '', // sources not in static data structure
+            100,
+            0
+          );
+          toast('Content loaded from culturalverse-data.js');
+          return;
+        }
+      }
+    }
+  }
+
+  // Final fallback — meta only
   const lesson = _lessons.find(l => l.id === id);
   if (lesson) {
-    document.getElementById('fLessonId').value       = lesson.id;
-    document.getElementById('fLessonModule').value   = lesson.module;
-    document.getElementById('fLessonTitle').value    = lesson.title;
-    document.getElementById('fLessonNum').value      = lesson.num || '';
-    document.getElementById('fLessonReadTime').value = lesson.read_time || '';
+    populateLessonForm(lesson.id, lesson.module, lesson.num || '',
+      lesson.title, lesson.read_time || '', '', '', '', 100, 0);
+    toast('Only metadata found — full content not available', true);
   }
+}
+
+function populateLessonForm(id, module, num, title, readTime, lead, content, sources, mana, sort) {
+  document.getElementById('fLessonId').value       = id || '';
+  document.getElementById('fLessonModule').value   = module || 'kanaka';
+  document.getElementById('fLessonTitle').value    = title || '';
+  document.getElementById('fLessonNum').value      = num || '';
+  document.getElementById('fLessonReadTime').value = readTime || '';
+  document.getElementById('fLessonLead').value     = lead || '';
+  document.getElementById('fLessonContent').value  = content || '';
+  document.getElementById('fLessonSources').value  = sources || '';
+  document.getElementById('fLessonMana').value     = mana || 100;
+  document.getElementById('fLessonSort').value     = sort || 0;
+  updateWordCount();
+  markUnsaved(false); // freshly loaded — no unsaved changes yet
 }
 
 /* ── Toggle Status ── */
@@ -1777,6 +1921,232 @@ function updateSupabaseStatus() {
     el.textContent = '✓ Supabase connected — saves write directly to cv_lessons table and go live immediately.';
   } else {
     el.textContent = 'Using local auth — saves go to localStorage. To enable live DB saves, sign in with your Pikoverse email and set _isAdmin: true on your profile (see DB Setup Guide).';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PASSWORD SHOW/HIDE TOGGLE
+═══════════════════════════════════════════════════════════ */
+function togglePwField(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon  = document.getElementById(iconId);
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+  } else {
+    input.type = 'password';
+    if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+  }
+}
+
+// Wire auth gate toggle
+document.getElementById('authPwToggle')?.addEventListener('click', () => {
+  togglePwField('authPassword', 'authPwIcon');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   CHANGE LOCAL PASSWORD
+═══════════════════════════════════════════════════════════ */
+async function changeLocalPassword() {
+  const currentPw = document.getElementById('settingsCurrentPw').value;
+  const newPw     = document.getElementById('settingsNewPw').value;
+  const confirmPw = document.getElementById('settingsConfirmPw').value;
+  const fbEl      = document.getElementById('settingsPwFeedback');
+  fbEl.className  = 'cv-feedback';
+
+  if (!currentPw || !newPw || !confirmPw) {
+    fbEl.textContent = 'All three fields are required.';
+    fbEl.className = 'cv-feedback error';
+    return;
+  }
+  if (newPw !== confirmPw) {
+    fbEl.textContent = 'New passwords do not match.';
+    fbEl.className = 'cv-feedback error';
+    return;
+  }
+  if (newPw.length < 12) {
+    fbEl.textContent = 'New password must be at least 12 characters.';
+    fbEl.className = 'cv-feedback error';
+    return;
+  }
+
+  const creds = Store.get(CREDS_KEY);
+  if (!creds) { fbEl.textContent = 'No credentials found.'; fbEl.className = 'cv-feedback error'; return; }
+
+  const currentHash = await sha256(creds.username + ':' + currentPw);
+  if (currentHash !== creds.hash) {
+    fbEl.textContent = 'Current password is incorrect.';
+    fbEl.className = 'cv-feedback error';
+    return;
+  }
+
+  const newHash = await sha256(creds.username + ':' + newPw);
+  Store.set(CREDS_KEY, { username: creds.username, hash: newHash });
+
+  document.getElementById('settingsCurrentPw').value = '';
+  document.getElementById('settingsNewPw').value = '';
+  document.getElementById('settingsConfirmPw').value = '';
+
+  fbEl.textContent = '✓ Password updated successfully. Use the new password next time you sign in.';
+  fbEl.className = 'cv-feedback success';
+  toast('Password changed successfully');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WORD COUNT on content textarea
+═══════════════════════════════════════════════════════════ */
+function updateWordCount() {
+  const content = document.getElementById('fLessonContent')?.value || '';
+  const text    = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const words   = text ? text.split(' ').length : 0;
+  const chars   = content.length;
+  const el      = document.getElementById('wordCountDisplay');
+  if (el) el.textContent = `${words.toLocaleString()} words · ${chars.toLocaleString()} chars`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UNSAVED CHANGES INDICATOR
+═══════════════════════════════════════════════════════════ */
+let _hasUnsaved = false;
+
+function markUnsaved(state = true) {
+  _hasUnsaved = state;
+  const el = document.getElementById('unsavedIndicator');
+  if (el) el.style.display = state ? 'inline' : 'none';
+}
+
+// Wire up form inputs to mark unsaved
+document.addEventListener('DOMContentLoaded', () => {
+  ['fLessonTitle','fLessonNum','fLessonReadTime','fLessonLead',
+   'fLessonContent','fLessonSources','fLessonMana','fLessonSort']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => {
+        markUnsaved(true);
+        if (id === 'fLessonContent') updateWordCount();
+      });
+    });
+});
+
+// Warn before leaving with unsaved changes
+window.addEventListener('beforeunload', e => {
+  if (_hasUnsaved) { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   PREVIEW LESSON
+═══════════════════════════════════════════════════════════ */
+function previewLesson() {
+  const title   = document.getElementById('fLessonTitle').value || 'Untitled Lesson';
+  const num     = document.getElementById('fLessonNum').value || '';
+  const time    = document.getElementById('fLessonReadTime').value || '';
+  const lead    = document.getElementById('fLessonLead').value || '';
+  const content = document.getElementById('fLessonContent').value || '';
+  const sources = document.getElementById('fLessonSources').value || '';
+
+  // Build preview HTML
+  const leadHtml    = lead ? `<p class="cv-lesson__lead" style="font-size:1.05rem;font-style:italic;line-height:1.8;margin-bottom:1.5rem;color:rgba(200,221,208,0.9);">${lead}</p>` : '';
+  const sourcesHtml = sources ? `<div style="margin-top:2rem;padding:1rem;border:1px solid rgba(60,179,113,0.15);border-radius:8px;font-size:0.8rem;color:rgba(200,221,208,0.55);">
+    <div style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Sources</div>
+    ${sources.split('\n').map(s => `<div>• ${s}</div>`).join('')}
+  </div>` : '';
+
+  // Render content tags
+  let rendered = content
+    .replace(/<h4>/g, '<h4 style="font-family:\'Cormorant Garamond\',serif;font-size:1.15rem;font-weight:600;color:#3cb371;margin:1.5rem 0 0.5rem;border-left:3px solid #3cb371;padding-left:12px;">')
+    .replace(/<\/h4>/g, '</h4>')
+    .replace(/<callout type="gold">([\s\S]*?)<\/callout>/g, '<div style="border-left:3px solid #f0c96a;background:rgba(240,201,106,0.05);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;font-style:italic;">$1</div>')
+    .replace(/<callout type="bridge">([\s\S]*?)<\/callout>/g, '<div style="border-left:3px solid #54d1ff;background:rgba(84,209,255,0.05);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">$1</div>')
+    .replace(/<callout>([\s\S]*?)<\/callout>/g, '<div style="border-left:3px solid #3cb371;background:rgba(60,179,113,0.06);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;font-style:italic;">$1</div>')
+    .replace(/<facts>([\s\S]*?)<\/facts>/g, (_, inner) => {
+      const facts = inner.split('|').map(f => f.trim()).filter(Boolean);
+      return '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin:1.5rem 0;">' +
+        facts.map(f => {
+          const [val, key] = f.split('::');
+          return `<div style="background:rgba(60,179,113,0.06);border:1px solid rgba(60,179,113,0.15);border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:#3cb371;">${val}</div>
+            <div style="font-size:0.72rem;color:rgba(200,221,208,0.5);margin-top:4px;">${key || ''}</div>
+          </div>`;
+        }).join('') + '</div>';
+    });
+
+  const win = window.open('', '_blank', 'width=900,height=800');
+  win.document.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <title>Preview: ${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { background:#030a0f; color:#c8ddd0; font-family:'Lora',serif; padding:40px; max-width:780px; margin:0 auto; line-height:1.75; }
+      h4 { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:600; color:#3cb371; margin:1.5rem 0 0.5rem; border-left:3px solid #3cb371; padding-left:12px; }
+      p { margin-bottom:1rem; font-size:0.95rem; }
+      ul { padding-left:1.25rem; margin-bottom:1rem; } li { margin-bottom:0.4rem; font-size:0.9rem; }
+      .preview-header { border-bottom:1px solid rgba(60,179,113,0.2); padding-bottom:20px; margin-bottom:28px; }
+      .preview-num { font-family:'Space Mono',monospace; font-size:0.72rem; color:#3cb371; opacity:0.6; letter-spacing:2px; }
+      .preview-title { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:700; margin:8px 0 4px; }
+      .preview-meta { font-family:'Space Mono',monospace; font-size:0.72rem; color:rgba(200,221,208,0.4); }
+      .preview-badge { display:inline-block; background:rgba(255,159,67,0.15); border:1px solid rgba(255,159,67,0.4); color:#ff9f43; font-family:'Space Mono',monospace; font-size:0.65rem; padding:3px 10px; border-radius:4px; margin-bottom:16px; letter-spacing:1px; }
+    </style>
+  </head><body>
+    <div class="preview-badge">⚠ PREVIEW — Not yet published</div>
+    <div class="preview-header">
+      <div class="preview-num">${num}</div>
+      <div class="preview-title">${title}</div>
+      <div class="preview-meta">${time}</div>
+    </div>
+    ${leadHtml}
+    ${rendered}
+    ${sourcesHtml}
+  </body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COPY TO DATA FILE — formats lesson as culturalverse-data.js entry
+═══════════════════════════════════════════════════════════ */
+function copyToDataFile() {
+  const id      = document.getElementById('fLessonId').value.trim();
+  const module  = document.getElementById('fLessonModule').value;
+  const num     = document.getElementById('fLessonNum').value.trim();
+  const title   = document.getElementById('fLessonTitle').value.trim();
+  const time    = document.getElementById('fLessonReadTime').value.trim();
+  const lead    = document.getElementById('fLessonLead').value.trim();
+  const content = document.getElementById('fLessonContent').value.trim();
+
+  if (!id || !title) { toast('ID and Title are required before copying', true); return; }
+
+  const fullContent = lead
+    ? `<p class="lead">${lead}</p>\n\n${content}`
+    : content;
+
+  const output = `            {
+              id:       '${id}',
+              num:      '${num}',
+              title:    '${title}',
+              readTime: '${time}',
+              content: \`
+${fullContent}
+\`
+            },`;
+
+  navigator.clipboard.writeText(output).then(() => {
+    toast('✓ Copied! Paste into the appropriate module lessons array in culturalverse-data.js');
+  }).catch(() => {
+    toast('Copy failed — your browser may need clipboard permission', true);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SETTINGS PAGE INIT
+═══════════════════════════════════════════════════════════ */
+function initSettingsPage() {
+  const el = document.getElementById('settingsAuthMode');
+  if (!el) return;
+  if (_authMode === 'supabase') {
+    el.innerHTML = '<span style="color:var(--emerald)">✓ Signed in via Supabase</span> — saves write directly to the database. Your Pikoverse profile has <code style="color:var(--emerald);font-family:var(--font-mono)">_isAdmin: true</code>.';
+  } else {
+    el.innerHTML = '<span style="color:var(--amber)">◉ Local auth (username/password)</span> — saves go to browser localStorage. To switch to Supabase, set <code style="color:var(--emerald);font-family:var(--font-mono)">_isAdmin: true</code> on your Pikoverse profile using the SQL below.';
   }
 }
 
