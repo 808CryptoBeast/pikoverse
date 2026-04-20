@@ -34,7 +34,7 @@
                    'ke-maat-politics','ke-medunetjer','ke-medicine'].every(id => c.includes(id)) },
     { id: 'bridge-walker',  label: 'Bridge Walker',    icon: '🌐',
       desc: 'Complete all Bridge lessons.',
-      check: c => ['bridge-darkness','bridge-pairs','bridge-pono-maat'].every(id => c.includes(id)) },
+      check: c => ['bridge-darkness','bridge-pairs','bridge-aloha-maat'].every(id => c.includes(id)) },
     { id: 'weaver',         label: 'Knowledge Weaver', icon: '✦',
       desc: 'Complete all available lessons.',      check: c => c.length >= 18 },
   ];
@@ -139,10 +139,9 @@
     if (el('manaFillLocal'))    el('manaFillLocal').style.width    = pct + '%';
     // Lessons page uses these same IDs too
     if (el('culturesCount')) {
-      // Count distinct cultures in completed lessons
       const kanaka = ['km-kumulipo','km-wakea','km-starcompass','km-hokuleaa','km-ahupuaa','km-loikalo','km-olelo','km-hula'];
       const kemet  = ['ke-nun','ke-ennead','ke-ptah','ke-maat','ke-maat-politics','ke-medunetjer','ke-medicine'];
-      const bridge = ['bridge-darkness','bridge-pairs','bridge-pono-maat'];
+      const bridge = ['bridge-darkness','bridge-pairs','bridge-aloha-maat'];
       let count = 0;
       if (kanaka.some(id => completed.includes(id))) count++;
       if (kemet.some(id  => completed.includes(id))) count++;
@@ -193,9 +192,8 @@
         .from('profiles').select('display_name, avatar_url, theme').eq('id', _userId).single();
       if (error || !data) return null;
 
-      // Pull richer profile data (avatar from Storage, display_name from profiles table)
       if (_user) {
-        if (data.avatar_url) _user.user_metadata = { ..._user.user_metadata, avatar_url: data.avatar_url };
+        if (data.avatar_url)   _user.user_metadata = { ..._user.user_metadata, avatar_url:   data.avatar_url };
         if (data.display_name) _user.user_metadata = { ..._user.user_metadata, display_name: data.display_name };
       }
 

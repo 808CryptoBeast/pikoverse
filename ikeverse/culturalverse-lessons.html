@@ -10,6 +10,216 @@
   <link rel="stylesheet" href="css/culturalverse.css" />
   <link rel="stylesheet" href="css/culturalverse-lessons.css" />
   <link rel="stylesheet" href="css/culturalverse-additions.css" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       NEW COMPONENT STYLES — Laʻau Lapaʻau + Aloha/Maʻat
+       Added for: km-laau, ke-medicine, bridge-aloha-maat
+    ═══════════════════════════════════════════════════ */
+
+    /* ── Plant grid (Laʻau Lapaʻau lesson) ── */
+    .cv-plant-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .cv-plant-grid { grid-template-columns: 1fr; }
+    }
+
+    .cv-plant-card {
+      border: 1px solid rgba(60, 179, 113, 0.22);
+      border-radius: 12px;
+      padding: 1.25rem;
+      background: rgba(60, 179, 113, 0.04);
+      transition: border-color 0.2s;
+    }
+
+    .cv-plant-card:hover {
+      border-color: rgba(60, 179, 113, 0.4);
+    }
+
+    .cv-plant-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--emerald, #3cb371);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .cv-plant-latin {
+      font-size: 0.78rem;
+      font-style: italic;
+      font-weight: 400;
+      opacity: 0.65;
+      display: block;
+      margin-top: 3px;
+    }
+
+    .cv-plant-body p {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--text-2, rgba(255,255,255,0.72));
+      margin: 0;
+    }
+
+    /* ── Card grid (Kemet medicine papyri) ── */
+    .cv-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .cv-card-grid { grid-template-columns: 1fr; }
+    }
+
+    .cv-info-card {
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .cv-info-card--gold {
+      border-color: rgba(240, 201, 106, 0.25);
+      background: rgba(240, 201, 106, 0.04);
+    }
+
+    .cv-info-card__title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold, #f0c96a);
+      margin-bottom: 4px;
+    }
+
+    .cv-info-card__subtitle {
+      font-size: 0.75rem;
+      color: rgba(240, 201, 106, 0.55);
+      font-style: italic;
+      margin-bottom: 0.75rem;
+    }
+
+    .cv-info-card p {
+      font-size: 0.87rem;
+      line-height: 1.75;
+      color: var(--text-2, rgba(255,255,255,0.72));
+      margin: 0;
+    }
+
+    /* ── Bridge quote block (Aloha & Maʻat) ── */
+    .cv-bridge-quote {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .cv-bridge-quote__hawaii,
+    .cv-bridge-quote__kemet {
+      flex: 1;
+      min-width: 200px;
+      font-style: italic;
+      line-height: 1.8;
+      font-size: 0.92rem;
+      opacity: 0.85;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .cv-bridge-quote__attr {
+      font-style: normal;
+      font-size: 0.75rem;
+      opacity: 0.55;
+      margin-top: 0.5rem;
+      display: block;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+
+    .cv-bridge-quote__divider {
+      font-size: 1.5rem;
+      opacity: 0.25;
+      flex-shrink: 0;
+      padding-top: 0.25rem;
+    }
+
+    /* ── Gold heading variant (Kemet lessons) ── */
+    .cv-heading--gold {
+      color: var(--gold, #f0c96a);
+      border-left-color: var(--gold, #f0c96a);
+    }
+
+    /* ── Gold callout variant ── */
+    .cv-callout--gold {
+      border-left-color: var(--gold, #f0c96a);
+      background: rgba(240, 201, 106, 0.05);
+    }
+
+    /* ── Sources block ── */
+    .cv-sources {
+      margin-top: 2rem;
+      padding: 1.25rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .cv-sources__label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-bottom: 0.75rem;
+    }
+
+    .cv-sources ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .cv-sources li {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text-2, rgba(255,255,255,0.65));
+    }
+
+    .cv-sources a {
+      color: var(--emerald, #3cb371);
+      text-decoration: none;
+    }
+
+    .cv-sources a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── cv-list (shared) ── */
+    .cv-list {
+      padding-left: 1.25rem;
+      margin: 0.75rem 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cv-list li {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-2, rgba(255,255,255,0.75));
+    }
+  </style>
 </head>
 <body>
 

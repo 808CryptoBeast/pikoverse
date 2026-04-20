@@ -1,0 +1,661 @@
+<!--
+════════════════════════════════════════════════════════════════
+  PIKOVERSE — CULTURALVERSE NEW LESSON BLOCKS
+  File: culturalverse-new-lessons.html
+
+  HOW TO USE:
+  1. LAAU LAPAU LESSON → paste inside the Kānaka Maoli <div class="cv-lessons"> section
+     after the last existing lesson block (after km-hula or your last KM lesson)
+
+  2. KEMET ADDITIONS (ke-medicine + ke-imhotep) → paste inside the Kemet
+     <div class="cv-lessons cv-lessons--kemet"> section, after lesson ke-medunetjer
+
+  3. ALOHA AND MAAT BRIDGE → REPLACE the entire existing "bridge-pono-maat"
+     <div class="cv-connection"> block with this new one
+
+  Also rename the achievement check in culturalverse-profile.js:
+    OLD: 'bridge-pono-maat'
+    NEW: 'bridge-aloha-maat'
+════════════════════════════════════════════════════════════════
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     BLOCK 1 — INSERT INTO KĀNAKA MAOLI LESSONS SECTION
+     Lesson ID: km-laau
+     Paste after your last Kānaka Maoli lesson block
+════════════════════════════════════════════════════════════════ -->
+
+<div class="cv-lesson" id="lesson-km-laau">
+  <button class="cv-lesson__trigger" onclick="toggleLesson('lesson-km-laau')">
+    <div class="cv-lesson__trigger-left">
+      <span class="cv-lesson__num">KM·09</span>
+      <div>
+        <span class="cv-lesson__title">Laʻau Lapaʻau — The Sacred Art of Hawaiian Plant Medicine</span>
+        <span class="cv-lesson__meta">Healing · Botany · Kahuna · Kapu · Living Tradition · ~16 min</span>
+      </div>
+    </div>
+    <span class="cv-lesson__chevron">▾</span>
+  </button>
+  <div class="cv-lesson__body">
+
+    <p class="cv-lesson__lead">
+      <em>Laʻau lapaʻau</em> — Hawaiian plant medicine — is one of the most sophisticated
+      healing systems developed in the Pacific. For over a thousand years before Western contact,
+      Kānaka Maoli healers called <strong>kahuna lapaʻau</strong> maintained deep botanical
+      knowledge of hundreds of native and Polynesian-introduced plants, combining physical
+      remedies with spiritual practice, prayer, and an understanding that healing is never
+      separate from the relationship between person, family, land, and cosmos.
+      This is not folk medicine. It is a complete medical science.
+    </p>
+
+    <div class="cv-fact-row">
+      <div class="cv-fact">
+        <div class="cv-fact__val">300+</div>
+        <div class="cv-fact__key">Medicinal plants used</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">~1,000 yrs</div>
+        <div class="cv-fact__key">Of recorded practice</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">Kahuna</div>
+        <div class="cv-fact__key">Trained specialists</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">Living</div>
+        <div class="cv-fact__key">Tradition today</div>
+      </div>
+    </div>
+
+    <h4 class="cv-heading">The Kahuna Lapaʻau — Healers of the Highest Order</h4>
+    <p>
+      A <strong>kahuna lapaʻau</strong> (healing kahuna) was not simply an herbalist. The word
+      <em>kahuna</em> means "keeper of the secret" or "master of a craft" — and the craft of
+      healing required years, sometimes decades, of apprenticeship under an established healer.
+      Training was oral, rigorous, and sacred. A kahuna lapaʻau learned:
+    </p>
+    <ul class="cv-list">
+      <li>The identity, preparation, and proper harvesting of medicinal plants</li>
+      <li>The prayers (<em>pule</em>) associated with each plant and condition</li>
+      <li>Diagnosis through observation, questioning, and spiritual discernment</li>
+      <li>The timing of treatments according to lunar cycles and seasons</li>
+      <li>The kapu (sacred protocols) governing medicine — when to harvest, how to approach plants with respect, how to prepare and administer remedies</li>
+      <li>The relationship between emotional and spiritual states and physical illness</li>
+    </ul>
+    <p>
+      There were many types of kahuna healers, each with specific specializations: the
+      <strong>kahuna hāhā</strong> diagnosed illness through physical examination and touch;
+      the <strong>kahuna pule</strong> healed through prayer and spiritual intervention; the
+      kahuna lapaʻau worked specifically with plant-based medicines. These roles sometimes
+      overlapped in a single healer, and often collaborated.
+    </p>
+
+    <h4 class="cv-heading">Key Medicinal Plants of Hawaiʻi</h4>
+    <p>
+      Of the hundreds of plants in the Hawaiian pharmacopoeia, the following were among the
+      most foundational — carried across the Pacific in the voyaging canoes, cultivated in the
+      ahupuaʻa system, and integrated into daily life as both food and medicine.
+    </p>
+
+    <div class="cv-plant-grid">
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">Noni <span class="cv-plant-latin">Morinda citrifolia</span></div>
+        <div class="cv-plant-body">
+          <p>Called the "pain killer tree" in Polynesia, noni was one of the most versatile
+          medicines in the Hawaiian tradition. The fruit, leaves, bark, and roots all had
+          documented uses. The fruit juice was used for high blood pressure, diabetes-related
+          conditions, digestive complaints, and general immune support. Leaves were heated and
+          applied as poultices for joint pain and skin conditions. The bark was used in
+          preparations for fevers. Modern research has confirmed many of noni's bioactive
+          compounds including damnacanthal, scopoletin, and proxeronine — which has led to
+          significant scientific interest in this traditional knowledge.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">ʻŌlena <span class="cv-plant-latin">Curcuma longa — Turmeric</span></div>
+        <div class="cv-plant-body">
+          <p>ʻŌlena (turmeric) was brought to Hawaiʻi by the first Polynesian voyagers and
+          held deep medicinal and ceremonial significance. It was used to treat respiratory
+          infections — the juice squeezed into the nostrils for sinus conditions and congestion.
+          It was also used for ear infections, skin inflammations, and as a purifying agent.
+          ʻŌlena held spiritual significance as well: it was used in purification ceremonies
+          and was sometimes worn or applied to the body for protection. The active compound
+          curcumin is now one of the most studied anti-inflammatory substances in modern
+          pharmacology — a direct confirmation of what Kānaka Maoli healers knew for
+          over a thousand years.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">Kalo <span class="cv-plant-latin">Colocasia esculenta — Taro</span></div>
+        <div class="cv-plant-body">
+          <p>Kalo is the sacred elder sibling of the Kānaka Maoli people — born of Wākea (Sky
+          Father) and Hoʻohōkūkalani, the same lineage as the first human. As medicine, kalo
+          leaves were used in poultices for skin irritations and minor wounds. The corm was
+          cooked into preparations for digestive disorders. The starchy gel from cooked kalo
+          was used to soothe inflammation internally and externally. Beyond its medicinal
+          properties, kalo represents the deep inseparability of food and medicine in Hawaiian
+          tradition — the concept that properly cultivated, prepared, and consumed food is
+          itself preventive medicine and the foundation of health.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">Kukui <span class="cv-plant-latin">Aleurites moluccana — Candlenut</span></div>
+        <div class="cv-plant-body">
+          <p>The kukui tree — now the official state tree of Hawaiʻi — was a complete pharmacy
+          in itself. The nut oil was used for skin conditions including burns, chapped skin,
+          and sunburn. The roasted kernels were used as a laxative. The sap from the bark
+          treated mouth sores and thrush. The flowers were prepared for respiratory conditions.
+          The ash of burned kukui nuts was mixed with salt and applied to gum infections and
+          toothaches. Kukui oil was also used in massage and body care practices. The tree
+          held deep spiritual symbolism as well — kukui (light) represented knowledge and
+          enlightenment, and leis made from kukui nuts were worn by aliʻi and hula dancers.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">Kī <span class="cv-plant-latin">Cordyline fruticosa — Ti Plant</span></div>
+        <div class="cv-plant-body">
+          <p>Kī (ti plant) held immense spiritual and medicinal power in Hawaiian tradition.
+          The leaves were used to wrap hot stones in steam treatments — the original Hawaiian
+          steam therapy. Kī was used in purification rituals (hoʻoponopono settings), planted
+          around homes for protection, and carried by healers during ceremonies. Medicinally,
+          the leaves were heated and applied as poultices for fevers and body aches. The root
+          was fermented into a beverage. The spiritual and medicinal properties of kī were
+          considered inseparable — plants used in healing were understood to carry mana, and
+          that mana was activated through proper prayer and protocol.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">Māmaki <span class="cv-plant-latin">Pipturus albidus</span></div>
+        <div class="cv-plant-body">
+          <p>Māmaki is one of Hawaiʻi's most beloved native plants and one of the few endemic
+          plants widely used medicinally. As a tea, māmaki leaves were consumed to support
+          overall health, strengthen the immune system, and aid recovery from illness. It was
+          used for high blood pressure, liver conditions, and as a general tonic. The bark
+          fiber was used to make kapa (bark cloth), showing again the Hawaiian principle that
+          useful plants serve life on multiple levels simultaneously. Modern research has
+          identified polyphenols, chlorogenic acid, and rutin in māmaki — compounds associated
+          with antioxidant, anti-inflammatory, and cardioprotective effects.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">ʻAwaʻawa <span class="cv-plant-latin">Piper methysticum — Kava</span></div>
+        <div class="cv-plant-body">
+          <p>ʻAwa (kava) was one of the most significant ceremonially and medicinally important
+          plants brought by Polynesian voyagers. Used across the Pacific for thousands of years,
+          ʻawa was consumed in ritual ceremonies to open communication with ancestral spirits
+          and the divine. Medicinally, it functioned as a powerful anxiolytic and muscle
+          relaxant — used to ease pain, calm anxiety, treat insomnia, and aid recovery. The
+          root was ground and mixed with water. The kavalactones in kava are now confirmed by
+          modern science to have sedative, anxiolytic, and analgesic properties.
+          Different varieties of ʻawa were cultivated for specific purposes — some for ceremony,
+          some for healing, some for daily relaxation — reflecting an agricultural sophistication
+          around medicinal plants.</p>
+        </div>
+      </div>
+
+      <div class="cv-plant-card">
+        <div class="cv-plant-name">ʻUhaloa <span class="cv-plant-latin">Waltheria indica</span></div>
+        <div class="cv-plant-body">
+          <p>ʻUhaloa was one of the primary respiratory plants in the Hawaiian pharmacopoeia.
+          The root and bark were chewed or brewed into preparations for sore throats, coughs,
+          and respiratory infections. It was considered one of the most reliable treatments
+          for throat conditions and was widely used. The plant demonstrates the remarkable
+          practical specificity of Hawaiian botanical knowledge — healers did not use a generic
+          "cough plant" but understood that different preparations of ʻuhaloa worked differently
+          depending on whether the condition was in the upper or lower respiratory tract.</p>
+        </div>
+      </div>
+
+    </div><!-- /cv-plant-grid -->
+
+    <h4 class="cv-heading">Kapu and the Ethics of Healing</h4>
+    <p>
+      The kapu system — often misrepresented as merely a set of restrictions — was in reality
+      a sophisticated framework for maintaining balance (<em>pono</em>) between human activity
+      and the natural and spiritual worlds. In the context of laʻau lapaʻau, kapu governed:
+    </p>
+    <ul class="cv-list">
+      <li><strong>Harvesting protocols:</strong> Plants were gathered at specific times, in specific
+      ways, with prayers offered before and after. Taking more than needed was forbidden. The first
+      of a harvest was often returned as an offering.</li>
+      <li><strong>Gender protocols:</strong> Some plants and preparations were specific to women's
+      medicine, others to men's. Some spaces of healing were restricted.</li>
+      <li><strong>Preparation environments:</strong> The space where medicine was prepared was
+      considered sacred. Certain activities and presences were restricted during preparation.</li>
+      <li><strong>The healer's conduct:</strong> The kahuna lapaʻau maintained personal purity —
+      physical, emotional, spiritual — as a prerequisite for effective healing. A healer in
+      conflict or imbalance could not effectively channel the healing mana of plants.</li>
+    </ul>
+    <p>
+      This is not superstition. This is an understanding that the healer's state of consciousness
+      and intention is a variable in the healing outcome — something that modern placebo research,
+      therapeutic relationship studies, and mind-body medicine are beginning to document
+      scientifically.
+    </p>
+
+    <h4 class="cv-heading">Pule — Prayer as Medicine</h4>
+    <p>
+      No preparation of laʻau lapaʻau was complete without <strong>pule</strong> (prayer).
+      The pule was not decoration on top of the medicine — it was understood to be integral to
+      activating the plant's healing properties. Plants held <em>mana</em> — spiritual power —
+      and that mana was accessed and directed through the proper prayers, spoken by a qualified
+      kahuna who had earned the right to call upon those forces.
+    </p>
+    <p>
+      Specific pule existed for specific plants and conditions. The healer also prayed with and
+      for the patient, addressing not just the physical symptoms but the spiritual and relational
+      conditions that might have opened the person to illness. Hawaiian healing understood that
+      illness was often a symptom of a disrupted relationship — with family, with land, with
+      the divine — and that lasting healing required addressing all levels simultaneously.
+    </p>
+
+    <h4 class="cv-heading">The Modern Revival</h4>
+    <p>
+      The Hawaiian cultural renaissance of the 1970s brought renewed attention to laʻau lapaʻau.
+      Efforts to document, preserve, and revive traditional healing knowledge have been led by
+      organizations including <strong>Papa Ola Lōkahi</strong> (the Native Hawaiian Health Care
+      consortium), the University of Hawaiʻi's ethnobotany and Hawaiian Studies programs, and
+      individual kahuna who maintained the tradition through generations of suppression.
+    </p>
+    <p>
+      The integration of laʻau lapaʻau with modern medicine is an ongoing conversation in
+      Hawaiʻi. Many Native Hawaiian healers and health advocates call for a both/and approach —
+      recognizing that Western biomedicine and traditional healing are not opposites but
+      complementary systems that address different dimensions of health.
+    </p>
+
+    <div class="cv-callout">
+      Laʻau lapaʻau reveals a principle at the heart of Kānaka Maoli knowledge: that the
+      land — the <em>ʻāina</em> — provides everything needed for human health and flourishing.
+      The plants are not resources to be extracted but relatives to be respected. The healer
+      is not separate from the land but its student and steward. This is not a metaphor.
+      It is the operating system of an entire civilization.
+    </div>
+
+    <div class="cv-sources">
+      <div class="cv-sources__label">Sources &amp; Further Reading</div>
+      <ul>
+        <li>Chun, Malcolm Nāeʻa. <em>Must We Wait in Despair: The 1867 Report of the 'Ahahui Lāʻau Lapaʻau of Wailuku, Maui on Native Hawaiian Health</em></li>
+        <li>Krauss, Beatrice H. <em>Plants in Hawaiian Culture</em>. University of Hawaiʻi Press.</li>
+        <li>Gutmanis, June. <em>Kahuna Lapaʻau: The Practice of Hawaiian Herbal Medicine</em>. Island Heritage Publishing.</li>
+        <li>Papa Ola Lōkahi — <a href="https://www.papaolalokahi.org" target="_blank" rel="noopener">papaolalokahi.org</a></li>
+        <li>Whistler, W. Arthur. <em>Polynesian Herbal Medicine</em>. National Tropical Botanical Garden.</li>
+      </ul>
+    </div>
+
+  </div><!-- /lesson body -->
+</div><!-- /lesson km-laau -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     BLOCK 2A — INSERT INTO KEMET LESSONS SECTION
+     Lesson ID: ke-medicine
+     Paste after your last existing Kemet lesson
+════════════════════════════════════════════════════════════════ -->
+
+<div class="cv-lesson cv-lesson--kemet" id="lesson-ke-medicine">
+  <button class="cv-lesson__trigger cv-lesson__trigger--kemet" onclick="toggleLesson('lesson-ke-medicine')">
+    <div class="cv-lesson__trigger-left">
+      <span class="cv-lesson__num cv-lesson__num--gold">KE·05</span>
+      <div>
+        <span class="cv-lesson__title">Kemetic Medicine — Science, Spirit, and the Art of Healing</span>
+        <span class="cv-lesson__meta">Medicine · Imhotep · Papyri · Surgery · Herbalism · ~14 min</span>
+      </div>
+    </div>
+    <span class="cv-lesson__chevron">▾</span>
+  </button>
+  <div class="cv-lesson__body">
+
+    <p class="cv-lesson__lead">
+      Ancient Kemet produced some of the earliest and most sophisticated medical texts in
+      human history — predating the Greek medical tradition by thousands of years. Kemetic
+      physicians understood anatomy, performed surgical procedures, compounded medicines from
+      plants and minerals, and operated within a framework that saw physical health, spiritual
+      balance, and cosmic alignment as inseparable. The most famous physician of all antiquity
+      was not Greek. He was Kemetic.
+    </p>
+
+    <div class="cv-fact-row">
+      <div class="cv-fact">
+        <div class="cv-fact__val">~3,500 BCE</div>
+        <div class="cv-fact__key">Earliest medical records</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">700+</div>
+        <div class="cv-fact__key">Medical formulas in Ebers Papyrus</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">48</div>
+        <div class="cv-fact__key">Surgical cases in Edwin Smith Papyrus</div>
+      </div>
+      <div class="cv-fact">
+        <div class="cv-fact__val">Imhotep</div>
+        <div class="cv-fact__key">First named physician in history</div>
+      </div>
+    </div>
+
+    <h4 class="cv-heading cv-heading--gold">Imhotep — Architect, Physician, and Deified Healer</h4>
+    <p>
+      <strong>Imhotep</strong> (c. 2650–2600 BCE) is among the most extraordinary figures in
+      recorded history. He served under Pharaoh Djoser of the Third Dynasty and is credited as
+      the architect of the <strong>Step Pyramid of Saqqara</strong> — the world's first large
+      stone structure. But his legacy as a healer may be even more significant.
+    </p>
+    <p>
+      Imhotep was the <strong>first physician in recorded history whose name we know</strong>.
+      He was so revered for his healing knowledge that, centuries after his death, he was
+      deified — elevated to the status of a god of medicine and wisdom. His temple at Memphis
+      became a center of healing — people traveled from across the ancient world to seek cures
+      there, sleeping in sacred spaces and receiving guidance in dreams (a practice called
+      <em>incubation</em>). The Greeks identified him with their own healing deity Asclepius.
+    </p>
+    <p>
+      Imhotep's attributed works, passed down and expanded over centuries, are believed to
+      have contributed to the medical papyri tradition — the written codification of Kemetic
+      medical knowledge.
+    </p>
+
+    <h4 class="cv-heading cv-heading--gold">The Medical Papyri — Written Medicine</h4>
+    <p>
+      Several major medical papyri survive from ancient Kemet, each representing a different
+      domain of medical knowledge:
+    </p>
+
+    <div class="cv-card-grid">
+      <div class="cv-info-card cv-info-card--gold">
+        <div class="cv-info-card__title">The Ebers Papyrus</div>
+        <div class="cv-info-card__subtitle">c. 1550 BCE — 108 pages, 700+ formulas</div>
+        <p>The longest surviving medical papyrus, the Ebers is essentially an encyclopedia of
+        Kemetic medicine. It covers treatments for heart conditions, skin diseases, digestive
+        disorders, eye and dental problems, women's health, and mental illness. Treatments
+        combine herbal preparations, mineral compounds, and prayers. Plants used include
+        aloe vera, castor oil, garlic, juniper, myrrh, willow bark (which contains salicin —
+        the active ingredient in aspirin), pomegranate, and coriander.</p>
+      </div>
+      <div class="cv-info-card cv-info-card--gold">
+        <div class="cv-info-card__title">The Edwin Smith Papyrus</div>
+        <div class="cv-info-card__subtitle">c. 1600 BCE — 48 surgical cases</div>
+        <p>The world's earliest known surgical text. It describes 48 cases of trauma and
+        surgical conditions, organized anatomically from head to toe. Each case includes an
+        examination, diagnosis, prognosis (rated as "treatable," "contestable," or "not to be
+        treated"), and treatment. The clinical precision is remarkable: the papyrus describes
+        the heart and pulse, the meninges of the brain, sutures, and the use of fresh meat
+        to control bleeding. It represents rational, empirical medicine — a radical departure
+        from purely spiritual approaches to illness.</p>
+      </div>
+    </div>
+
+    <h4 class="cv-heading cv-heading--gold">The 42 Negative Confessions — Maʻat as Medical Ethics</h4>
+    <p>
+      While not strictly a medical document, the <strong>42 Negative Confessions</strong>
+      (also called the Declaration of Innocence) from the <em>Book of Coming Forth by Day</em>
+      (commonly called the Book of the Dead) reveal the ethical framework within which Kemetic
+      medicine — and all of Kemetic life — operated.
+    </p>
+    <p>
+      In the Hall of Two Truths, the soul of the deceased recited 42 declarations of innocence
+      before 42 divine assessors — one for each nome (province) of Kemet. These were not
+      confessions of sins committed, but declarations of what had <em>not</em> been done —
+      violations of Maʻat avoided. They include:
+    </p>
+    <ul class="cv-list">
+      <li>"I have not done violence to any person."</li>
+      <li>"I have not caused pain."</li>
+      <li>"I have not caused anyone to weep."</li>
+      <li>"I have not polluted the water."</li>
+      <li>"I have not spoken against anyone."</li>
+      <li>"I have not stolen grain."</li>
+      <li>"I have not eavesdropped."</li>
+      <li>"I have not acted with insolence."</li>
+      <li>"I have not killed."</li>
+      <li>"I have not caused the destruction of food."</li>
+    </ul>
+    <p>
+      Read carefully, the 42 Negative Confessions are a comprehensive ethical code covering
+      harm to persons, animals, the environment, community resources, and social relationships.
+      The fact that ecological responsibility (not polluting water, not destroying food)
+      sits alongside prohibitions against violence and theft reveals Kemetic ethics as
+      inherently relational — health, justice, ecology, and cosmic order are all expressions
+      of the same principle: Maʻat.
+    </p>
+
+    <h4 class="cv-heading cv-heading--gold">Spirit and Science — An Integrated System</h4>
+    <p>
+      A common Western misreading of Kemetic medicine is to see it as split between "rational"
+      (Edwin Smith type) and "magical" (Ebers type) treatments — as if these represented
+      competing schools of thought. This is a projection of modern Western categories onto
+      an entirely different worldview.
+    </p>
+    <p>
+      For Kemetic physicians, prayer, herbs, surgery, and cosmic alignment were not competing
+      approaches. They were different instruments in a single orchestra. The physical and
+      spiritual dimensions of illness were not separate — they were expressions of a single
+      disruption of Maʻat. Treatment therefore addressed all dimensions simultaneously.
+      This understanding — that health is a state of harmony rather than merely the absence
+      of disease — is one of the most sophisticated medical philosophies ever developed, and
+      one that modern integrative medicine is slowly rediscovering.
+    </p>
+
+    <div class="cv-callout cv-callout--gold">
+      When Hippocrates — the "father of Western medicine" — visited Kemet, he was entering a
+      medical tradition already thousands of years old. Greek medicine did not invent rational,
+      empirical healing. It inherited and repackaged a tradition with deep African roots.
+      Knowing this changes everything about how we understand the history of medicine.
+    </div>
+
+    <div class="cv-sources">
+      <div class="cv-sources__label">Sources &amp; Further Reading</div>
+      <ul>
+        <li>Breasted, James Henry. <em>The Edwin Smith Surgical Papyrus</em>. University of Chicago Press.</li>
+        <li>Nunn, John F. <em>Ancient Egyptian Medicine</em>. University of Oklahoma Press.</li>
+        <li>Bryan, C.P. (trans.) <em>The Papyrus Ebers</em>. Geoffrey Bles, London.</li>
+        <li>Asante, Molefi Kete. <em>The History of Africa</em>. Routledge.</li>
+        <li>Diop, Cheikh Anta. <em>Civilization or Barbarism</em>. Lawrence Hill Books.</li>
+      </ul>
+    </div>
+
+  </div><!-- /lesson body -->
+</div><!-- /lesson ke-medicine -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     BLOCK 3 — REPLACE THE EXISTING "bridge-pono-maat" BLOCK
+     New ID: bridge-aloha-maat
+     Old title was: "Pono and Maʻat — Two Names for the Same Alignment"
+     CORRECTION: Aloha is the overarching philosophy. Pono flows from Aloha.
+     Maʻat aligns with ALOHA — both are complete cosmic ethical frameworks.
+════════════════════════════════════════════════════════════════ -->
+
+<div class="cv-connection" id="bridge-aloha-maat">
+  <div class="cv-connection__num">03</div>
+  <h3 class="cv-connection__title">Aloha and Maʻat — Two Complete Philosophies of Cosmic Alignment</h3>
+  <div class="cv-connection__cols">
+
+    <div class="cv-connection__col cv-connection__col--hawaii">
+      <div class="cv-connection__col-label">🌺 Aloha — The Hawaiian Philosophy</div>
+      <p>
+        <strong>Aloha</strong> is one of the most profoundly misunderstood words in the
+        Hawaiian language. In the context of tourism, it has been reduced to a greeting —
+        "hello" and "goodbye." But Aloha is a complete philosophical system, a way of being
+        in the world, a cosmic orientation.
+      </p>
+      <p>
+        The word itself reveals everything. <em>Alo</em> means presence, face, to share.
+        <em>Hā</em> means breath — the breath of life, the divine breath. Aloha therefore
+        means: <strong>the presence of the divine breath, shared</strong>. To live Aloha is
+        to recognize that the breath of life — the mana that animates all things — is present
+        in all beings, and that our task is to be in right relationship with that presence.
+      </p>
+      <p>
+        Aloha encompasses the virtues of love, compassion, kindness, humility, unity, patience,
+        and harmony. In traditional Hawaiian governance, the <em>Aloha ʻĀina</em> —
+        love of the land — was not a sentiment but a governing principle: the land is sacred,
+        and all human conduct must be in alignment with its wellbeing.
+      </p>
+      <p>
+        <strong>Pono</strong> is one of the most important expressions of living Aloha.
+        Pono means righteousness, balance, correctness — doing what is right in relationship
+        to all things. A person who lives with Aloha will naturally act with Pono. But Pono
+        is the branch; Aloha is the root. Aloha is the soil from which Pono, Mālama (care),
+        Haʻahaʻa (humility), Lokahi (unity), and ʻOluʻolu (gentleness) all grow.
+      </p>
+    </div>
+
+    <div class="cv-connection__col cv-connection__col--kemet">
+      <div class="cv-connection__col-label">☥ Maʻat — The Kemetic Philosophy</div>
+      <p>
+        <strong>Maʻat</strong> is the Kemetic principle of cosmic order, truth, justice,
+        harmony, and balance. It is not merely a legal or ethical concept — it is the
+        organizing principle of the universe itself. The stars move in Maʻat. The Nile floods
+        in Maʻat. The sun rises in Maʻat. When human beings live in truth, practice justice,
+        and maintain harmony in their communities and with the land, they are participating
+        in and sustaining Maʻat.
+      </p>
+      <p>
+        Its opposite, <strong>Isfet</strong> — chaos, untruth, injustice — was not merely
+        morally wrong. It was cosmically dangerous. A pharaoh who ruled in Isfet did not
+        merely harm his people — he threatened the order of creation itself. This gave ethics
+        a cosmic weight that is rare in any civilization's philosophy.
+      </p>
+      <p>
+        Maʻat was personified as a goddess wearing the ostrich feather — the measure against
+        which the human heart was weighed after death. She was present at the creation of the
+        world and will be present at its end. She is not a rule written by humans; she is the
+        pattern woven into the fabric of existence. To live in alignment with Maʻat is to live
+        in alignment with reality itself.
+      </p>
+      <p>
+        Like Aloha, Maʻat encompasses a cluster of specific virtues — truth (<em>maat</em>),
+        justice, righteousness, harmony, order, reciprocity. None of these virtues can fully
+        be separated from the others; they are all facets of a single orientation toward life.
+      </p>
+    </div>
+
+  </div><!-- /cols -->
+
+  <div class="cv-connection__bridge">
+    <h4 class="cv-connection__bridge-title">The Deep Pattern</h4>
+    <p>
+      Aloha and Maʻat are not surface-level parallels. They are structurally identical
+      philosophical frameworks — developed independently, on opposite sides of the Earth,
+      by peoples who never met, thousands of years apart.
+    </p>
+    <p>
+      Both understand that <strong>life operates within a cosmic order</strong> that is not
+      made by humans but must be aligned with. Both understand that <strong>individual ethics,
+      community relationships, and ecological responsibility are not separate concerns</strong> —
+      they are all expressions of the same underlying alignment. Both see
+      <strong>love, care, and respect as the proper orientation</strong> of a human being toward
+      all life, not as sentiments but as practical operating principles. Both see
+      <strong>imbalance — Isfet / the absence of Aloha — as dangerous</strong>, not just to
+      individuals but to the whole community and even the cosmic order.
+    </p>
+    <p>
+      The Hawaiian teacher Pilahi Paki, who is credited with articulating the ALOHA acronym
+      used in the Hawaiʻi state law (HRS §5-7.5), identified five qualities within Aloha:
+      <em>Akahai</em> (kindness), <em>Lōkahi</em> (unity), <em>ʻOluʻolu</em> (agreeableness),
+      <em>Haʻahaʻa</em> (humility), <em>Ahonui</em> (patience). Read this against the
+      42 Negative Confessions of Maʻat — they are two expressions of the same ancient
+      understanding: that the human being's highest task is to be a keeper of cosmic order,
+      through the quality of every relationship, every action, every word.
+    </p>
+
+    <div class="cv-bridge-quote">
+      <div class="cv-bridge-quote__hawaii">
+        "Aloha is the intelligence with which we meet life."<br>
+        <span class="cv-bridge-quote__attr">— Attributed to Aunty Pilahi Paki</span>
+      </div>
+      <div class="cv-bridge-quote__divider">✦</div>
+      <div class="cv-bridge-quote__kemet">
+        "Speak Maʻat. Do Maʻat. For she is mighty, she is great,<br>she endures."<br>
+        <span class="cv-bridge-quote__attr">— Kemetic inscription, Tomb of Rekhmire, c. 1425 BCE</span>
+      </div>
+    </div>
+  </div><!-- /bridge -->
+</div><!-- /bridge-aloha-maat -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CSS ADDITIONS
+     Add these classes to your culturalverse-lessons.css if not already present
+════════════════════════════════════════════════════════════════ -->
+<style id="new-lesson-styles-reference">
+/*
+  ADD THESE TO culturalverse-lessons.css:
+
+  .cv-plant-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 768px) { .cv-plant-grid { grid-template-columns: 1fr; } }
+
+  .cv-plant-card {
+    border: 1px solid rgba(var(--hawaii-accent-rgb, 34,139,87), 0.25);
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: rgba(var(--hawaii-accent-rgb, 34,139,87), 0.04);
+  }
+
+  .cv-plant-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--hawaii-accent, #22916a);
+    margin-bottom: 0.5rem;
+  }
+
+  .cv-plant-latin {
+    font-size: 0.8rem;
+    font-style: italic;
+    font-weight: 400;
+    opacity: 0.75;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .cv-bridge-quote {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    flex-wrap: wrap;
+  }
+
+  .cv-bridge-quote__hawaii,
+  .cv-bridge-quote__kemet {
+    flex: 1;
+    min-width: 200px;
+    font-style: italic;
+    line-height: 1.7;
+    font-size: 0.92rem;
+    opacity: 0.85;
+  }
+
+  .cv-bridge-quote__attr {
+    font-style: normal;
+    font-size: 0.78rem;
+    opacity: 0.6;
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  .cv-bridge-quote__divider {
+    font-size: 1.5rem;
+    opacity: 0.35;
+    flex-shrink: 0;
+  }
+*/
+</style>
