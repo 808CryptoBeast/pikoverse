@@ -2,6 +2,11 @@
    culturalverse-lessons.js
    Rendering engine — reads CULTURALVERSE_DATA, builds everything.
    No content lives here. All content is in culturalverse-data.js
+
+   Supabase integration:
+   On init, attempts to fetch from cv_lessons table and merges any
+   DB content into CULTURALVERSE_DATA in memory before rendering.
+   Falls back to static file seamlessly if Supabase is unavailable.
 ═══════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -13,7 +18,8 @@
     activeLessonId:   null,
     filterCulture:    'all',
     completed:        JSON.parse(localStorage.getItem('cv_completed') || '[]'),
-    mana:             parseInt(localStorage.getItem('cv_mana') || '0')
+    mana:             parseInt(localStorage.getItem('cv_mana') || '0'),
+    dbLoaded:         false,   // true once Supabase fetch has run (success or fail)
   };
 
   /* ── DOM refs ── */
@@ -30,6 +36,87 @@
   const completedCnt  = document.getElementById('completedCount');
   const manaDisplay   = document.getElementById('manaDisplay');
   const manaFill      = document.getElementById('manaFill');
+
+  /* ═══════════════════════════════════════════════════════════════
+     SUPABASE MERGE
+     Fetches live lessons from cv_lessons table and merges content
+     into the in-memory CULTURALVERSE_DATA before rendering.
+     Runs once. If it fails, static data is used as-is.
+  ═══════════════════════════════════════════════════════════════ */
+  async function mergeSupabaseLessons(supa) {
+    try {
+      const { data, error } = await supa
+        .from('cv_lessons')
+        .select('id, module, lesson_num, title, read_time, lead_text, content, sources, mana, sort_order, status')
+        .eq('status', 'live')
+        .order('module')
+        .order('sort_order');
+
+      if (error || !data?.length) return;
+
+      // Build a quick lookup map by lesson id
+      const dbMap = {};
+      data.forEach(row => { dbMap[row.id] = row; });
+
+      // Walk CULTURALVERSE_DATA and overlay DB fields where they exist
+      for (const culture of CULTURALVERSE_DATA.cultures) {
+        for (const mod of culture.modules || []) {
+          for (const lesson of mod.lessons || []) {
+            const db = dbMap[lesson.id];
+            if (!db) continue;
+
+            // Override fields that exist in DB (DB is source of truth)
+            if (db.title)     lesson.title    = db.title;
+            if (db.lesson_num)lesson.num      = db.lesson_num;
+            if (db.read_time) lesson.readTime = db.read_time;
+
+            // Merge content: if DB has a lead_text, prepend it as the lead paragraph
+            if (db.content) {
+              const leadBlock = db.lead_text
+                ? `<p class="lead">${db.lead_text}</p>\n\n`
+                : '';
+              lesson.content = leadBlock + db.content;
+            }
+          }
+        }
+      }
+
+      // Also handle lessons that exist in DB but NOT in static data
+      // (new lessons added via admin panel)
+      data.forEach(row => {
+        if (!row.content) return; // skip metadata-only rows
+        const culture = CULTURALVERSE_DATA.cultures.find(c => c.id === row.module);
+        if (!culture || culture.status !== 'live') return;
+
+        // Check if this lesson already exists in any module
+        let found = false;
+        for (const mod of culture.modules) {
+          if (mod.lessons.find(l => l.id === row.id)) { found = true; break; }
+        }
+        if (found) return;
+
+        // New lesson — add to the first module of the culture for now
+        // Admin should set module_id properly; fallback to first module
+        const targetMod = culture.modules[0];
+        if (!targetMod) return;
+
+        const leadBlock = row.lead_text ? `<p class="lead">${row.lead_text}</p>\n\n` : '';
+        targetMod.lessons.push({
+          id:       row.id,
+          num:      row.lesson_num || '',
+          title:    row.title,
+          readTime: row.read_time || '',
+          content:  leadBlock + (row.content || ''),
+        });
+      });
+
+      console.info(`[Culturalverse] Merged ${data.length} lesson(s) from Supabase`);
+
+    } catch (err) {
+      // Supabase unavailable or table doesn't exist — static data used as-is
+      console.info('[Culturalverse] Supabase not available, using static data:', err.message);
+    }
+  }
 
   /* ─────────────────────────────────────────────
      FLAT LESSON LIST (for prev/next navigation)
@@ -95,6 +182,9 @@
         .map(t => `<span class="cv-concept-tag">${t}</span>`).join('');
       return `<div class="cv-concepts-block">${tags}</div>`;
     });
+
+    /* Pass-through plant grid and card grid HTML (from admin panel) */
+    /* These are already valid HTML — parseContent doesn't need to touch them */
 
     /* Wrap orphan <p> lead class */
     html = html.replace(/<p class="lead">/g, '<p class="lead">');
@@ -257,8 +347,9 @@
     lessonArticle.hidden = false;
 
     /* Build header */
-    const theme = culture.theme || 'emerald';
+    const theme  = culture.theme || 'emerald';
     const isDone = state.completed.includes(lessonId);
+
     lessonHeader.innerHTML = `
       <span class="cv-lesson-article__badge cv-lesson-article__badge--${theme}">
         ${culture.emoji} ${culture.name} · ${mod.title}
@@ -306,6 +397,11 @@
     /* Update URL hash for bookmarking */
     window.location.hash = `#${lessonId}`;
 
+    /* Dispatch event for culturalverse-profile.js */
+    document.dispatchEvent(new CustomEvent('cv:lessonToggle', {
+      detail: { lessonId, completed: state.completed, mana: state.mana }
+    }));
+
     updateProfileStats();
   }
 
@@ -327,13 +423,18 @@
       state.mana = Math.min(state.mana + 10, 999);
       btn.classList.add('is-done');
       btn.textContent = '✓ Completed';
-      // Pulse animation
       btn.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}], {duration:300});
     }
 
     localStorage.setItem('cv_completed', JSON.stringify(state.completed));
     localStorage.setItem('cv_mana', state.mana.toString());
-    buildTree(); // refresh checkmarks in sidebar
+
+    /* Notify profile.js of completion change */
+    document.dispatchEvent(new CustomEvent('cv:lessonToggle', {
+      detail: { lessonId, completed: state.completed, mana: state.mana }
+    }));
+
+    buildTree();
     updateProfileStats();
   }
 
@@ -357,7 +458,6 @@
     sidebar?.classList.contains('is-open') ? closeSidebar() : openSidebar();
   });
 
-  /* Close sidebar when clicking outside on mobile */
   document.addEventListener('click', e => {
     if (window.innerWidth <= 900 &&
         !e.target.closest('#cvSidebar') &&
@@ -384,16 +484,15 @@
   }
 
   /* ─────────────────────────────────────────────
-     INIT
+     INIT — with Supabase merge
   ───────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', () => {
+  function initRender() {
     buildFilters();
     buildTree();
     buildWelcome();
     updateProfileStats();
     routeFromHash();
 
-    // Open first live culture by default if nothing is active
     if (!state.activeLessonId) {
       const first = CULTURALVERSE_DATA.cultures.find(c => c.status === 'live');
       if (first) {
@@ -401,6 +500,37 @@
         state.activeModuleId  = first.modules[0]?.id;
         buildTree();
       }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const supa = window.piko_supa;
+
+    if (supa) {
+      // Supabase already ready — merge then render
+      mergeSupabaseLessons(supa).finally(initRender);
+    } else {
+      // Listen for Supabase to become ready
+      // Give it 1.5s — if it hasn't fired by then, render with static data
+      let rendered = false;
+
+      const onSupaReady = async (e) => {
+        if (rendered) return;
+        rendered = true;
+        const sb = e.detail?.offline ? null : window.piko_supa;
+        if (sb) await mergeSupabaseLessons(sb);
+        initRender();
+      };
+
+      window.addEventListener('piko:supa:ready', onSupaReady, { once: true });
+
+      setTimeout(() => {
+        if (rendered) return;
+        rendered = true;
+        window.removeEventListener('piko:supa:ready', onSupaReady);
+        console.info('[Culturalverse] Supabase timeout — rendering with static data');
+        initRender();
+      }, 1500);
     }
   });
 
