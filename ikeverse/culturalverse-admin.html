@@ -1353,7 +1353,30 @@ where theme->>'_isAdmin' = 'true';</div>
      SCRIPTS
 ══════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://pikoverse.xyz/js/supabase-client.js"></script>
+<script>
+/* ── Initialize Supabase directly — no external dependency ── */
+(function() {
+  const SUPA_URL = 'https://fmrjdvsqdfyaqtzwbbqi.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcmpkdnNxZGZ5YXF0endiYnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1OTE2MzYsImV4cCI6MjA5MTE2NzYzNn0.UKyvX02bG4cNhb7U2TK96t8XFREHYYwHJIKbPK06nqs';
+
+  function initSupa() {
+    try {
+      window.piko_supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+      window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: false } }));
+    } catch(e) {
+      console.warn('[CV Admin] Supabase init failed:', e.message);
+      window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: true } }));
+    }
+  }
+
+  if (typeof supabase !== 'undefined') {
+    initSupa();
+  } else {
+    document.currentScript?.closest('script')?.addEventListener('load', initSupa);
+    setTimeout(initSupa, 500);
+  }
+})();
+</script>
 <script src="js/culturalverse-data.js"></script>
 
 <script>
