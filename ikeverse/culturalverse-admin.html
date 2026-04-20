@@ -717,8 +717,8 @@
     <div class="auth-sub">Content Management Panel</div>
 
     <div class="auth-field">
-      <label class="auth-label" for="authEmail">Email</label>
-      <input class="auth-input" type="email" id="authEmail" placeholder="your@email.com" autocomplete="email" />
+      <label class="auth-label" for="authUsername">Email or Username</label>
+      <input class="auth-input" type="text" id="authUsername" placeholder="email or username" autocomplete="username" />
     </div>
     <div class="auth-field">
       <label class="auth-label" for="authPassword">Password</label>
@@ -1246,18 +1246,73 @@ async function loadLessonsFromDB() {
 <script src="js/culturalverse-data.js"></script>
 
 <script>
-/* ════════════════════════════════════════════
-   STATE
-════════════════════════════════════════════ */
-let _supa      = null;
-let _user      = null;
-let _isAdmin   = false;
-let _lessons   = [];         // flat array of all lessons from DB or static
-let _activeModule = null;    // for filtered lesson view
+/* ═══════════════════════════════════════════════════════════
+   CULTURALVERSE ADMIN — Hybrid Auth
+   Primary:  Supabase email + password → checks _isAdmin flag
+   Fallback: username/password via localStorage hash
+   Default:  admin / alohamass2025!
+═══════════════════════════════════════════════════════════ */
 
-/* ════════════════════════════════════════════
+/* ── Storage ── */
+const Store = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+  del: k => localStorage.removeItem(k),
+};
+
+/* ── SHA-256 ── */
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* ── Config ── */
+const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+const CREDS_KEY   = 'cv_admin_creds';
+const SESSION_KEY = 'cv_admin_session';
+
+/* ── State ── */
+let _supa         = null;
+let _authMode     = null; // 'supabase' | 'local'
+let _lessons      = [];
+let _activeModule = null;
+
+/* ═══════════════════════════════════════════════════════════
+   LOCAL AUTH — username + password hash (fallback)
+═══════════════════════════════════════════════════════════ */
+function localAuthInit() {
+  if (!Store.get(CREDS_KEY)) {
+    // Default: admin / alohamass2025!
+    Store.set(CREDS_KEY, {
+      username: 'admin',
+      hash: 'fa9b1f183328c65a71a1bdd3d234435a6bfd76e683e4b2ede1f3525d3a53dbf6',
+    });
+  }
+}
+
+async function localAuthCheck(username, password) {
+  const creds = Store.get(CREDS_KEY);
+  if (!creds) return false;
+  const hash = await sha256(username + ':' + password);
+  return creds.username === username && creds.hash === hash;
+}
+
+function localStartSession(username) {
+  Store.set(SESSION_KEY, { username, mode: 'local', expires: Date.now() + SESSION_DURATION });
+}
+
+function getLocalSession() {
+  const s = Store.get(SESSION_KEY);
+  if (!s) return null;
+  if (Date.now() > s.expires) { Store.del(SESSION_KEY); return null; }
+  return s;
+}
+
+function endLocalSession() { Store.del(SESSION_KEY); }
+
+/* ═══════════════════════════════════════════════════════════
    TOAST
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function toast(msg, isErr = false) {
   const el = document.getElementById('cvToast');
   el.textContent = msg;
@@ -1266,117 +1321,145 @@ function toast(msg, isErr = false) {
   setTimeout(() => el.classList.remove('show'), 3200);
 }
 
-/* ════════════════════════════════════════════
-   AUTH
-════════════════════════════════════════════ */
-window.addEventListener('piko:supa:ready', async (e) => {
-  _supa = window.piko_supa;
-  if (!_supa) { showAuthGate('Connection unavailable.'); return; }
-
-  try {
-    const { data } = await _supa.auth.getSession();
-    if (!data?.session?.user) { showAuthGate(); return; }
-    await checkAdminAndInit(data.session.user);
-  } catch (err) {
-    showAuthGate('Session error — please sign in.');
-  }
-});
-
-async function checkAdminAndInit(user) {
-  try {
-    const { data: profile } = await _supa
-      .from('profiles')
-      .select('theme, display_name')
-      .eq('id', user.id)
-      .single();
-
-    const isAdmin = profile?.theme?._isAdmin === true;
-
-    if (!isAdmin) {
-      showAuthGate('This panel is restricted to admin accounts.');
-      return;
-    }
-
-    _user    = user;
-    _isAdmin = true;
-    const name = profile?.display_name || user.email;
-    document.getElementById('adminUserEmail').textContent = name;
-    showAdminShell();
-    loadLessonsFromDB();
-
-  } catch (err) {
-    // If profiles table query fails, check if _isAdmin is in user_metadata
-    const metaAdmin = user.user_metadata?._isAdmin === true;
-    if (metaAdmin) {
-      _user = user; _isAdmin = true;
-      document.getElementById('adminUserEmail').textContent = user.email;
-      showAdminShell();
-      loadLessonsFromDB();
-    } else {
-      showAuthGate('Could not verify admin status.');
-    }
-  }
-}
-
-/* ── Manual sign-in from gate ── */
-document.getElementById('authSignInBtn').addEventListener('click', async () => {
-  const email    = document.getElementById('authEmail').value.trim();
-  const password = document.getElementById('authPassword').value;
-  const errEl    = document.getElementById('authErr');
-  const btnEl    = document.getElementById('authSignInBtn');
-
-  if (!email || !password) { errEl.textContent = 'Email and password required.'; return; }
-  errEl.textContent = '';
-  btnEl.disabled = true;
-  btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> &nbsp;Signing in…';
-
-  const sb = window.piko_supa;
-  if (!sb) { errEl.textContent = 'Connection not ready — wait a moment and try again.'; btnEl.disabled = false; btnEl.innerHTML = '<i class="fas fa-leaf"></i> &nbsp;Sign In'; return; }
-
-  try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    _supa = sb;
-    await checkAdminAndInit(data.user);
-  } catch (err) {
-    errEl.textContent = err.message?.includes('Invalid') ? 'Incorrect email or password.' : (err.message || 'Sign in failed.');
-    btnEl.disabled = false;
-    btnEl.innerHTML = '<i class="fas fa-leaf"></i> &nbsp;Sign In';
-  }
-});
-
-document.getElementById('authPassword').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('authSignInBtn').click();
-});
-
-document.getElementById('authEmail').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('authPassword').focus();
-});
-
-document.getElementById('adminSignOut').addEventListener('click', async () => {
-  if (_supa) await _supa.auth.signOut();
-  _user = null; _isAdmin = false;
-  showAuthGate();
-});
-
-/* ════════════════════════════════════════════
-   SHOW/HIDE
-════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   SHOW / HIDE
+═══════════════════════════════════════════════════════════ */
 function showAuthGate(msg = '') {
   document.getElementById('authGate').style.display = 'flex';
   document.getElementById('adminShell').style.display = 'none';
   if (msg) document.getElementById('authErr').textContent = msg;
 }
 
-function showAdminShell() {
+function showAdminShell(displayName, mode) {
+  _authMode = mode;
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('adminShell').style.display = 'grid';
+  const modeLabel = mode === 'supabase' ? ' ✓' : ' (local)';
+  document.getElementById('adminUserEmail').textContent = displayName + modeLabel;
   updateStats();
+  loadLessonsFromData();
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
+   INIT — runs immediately on script load
+═══════════════════════════════════════════════════════════ */
+localAuthInit();
+
+// Check local session right away (no network needed)
+(function checkLocalSession() {
+  const s = getLocalSession();
+  if (s) showAdminShell(s.username, s.mode || 'local');
+  else showAuthGate();
+})();
+
+// When Supabase is ready — upgrade to Supabase session if already signed in
+window.addEventListener('piko:supa:ready', async (e) => {
+  if (e.detail?.offline) return;
+  _supa = window.piko_supa;
+  if (!_supa) return;
+
+  try {
+    const { data } = await _supa.auth.getSession();
+    const user = data?.session?.user;
+    if (!user) return;
+
+    const { data: profile } = await _supa
+      .from('profiles')
+      .select('display_name, theme')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.theme?._isAdmin !== true) return;
+
+    const name = profile?.display_name || user.email.split('@')[0];
+    endLocalSession();
+    showAdminShell(name, 'supabase');
+  } catch (e) {
+    // Supabase check failed — local session stays if active
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   SIGN IN — Supabase first (if email), local hash fallback
+═══════════════════════════════════════════════════════════ */
+document.getElementById('authSignInBtn').addEventListener('click', async () => {
+  const input    = document.getElementById('authUsername').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errEl    = document.getElementById('authErr');
+  const btnEl    = document.getElementById('authSignInBtn');
+
+  if (!input || !password) { errEl.textContent = 'Email/username and password required.'; return; }
+
+  errEl.textContent = '';
+  btnEl.disabled = true;
+  btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> &nbsp;Signing in…';
+
+  const resetBtn = () => {
+    btnEl.disabled = false;
+    btnEl.innerHTML = '<i class="fas fa-leaf"></i> &nbsp;Sign In';
+  };
+
+  // ── Try Supabase if input looks like an email ──
+  if (input.includes('@') && _supa) {
+    try {
+      const { data, error } = await _supa.auth.signInWithPassword({ email: input, password });
+      if (!error && data?.user) {
+        const { data: profile } = await _supa
+          .from('profiles')
+          .select('display_name, theme')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile?.theme?._isAdmin !== true) {
+          errEl.textContent = 'Your Pikoverse account does not have admin access. Set _isAdmin: true on your profile in Supabase.';
+          resetBtn();
+          return;
+        }
+
+        const name = profile?.display_name || input.split('@')[0];
+        endLocalSession();
+        showAdminShell(name, 'supabase');
+        resetBtn();
+        return;
+      }
+      // Supabase auth failed — fall through to local
+    } catch (e) { /* Supabase unavailable — fall through */ }
+  }
+
+  // ── Local username/password fallback ──
+  const ok = await localAuthCheck(input, password);
+  if (ok) {
+    localStartSession(input);
+    showAdminShell(input, 'local');
+  } else {
+    errEl.textContent = input.includes('@')
+      ? 'Sign in failed. Check credentials or ensure _isAdmin is set on your Pikoverse profile.'
+      : 'Incorrect username or password.';
+  }
+  resetBtn();
+});
+
+document.getElementById('authPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('authSignInBtn').click();
+});
+document.getElementById('authUsername').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('authPassword').focus();
+});
+
+/* ── Sign out ── */
+document.getElementById('adminSignOut').addEventListener('click', async () => {
+  if (_supa && _authMode === 'supabase') await _supa.auth.signOut().catch(() => {});
+  endLocalSession();
+  _authMode = null;
+  document.getElementById('authUsername').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authErr').textContent = '';
+  showAuthGate();
+});
+
+/* ═══════════════════════════════════════════════════════════
    NAVIGATION
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function showPage(id, moduleFilter) {
   document.querySelectorAll('.cv-admin-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.cv-admin-nav-item').forEach(n => n.classList.remove('active'));
@@ -1384,7 +1467,6 @@ function showPage(id, moduleFilter) {
   const page = document.getElementById('page-' + id);
   if (page) page.classList.add('active');
 
-  // highlight nav
   document.querySelectorAll('.cv-admin-nav-item').forEach(n => {
     if (n.getAttribute('onclick')?.includes(`'${id}'`)) n.classList.add('active');
   });
@@ -1404,12 +1486,13 @@ function showPage(id, moduleFilter) {
   }
 }
 
-/* ════════════════════════════════════════════
-   LOAD LESSONS (from DB or static fallback)
-════════════════════════════════════════════ */
-async function loadLessonsFromDB() {
-  // Build flat lessons array from static data first (always available)
+/* ═══════════════════════════════════════════════════════════
+   LOAD LESSONS from culturalverse-data.js
+═══════════════════════════════════════════════════════════ */
+function loadLessonsFromData() {
   _lessons = [];
+  if (typeof CULTURALVERSE_DATA === 'undefined') { updateStats(); updateCounts(); return; }
+
   CULTURALVERSE_DATA.cultures.forEach(culture => {
     if (culture.status !== 'live') return;
     culture.modules.forEach(mod => {
@@ -1421,55 +1504,18 @@ async function loadLessonsFromDB() {
           title:     lesson.title,
           read_time: lesson.readTime,
           status:    'live',
-          source:    'static'
+          source:    'static',
         });
       });
     });
   });
-
-  // Try to enrich/override with Supabase data
-  if (_supa) {
-    try {
-      const { data } = await _supa
-        .from('cv_lessons')
-        .select('id, module, lesson_num, title, read_time, status, sort_order')
-        .order('module').order('sort_order');
-
-      if (data?.length) {
-        // Merge: DB records override static, new ones added
-        data.forEach(row => {
-          const idx = _lessons.findIndex(l => l.id === row.id);
-          const merged = {
-            id: row.id,
-            module: row.module,
-            num: row.lesson_num || '',
-            title: row.title,
-            read_time: row.read_time || '',
-            status: row.status || 'live',
-            source: 'db'
-          };
-          if (idx > -1) _lessons[idx] = merged;
-          else _lessons.push(merged);
-        });
-        document.getElementById('supabaseStatusMsg').textContent =
-          '✓ Connected to Supabase — ' + data.length + ' lessons in database. New lessons saved here go live immediately.';
-      } else {
-        document.getElementById('supabaseStatusMsg').textContent =
-          'Supabase connected but cv_lessons table is empty. Run the SQL in the DB Setup Guide to seed lessons, or save a lesson from this form to create the first row.';
-      }
-    } catch (err) {
-      document.getElementById('supabaseStatusMsg').textContent =
-        'cv_lessons table not found yet — see DB Setup Guide to create it. Content is currently served from culturalverse-data.js (static file).';
-    }
-  }
-
   updateStats();
   updateCounts();
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    STATS & COUNTS
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function updateStats() {
   const live  = _lessons.filter(l => l.status === 'live').length;
   const draft = _lessons.filter(l => l.status === 'draft').length;
@@ -1488,15 +1534,14 @@ function updateCounts() {
   if (subEl) subEl.textContent = _lessons.length + ' lessons across all modules';
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    RENDER TABLES
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 const MODULE_TAGS = {
   kanaka: '<span class="cv-tag tag-kanaka">🌺 Kānaka</span>',
   kemet:  '<span class="cv-tag tag-kemet">☥ Kemet</span>',
   bridge: '<span class="cv-tag tag-bridge">🌐 Bridge</span>',
 };
-
 const STATUS_PILLS = {
   live:  '<span class="cv-status status-live">Live</span>',
   draft: '<span class="cv-status status-draft">Draft</span>',
@@ -1542,9 +1587,7 @@ function renderCultureLessons(mod) {
   `).join('');
 }
 
-/* ════════════════════════════════════════════
-   FILTER
-════════════════════════════════════════════ */
+/* ── Filter ── */
 function filterLessons() {
   const q   = document.getElementById('lessonSearch')?.value.toLowerCase() || '';
   const mod = document.getElementById('lessonModuleFilter')?.value || '';
@@ -1557,9 +1600,9 @@ function filterLessons() {
   renderLessonsTable(filtered);
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    SAVE LESSON
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 async function saveLesson(status) {
   const id       = document.getElementById('fLessonId').value.trim();
   const module   = document.getElementById('fLessonModule').value;
@@ -1581,38 +1624,52 @@ async function saveLesson(status) {
     return;
   }
 
-  const payload = { id, module, lesson_num: num, title, read_time: readTime,
-    lead_text: lead, content, sources, mana, sort_order: sort,
-    status, updated_at: new Date().toISOString() };
-
-  if (_supa) {
+  // Try Supabase first
+  if (_supa && _authMode === 'supabase') {
     try {
-      const { error } = await _supa.from('cv_lessons').upsert(payload);
+      const { error } = await _supa.from('cv_lessons').upsert({
+        id, module, lesson_num: num, title, read_time: readTime,
+        lead_text: lead, content, sources, mana, sort_order: sort,
+        status, updated_at: new Date().toISOString()
+      });
       if (error) throw error;
-      fbEl.textContent = `✓ Lesson "${title}" saved as ${status.toUpperCase()} in Supabase.`;
+      fbEl.textContent = `✓ "${title}" saved as ${status.toUpperCase()} in Supabase.`;
       fbEl.className = 'cv-feedback success';
       toast(`"${title}" ${status === 'live' ? 'published' : 'saved as draft'}`);
-      await loadLessonsFromDB();
+      const idx = _lessons.findIndex(l => l.id === id);
+      const entry = { id, module, num, title, read_time: readTime, status, source: 'db' };
+      if (idx > -1) _lessons[idx] = entry; else _lessons.push(entry);
+      renderLessonsTable(_lessons);
+      updateStats(); updateCounts();
+      return;
     } catch (err) {
-      // Table may not exist yet
-      fbEl.textContent = 'Supabase save failed: ' + (err.message || 'Table may not exist yet — see DB Setup Guide.');
-      fbEl.className = 'cv-feedback error';
+      // Fall through to localStorage
     }
-  } else {
-    fbEl.textContent = 'Not connected to Supabase yet. Set up the database (see DB Setup Guide) to enable saving.';
-    fbEl.className = 'cv-feedback error';
   }
+
+  // localStorage fallback
+  const saved = Store.get('cv_admin_lessons') || {};
+  saved[id] = { id, module, num, title, readTime, lead, content, sources, mana, sort, status, updatedAt: new Date().toISOString() };
+  Store.set('cv_admin_lessons', saved);
+
+  const idx = _lessons.findIndex(l => l.id === id);
+  const entry = { id, module, num, title, read_time: readTime, status, source: 'local' };
+  if (idx > -1) _lessons[idx] = entry; else _lessons.push(entry);
+
+  fbEl.textContent = `✓ "${title}" saved locally. Once Supabase is connected and _isAdmin is set, saves will go directly to the database.`;
+  fbEl.className = 'cv-feedback success';
+  toast(`"${title}" saved`);
+  renderLessonsTable(_lessons);
+  updateStats(); updateCounts();
 }
 
-/* ════════════════════════════════════════════
-   EDIT LESSON — populate form
-════════════════════════════════════════════ */
+/* ── Edit Lesson ── */
 async function editLesson(id) {
   showPage('new-lesson');
   document.getElementById('lessonFormTitle').textContent = 'Edit Lesson';
 
-  // First try to load full content from Supabase
-  if (_supa) {
+  // Try Supabase
+  if (_supa && _authMode === 'supabase') {
     try {
       const { data } = await _supa.from('cv_lessons').select('*').eq('id', id).single();
       if (data) {
@@ -1628,10 +1685,27 @@ async function editLesson(id) {
         document.getElementById('fLessonSort').value     = data.sort_order || 0;
         return;
       }
-    } catch (e) { /* fall through to static */ }
+    } catch (e) {}
   }
 
-  // Fallback: populate what we know from static data
+  // localStorage fallback
+  const saved = Store.get('cv_admin_lessons') || {};
+  if (saved[id]) {
+    const d = saved[id];
+    document.getElementById('fLessonId').value       = d.id || '';
+    document.getElementById('fLessonModule').value   = d.module || 'kanaka';
+    document.getElementById('fLessonTitle').value    = d.title || '';
+    document.getElementById('fLessonNum').value      = d.num || '';
+    document.getElementById('fLessonReadTime').value = d.readTime || '';
+    document.getElementById('fLessonLead').value     = d.lead || '';
+    document.getElementById('fLessonContent').value  = d.content || '';
+    document.getElementById('fLessonSources').value  = d.sources || '';
+    document.getElementById('fLessonMana').value     = d.mana || 100;
+    document.getElementById('fLessonSort').value     = d.sort || 0;
+    return;
+  }
+
+  // Static data fallback (title/meta only)
   const lesson = _lessons.find(l => l.id === id);
   if (lesson) {
     document.getElementById('fLessonId').value       = lesson.id;
@@ -1639,67 +1713,59 @@ async function editLesson(id) {
     document.getElementById('fLessonTitle').value    = lesson.title;
     document.getElementById('fLessonNum').value      = lesson.num || '';
     document.getElementById('fLessonReadTime').value = lesson.read_time || '';
-    document.getElementById('fLessonMana').value     = 100;
   }
 }
 
-/* ════════════════════════════════════════════
-   TOGGLE STATUS
-════════════════════════════════════════════ */
+/* ── Toggle Status ── */
 async function toggleLessonStatus(id) {
   const lesson = _lessons.find(l => l.id === id);
   if (!lesson) return;
   const newStatus = lesson.status === 'live' ? 'draft' : 'live';
 
-  if (_supa) {
+  if (_supa && _authMode === 'supabase') {
     try {
       await _supa.from('cv_lessons').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
-      toast(`"${lesson.title}" → ${newStatus}`);
-      await loadLessonsFromDB();
-      renderLessonsTable(_lessons);
-    } catch (err) {
-      toast('Toggle failed: ' + err.message, true);
-    }
-  } else {
-    lesson.status = newStatus;
-    renderLessonsTable(_lessons);
-    toast('Status toggled locally (not saved to DB)', true);
+    } catch (e) {}
   }
+
+  lesson.status = newStatus;
+  const saved = Store.get('cv_admin_lessons') || {};
+  if (saved[id]) { saved[id].status = newStatus; Store.set('cv_admin_lessons', saved); }
+
+  toast(`"${lesson.title}" → ${newStatus}`);
+  renderLessonsTable(_lessons);
 }
 
-/* ════════════════════════════════════════════
-   DELETE LESSON
-════════════════════════════════════════════ */
+/* ── Delete Lesson ── */
 async function deleteLesson(id) {
   const lesson = _lessons.find(l => l.id === id);
   if (!lesson) return;
-  if (!confirm(`Delete "${lesson.title}"? This cannot be undone.`)) return;
+  if (!confirm(`Delete "${lesson.title}"?\n\nNote: removes from admin view only. Static lessons in culturalverse-data.js will reload on next visit.`)) return;
 
-  if (_supa) {
-    try {
-      await _supa.from('cv_lessons').delete().eq('id', id);
-      toast(`"${lesson.title}" deleted`);
-      await loadLessonsFromDB();
-      renderLessonsTable(_lessons);
-    } catch (err) {
-      toast('Delete failed: ' + err.message, true);
-    }
-  } else {
-    toast('Not connected to Supabase — cannot delete.', true);
+  if (_supa && _authMode === 'supabase') {
+    try { await _supa.from('cv_lessons').delete().eq('id', id); } catch (e) {}
   }
+
+  _lessons = _lessons.filter(l => l.id !== id);
+  const saved = Store.get('cv_admin_lessons') || {};
+  delete saved[id];
+  Store.set('cv_admin_lessons', saved);
+
+  toast(`"${lesson.title}" removed`);
+  renderLessonsTable(_lessons);
+  updateStats(); updateCounts();
 }
 
-/* ════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    HELPERS
-════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function clearLessonForm() {
   ['fLessonId','fLessonTitle','fLessonNum','fLessonReadTime',
    'fLessonLead','fLessonContent','fLessonSources'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+    const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('fLessonMana').value = '100';
-  document.getElementById('fLessonSort').value = '0';
+  document.getElementById('fLessonMana').value   = '100';
+  document.getElementById('fLessonSort').value   = '0';
   document.getElementById('fLessonModule').value = 'kanaka';
   document.getElementById('lessonFormFeedback').className = 'cv-feedback';
 }
@@ -1707,10 +1773,10 @@ function clearLessonForm() {
 function updateSupabaseStatus() {
   const el = document.getElementById('supabaseStatusMsg');
   if (!el) return;
-  if (_supa && _isAdmin) {
-    el.textContent = '✓ Supabase connected and admin verified. Saving a lesson will write directly to the cv_lessons table.';
+  if (_authMode === 'supabase') {
+    el.textContent = '✓ Supabase connected — saves write directly to cv_lessons table and go live immediately.';
   } else {
-    el.textContent = 'Not connected to Supabase yet. Complete the DB Setup Guide first.';
+    el.textContent = 'Using local auth — saves go to localStorage. To enable live DB saves, sign in with your Pikoverse email and set _isAdmin: true on your profile (see DB Setup Guide).';
   }
 }
 
