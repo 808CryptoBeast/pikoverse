@@ -38,6 +38,64 @@
   const manaFill      = document.getElementById('manaFill');
 
   /* ═══════════════════════════════════════════════════════════════
+     LOCAL ADMIN MERGE
+     Merges any lessons saved locally from the admin panel
+     (localStorage key: cv_admin_lessons) into CULTURALVERSE_DATA.
+     This runs first — Supabase merge runs after and overrides if it
+     has newer/fuller content.
+  ═══════════════════════════════════════════════════════════════ */
+  function mergeLocalAdminLessons() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('cv_admin_lessons') || '{}');
+      if (!Object.keys(saved).length) return;
+
+      for (const [id, row] of Object.entries(saved)) {
+        if (row.status === 'draft') continue; // skip drafts — only live lessons show
+        if (!row.content && !row.title) continue;
+
+        // Find the lesson in CULTURALVERSE_DATA
+        let found = false;
+        for (const culture of CULTURALVERSE_DATA.cultures) {
+          for (const mod of culture.modules || []) {
+            const lesson = (mod.lessons || []).find(l => l.id === id);
+            if (lesson) {
+              if (row.title)    lesson.title    = row.title;
+              if (row.num)      lesson.num      = row.num;
+              if (row.readTime) lesson.readTime = row.readTime;
+              if (row.content) {
+                const leadBlock = row.lead ? `<p class="lead">${row.lead}</p>\n\n` : '';
+                lesson.content  = leadBlock + row.content;
+              }
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
+
+        // New lesson not in static data — add it
+        if (!found && row.content && row.module) {
+          const culture = CULTURALVERSE_DATA.cultures.find(c => c.id === row.module);
+          if (culture && culture.modules[0]) {
+            const leadBlock = row.lead ? `<p class="lead">${row.lead}</p>\n\n` : '';
+            culture.modules[0].lessons.push({
+              id:       id,
+              num:      row.num || '',
+              title:    row.title || id,
+              readTime: row.readTime || '',
+              content:  leadBlock + row.content,
+            });
+          }
+        }
+      }
+
+      const count = Object.keys(saved).length;
+      console.info(`[Culturalverse] Merged ${count} local admin lesson(s) from localStorage`);
+    } catch (e) {
+      console.warn('[Culturalverse] Local admin merge failed:', e.message);
+    }
+  }
+  /* ═══════════════════════════════════════════════════════════════
      SUPABASE MERGE
      Fetches live lessons from cv_lessons table and merges content
      into the in-memory CULTURALVERSE_DATA before rendering.
@@ -487,6 +545,7 @@
      INIT — with Supabase merge
   ───────────────────────────────────────────── */
   function initRender() {
+    mergeLocalAdminLessons(); // apply any locally-saved admin edits first
     buildFilters();
     buildTree();
     buildWelcome();
@@ -503,35 +562,40 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const supa = window.piko_supa;
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Try to get or initialize Supabase directly
+    let supa = window.piko_supa;
+
+    if (!supa && typeof supabase !== 'undefined') {
+      try {
+        const SUPA_URL = 'https://fmrjdvsqdfyaqtzwbbqi.supabase.co';
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcmpkdnNxZGZ5YXF0endiYnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1OTE2MzYsImV4cCI6MjA5MTE2NzYzNn0.UKyvX02bG4cNhb7U2TK96t8XFREHYYwHJIKbPK06nqs';
+        window.piko_supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+        supa = window.piko_supa;
+      } catch (e) {
+        console.warn('[Culturalverse] Supabase init failed:', e.message);
+      }
+    }
 
     if (supa) {
-      // Supabase already ready — merge then render
-      mergeSupabaseLessons(supa).finally(initRender);
+      // Supabase ready — merge DB content then render
+      await mergeSupabaseLessons(supa).catch(() => {});
     } else {
-      // Listen for Supabase to become ready
-      // Give it 1.5s — if it hasn't fired by then, render with static data
-      let rendered = false;
-
-      const onSupaReady = async (e) => {
-        if (rendered) return;
-        rendered = true;
-        const sb = e.detail?.offline ? null : window.piko_supa;
-        if (sb) await mergeSupabaseLessons(sb);
-        initRender();
-      };
-
-      window.addEventListener('piko:supa:ready', onSupaReady, { once: true });
-
-      setTimeout(() => {
-        if (rendered) return;
-        rendered = true;
-        window.removeEventListener('piko:supa:ready', onSupaReady);
-        console.info('[Culturalverse] Supabase timeout — rendering with static data');
-        initRender();
-      }, 1500);
+      // No Supabase — listen briefly then fall back to static
+      await new Promise(resolve => {
+        let done = false;
+        const onReady = async (e) => {
+          if (done) return; done = true;
+          const sb = e.detail?.offline ? null : window.piko_supa;
+          if (sb) await mergeSupabaseLessons(sb).catch(() => {});
+          resolve();
+        };
+        window.addEventListener('piko:supa:ready', onReady, { once: true });
+        setTimeout(() => { if (!done) { done = true; resolve(); } }, 1500);
+      });
     }
+
+    initRender();
   });
 
   window.addEventListener('hashchange', routeFromHash);

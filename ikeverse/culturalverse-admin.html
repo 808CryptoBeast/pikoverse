@@ -864,27 +864,12 @@
         <div>
           <div class="cv-section-hdr">
             <div class="cv-section-title">Recent Activity</div>
+            <button class="cv-row-btn" onclick="loadActivityFeed()" style="font-size:0.65rem;">↻ Refresh</button>
           </div>
-          <div class="cv-activity-feed">
+          <div class="cv-activity-feed" id="activityFeed">
             <div class="cv-activity-item">
               <div class="cv-activity-dot dot-em"></div>
-              <div style="flex:1"><strong>Laʻau Lapaʻau</strong> (KM·09) added to Kānaka Maoli</div>
-              <div class="cv-activity-time">Today</div>
-            </div>
-            <div class="cv-activity-item">
-              <div class="cv-activity-dot dot-go"></div>
-              <div style="flex:1"><strong>Kemetic Medicine</strong> (KE·07) expanded — Imhotep, papyri, 42 confessions</div>
-              <div class="cv-activity-time">Today</div>
-            </div>
-            <div class="cv-activity-item">
-              <div class="cv-activity-dot dot-cy"></div>
-              <div style="flex:1">Bridge lesson renamed → <strong>Aloha &amp; Maʻat</strong> (was Pono &amp; Maʻat)</div>
-              <div class="cv-activity-time">Today</div>
-            </div>
-            <div class="cv-activity-item">
-              <div class="cv-activity-dot dot-em"></div>
-              <div style="flex:1">Google Search Console verified — pikoverse.xyz indexed</div>
-              <div class="cv-activity-time">Today</div>
+              <div style="flex:1;color:var(--text-3);font-family:var(--font-mono);font-size:0.78rem;">Loading activity…</div>
             </div>
           </div>
         </div>
@@ -1083,57 +1068,123 @@
           <div class="cv-admin-page-title">Globe Cultures</div>
           <div class="cv-admin-page-sub">Manage cultures shown on the Cosmic Weave globe</div>
         </div>
-        <button class="btn btn-gold" onclick="openNewCultureForm()">＋ Add Culture</button>
+        <button class="btn btn-gold" onclick="openCultureForm()">＋ Add Culture</button>
+      </div>
+
+      <!-- Culture edit form -->
+      <div id="cultureFormWrap" style="display:none;background:var(--surface);border:1px solid var(--border-glow);border-radius:var(--r);padding:24px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div class="cv-admin-page-title" id="cultureFormTitle" style="font-size:1.2rem;">New Culture</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost" onclick="closeCultureForm()">Cancel</button>
+            <button class="btn btn-gold" onclick="saveCulture()">Save Culture</button>
+          </div>
+        </div>
+        <div id="cultureFormFeedback" class="cv-feedback"></div>
+        <div class="cv-form-grid" style="margin-bottom:14px;">
+          <div class="cv-form-group">
+            <label class="cv-form-label">Culture ID</label>
+            <input class="cv-form-input" id="fCultureId" type="text" placeholder="dreamtime" style="font-family:var(--font-mono);" />
+            <div class="cv-form-hint">Lowercase, no spaces — e.g. kanaka, kemet, dreamtime</div>
+          </div>
+          <div class="cv-form-group">
+            <label class="cv-form-label">Status</label>
+            <select class="cv-form-select" id="fCultureStatus">
+              <option value="live">Live</option>
+              <option value="soon">Coming Soon</option>
+            </select>
+          </div>
+        </div>
+        <div class="cv-form-grid" style="margin-bottom:14px;">
+          <div class="cv-form-group">
+            <label class="cv-form-label">Name</label>
+            <input class="cv-form-input" id="fCultureName" type="text" placeholder="Kānaka Maoli" />
+          </div>
+          <div class="cv-form-group">
+            <label class="cv-form-label">Emoji</label>
+            <input class="cv-form-input" id="fCultureEmoji" type="text" placeholder="🌺" style="font-size:1.2rem;" />
+          </div>
+        </div>
+        <div class="cv-form-group" style="margin-bottom:14px;">
+          <label class="cv-form-label">Tagline</label>
+          <input class="cv-form-input" id="fCultureTagline" type="text" placeholder="Hawaiian Indigenous Knowledge" />
+        </div>
+        <div class="cv-form-group" style="margin-bottom:14px;">
+          <label class="cv-form-label">Theme Color</label>
+          <select class="cv-form-select" id="fCultureTheme">
+            <option value="emerald">Emerald (Kānaka Maoli)</option>
+            <option value="gold">Gold (Kemet)</option>
+            <option value="bridge">Bridge (Cross-cultural)</option>
+            <option value="rust">Rust (Dreamtime)</option>
+            <option value="amber">Amber (Dogon)</option>
+            <option value="saffron">Saffron (Vedic)</option>
+          </select>
+        </div>
+        <div class="cv-form-group">
+          <label class="cv-form-label">Intro Paragraph</label>
+          <textarea class="cv-form-textarea" id="fCultureIntro" placeholder="A brief introduction to this culture's knowledge systems…"></textarea>
+        </div>
       </div>
 
       <div class="cv-table-wrap">
         <table>
           <thead>
-            <tr><th>ID</th><th>Name</th><th>Region</th><th>Status</th><th>Actions</th></tr>
+            <tr><th>ID</th><th>Name</th><th>Theme</th><th>Status</th><th>Actions</th></tr>
           </thead>
           <tbody id="culturesTableBody">
             <tr>
               <td><span class="cv-lesson-id">kanaka</span></td>
-              <td>Kānaka Maoli</td><td>Pacific</td>
+              <td>🌺 Kānaka Maoli</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--emerald)">emerald</span></td>
               <td><span class="cv-status status-live">Live</span></td>
               <td class="cv-row-actions">
-                <button class="cv-row-btn">Edit</button>
+                <button class="cv-row-btn" onclick="editCulture('kanaka')">Edit</button>
               </td>
             </tr>
             <tr>
               <td><span class="cv-lesson-id">kemet</span></td>
-              <td>Ancient Kemet</td><td>Africa</td>
+              <td>☥ Ancient Kemet</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--gold)">gold</span></td>
               <td><span class="cv-status status-live">Live</span></td>
               <td class="cv-row-actions">
-                <button class="cv-row-btn">Edit</button>
+                <button class="cv-row-btn" onclick="editCulture('kemet')">Edit</button>
               </td>
             </tr>
             <tr>
               <td><span class="cv-lesson-id">bridge</span></td>
-              <td>The Bridge</td><td>Cross-cultural</td>
+              <td>🌐 The Bridge</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cyan)">bridge</span></td>
               <td><span class="cv-status status-live">Live</span></td>
               <td class="cv-row-actions">
-                <button class="cv-row-btn">Edit</button>
+                <button class="cv-row-btn" onclick="editCulture('bridge')">Edit</button>
               </td>
             </tr>
             <tr>
               <td><span class="cv-lesson-id">dreamtime</span></td>
-              <td>Dreamtime</td><td>Pacific</td>
+              <td>🌏 Dreamtime</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--amber)">rust</span></td>
               <td><span class="cv-status status-draft">Coming Soon</span></td>
               <td class="cv-row-actions">
-                <button class="cv-row-btn">Edit</button>
+                <button class="cv-row-btn" onclick="editCulture('dreamtime')">Edit</button>
               </td>
             </tr>
             <tr>
               <td><span class="cv-lesson-id">dogon</span></td>
-              <td>Dogon</td><td>Africa</td>
+              <td>🪘 Dogon</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--amber)">amber</span></td>
               <td><span class="cv-status status-draft">Coming Soon</span></td>
               <td class="cv-row-actions">
-                <button class="cv-row-btn">Edit</button>
+                <button class="cv-row-btn" onclick="editCulture('dogon')">Edit</button>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="cv-lesson-id">vedic</span></td>
+              <td>🕉️ Vedic</td><td><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--gold)">saffron</span></td>
+              <td><span class="cv-status status-draft">Coming Soon</span></td>
+              <td class="cv-row-actions">
+                <button class="cv-row-btn" onclick="editCulture('vedic')">Edit</button>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="cv-setup-note" style="margin-top:12px;font-size:0.78rem;">
+        💡 Culture edits update <code style="color:var(--emerald);font-family:var(--font-mono)">culturalverse-data.js</code> — use <strong>Copy to File</strong> after saving to get the formatted entry.
       </div>
     </div>
 
@@ -1476,6 +1527,7 @@ function showAdminShell(displayName, mode) {
   document.getElementById('adminUserEmail').textContent = displayName + modeLabel;
   updateStats();
   loadLessonsFromData();
+  loadActivityFeed();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1625,6 +1677,7 @@ function showPage(id, moduleFilter) {
   });
 
   if (id === 'all-lessons') renderLessonsTable(_lessons);
+  if (id === 'dashboard') loadActivityFeed();
   if (id === 'lessons' && moduleFilter) {
     _activeModule = moduleFilter;
     const labels = { kanaka: 'Kānaka Maoli', kemet: 'Kemet', bridge: 'The Bridge' };
@@ -2192,9 +2245,201 @@ function initSettingsPage() {
   }
 }
 
-function openNewCultureForm() {
-  toast('Culture editing coming in the next update — edit culturalverse-data.js directly for now.');
+/* ═══════════════════════════════════════════════════════════
+   ACTIVITY FEED — pulls real data from Supabase cv_lessons
+═══════════════════════════════════════════════════════════ */
+async function loadActivityFeed() {
+  const feed = document.getElementById('activityFeed');
+  if (!feed) return;
+
+  // Always show local activity first
+  const localSaved = Store.get('cv_admin_lessons') || {};
+  const localItems = Object.values(localSaved)
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    .slice(0, 5);
+
+  let items = [];
+
+  // Try Supabase for real DB activity
+  if (_supa) {
+    try {
+      const { data } = await _supa
+        .from('cv_lessons')
+        .select('id, title, module, status, updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(8);
+
+      if (data?.length) {
+        items = data.map(row => ({
+          title:  row.title,
+          id:     row.id,
+          module: row.module,
+          status: row.status,
+          time:   row.updated_at,
+          source: 'db'
+        }));
+      }
+    } catch (e) { /* fall through to local */ }
+  }
+
+  // Merge local items not in DB
+  localItems.forEach(l => {
+    if (!items.find(i => i.id === l.id)) {
+      items.unshift({ title: l.title, id: l.id, module: l.module,
+        status: l.status, time: l.updatedAt, source: 'local' });
+    }
+  });
+
+  if (!items.length) {
+    feed.innerHTML = `<div class="cv-activity-item">
+      <div style="flex:1;color:var(--text-3);font-family:var(--font-mono);font-size:0.78rem;">
+        No activity yet — publish a lesson to see it here.
+      </div>
+    </div>`;
+    return;
+  }
+
+  const dotColor = { kanaka: 'dot-em', kemet: 'dot-go', bridge: 'dot-cy' };
+  const moduleLabel = { kanaka: '🌺', kemet: '☥', bridge: '🌐' };
+
+  feed.innerHTML = items.map(item => {
+    const dot  = dotColor[item.module] || 'dot-em';
+    const icon = moduleLabel[item.module] || '📖';
+    const ago  = item.time ? timeAgo(item.time) : 'Recently';
+    const badge = item.source === 'local'
+      ? '<span style="font-size:0.62rem;color:var(--amber);font-family:var(--font-mono);margin-left:6px;">(local)</span>'
+      : '';
+    const statusBadge = item.status === 'draft'
+      ? '<span style="font-size:0.62rem;color:var(--amber);font-family:var(--font-mono);margin-left:4px;">draft</span>'
+      : '';
+    return `<div class="cv-activity-item">
+      <div class="cv-activity-dot ${dot}"></div>
+      <div style="flex:1">
+        ${icon} <strong>${item.title}</strong>${statusBadge}${badge}
+        <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;font-family:var(--font-mono)">${item.id}</div>
+      </div>
+      <div class="cv-activity-time">${ago}</div>
+    </div>`;
+  }).join('');
 }
+
+function timeAgo(isoString) {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins  = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days  = Math.floor(diff / 86400000);
+  if (mins < 1)   return 'Just now';
+  if (mins < 60)  return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7)   return `${days}d ago`;
+  return new Date(isoString).toLocaleDateString();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CULTURE FORM — add / edit cultures
+═══════════════════════════════════════════════════════════ */
+const CULTURE_DATA = {
+  kanaka:   { name: 'Kānaka Maoli', emoji: '🌺', theme: 'emerald', status: 'live',  tagline: 'Hawaiian Indigenous Knowledge', intro: 'The Native Hawaiian people developed one of the most sophisticated civilizations in the Pacific over more than 1,500 years.' },
+  kemet:    { name: 'Kemet',        emoji: '☥',  theme: 'gold',    status: 'live',  tagline: 'Ancient Egyptian Wisdom — The Teachings of the Black Land', intro: 'The ancient Egyptians called their land Kemet — "the Black Land." They were African.' },
+  bridge:   { name: 'The Bridge',   emoji: '🌐', theme: 'bridge',  status: 'live',  tagline: 'Cross-Cultural Connections — Shared Cosmologies', intro: 'Two civilizations on opposite ends of the Earth, pointing to the same cosmic realities.' },
+  dreamtime:{ name: 'Dreamtime',    emoji: '🌏', theme: 'rust',    status: 'soon',  tagline: 'Aboriginal Australian Wisdom Traditions', intro: 'Coming soon.' },
+  dogon:    { name: 'Dogon',        emoji: '🪘', theme: 'amber',   status: 'soon',  tagline: 'West African Knowledge — Mali', intro: 'Coming soon.' },
+  vedic:    { name: 'Vedic',        emoji: '🕉️', theme: 'saffron', status: 'soon',  tagline: 'Ancient Indian Wisdom Traditions', intro: 'Coming soon.' },
+};
+
+let _editingCultureId = null;
+
+function openCultureForm() {
+  _editingCultureId = null;
+  document.getElementById('cultureFormTitle').textContent = 'New Culture';
+  document.getElementById('fCultureId').value      = '';
+  document.getElementById('fCultureId').disabled   = false;
+  document.getElementById('fCultureName').value    = '';
+  document.getElementById('fCultureEmoji').value   = '';
+  document.getElementById('fCultureTagline').value = '';
+  document.getElementById('fCultureTheme').value   = 'emerald';
+  document.getElementById('fCultureStatus').value  = 'soon';
+  document.getElementById('fCultureIntro').value   = '';
+  document.getElementById('cultureFormFeedback').className = 'cv-feedback';
+  document.getElementById('cultureFormWrap').style.display = 'block';
+  document.getElementById('cultureFormWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function editCulture(id) {
+  _editingCultureId = id;
+  const c = CULTURE_DATA[id];
+
+  // Try localStorage override first
+  const stored = Store.get('cv_admin_cultures') || {};
+  const data = { ...c, ...(stored[id] || {}) };
+
+  document.getElementById('cultureFormTitle').textContent = 'Edit Culture — ' + id;
+  document.getElementById('fCultureId').value      = id;
+  document.getElementById('fCultureId').disabled   = true; // can't change ID of existing culture
+  document.getElementById('fCultureName').value    = data.name || '';
+  document.getElementById('fCultureEmoji').value   = data.emoji || '';
+  document.getElementById('fCultureTagline').value = data.tagline || '';
+  document.getElementById('fCultureTheme').value   = data.theme || 'emerald';
+  document.getElementById('fCultureStatus').value  = data.status || 'soon';
+  document.getElementById('fCultureIntro').value   = data.intro || '';
+  document.getElementById('cultureFormFeedback').className = 'cv-feedback';
+  document.getElementById('cultureFormWrap').style.display = 'block';
+  document.getElementById('cultureFormWrap').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeCultureForm() {
+  document.getElementById('cultureFormWrap').style.display = 'none';
+  _editingCultureId = null;
+}
+
+function saveCulture() {
+  const id      = document.getElementById('fCultureId').value.trim().toLowerCase().replace(/\s+/g, '-');
+  const name    = document.getElementById('fCultureName').value.trim();
+  const emoji   = document.getElementById('fCultureEmoji').value.trim();
+  const tagline = document.getElementById('fCultureTagline').value.trim();
+  const theme   = document.getElementById('fCultureTheme').value;
+  const status  = document.getElementById('fCultureStatus').value;
+  const intro   = document.getElementById('fCultureIntro').value.trim();
+
+  const fbEl = document.getElementById('cultureFormFeedback');
+  fbEl.className = 'cv-feedback';
+
+  if (!id || !name) {
+    fbEl.textContent = 'Culture ID and Name are required.';
+    fbEl.className = 'cv-feedback error';
+    return;
+  }
+
+  // Save to localStorage (source of truth until we write to the data file)
+  const stored = Store.get('cv_admin_cultures') || {};
+  stored[id] = { id, name, emoji, tagline, theme, status, intro, updatedAt: new Date().toISOString() };
+  Store.set('cv_admin_cultures', stored);
+
+  // Also update in-memory CULTURE_DATA
+  CULTURE_DATA[id] = { name, emoji, tagline, theme, status, intro };
+
+  fbEl.textContent = `✓ Culture "${name}" saved locally. Use Copy to File to get the culturalverse-data.js entry.`;
+  fbEl.className = 'cv-feedback success';
+  toast(`Culture "${name}" saved`);
+
+  // Copy the data.js entry to clipboard automatically
+  const entry = `    {
+      id:      '${id}',
+      name:    '${name}',
+      emoji:   '${emoji}',
+      tagline: '${tagline}',
+      theme:   '${theme}',
+      status:  '${status}',
+      intro:   '${intro}',
+      modules: []
+    },`;
+
+  navigator.clipboard.writeText(entry).then(() => {
+    fbEl.textContent += ' Entry copied to clipboard — paste into the cultures array in culturalverse-data.js.';
+  }).catch(() => {});
+}
+
+function openNewCultureForm() { openCultureForm(); }
 </script>
 
 </body>

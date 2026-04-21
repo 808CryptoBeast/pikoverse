@@ -27,7 +27,7 @@
     { id: 'kanaka-scholar', label: 'Kānaka Scholar',   icon: '🌺',
       desc: 'Complete all Kānaka Maoli lessons.',
       check: c => ['km-kumulipo','km-wakea','km-starcompass','km-hokuleaa',
-                   'km-ahupuaa','km-loikalo','km-olelo','km-hula'].every(id => c.includes(id)) },
+                   'km-ahupuaa','km-loikalo','km-olelo','km-hula','km-laau'].every(id => c.includes(id)) },
     { id: 'kemet-scholar',  label: 'Kemetic Scholar',  icon: '☥',
       desc: 'Complete all Kemet lessons.',
       check: c => ['ke-nun','ke-ennead','ke-ptah','ke-maat',
@@ -139,7 +139,7 @@
     if (el('manaFillLocal'))    el('manaFillLocal').style.width    = pct + '%';
     // Lessons page uses these same IDs too
     if (el('culturesCount')) {
-      const kanaka = ['km-kumulipo','km-wakea','km-starcompass','km-hokuleaa','km-ahupuaa','km-loikalo','km-olelo','km-hula'];
+      const kanaka = ['km-kumulipo','km-wakea','km-starcompass','km-hokuleaa','km-ahupuaa','km-loikalo','km-olelo','km-hula','km-laau'];
       const kemet  = ['ke-nun','ke-ennead','ke-ptah','ke-maat','ke-maat-politics','ke-medunetjer','ke-medicine'];
       const bridge = ['bridge-darkness','bridge-pairs','bridge-aloha-maat'];
       let count = 0;
