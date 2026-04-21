@@ -1354,7 +1354,7 @@ where theme->>'_isAdmin' = 'true';</div>
 ══════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ── Initialize Supabase directly — no external dependency ── */
+/* ── Initialize Supabase directly — fires after main script registers listener ── */
 (function() {
   const SUPA_URL = 'https://fmrjdvsqdfyaqtzwbbqi.supabase.co';
   const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtcmpkdnNxZGZ5YXF0endiYnFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1OTE2MzYsImV4cCI6MjA5MTE2NzYzNn0.UKyvX02bG4cNhb7U2TK96t8XFREHYYwHJIKbPK06nqs';
@@ -1362,17 +1362,21 @@ where theme->>'_isAdmin' = 'true';</div>
   function initSupa() {
     try {
       window.piko_supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-      window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: false } }));
+      // Small delay so the main script's event listener registers first
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: false } }));
+      }, 50);
     } catch(e) {
       console.warn('[CV Admin] Supabase init failed:', e.message);
-      window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: true } }));
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('piko:supa:ready', { detail: { offline: true } }));
+      }, 50);
     }
   }
 
   if (typeof supabase !== 'undefined') {
     initSupa();
   } else {
-    document.currentScript?.closest('script')?.addEventListener('load', initSupa);
     setTimeout(initSupa, 500);
   }
 })();
@@ -1495,7 +1499,7 @@ window.addEventListener('piko:supa:ready', async (e) => {
   try {
     const { data } = await _supa.auth.getSession();
     const user = data?.session?.user;
-    if (!user) return;
+    if (!user) return; // no existing session — wait for manual sign-in
 
     const { data: profile } = await _supa
       .from('profiles')
@@ -1509,7 +1513,7 @@ window.addEventListener('piko:supa:ready', async (e) => {
     endLocalSession();
     showAdminShell(name, 'supabase');
   } catch (e) {
-    // Supabase check failed — local session stays if active
+    console.warn('[CV Admin] Auto-login check failed:', e.message);
   }
 });
 
@@ -1534,30 +1538,45 @@ document.getElementById('authSignInBtn').addEventListener('click', async () => {
   };
 
   // ── Try Supabase if input looks like an email ──
-  if (input.includes('@') && _supa) {
+  const sb = window.piko_supa; // always read fresh from window
+  if (input.includes('@') && sb) {
     try {
-      const { data, error } = await _supa.auth.signInWithPassword({ email: input, password });
+      const { data, error } = await sb.auth.signInWithPassword({ email: input, password });
       if (!error && data?.user) {
-        const { data: profile } = await _supa
+        const { data: profile } = await sb
           .from('profiles')
           .select('display_name, theme')
           .eq('id', data.user.id)
           .single();
 
         if (profile?.theme?._isAdmin !== true) {
-          errEl.textContent = 'Your Pikoverse account does not have admin access. Set _isAdmin: true on your profile in Supabase.';
+          errEl.textContent = 'Your account does not have admin access. Ensure _isAdmin: true is set on your profile.';
           resetBtn();
           return;
         }
 
+        _supa = sb;
         const name = profile?.display_name || input.split('@')[0];
         endLocalSession();
         showAdminShell(name, 'supabase');
         resetBtn();
         return;
       }
-      // Supabase auth failed — fall through to local
-    } catch (e) { /* Supabase unavailable — fall through */ }
+      // Supabase auth failed — show the actual error
+      if (error) {
+        errEl.textContent = 'Supabase: ' + (error.message || 'Sign in failed.');
+        resetBtn();
+        return;
+      }
+    } catch (e) {
+      errEl.textContent = 'Connection error: ' + e.message;
+      resetBtn();
+      return;
+    }
+  } else if (input.includes('@') && !sb) {
+    errEl.textContent = 'Supabase not ready yet — wait a moment and try again.';
+    resetBtn();
+    return;
   }
 
   // ── Local username/password fallback ──
