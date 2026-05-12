@@ -2450,7 +2450,7 @@ function checkPublishStatus() {
     });
 }
 
-// ── "Publish All to Site" — commits pikoData.js to GitHub ──────────────────
+// ── "Publish All to Site" — commits pikoData.json to GitHub ─────────────────
 // Bundles ALL site data into one file so every device sees the same content:
 //   articles, products, projects (approved), ideas, banner, promos, pay config
 function generateArticleEmbed() {
@@ -2945,7 +2945,7 @@ function renderNotifySettings() {
       });
       notifyEl.innerHTML = Object.entries(byProduct).map(([id, g]) => {
         const subject = encodeURIComponent(g.name + ' is back in stock!');
-        const body    = encodeURIComponent('Great news! ' + g.name + ' is back in stock.\n\nhttps://pikoverse.xyz/marketplace/marketplace.html\n\nMahalo! \u{1F33A} \u2014 Aloha Mass Productions');
+        const body    = encodeURIComponent('Great news! ' + g.name + ' is back in stock.\n\nhttps://pikoverse.xyz/marketplace/index.html\n\nMahalo! \u{1F33A} \u2014 Aloha Mass Productions');
         const mailto  = 'mailto:' + g.emails.join(',') + '?subject=' + subject + '&body=' + body;
         return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-soft)">
           <div>
@@ -2976,7 +2976,7 @@ function renderNotifySettings() {
       if (mailtoAll) {
         mailtoAll.style.display = '';
         const subAll  = encodeURIComponent('News from Aloha Mass Productions');
-        const bodyAll = encodeURIComponent('Aloha! Here\'s what\'s new at AMP:\n\n[Your message here]\n\nShop now: https://pikoverse.xyz/marketplace/marketplace.html\n\nMahalo! \u2014 Aloha Mass Productions');
+        const bodyAll = encodeURIComponent('Aloha! Here\'s what\'s new at AMP:\n\n[Your message here]\n\nShop now: https://pikoverse.xyz/marketplace/index.html\n\nMahalo! \u2014 Aloha Mass Productions');
         mailtoAll.href = 'mailto:' + emailList.join(',') + '?subject=' + subAll + '&body=' + bodyAll;
       }
     }
@@ -3039,7 +3039,7 @@ var DEFAULT_SECTIONS = [
     id: 'marketplace',
     label: 'AMP Marketplace',
     icon: 'fa-store',
-    url: '/marketplace/marketplace.html',
+    url: '/marketplace/index.html',
     status: 'coming_soon',
     title: 'Opening Soon',
     message: 'The AMP Marketplace is almost ready. Drop your email to get notified when we launch.',

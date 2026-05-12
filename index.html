@@ -19,7 +19,7 @@
   <meta property="og:url"          content="https://pikoverse.xyz/">
   <meta property="og:title"        content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
   <meta property="og:description"  content="A gateway platform where Aloha, indigenous knowledge, culture, history, and emerging technologies are woven together through learning, preservation, and digital innovation. Built from Hawaiʻi.">
-  <meta property="og:image"        content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.png">
+  <meta property="og:image"        content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt"    content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
@@ -30,7 +30,7 @@
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="Pikoverse — Ka Ulana ʻIke | The Weaving of Knowledge">
   <meta name="twitter:description" content="Aloha, indigenous knowledge, culture, history, and emerging technologies woven together. Built from Hawaiʻi by Aloha Mass Productions.">
-  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.png">
+  <meta name="twitter:image"       content="https://pikoverse.xyz/assets/platform-images/pikoverse-og.svg">
 
   <!-- ── Structured Data ── -->
   <script type="application/ld+json">
@@ -69,7 +69,6 @@
   </script>
 
   <!-- ── Icons & Manifest ── -->
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/platform-images/pikoverse-icon.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/platform-images/pikoverse-icon.png">
   <link rel="manifest" href="manifest.json">
@@ -105,13 +104,13 @@
         <span class="dock-node-name">Ikeverse</span>
         <div class="dock-tooltip"><span class="dock-tooltip-name">Ikeverse</span><span class="dock-tooltip-status">◉ Beta</span></div>
       </a>
-      <a href="cosmic-weave.html" class="dock-node" data-status="live">
+      <a href="#ecosystem" class="dock-node" data-status="soon">
         <div class="dock-icon-wrap">
           <div class="dock-icon">🌌</div>
           <div class="dock-status-ring"></div><div class="dock-status-dot"></div>
         </div>
-        <span class="dock-node-name">Cosmic Weave</span>
-        <div class="dock-tooltip"><span class="dock-tooltip-name">Cosmic Weave Globe</span><span class="dock-tooltip-status">● Live</span></div>
+        <span class="dock-node-name">Future</span>
+        <div class="dock-tooltip"><span class="dock-tooltip-name">Future Platform</span><span class="dock-tooltip-status">Coming Soon</span></div>
       </a>
       <div class="dock-divider"></div>
       <a href="#ecosystem" class="dock-node" data-status="soon">
@@ -320,19 +319,6 @@
         <div class="meaning-card" style="background-image:url('assets/images/hoohanau.jpg');--delay:0.9"><div class="card-content"><h3>Hoʻohānau</h3><p class="meaning-subtitle">Creativity</p><p>Bringing spirit into form — expressing truth, beauty, and innovation rooted in ʻike.</p></div></div>
         <div class="meaning-card" style="background-image:url('assets/images/ikepo.jpg');--delay:1"><div class="card-content"><h3>ʻIke Pō</h3><p class="meaning-subtitle">Deep Insight</p><p>Wisdom from the unseen — ancestral understanding from the darkness of creation.</p></div></div>
         <div class="meaning-card" style="background-image:url('assets/images/oiaio.jpg');--delay:1.1"><div class="card-content"><h3>ʻOiaʻiʻo</h3><p class="meaning-subtitle">Truth &amp; Honesty</p><p>To speak and live in truth — unwavering integrity rooted in the foundation of your spirit.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LIVING ALOHA -->
-  <section id="lifestyle" class="lifestyle-section">
-    <div class="container">
-      <h2>Living Aloha Every Day</h2>
-      <div class="practices-grid">
-        <div class="practice-card"><h3>Morning Gratitude</h3><p>Begin each day by expressing gratitude for the gift of life and the beauty that surrounds you.</p></div>
-        <div class="practice-card"><h3>Mindful Connection</h3><p>Take time to truly see and hear those around you, acknowledging their presence with your full attention.</p></div>
-        <div class="practice-card"><h3>Environmental Respect</h3><p>Honor and protect the land, water, and air that sustains all life, practicing mālama ʻāina (care for the land).</p></div>
-        <div class="practice-card"><h3>Community Service</h3><p>Share your time and talents with your community, recognizing that we are all connected in the circle of life.</p></div>
       </div>
     </div>
   </section>
@@ -585,8 +571,8 @@
 
         <div class="piko-hub-pane" id="pikoHubPaneActivity">
           <div class="piko-hub-activity-feed" id="pikoActivityFeed">
-            <div class="piko-pulse-list" id="pikoPulseList" style="max-height:none"></div>
-            <div class="piko-pulse-empty" id="pikoPulseEmpty" hidden>No recent activity yet.</div>
+            <div class="piko-pulse-list" id="pikoActivityPulseList" data-piko-pulse-list style="max-height:none"></div>
+            <div class="piko-pulse-empty" id="pikoActivityPulseEmpty" data-piko-pulse-empty hidden>No recent activity yet.</div>
           </div>
           <div class="piko-hub-post-bar">
             <button class="piko-share-fab-inline" id="pikoActivityPostBtn" type="button">
@@ -640,21 +626,6 @@
         <p class="piko-chron-sub-success" id="pikoChronSubSuccess" hidden>
           <i class="fas fa-circle-check"></i> You're on the list. Mahalo! 🌺
         </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section id="connect" class="final-cta-section">
-    <div class="container">
-      <div class="final-cta-box">
-        <p class="eyebrow">Build with meaning</p>
-        <h2>Pikoverse — Ka Ulana ʻIke</h2>
-        <p>Pikoverse is not just a website. It is a woven ecosystem of culture, research, learning, preservation, creativity, and technology — designed to connect what has been, what is, and what is still becoming.</p>
-        <div class="cta-buttons">
-          <a href="#ecosystem" class="cta-btn cta-primary">Explore the Platforms</a>
-          <a href="#showcase" class="cta-btn cta-secondary">View the Showcase</a>
-        </div>
       </div>
     </div>
   </section>
@@ -1048,8 +1019,8 @@
           </button>
         </div>
       </div>
-      <div class="piko-pulse-list" id="pikoPulseList"></div>
-      <div class="piko-pulse-empty" id="pikoPulseEmpty" hidden>No recent activity yet.</div>
+      <div class="piko-pulse-list" id="pikoPulseList" data-piko-pulse-list></div>
+      <div class="piko-pulse-empty" id="pikoPulseEmpty" data-piko-pulse-empty hidden>No recent activity yet.</div>
     </div>
     <button class="piko-pulse-toggle" id="pikoPulseToggle"
       type="button" aria-expanded="false" aria-controls="pikoPulsePanel">
@@ -1144,7 +1115,6 @@
     </a>
   </nav>
 
-  <script src="js/pikoData.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script>

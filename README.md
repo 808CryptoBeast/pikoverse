@@ -72,7 +72,6 @@ Pikoverse/
 ├── index.html
 ├── README.md
 ├── manifest.json
-├── favicon.svg
 ├── assets/
 │   ├── intro/
 │   ├── images/

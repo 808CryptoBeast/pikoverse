@@ -543,18 +543,18 @@ function sbGetUpvotes(ideaId) {
   }
 
   function refreshPulse() {
-    var list  = document.getElementById('pikoPulseList');
-    var empty = document.getElementById('pikoPulseEmpty');
-    if (!list) return;
-
     var items = buildPulseItems();
-    if (items.length === 0) {
-      list.innerHTML = '';
-      if (empty) empty.hidden = false;
-    } else {
-      if (empty) empty.hidden = true;
-      list.innerHTML = items.map(renderPulseItem).join('');
-    }
+    var html = items.map(renderPulseItem).join('');
+    var lists = document.querySelectorAll('[data-piko-pulse-list], #pikoPulseList');
+    var empties = document.querySelectorAll('[data-piko-pulse-empty], #pikoPulseEmpty');
+    if (!lists.length) return;
+
+    lists.forEach(function(list) {
+      list.innerHTML = items.length ? html : '';
+    });
+    empties.forEach(function(empty) {
+      empty.hidden = items.length !== 0;
+    });
   }
 
   function initPulse() {
@@ -1291,7 +1291,7 @@ function sbGetUpvotes(ideaId) {
   var chronPage = 1;
 
   function loadArticles() {
-    // Priority: _pikoData.articles (from pikoData.js fetch) > _pikoArticles > localStorage
+    // Priority: _pikoData.articles (from pikoData.json fetch) > _pikoArticles > localStorage
     var embedded = [];
     try {
       var src = (window._pikoData && window._pikoData.articles) ? window._pikoData.articles
@@ -1525,7 +1525,7 @@ function sbGetUpvotes(ideaId) {
       });
     }
 
-    // ── Fetch pikoData.js from server ────────────────────────────────────
+    // ── Fetch pikoData.json from server ───────────────────────────────────
     // Loads all site data committed via Admin "Publish All to Site"
     // Syncs articles, products, projects, ideas across ALL devices
     if (typeof fetch !== 'undefined') {

@@ -410,7 +410,7 @@
   function renderPlatforms() {
     var wrap=$('pikoPlatformsGrid'); if(!wrap) return;
     var cv=(STATE.learn.culturalverse||[]).length, dv=(STATE.learn.digitalverse||[]).length;
-    wrap.innerHTML='<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>'+(STATE.ideas.length+STATE.projects.length)+' submissions</span></a><a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>'+STATE.orders.length+' orders</span></a><a class="piko-platform-card" href="ikeverse/culturalverse.html"><strong>Culturalverse</strong><span>'+cv+' modules complete</span></a><a class="piko-platform-card" href="ikeverse/digitalverse/index.html"><strong>DigitalVerse</strong><span>'+dv+' modules complete</span></a>';
+    wrap.innerHTML='<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>'+(STATE.ideas.length+STATE.projects.length)+' submissions</span></a><a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>'+STATE.orders.length+' orders</span></a><a class="piko-platform-card" href="ikeverse/culturalverse.html"><strong>Culturalverse</strong><span>'+cv+' modules complete</span></a><a class="piko-platform-card" href="digitalverse/index.html"><strong>DigitalVerse</strong><span>'+dv+' modules complete</span></a>';
   }
 
   function renderNotifications() {
