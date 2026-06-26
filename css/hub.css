@@ -8987,3 +8987,105 @@ textarea.piko-comment-text::placeholder { color: rgba(255,255,255,.2); }
     padding-bottom: 80px !important;
   }
 }
+
+/* ==========================================================================
+   MOBILE LANDING POLISH
+   Keeps the fixed header usable, exposes the project dock, and makes the hero
+   less vertically heavy on phones.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .site-header .container {
+    gap: 12px;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+
+  .mobile-nav-dropdown {
+    position: fixed !important;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    display: flex !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+  }
+
+  .mobile-nav-dropdown.is-open {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0);
+    pointer-events: auto !important;
+  }
+
+  .piko-dock {
+    margin-top: var(--header-height) !important;
+    padding: 0 12px !important;
+  }
+
+  .piko-dock-inner {
+    height: 62px !important;
+    gap: 6px;
+  }
+
+  .piko-dock-label {
+    padding-right: 12px;
+    margin-right: 4px;
+  }
+
+  .dock-node {
+    padding: 7px 10px;
+  }
+
+  .dock-tooltip {
+    display: none;
+  }
+
+  .piko-share-fab {
+    display: none !important;
+  }
+
+  .hero-section {
+    min-height: auto;
+    padding-top: 42px !important;
+    padding-bottom: 72px !important;
+  }
+
+  .hero-grid {
+    gap: 26px;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(2rem, 9vw, 2.85rem) !important;
+    line-height: 1.08;
+  }
+
+  .hero-content .subtitle {
+    font-size: .98rem !important;
+    line-height: 1.72 !important;
+  }
+
+  .hero-tags {
+    gap: 10px;
+  }
+
+  .hero-tags span {
+    padding: 8px 14px;
+    font-size: .86rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-content h1 {
+    font-size: clamp(1.9rem, 8.6vw, 2.45rem) !important;
+  }
+
+  .hero-tags span {
+    padding: 7px 12px;
+  }
+}

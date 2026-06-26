@@ -1245,6 +1245,8 @@ function sbGetUpvotes(ideaId) {
     var toggle   = document.getElementById('mobileMenuToggle');
     var dropdown = document.getElementById('mobileNavDropdown');
     if (!toggle || !dropdown) return;
+    if (toggle._pikoMobileNavWired) return;
+    toggle._pikoMobileNavWired = true;
 
     // Toggle open/close
     toggle.addEventListener('click', function() {
@@ -1286,6 +1288,8 @@ function sbGetUpvotes(ideaId) {
   /* ─────────────────────────────────────────────
      CHRONICLE — Article Feed
   ───────────────────────────────────────────── */
+  initMobileNav();
+
   var CHRON_PAGE_SIZE = 9;
   var chronCat = 'all';
   var chronPage = 1;
