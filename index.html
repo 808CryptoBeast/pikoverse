@@ -104,6 +104,14 @@
         <span class="dock-node-name">Ikeverse</span>
         <div class="dock-tooltip"><span class="dock-tooltip-name">Ikeverse</span><span class="dock-tooltip-status">◉ Beta</span></div>
       </a>
+      <a href="https://808cryptobeast.github.io/IkeStar/" class="dock-node" data-status="beta">
+        <div class="dock-icon-wrap">
+          <div class="dock-icon"><img src="assets/platform-images/ikestar.png" alt="IkeStar"></div>
+          <div class="dock-status-ring"></div><div class="dock-status-dot"></div>
+        </div>
+        <span class="dock-node-name">IkeStar</span>
+        <div class="dock-tooltip"><span class="dock-tooltip-name">IkeStar Observatory</span><span class="dock-tooltip-status">Beta</span></div>
+      </a>
       <a href="#ecosystem" class="dock-node" data-status="soon">
         <div class="dock-icon-wrap">
           <div class="dock-icon">🌌</div>
@@ -373,6 +381,25 @@
           </div>
         </article>
 
+        <article class="ecosystem-card card-ikestar" data-popup="ikestar">
+          <img class="card-video" src="assets/platform-images/ikestar.png" alt="" aria-hidden="true">
+          <div class="card-video-overlay"></div><div class="card-top-glow"></div>
+          <div class="project-icon"><img src="assets/platform-images/ikestar.png" alt="IkeStar Night Sky Observatory icon"></div>
+          <h3>IkeStar</h3>
+          <p class="project-subtitle">Night Sky Observatory &middot; Hawaiʻi 21&deg;N</p>
+          <p class="project-description">An interactive night-sky observatory centered on Hawaiʻi and built as the sky-focused layer of Ikeverse, weaving Hawaiian star formations, moon-night knowledge, wayfinding, moʻolelo, and formation learning tools into one living sky map.</p>
+          <ul class="project-features">
+            <li>Interactive 3D sky with stars, planets, Moon, Sun, Milky Way, and horizon</li>
+            <li>Kānaka Maoli / Hawaiian star-formation layer with labels and cultural context</li>
+            <li>Monthly Hawaiian sky-map overlays, formation focus, and moon-night learning</li>
+            <li>Learn modules, progress tracking, and knowledge status badges</li>
+          </ul>
+          <div class="eco-card-actions">
+            <a href="https://808cryptobeast.github.io/IkeStar/" class="project-link project-link--ikestar" target="_blank" rel="noopener"><i class="fas fa-star"></i> Open IkeStar &rarr;</a>
+            <button class="eco-popup-btn eco-popup-btn--ikestar" data-popup="ikestar" type="button"><i class="fas fa-layer-group"></i> Deeper Dive</button>
+          </div>
+        </article>
+
         <article class="ecosystem-card card-history">
           <video class="card-video" autoplay muted playsinline preload="metadata"><source src="assets/platform-images/historical-bg.mp4" type="video/mp4"></video>
           <div class="card-video-overlay"></div><div class="card-top-glow"></div>
@@ -387,7 +414,7 @@
             <li>Future-ready decentralized archival direction</li>
           </ul>
           <div class="eco-card-actions">
-            <a href="#contact" class="project-link">Follow the Build →</a>
+            <a href="#hda-showcase" class="project-link">Follow the Build →</a>
             <button class="eco-popup-btn" data-popup="history" type="button"><i class="fas fa-layer-group"></i> Deeper Dive</button>
           </div>
         </article>
@@ -511,6 +538,30 @@
             <a href="projects/rootstall.html" class="piko-featured-link">
               <i class="fas fa-arrow-up-right-from-square"></i> Explore Root Stall
             </a>
+          </div>
+        </div>
+
+        <div class="piko-featured-card piko-featured-card--hda" id="hda-showcase">
+          <div class="piko-featured-img" style="background-image:url('assets/platform-images/HDA.png')">
+            <div class="piko-featured-img-overlay"></div>
+            <div class="piko-featured-badge">In Build</div>
+          </div>
+          <div class="piko-featured-body">
+            <div class="piko-featured-meta">
+              <img src="assets/platform-images/HDA.png" alt="Historical Data Aggregator" class="piko-featured-logo">
+              <div>
+                <h3 class="piko-featured-name">Historical Data Aggregator</h3>
+                <p class="piko-featured-sub">Memory, preservation, and research infrastructure</p>
+              </div>
+              <span class="piko-featured-stage piko-stage--building">Building</span>
+            </div>
+            <p class="piko-featured-desc">The Historical Data Aggregator is the long-form preservation track of Pikoverse: a research system for gathering, organizing, cross-referencing, and protecting historical knowledge from cultures, timelines, and sources that are often overlooked or misrepresented.</p>
+            <div class="piko-featured-tags">
+              <span>Historical Memory</span><span>Research</span><span>Indigenous Knowledge</span><span>Preservation</span>
+            </div>
+            <button class="piko-featured-link" data-popup="history" type="button">
+              <i class="fas fa-layer-group"></i> Read the Build Notes
+            </button>
           </div>
         </div>
       </div>
@@ -734,6 +785,37 @@
     </div>
   </div>
 
+  <!-- POPUP: IkeStar -->
+  <div class="eco-popup" id="eco-popup-ikestar" role="dialog" aria-modal="true" aria-labelledby="ecoPopupIkeStarTitle" hidden>
+    <div class="eco-popup__border" aria-hidden="true"></div>
+    <div class="eco-popup__header">
+      <div class="eco-popup__icon"><img src="assets/platform-images/ikestar.png" alt="IkeStar" /></div>
+      <div class="eco-popup__title-wrap">
+        <span class="eco-popup__eyebrow">Ikeverse Platform &middot; Observatory</span>
+        <h3 class="eco-popup__title" id="ecoPopupIkeStarTitle">IkeStar</h3>
+        <p class="eco-popup__subtitle">Hawaiian Night Sky Observatory &middot; Hawaiʻi 21&deg;N</p>
+      </div>
+      <button class="eco-popup__close" data-close-popup type="button" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="eco-popup__body">
+      <p>IkeStar is an interactive night-sky web app centered on Hawaiʻi and built as the sky-focused observatory layer of the Pikoverse / Ikeverse vision.</p>
+      <h4 class="eco-popup__section-title">What IkeStar Brings</h4>
+      <ul class="eco-popup__list">
+        <li>Three.js night sky with stars, planets, Moon, Sun, horizon, Milky Way, and compass controls</li>
+        <li>Kānaka Maoli / Hawaiian star formations, labels, formation lines, and cultural context</li>
+        <li>Monthly Hawaiian sky-map overlays with visible, low-horizon, and below-horizon status</li>
+        <li>Formation Focus mode with anchor stars, moʻolelo, navigation notes, and map actions</li>
+        <li>Learn modules with completion gates, reflection prompts, and sky-linked practice</li>
+      </ul>
+      <h4 class="eco-popup__section-title">Cultural Care</h4>
+      <p>The verified build focuses on the Hawaiian sky layer while other cultural layers remain under construction and review, supporting learning without flattening or overclaiming cultural meaning.</p>
+    </div>
+    <div class="eco-popup__footer">
+      <a href="https://808cryptobeast.github.io/IkeStar/" target="_blank" rel="noopener" class="eco-popup__cta eco-popup__cta--primary"><i class="fas fa-star"></i> Open IkeStar</a>
+      <a href="https://808cryptobeast.github.io/Ikeverse/" target="_blank" rel="noopener" class="eco-popup__cta eco-popup__cta--ghost"><i class="fas fa-leaf"></i> Enter Ikeverse</a>
+    </div>
+  </div>
+
   <!-- POPUP: Historical Data Aggregator -->
   <div class="eco-popup" id="eco-popup-history" role="dialog" aria-modal="true" aria-labelledby="ecoPopupHistoryTitle" hidden>
     <div class="eco-popup__border" aria-hidden="true"></div>
@@ -773,7 +855,7 @@
       </div>
     </div>
     <div class="eco-popup__footer">
-      <a href="#contact" class="eco-popup__cta eco-popup__cta--primary"><i class="fas fa-paper-plane"></i> Follow the Build</a>
+      <a href="#hda-showcase" class="eco-popup__cta eco-popup__cta--primary"><i class="fas fa-rocket"></i> Follow in Showcase</a>
       <a href="marketplace/index.html" class="eco-popup__cta eco-popup__cta--ghost"><i class="fas fa-store"></i> AMP Marketplace</a>
     </div>
   </div>
@@ -1049,7 +1131,7 @@
 
     // Lazy-load ecosystem card videos via IntersectionObserver
     if ("IntersectionObserver" in window) {
-      const lazyVideos = document.querySelectorAll(".ecosystem-card .card-video");
+      const lazyVideos = document.querySelectorAll(".ecosystem-card video.card-video");
       const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           const video = entry.target;
@@ -1061,32 +1143,6 @@
         });
       }, { rootMargin: "100px" });
       lazyVideos.forEach(v => videoObserver.observe(v));
-    }
-  });
-  </script>
-
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Mobile nav toggle
-    const mobileToggle = document.querySelector('.mobile-menu-toggle');
-    const mainNav      = document.querySelector('.main-nav');
-    if (mobileToggle && mainNav) {
-      mobileToggle.addEventListener('click', () => {
-        const isOpen = mainNav.classList.toggle('show');
-        mobileToggle.setAttribute('aria-expanded', isOpen);
-      });
-      mainNav.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          mainNav.classList.remove('show');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-        });
-      });
-      document.addEventListener('click', e => {
-        if (!e.target.closest('.main-nav') && !e.target.closest('.mobile-menu-toggle')) {
-          mainNav.classList.remove('show');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
     }
   });
   </script>
