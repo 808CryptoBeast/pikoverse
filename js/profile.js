@@ -36,6 +36,18 @@
 
   var CV_MODULES = ['Hawaiian History','Pacific Islanders','Indigenous Knowledge','Cultural Connections','Oral Traditions','Ancestral Navigation','Language & Identity','Modern Sovereignty'];
   var DV_MODULES = ['Bitcoin Fundamentals','Ethereum & Smart Contracts','XRPL Deep Dive','Flare & Songbird','DeFi & AMMs','Web3 Security','Scam Field Guide','Protocol Comparison','Blockchain Forensics Intro','NaluLF Workflow'];
+  var IKE_MODULES = [
+    {id:'intro-sky',          name:'The Sky as Ancestor'},
+    {id:'hawaiian-map',       name:'Hawaiian Star Map'},
+    {id:'moon-wayfinding',    name:'Moon & Wayfinding'},
+    {id:'formation-practice', name:'Formation Practice'},
+    {id:'knowledge-care',     name:'Knowledge Care'},
+    {id:'star-lines',         name:'Star Lines'},
+    {id:'seasonal-sky',       name:'Seasonal Sky'},
+    {id:'kemet-sky',          name:'Kemet Sky'},
+    {id:'kemet-stars',        name:'Kemet Stars'},
+    {id:'kemet-decans',       name:'Kemet Decans'}
+  ];
 
   var DEFAULT_THEME = { accent:'#f0c96a', bg:'#080b14', bg2:'#0d1220', text:'rgba(255,255,255,.88)', font:'Montserrat', bgMode:'default', bgUrl:'', customCss:'' };
   var BG_MAP = { default:'linear-gradient(135deg,#080b14,#141830)', stars:'#050510', gradient1:'linear-gradient(135deg,#0a0020,#200040,#000020)', gradient2:'linear-gradient(135deg,#001020,#002040,#003060)', gradient3:'linear-gradient(135deg,#0a1a05,#102a10,#1a3a1a)', gradient4:'linear-gradient(135deg,#1a0a00,#2a1500,#1a0a00)', light:'linear-gradient(135deg,#f0f4ff,#e0e8ff)' };
@@ -59,6 +71,7 @@
     orders:   [],
     notifs:   [],
     learn:    { culturalverse:[], digitalverse:[] },
+    ikestar:  [],    /* IkeStar lesson IDs completed */
     theme:    Object.assign({}, DEFAULT_THEME),
     nameStyle:{ color:'#ffffff', font:'', weight:'700', size:28 }
   };
@@ -269,6 +282,26 @@
     } catch(e){ return []; }
   }
 
+  async function fetchIkestarProgress() {
+    /* 1. localStorage — IkeStar writes here after each lesson */
+    try {
+      var local = JSON.parse(localStorage.getItem('ikestar-learn-progress') || '{}');
+      var ids = Object.keys(local).filter(function(k){ return !!local[k]; });
+      if (ids.length) return ids;
+    } catch(e){}
+    /* 2. Supabase user_progress table — synced by IkeStar when signed in */
+    if (supa() && STATE.user) {
+      try {
+        var r = await supa().from('user_progress').select('learn_progress').eq('user_id', STATE.user.id).single();
+        if (!r.error && r.data && r.data.learn_progress) {
+          var prog = r.data.learn_progress;
+          return Object.keys(prog).filter(function(k){ return !!prog[k]; });
+        }
+      } catch(e2){}
+    }
+    return [];
+  }
+
   async function addNotif(icon, text) {
     var n={ icon:icon, text:text, read:false, created_at:new Date().toISOString() };
     if(supa()&&STATE.user) {
@@ -410,7 +443,8 @@
   function renderPlatforms() {
     var wrap=$('pikoPlatformsGrid'); if(!wrap) return;
     var cv=(STATE.learn.culturalverse||[]).length, dv=(STATE.learn.digitalverse||[]).length;
-    wrap.innerHTML='<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>'+(STATE.ideas.length+STATE.projects.length)+' submissions</span></a><a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>'+STATE.orders.length+' orders</span></a><a class="piko-platform-card" href="https://808cryptobeast.github.io/The-Living-Knowledge-Platform/" target="_blank" rel="noopener"><strong>Living Knowledge Platform</strong><span>'+cv+' modules complete</span></a><a class="piko-platform-card" href="digitalverse/index.html"><strong>DigitalVerse</strong><span>'+dv+' modules complete</span></a>';
+    var ike=(STATE.ikestar||[]).length;
+    wrap.innerHTML='<a class="piko-platform-card" href="index.html"><strong>Pikoverse Hub</strong><span>'+(STATE.ideas.length+STATE.projects.length)+' submissions</span></a><a class="piko-platform-card" href="marketplace/index.html"><strong>AMP Marketplace</strong><span>'+STATE.orders.length+' orders</span></a><a class="piko-platform-card" href="https://808cryptobeast.github.io/The-Living-Knowledge-Platform/" target="_blank" rel="noopener"><strong>Living Knowledge Platform</strong><span>'+cv+' modules complete</span></a><a class="piko-platform-card" href="digitalverse/index.html"><strong>DigitalVerse</strong><span>'+dv+' modules complete</span></a><a class="piko-platform-card" href="../IkeStar/index.html"><strong>IkeStar</strong><span>'+ike+' lessons complete</span></a>';
   }
 
   function renderNotifications() {
@@ -463,6 +497,18 @@
   function renderLearning() {
     renderTrack('culturalverse', CV_MODULES, STATE.learn.culturalverse||[]);
     renderTrack('digitalverse',  DV_MODULES, STATE.learn.digitalverse||[]);
+    renderIkestarTrack();
+  }
+
+  function renderIkestarTrack() {
+    var pEl=$('ikestarProgress'), wEl=$('ikestarModules'); if(!wEl) return;
+    var completed=STATE.ikestar||[];
+    var pct=IKE_MODULES.length?Math.round((completed.length/IKE_MODULES.length)*100):0;
+    if(pEl) pEl.style.width=pct+'%';
+    wEl.innerHTML=IKE_MODULES.map(function(mod){
+      var done=completed.indexOf(mod.id)>-1;
+      return '<span class="piko-learn-module piko-learn-module--'+(done?'done':'todo')+'"><i class="fas fa-'+(done?'circle-check':'circle')+'"></i> '+esc(mod.name)+'</span>';
+    }).join('');
   }
 
   function renderTrack(trackId, modules, completed) {
@@ -533,11 +579,12 @@
     applyTheme(themeBase);
 
     /* Fetch all data in parallel */
-    var results=await Promise.all([fetchIdeas(), fetchProjects(), fetchNotifs()]);
+    var results=await Promise.all([fetchIdeas(), fetchProjects(), fetchNotifs(), fetchIkestarProgress()]);
     STATE.ideas    = results[0];
     STATE.projects = results[1];
     STATE.orders   = fetchOrders();
     STATE.notifs   = results[2];
+    STATE.ikestar  = results[3];
 
     showProfileSection();
     renderAll();
